@@ -1,0 +1,17 @@
+@reference "tailwindcss";
+
+.main-layout-container {
+  @apply min-h-screen bg-gray-50 flex w-full overflow-hidden font-sans text-gray-900 dark:bg-gray-900 dark:text-gray-100;
+}
+
+.main-content-wrapper {
+  @apply flex flex-col flex-1 w-full min-h-screen transition-all duration-300 ease-in-out lg:ml-64;
+}
+
+.main-content-wrapper.collapsed {
+  @apply lg:ml-20;
+}
+
+.main-content-area {
+  @apply flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto h-[calc(100vh-4rem)];
+}

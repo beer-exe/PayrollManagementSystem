@@ -1,0 +1,57 @@
+@reference "tailwindcss";
+
+.header-container {
+  @apply h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shrink-0 sticky top-0 z-20;
+}
+
+.header-left, .header-right {
+  @apply flex items-center h-full;
+}
+
+.toggle-btn {
+  @apply p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500 mr-2 lg:mr-4;
+}
+
+.header-breadcrumb {
+  @apply flex items-center text-sm;
+}
+
+.user-dropdown-btn {
+  @apply flex items-center gap-3 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none text-left;
+}
+
+.user-avatar {
+  @apply flex items-center justify-center w-9 h-9 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400 font-bold text-sm tracking-wider shrink-0;
+}
+
+.user-info {
+  @apply hidden sm:flex flex-col;
+}
+
+.user-name {
+  @apply text-sm font-medium text-gray-900 dark:text-white truncate max-w-[120px];
+}
+
+.user-role {
+  @apply text-xs text-gray-500 dark:text-gray-400 truncate max-w-[120px];
+}
+
+.dropdown-menu {
+  @apply absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 ring-1 ring-black/5 origin-top-right focus:outline-none z-50;
+  animation: dropdownFade 0.15s ease-out forwards;
+}
+
+.dropdown-item {
+  @apply block w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

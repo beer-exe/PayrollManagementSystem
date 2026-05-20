@@ -1,0 +1,61 @@
+@reference "tailwindcss";
+
+.sidebar-container {
+  @apply fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transform -translate-x-full transition-all duration-300 ease-in-out lg:translate-x-0 flex flex-col;
+}
+
+.sidebar-container.collapsed {
+  @apply lg:w-20;
+}
+
+.sidebar-container.open {
+  @apply translate-x-0 shadow-2xl;
+}
+
+.sidebar-overlay {
+  @apply fixed inset-0 z-30 bg-gray-900/50 backdrop-blur-sm lg:hidden transition-opacity;
+}
+
+.sidebar-logo-area {
+  @apply h-16 flex items-center px-6 border-b border-gray-200 dark:border-gray-800 overflow-hidden shrink-0;
+}
+
+.sidebar-container.collapsed .sidebar-logo-area {
+  @apply px-0 justify-center;
+}
+
+.sidebar-logo-text {
+  @apply ml-3 font-bold text-xl tracking-tight text-gray-900 dark:text-white whitespace-nowrap transition-opacity duration-300;
+}
+
+.sidebar-container.collapsed .sidebar-logo-text {
+  @apply hidden;
+}
+
+.sidebar-nav {
+  @apply flex-1 px-3 py-4 overflow-y-auto overflow-x-hidden;
+}
+
+.nav-item {
+  @apply flex items-center px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors relative;
+}
+
+.sidebar-container.collapsed .nav-item {
+  @apply justify-center px-0;
+}
+
+.nav-item.active {
+  @apply bg-violet-50 text-violet-700 dark:bg-violet-900/20 dark:text-violet-400;
+}
+
+.nav-icon {
+  @apply shrink-0 transition-colors;
+}
+
+.nav-text {
+  @apply ml-3 whitespace-nowrap transition-opacity duration-300;
+}
+
+.sidebar-container.collapsed .nav-text {
+  @apply hidden;
+}

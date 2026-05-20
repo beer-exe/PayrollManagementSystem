@@ -1,7 +1,7 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
-import type { AuthResponseDto } from '@/types/auth.types';
+import { AuthResponseDto, ApiResponse } from '@/types/auth.types';
+import { useAuthStore } from '@/store/useAuthStore';
 
-// Hàm utility thao tác với LocalStorage
 const getToken = () => localStorage.getItem('accessToken');
 const getRefreshToken = () => localStorage.getItem('refreshToken');
 const setTokens = (access: string, refresh: string) => {
@@ -62,7 +62,7 @@ axiosClient.interceptors.response.use(
           failedQueue.push({ resolve, reject });
         })
           .then((token) => {
-            originalRequest.headers.Authorization = 'Bearer ' + token;
+            originalRequest.headers.Authorization = `Bearer ${token}`;
             return axiosClient(originalRequest);
           })
           .catch((err) => Promise.reject(err));
@@ -71,30 +71,33 @@ axiosClient.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
 
+      const accessToken = getToken();
       const refreshToken = getRefreshToken();
-      if (!refreshToken) {
+      
+      if (!refreshToken || !accessToken) {
         clearTokens();
-        window.location.href = '/login';
+        useAuthStore.getState().setSessionExpired(true);
         return Promise.reject(error);
       }
 
       try {
-        const response = await axios.post<AuthResponseDto>(
-          `${BASE_URL}/Auth/refresh`,
-          { refreshToken }
+        const response = await axios.post<ApiResponse<AuthResponseDto>>(
+          `${BASE_URL}/Auth/refresh-token`,
+          { accessToken, refreshToken }
         );
 
-        const { accessToken, refreshToken: newRefreshToken } = response.data;
-        setTokens(accessToken, newRefreshToken);
+        const newAccessToken = response.data.data.accessToken;
+        const newRefreshToken = response.data.data.refreshToken;
+        
+        setTokens(newAccessToken, newRefreshToken);
+        processQueue(null, newAccessToken);
 
-        processQueue(null, accessToken);
-
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axiosClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError as AxiosError, null);
         clearTokens();
-        window.location.href = '/login';
+        useAuthStore.getState().setSessionExpired(true);
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
