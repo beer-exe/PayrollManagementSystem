@@ -1,4 +1,3 @@
-// src/types/profile.types.ts
 export interface UserProfileDetail {
   cccd: string;
   hoTen: string;
@@ -15,4 +14,11 @@ export interface UserProfileDetail {
   soBhyt: string | null;
   tenPhongBan: string | null;
   tenChucVu: string | null;
+  thanNhans: ThanNhanDto[];
+}
+
+export interface ThanNhanDto {
+  tenTn: string;
+  ngaySinh: string | null;
+  moiQuanHe: string | null;
 }
