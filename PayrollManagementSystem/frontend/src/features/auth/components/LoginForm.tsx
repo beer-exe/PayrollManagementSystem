@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLogin } from '../hooks/useLogin';
 import './LoginForm.css';
 
 export const LoginForm: React.FC = () => {
   const [tenTaiKhoan, setTenTaiKhoan] = useState('');
   const [matKhau, setMatKhau] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // Thêm state này
+  const [showPassword, setShowPassword] = useState(false);
+  
+  const navigate = useNavigate();
   const { login, isLoading, error } = useLogin();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -14,7 +17,7 @@ export const LoginForm: React.FC = () => {
     
     const success = await login({ tenTaiKhoan, matKhau });
     if (success) {
-      window.location.href = '/dashboard';
+      navigate('/dashboard'); 
     }
   };
 

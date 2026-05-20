@@ -1,0 +1,58 @@
+/* src/features/profile/components/UserProfile.css */
+@reference "tailwindcss";
+
+.profile-container {
+  @apply max-w-6xl mx-auto space-y-6;
+}
+
+.profile-header-card {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6;
+}
+
+.profile-avatar-large {
+  @apply w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400 flex items-center justify-center text-4xl font-bold tracking-wider shrink-0 shadow-inner;
+}
+
+.profile-name {
+  @apply text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 text-center sm:text-left;
+}
+
+.profile-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400;
+}
+
+.profile-grid {
+  @apply grid grid-cols-1 lg:grid-cols-3 gap-6;
+}
+
+.profile-card {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden;
+}
+
+.profile-card-header {
+  @apply px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2;
+}
+
+.profile-card-title {
+  @apply text-lg font-semibold text-gray-900 dark:text-white;
+}
+
+.profile-card-body {
+  @apply p-6 space-y-4;
+}
+
+.info-group {
+  @apply flex flex-col space-y-1;
+}
+
+.info-label {
+  @apply text-sm font-medium text-gray-500 dark:text-gray-400;
+}
+
+.info-value {
+  @apply text-base text-gray-900 dark:text-gray-100;
+}
+
+.btn-outline {
+  @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 border border-gray-300 bg-transparent hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800 h-10 px-4 py-2 mt-4 sm:mt-0;
+}

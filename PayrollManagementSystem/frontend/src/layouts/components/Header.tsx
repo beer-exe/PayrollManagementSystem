@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import './Header.css';
 
@@ -13,7 +14,6 @@ export const Header: React.FC<HeaderProps> = ({ isCollapsed, toggleCollapse, tog
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Tạo Avatar từ chữ cái đầu của tên (Ví dụ: Nguyễn Văn A -> NA)
   const getInitials = (name: string) => {
     if (!name) return 'U';
     const parts = name.trim().split(' ');
@@ -52,7 +52,7 @@ export const Header: React.FC<HeaderProps> = ({ isCollapsed, toggleCollapse, tog
 
         <div className="header-breadcrumb">
           {/* Có thể tích hợp react-router logic để render breadcrumb thật ở đây */}
-          <span className="font-semibold text-gray-800 dark:text-gray-100">Bảng điều khiển</span>
+          <span className="font-semibold text-gray-800 dark:text-gray-100">Dashboard</span>
         </div>
       </div>
 
@@ -81,7 +81,9 @@ export const Header: React.FC<HeaderProps> = ({ isCollapsed, toggleCollapse, tog
               </div>
               <ul className="py-1">
                 <li>
-                  <button className="dropdown-item">Hồ sơ cá nhân</button>
+                  <Link to="/dashboard/ho-so" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>
+                    Hồ sơ cá nhân
+                  </Link>
                 </li>
                 <li>
                   <button className="dropdown-item">Đổi mật khẩu</button>
