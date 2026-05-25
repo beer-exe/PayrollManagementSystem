@@ -34,7 +34,7 @@ namespace PayrollManagementSystem.Application.Features.Employees.Queries.GetEmpl
             int totalRecords = await query.CountAsync(cancellationToken);
 
             var employees = await query
-                .OrderByDescending(nv => nv.NgayVaoLam) // Sắp xếp nhân viên mới nhất lên đầu
+                .OrderByDescending(nv => nv.NgayVaoLam)
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .Select(nv => new EmployeeDto
