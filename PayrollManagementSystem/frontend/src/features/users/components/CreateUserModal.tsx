@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Input, Select } from 'antd';
+import { Modal, Input, Select, Spin } from 'antd';
 import { CreateUserCommand, RoleDto } from '../types/user.types';
+import { useEmployeesNoAccount } from '../hooks/useUsers';
+import './UserManagement.css';
 
 interface Props {
   isOpen: boolean;
@@ -20,6 +22,8 @@ export const CreateUserModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, ro
   const [formData, setFormData] = useState<CreateUserCommand>(initialFormState);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { employees, isLoading } = useEmployeesNoAccount(isOpen);
+
   useEffect(() => {
     if (!isOpen) {
       setFormData(initialFormState);
@@ -31,52 +35,70 @@ export const CreateUserModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, ro
     const success = await onSubmit(formData);
     setIsSubmitting(false);
     
-    if (success) {
-      onClose();
-    }
+    if (success) onClose();
   };
 
   return (
     <Modal
-      title={<h3 className="text-lg font-bold text-gray-800">Thêm tài khoản mới</h3>}
+      title={<h3 className="user-modal-title">Cấp tài khoản mới</h3>}
       open={isOpen}
       onCancel={onClose}
       onOk={handleSubmit}
       confirmLoading={isSubmitting}
       okText="Tạo tài khoản"
-      cancelText="Hủy"
-      okButtonProps={{ className: 'bg-violet-600 hover:bg-violet-700' }}
+      cancelText="Hủy bỏ"
+      okButtonProps={{ className: 'user-btn-primary !border-none !shadow-none' }}
+      cancelButtonProps={{ className: '!rounded-lg' }}
+      destroyOnClose
     >
-      <div className="space-y-4 my-4">
+      <div className="space-y-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Căn cước công dân (Mã NV)</label>
-          <Input 
-            placeholder="Nhập CCCD của nhân viên" 
-            value={formData.cccd}
-            onChange={(e) => setFormData({ ...formData, cccd: e.target.value })}
+          <label className="user-form-label">Mã nhân viên (CCCD) <span className="text-red-500">*</span></label>
+          <Select
+            showSearch
+            size="large"
+            className="w-full"
+            placeholder="Nhập CCCD hoặc Tên để tìm kiếm..."
+            value={formData.cccd || undefined}
+            onChange={(value) => setFormData({ ...formData, cccd: value })}
+            filterOption={(input, option) => 
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
+            notFoundContent={isLoading ? <Spin size="small" /> : "Không tìm thấy nhân viên"}
+            options={(employees ?? []).map((emp) => ({
+              value: emp.cccd,
+              label: `${emp.hoTen} - ${emp.cccd}`,
+              cccd: emp.cccd
+            }))}
           />
         </div>
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Tên đăng nhập</label>
+          <label className="user-form-label">Tên đăng nhập <span className="text-red-500">*</span></label>
           <Input 
-            placeholder="Nhập tên đăng nhập" 
+            size="large"
+            placeholder="VD: nv_nguyenvana" 
             value={formData.tenTaiKhoan}
             onChange={(e) => setFormData({ ...formData, tenTaiKhoan: e.target.value })}
           />
         </div>
+        
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+          <label className="user-form-label">Mật khẩu khởi tạo <span className="text-red-500">*</span></label>
           <Input.Password 
-            placeholder="Nhập mật khẩu" 
+            size="large"
+            placeholder="Nhập mật khẩu an toàn" 
             value={formData.matKhau}
             onChange={(e) => setFormData({ ...formData, matKhau: e.target.value })}
           />
         </div>
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Vai trò</label>
+          <label className="user-form-label">Cấp quyền hạn (Vai trò) <span className="text-red-500">*</span></label>
           <Select
+            size="large"
             className="w-full"
-            placeholder="Chọn vai trò"
+            placeholder="-- Chọn vai trò --"
             value={formData.idVaiTro || undefined}
             onChange={(value) => setFormData({ ...formData, idVaiTro: value })}
             options={roles.map(role => ({

@@ -28,6 +28,9 @@ namespace PayrollManagementSystem.Application.Features.Users.Commands.CreateUser
             if (nhanVien == null) throw new ApiException("Không tìm thấy nhân viên với CCCD này.");
             if (nhanVien.IdTaiKhoan != null) throw new ApiException("Nhân viên này đã có tài khoản.");
 
+            var vaiTroExists = await _context.VaiTros.AnyAsync(v => v.IdVaiTro == request.IdVaiTro, cancellationToken);
+            if (!vaiTroExists) throw new ApiException("Vai trò được phân quyền không tồn tại trong hệ thống.");
+
             var taiKhoan = new TaiKhoan
             {
                 TenTaiKhoan = request.TenTaiKhoan,

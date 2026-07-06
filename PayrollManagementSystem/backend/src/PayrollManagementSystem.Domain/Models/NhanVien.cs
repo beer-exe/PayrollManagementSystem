@@ -1,4 +1,4 @@
-﻿using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Enums;
 
 namespace PayrollManagementSystem.Domain.Models
 {
@@ -18,14 +18,24 @@ namespace PayrollManagementSystem.Domain.Models
         public TrangThaiNhanVien? TrangThai { get; set; } = TrangThaiNhanVien.DANG_LAM_VIEC;
         public string? SoBhxh { get; set; }
         public string? SoBhyt { get; set; }
+        public string? SoTaiKhoan { get; set; }
+        public string? TenNganHang { get; set; }
+        public string? MaSoThue { get; set; }
         public string? IdPb { get; set; }
         public Guid? IdTaiKhoan { get; set; }
+        public decimal? HeSoP2 { get; set; }
+        public string? CccdNguoiQuanLy { get; set; }
 
         // Navigation properties
         public PhongBan? PhongBan { get; set; }
         public TaiKhoan? TaiKhoan { get; set; }
+        public NhanVien? NguoiQuanLy { get; set; }
+        public ICollection<NhanVien> NhanVienCapDuois { get; set; } = new List<NhanVien>();
         public ICollection<QuyetDinhNhanSu> QuyetDinhNhanSus { get; set; } = new List<QuyetDinhNhanSu>();
-        public ICollection<TaiKhoanNganHang> TaiKhoanNganHangs { get; set; } = new List<TaiKhoanNganHang>();
+
         public ICollection<ThanNhanNhanVien> ThanNhanNhanViens { get; set; } = new List<ThanNhanNhanVien>();
+        public ICollection<HopDongLaoDong> HopDongLaoDongs { get; set; } = new List<HopDongLaoDong>();
+
+        public ICollection<NhatKyTrangThai> NhatKyTrangThais { get; set; } = new List<NhatKyTrangThai>();
     }
 }

@@ -2,58 +2,44 @@ import React, { useState, useEffect } from 'react';
 import { EmpTable } from './EmpTable';
 import { ColumnSetupDrawer } from './ColumnSetupDrawer';
 import { EmployeeDetailPanel } from './EmployeeDetailPanel';
+import { ChangeStatusModal } from './ChangeStatusModal';
+import { CreateEmployeeStepper } from './CreateEmployeeStepper';
+import { UpdateEmployeeModal } from './UpdateEmployeeModal';
 import { UserProfileDetail } from '@/types/profile.types';
-import { employeeApi } from '../api/employeeApi';
+import { CreateEmployeeCommand } from '../types/employee.types';
+import { useEmployees } from '../hooks/useEmployees';
+import { Modal } from 'antd';
 import './EmployeeManagement.css';
+import './EmployeeModals.css';
 
 export const EmployeeManagement: React.FC = () => {
-  // States quản lý dữ liệu API
-  const [employees, setEmployees] = useState<UserProfileDetail[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [totalRecords, setTotalRecords] = useState(0);
+  const { 
+    employees, totalRecords, loading, isExporting,
+    fetchEmployees, exportExcel, changeStatus, createEmployee, updateEmployee 
+  } = useEmployees();
   
-  // States quản lý tìm kiếm & phân trang
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize] = useState(15); // Có thể đổi thành state nếu cho user chọn kích thước trang
+  const [pageSize] = useState(15); 
 
-  // States quản lý UI (Mở panel, tùy chỉnh cột)
   const [selectedEmp, setSelectedEmp] = useState<UserProfileDetail | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
+  
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [employeeToChangeStatus, setEmployeeToChangeStatus] = useState<UserProfileDetail | null>(null);
+  
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [employeeToUpdate, setEmployeeToUpdate] = useState<UserProfileDetail | null>(null);
 
-  // 1. Fetch dữ liệu từ API
   useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        setIsLoading(true);
-        const response = await employeeApi.getEmployees({
-          SearchTerm: searchTerm,
-          PageNumber: pageNumber,
-          PageSize: pageSize
-        });
-        
-        if (response.succeeded) {
-          setEmployees(response.data);
-          setTotalRecords(response.totalRecords);
-        }
-      } catch (error) {
-        console.error("Lỗi khi tải dữ liệu nhân viên:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    // Áp dụng Debounce cho tính năng tìm kiếm (Tránh gọi API liên tục khi đang gõ)
     const timeoutId = setTimeout(() => {
-      fetchEmployees();
+      fetchEmployees(searchTerm, pageNumber, pageSize);
     }, 400);
-
     return () => clearTimeout(timeoutId);
-  }, [searchTerm, pageNumber, pageSize]);
+  }, [searchTerm, pageNumber, pageSize, fetchEmployees]);
 
-  // 2. Load cấu hình cột từ LocalStorage
   useEffect(() => {
     const saved = localStorage.getItem('empTableColumns');
     if (saved) {
@@ -63,42 +49,65 @@ export const EmployeeManagement: React.FC = () => {
     }
   }, []);
 
-  const handleColumnChange = (newCols: string[]) => {
-    setVisibleColumns(newCols);
-    localStorage.setItem('empTableColumns', JSON.stringify(newCols));
+  const handleCreateSuccess = async (data: CreateEmployeeCommand) => {
+    const success = await createEmployee(data);
+    if (success) {
+      setIsCreateModalOpen(false);
+      setPageNumber(1); 
+      fetchEmployees(searchTerm, 1, pageSize);
+    }
+    return success;
   };
 
-  const handleRowClick = (emp: UserProfileDetail) => {
-    setSelectedEmp(emp);
-    setIsPanelOpen(true);
-  };
-
-  const handleSearchChange = (value: string) => {
-    setSearchTerm(value);
-    setPageNumber(1); // Reset về trang 1 khi tìm kiếm từ khóa mới
+  const handleEditClick = (emp: UserProfileDetail) => {
+    setEmployeeToUpdate(emp);
+    setIsUpdateModalOpen(true);
   };
 
   return (
-    <div className="emp-wrapper p-4 sm:p-6">
-      <EmpTable 
-        data={employees} // <--- Đưa dữ liệu thật vào đây
-        visibleColumns={visibleColumns}
-        isLoading={isLoading}
-        searchTerm={searchTerm}
-        onSearchChange={handleSearchChange}
-        pageNumber={pageNumber}
-        pageSize={pageSize}
-        totalRecords={totalRecords}
-        onPageChange={(page) => setPageNumber(page)}
-        onOpenSettings={() => setIsDrawerOpen(true)}
-        onRowClick={handleRowClick}
-      />
+    <div className="emp-wrapper flex flex-col h-full min-w-0">
+      
+      <div className="emp-header">
+        <h2 className="emp-title">Hồ sơ Nhân sự</h2>
+        <button 
+          onClick={() => setIsCreateModalOpen(true)}
+          className="emp-btn-primary"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+          Thêm Nhân Viên
+        </button>
+      </div>
+
+      <div className="flex-1 min-w-0 overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+        <div className="w-full overflow-x-auto h-full">
+          <EmpTable 
+            data={employees}
+            visibleColumns={visibleColumns}
+            isLoading={loading}
+            isExporting={isExporting}
+            searchTerm={searchTerm}
+            onSearchChange={(v) => { setSearchTerm(v); setPageNumber(1); }}
+            pageNumber={pageNumber}
+            pageSize={pageSize}
+            totalRecords={totalRecords}
+            onPageChange={setPageNumber}
+            onOpenSettings={() => setIsDrawerOpen(true)}
+            onRowClick={(emp) => { setSelectedEmp(emp); setIsPanelOpen(true); }}
+            onStatusClick={(emp) => setEmployeeToChangeStatus(emp)}
+            onEditClick={handleEditClick}
+            onExportExcel={() => exportExcel(searchTerm)}
+          />
+        </div>
+      </div>
 
       <ColumnSetupDrawer 
         open={isDrawerOpen} 
         onClose={() => setIsDrawerOpen(false)}
         visibleColumns={visibleColumns}
-        onChange={handleColumnChange}
+        onChange={(cols) => { 
+          setVisibleColumns(cols); 
+          localStorage.setItem('empTableColumns', JSON.stringify(cols)); 
+        }}
       />
 
       <EmployeeDetailPanel 
@@ -106,6 +115,50 @@ export const EmployeeManagement: React.FC = () => {
         isOpen={isPanelOpen} 
         onClose={() => setIsPanelOpen(false)} 
       />
+
+      <Modal 
+        title={<h2 className="emp-modal-title">Thêm Mới Nhân Sự</h2>}
+        open={isCreateModalOpen} 
+        onCancel={() => setIsCreateModalOpen(false)}
+        footer={null}
+        width={800}
+        destroyOnClose
+      >
+        <CreateEmployeeStepper 
+          onSubmitSuccess={handleCreateSuccess}
+          onCancel={() => setIsCreateModalOpen(false)}
+        />
+      </Modal>
+
+      <UpdateEmployeeModal
+        isOpen={isUpdateModalOpen}
+        onClose={() => {
+          setIsUpdateModalOpen(false);
+          setEmployeeToUpdate(null);
+        }}
+        employee={employeeToUpdate}
+        onSubmitUpdate={async (cccd, data) => {
+          const success = await updateEmployee(cccd, data);
+          if (success) {
+            fetchEmployees(searchTerm, pageNumber, pageSize);
+          }
+            return success;
+        }}
+      />
+
+      {employeeToChangeStatus && (
+        <ChangeStatusModal 
+          isOpen={!!employeeToChangeStatus}
+          onClose={() => setEmployeeToChangeStatus(null)}
+          cccd={employeeToChangeStatus.cccd}
+          currentStatus={employeeToChangeStatus.trangThai || 'DANG_LAM_VIEC'}
+          onSubmitStatus={async (data) => {
+            const success = await changeStatus(employeeToChangeStatus.cccd, data);
+            if (success) fetchEmployees(searchTerm, pageNumber, pageSize);
+            return success;
+          }}
+        />
+      )}
     </div>
   );
 };

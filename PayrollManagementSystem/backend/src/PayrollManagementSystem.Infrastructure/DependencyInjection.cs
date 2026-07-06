@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PayrollManagementSystem.Application.Common.Interfaces;
@@ -18,6 +18,7 @@ namespace PayrollManagementSystem.Infrastructure
             services.AddTransient<IEmailService, EmailService>();
             services.AddTransient<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddTransient<IPasswordHasher, PasswordHasher>();
+            services.AddTransient<IExcelService, ExcelService>();
 
             return services;
         }

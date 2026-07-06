@@ -23,7 +23,12 @@ namespace PayrollManagementSystem.API
             services.AddApplicationServices(Configuration);  
             services.AddInfrastructureServices(Configuration);
 
-            services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+            services.AddControllers().AddJsonOptions(options => 
+            { 
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {

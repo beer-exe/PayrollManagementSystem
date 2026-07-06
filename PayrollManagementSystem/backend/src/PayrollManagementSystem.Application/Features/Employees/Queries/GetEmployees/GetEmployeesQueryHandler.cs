@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.Employees.DTOs;
@@ -59,13 +59,49 @@ namespace PayrollManagementSystem.Application.Features.Employees.Queries.GetEmpl
                         .OrderByDescending(qd => qd.NgayHieuLuc)
                         .Select(qd => _context.ChucVus.FirstOrDefault(cv => cv.IdChucVu == qd.IdChucVuMoi).TenChucVu)
                         .FirstOrDefault(),
+                        
+                    SoTaiKhoan = nv.SoTaiKhoan,
+                    TenNganHang = nv.TenNganHang,
+                    MaSoThue = nv.MaSoThue,
+                    
+                    LuongP1 = _context.QuyetDinhNhanSus
+                        .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC)
+                        .OrderByDescending(qd => qd.NgayHieuLuc)
+                        .Select(qd => _context.BacLuongs.FirstOrDefault(bl => bl.IdBacLuong == qd.IdBacLuongMoi).LuongP1)
+                        .FirstOrDefault(),
+                        
+                    HeSoP2 = _context.PhieuDanhGiaNangLucs
+                        .Where(pdg => pdg.CccdNhanVien == nv.Cccd && pdg.TrangThai == TrangThaiPhieuDanhGia.DA_HOAN_THANH)
+                        .OrderByDescending(pdg => pdg.KyDanhGia.NgayKetThuc)
+                        .Select(pdg => pdg.HeSoP2)
+                        .FirstOrDefault() ?? 1.00m,
+                        
+                    SoHopDong = _context.HopDongLaoDongs
+                        .Where(hd => hd.Cccd == nv.Cccd && hd.TrangThai == TrangThaiHopDong.HIEU_LUC)
+                        .OrderByDescending(hd => hd.NgayBatDau)
+                        .Select(hd => hd.SoHopDong)
+                        .FirstOrDefault(),
+                        
+                    LoaiHopDong = _context.HopDongLaoDongs
+                        .Where(hd => hd.Cccd == nv.Cccd && hd.TrangThai == TrangThaiHopDong.HIEU_LUC)
+                        .OrderByDescending(hd => hd.NgayBatDau)
+                        .Select(hd => hd.LoaiHopDong)
+                        .FirstOrDefault(),
+                        
+                    NgayBatDauHopDong = _context.HopDongLaoDongs
+                        .Where(hd => hd.Cccd == nv.Cccd && hd.TrangThai == TrangThaiHopDong.HIEU_LUC)
+                        .OrderByDescending(hd => hd.NgayBatDau)
+                        .Select(hd => hd.NgayBatDau.ToString("yyyy-MM-dd"))
+                        .FirstOrDefault(),
 
                     ThanNhans = _context.TNhanNviens
                         .Where(tn => tn.Cccd == nv.Cccd)
                         .Select(tn => new ThanNhanDto
                         {
+                            MaDinhDanh = tn.MaDinhDanh,
                             TenTn = tn.ThanNhan.TenTn,
                             NgaySinh = tn.ThanNhan.NgaySinh.HasValue ? tn.ThanNhan.NgaySinh.Value.ToString("yyyy-MM-dd") : null,
+                            IdMqh = tn.IdMqh,
                             MoiQuanHe = tn.MoiQuanHe != null ? tn.MoiQuanHe.TenQuanHe : "Khác"
                         }).ToList() ?? new List<ThanNhanDto>()
                 })

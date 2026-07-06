@@ -5,6 +5,7 @@ using PayrollManagementSystem.Application.Features.Users.Commands.CreateUser;
 using PayrollManagementSystem.Application.Features.Users.Commands.ResetPassword;
 using PayrollManagementSystem.Application.Features.Users.Commands.ToggleUserStatus;
 using PayrollManagementSystem.Application.Features.Users.Commands.UpdateUserRole;
+using PayrollManagementSystem.Application.Features.Users.Queries.GetEmployeesWithoutAccount;
 using PayrollManagementSystem.Application.Features.Users.Queries.GetRoles;
 using PayrollManagementSystem.Application.Features.Users.Queries.GetUsers;
 
@@ -65,6 +66,14 @@ namespace PayrollManagementSystem.API.Controllers
         {
             if (id != command.IdTaiKhoan) return BadRequest("ID không khớp.");
             var response = await _mediator.Send(command);
+            return Ok(response);
+        }
+
+        [HttpGet("employees-no-account")]
+        public async Task<IActionResult> GetEmployeesWithoutAccount()
+        {
+            var query = new GetEmployeesWithoutAccountQuery();
+            var response = await _mediator.Send(query);
             return Ok(response);
         }
     }

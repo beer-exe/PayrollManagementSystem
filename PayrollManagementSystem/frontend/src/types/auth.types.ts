@@ -11,6 +11,7 @@ export interface AuthResponseDto {
   email: string;
   accessToken: string;
   refreshToken: string;
+  hasDirectReports: boolean;
 }
 
 export interface LoginRequestDto {
@@ -22,4 +23,6 @@ export interface UserProfile {
   id: string;
   name: string;
   email: string;
+  role: string;
+  hasDirectReports: boolean;
 }

@@ -1,4 +1,3 @@
-import { ApiResponse } from '@/types/auth.types';
 
 export interface UserDto {
   idTaiKhoan: string;
@@ -30,4 +29,10 @@ export interface UpdateUserRoleCommand {
 export interface ResetPasswordCommand {
   idTaiKhoan: string;
   newPassword: string;
+}
+
+export interface EmployeeNoAccount {
+  cccd: string;
+  hoTen: string;
+  tenPhongBan?: string | null;
 }

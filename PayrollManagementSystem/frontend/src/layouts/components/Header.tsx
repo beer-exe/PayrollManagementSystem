@@ -26,7 +26,6 @@ export const Header: React.FC<HeaderProps> = ({ isCollapsed, toggleCollapse, tog
     window.location.href = '/login';
   };
 
-  // Đóng dropdown khi click ra ngoài
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {

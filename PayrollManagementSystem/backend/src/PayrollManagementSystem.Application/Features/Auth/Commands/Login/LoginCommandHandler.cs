@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Common.Interfaces;
@@ -46,13 +46,20 @@ namespace PayrollManagementSystem.Application.Features.Auth.Commands.Login
             taiKhoan.RefreshTokenExpiryTime = DateTime.SpecifyKind(DateTime.UtcNow.AddDays(7), DateTimeKind.Unspecified);
             await _context.SaveChangesAsync(cancellationToken);
 
+            bool hasDirectReports = false;
+            if (taiKhoan.NhanVien != null && !string.IsNullOrEmpty(taiKhoan.NhanVien.Cccd))
+            {
+                hasDirectReports = await _context.NhanViens.AnyAsync(nv => nv.CccdNguoiQuanLy == taiKhoan.NhanVien.Cccd, cancellationToken);
+            }
+
             AuthResponseDto? responseData = new AuthResponseDto
             {
                 UserId = taiKhoan.IdTaiKhoan.ToString(),
                 FullName = taiKhoan.TenTaiKhoan,
                 Email = taiKhoan.NhanVien?.Email ?? string.Empty,
                 AccessToken = accessToken,
-                RefreshToken = refreshToken
+                RefreshToken = refreshToken,
+                HasDirectReports = hasDirectReports
             };
 
             return new Response<AuthResponseDto>(responseData, "Đăng nhập thành công.");

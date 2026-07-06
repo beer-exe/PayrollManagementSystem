@@ -4,6 +4,6 @@ import { ApiResponse } from '@/types/auth.types';
 
 export const profileApi = {
   getMyProfile: () => {
-    return axiosClient.get<any, ApiResponse<UserProfileDetail>>('/Profile/me');
+    return axiosClient.get<unknown, ApiResponse<UserProfileDetail>>('/Profile/me');
   },
 };

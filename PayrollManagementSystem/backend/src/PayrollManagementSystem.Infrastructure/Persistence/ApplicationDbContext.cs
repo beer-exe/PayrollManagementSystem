@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Domain.Models;
 
@@ -19,15 +19,26 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
         public virtual DbSet<BacLuong> BacLuongs { get; set; }
         public virtual DbSet<ChucVu> ChucVus { get; set; }
         public virtual DbSet<MoiQuanHe> MoiQuanHes { get; set; }
-        public virtual DbSet<NganHang> NganHangs { get; set; }
+
         public virtual DbSet<NhanVien> NhanViens { get; set; }
         public virtual DbSet<PhongBan> PhongBans { get; set; }
         public virtual DbSet<QuyetDinhNhanSu> QuyetDinhNhanSus { get; set; }
         public virtual DbSet<TaiKhoan> TaiKhoans { get; set; }
-        public virtual DbSet<TaiKhoanNganHang> TaiKhoanNganHangs { get; set; }
+
         public virtual DbSet<ThanNhan> ThanNhans { get; set; }
         public virtual DbSet<ThanNhanNhanVien> TNhanNviens { get; set; }
         public virtual DbSet<VaiTro> VaiTros { get; set; }
+        public virtual DbSet<HopDongLaoDong> HopDongLaoDongs { get; set; }
+
+        public virtual DbSet<NhatKyTrangThai> NhatKyTrangThais { get; set; }
+        public virtual DbSet<KhungNangLucP2> KhungNangLucP2s { get; set; }
+
+
+        public virtual DbSet<KyDanhGia> KyDanhGias { get; set; }
+        public virtual DbSet<PhieuDanhGiaNangLuc> PhieuDanhGiaNangLucs { get; set; }
+        public virtual DbSet<ChiTietDanhGiaNangLuc> ChiTietDanhGiaNangLucs { get; set; }
+        public virtual DbSet<MucQuyDoiP2> MucQuyDoiP2s { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -46,12 +57,20 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                     .HasMaxLength(50)
                     .HasColumnName("id_chuc_vu");
 
+                entity.Property(e => e.TenBacLuong)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnName("ten_bac_luong");
+
                 entity.Property(e => e.LuongP1)
                     .HasPrecision(18, 2)
                     .HasColumnName("luong_p1");
 
                 entity.Property(e => e.NgayApDung)
                     .HasColumnName("ngay_ap_dung");
+
+                entity.Property(e => e.NgayKetThuc)
+                    .HasColumnName("ngay_ket_thuc");
 
                 entity.HasOne(d => d.ChucVu)
                     .WithMany(p => p.BacLuongs)
@@ -72,6 +91,10 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                 entity.Property(e => e.TenChucVu)
                     .HasMaxLength(100)
                     .HasColumnName("ten_chuc_vu");
+
+                entity.Property(e => e.MoTaCongViec)
+                    .HasMaxLength(500)
+                    .HasColumnName("mo_ta_cong_viec");
             });
 
             modelBuilder.Entity<MoiQuanHe>(entity =>
@@ -88,19 +111,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                     .HasColumnName("ten_quan_he");
             });
 
-            modelBuilder.Entity<NganHang>(entity =>
-            {
-                entity.HasKey(e => e.IdNganHang).HasName("ngan_hangs_pkey");
-                entity.ToTable("ngan_hangs");
 
-                entity.Property(e => e.IdNganHang)
-                    .HasDefaultValueSql("gen_random_uuid()")
-                    .HasColumnName("id_ngan_hang");
-
-                entity.Property(e => e.TenNganHang)
-                    .HasMaxLength(255)
-                    .HasColumnName("ten_ngan_hang");
-            });
 
             modelBuilder.Entity<NhanVien>(entity =>
             {
@@ -132,8 +143,14 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
 
                 entity.Property(e => e.SoBhxh).HasMaxLength(50).HasColumnName("so_bhxh");
                 entity.Property(e => e.SoBhyt).HasMaxLength(50).HasColumnName("so_bhyt");
+                entity.Property(e => e.SoTaiKhoan).HasMaxLength(50).HasColumnName("so_tai_khoan");
+                entity.Property(e => e.TenNganHang).HasMaxLength(100).HasColumnName("ten_ngan_hang");
+                entity.Property(e => e.MaSoThue).HasMaxLength(50).HasColumnName("ma_so_thue");
                 entity.Property(e => e.IdPb).HasMaxLength(50).HasColumnName("id_pb");
                 entity.Property(e => e.IdTaiKhoan).HasColumnName("id_tai_khoan");
+                entity.Property(e => e.CccdNguoiQuanLy)
+                    .HasMaxLength(20)
+                    .HasColumnName("cccd_nguoi_quan_ly");
 
                 entity.HasOne(d => d.PhongBan)
                     .WithMany(p => p.NhanViens)
@@ -146,6 +163,14 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                     .HasForeignKey<NhanVien>(d => d.IdTaiKhoan)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("nhan_viens_id_tai_khoan_fkey");
+
+                entity.Property(e => e.HeSoP2).HasPrecision(5, 2).HasColumnName("he_so_p2");
+
+                entity.HasOne(d => d.NguoiQuanLy)
+                    .WithMany(p => p.NhanVienCapDuois)
+                    .HasForeignKey(d => d.CccdNguoiQuanLy)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("nhan_viens_cccd_nguoi_quan_ly_fkey");
             });
 
             modelBuilder.Entity<PhongBan>(entity =>
@@ -247,36 +272,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                     .HasConstraintName("tai_khoans_id_vai_tro_fkey");
             });
 
-            modelBuilder.Entity<TaiKhoanNganHang>(entity =>
-            {
-                entity.HasKey(e => e.Stk).HasName("tai_khoan_ngan_hangs_pkey");
-                entity.ToTable("tai_khoan_ngan_hangs");
 
-                entity.Property(e => e.Stk)
-                    .HasMaxLength(50)
-                    .HasColumnName("stk");
-                entity.Property(e => e.ChiNhanh)
-                    .HasMaxLength(100)
-                    .HasColumnName("chi_nhanh");
-                entity.Property(e => e.NgayMoThe).HasColumnName("ngay_mo_the");
-                entity.Property(e => e.TrangThai).HasMaxLength(50).HasColumnName("trang_thai");
-                entity.Property(e => e.IdNganHang).HasColumnName("id_ngan_hang");
-                entity.Property(e => e.Cccd)
-                    .HasMaxLength(20)
-                    .HasColumnName("cccd");
-
-                entity.HasOne(d => d.NganHang)
-                    .WithMany(p => p.TaiKhoanNganHangs)
-                    .HasForeignKey(d => d.IdNganHang)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("tai_khoan_ngan_hangs_id_ngan_hang_fkey");
-
-                entity.HasOne(d => d.NhanVien)
-                    .WithMany(p => p.TaiKhoanNganHangs)
-                    .HasForeignKey(d => d.Cccd)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("tai_khoan_ngan_hangs_cccd_fkey");
-            });
 
             modelBuilder.Entity<ThanNhan>(entity =>
             {
@@ -339,6 +335,159 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                     .HasMaxLength(100)
                     .HasColumnName("ten_vai_tro");
             });
+
+            modelBuilder.Entity<HopDongLaoDong>(entity =>
+            {
+                entity.HasKey(e => e.SoHopDong).HasName("hop_dong_lao_dongs_pkey");
+                entity.ToTable("hop_dong_lao_dongs");
+
+                entity.Property(e => e.SoHopDong).HasMaxLength(50).HasColumnName("so_hop_dong");
+                entity.Property(e => e.Cccd).HasMaxLength(20).HasColumnName("cccd");
+                entity.Property(e => e.LoaiHopDong).HasMaxLength(100).HasColumnName("loai_hop_dong");
+                entity.Property(e => e.NgayBatDau).HasColumnName("ngay_bat_dau");
+                entity.Property(e => e.NgayKetThuc).HasColumnName("ngay_ket_thuc");
+                entity.Property(e => e.LuongCoBan).HasPrecision(18, 2).HasColumnName("luong_co_ban");
+
+                entity.Property(e => e.TrangThai)
+                    .HasConversion<string>()
+                    .HasMaxLength(50)
+                    .HasColumnName("trang_thai");
+
+                entity.HasOne(d => d.NhanVien)
+                    .WithMany(p => p.HopDongLaoDongs)
+                    .HasForeignKey(d => d.Cccd)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("hop_dong_lao_dongs_cccd_fkey");
+            });
+
+
+
+            modelBuilder.Entity<NhatKyTrangThai>(entity =>
+            {
+                entity.HasKey(e => e.IdNhatKy).HasName("nhat_ky_trang_thais_pkey");
+                entity.ToTable("nhat_ky_trang_thais");
+
+                entity.Property(e => e.IdNhatKy).ValueGeneratedOnAdd().HasColumnName("id_nhat_ky").HasDefaultValueSql("gen_random_uuid()");
+                entity.Property(e => e.Cccd).HasMaxLength(20).HasColumnName("cccd");
+                entity.Property(e => e.TrangThaiCu).HasConversion<string>().HasMaxLength(50).HasColumnName("trang_thai_cu");
+                entity.Property(e => e.TrangThaiMoi).HasConversion<string>().HasMaxLength(50).HasColumnName("trang_thai_moi");
+                entity.Property(e => e.LyDo).HasMaxLength(255).HasColumnName("ly_do");
+                entity.Property(e => e.NgayThayDoi).HasColumnType("timestamp without time zone").HasColumnName("ngay_thay_doi");
+                entity.Property(e => e.NguoiThayDoi).HasMaxLength(150).HasColumnName("nguoi_thay_doi");
+
+                entity.HasOne(d => d.NhanVien)
+                    .WithMany(p => p.NhatKyTrangThais)
+                    .HasForeignKey(d => d.Cccd)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("nhat_ky_trang_thais_cccd_fkey");
+            });
+
+            modelBuilder.Entity<KhungNangLucP2>(entity =>
+            {
+                entity.ToTable("khung_nang_luc_p2");
+                entity.HasKey(e => e.IdTieuChi).HasName("khung_nang_luc_p2_pkey");
+
+                entity.Property(e => e.IdTieuChi).HasColumnName("id_tieu_chi").HasDefaultValueSql("gen_random_uuid()");
+                entity.Property(e => e.IdChucVu).IsRequired().HasMaxLength(50).HasColumnName("id_chuc_vu");
+                entity.Property(e => e.TenNangLuc).IsRequired().HasMaxLength(150).HasColumnName("ten_nang_luc");
+                entity.Property(e => e.YeuCauToiThieu).IsRequired().HasMaxLength(500).HasColumnName("yeu_cau_toi_thieu");
+                entity.Property(e => e.TyTrong).HasPrecision(5, 2).HasColumnName("ty_trong");
+
+                entity.HasOne(d => d.ChucVu)
+                      .WithMany(p => p.KhungNangLucs)
+                      .HasForeignKey(d => d.IdChucVu)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .HasConstraintName("khung_nang_luc_id_chuc_vu_fkey");
+            });
+
+
+
+            modelBuilder.Entity<KyDanhGia>(entity =>
+            {
+                entity.ToTable("ky_danh_gias");
+                entity.HasKey(e => e.IdKyDanhGia).HasName("ky_danh_gias_pkey");
+
+                entity.Property(e => e.IdKyDanhGia).HasColumnName("id_ky_danh_gia").HasDefaultValueSql("gen_random_uuid()");
+                entity.Property(e => e.TenKyDanhGia).IsRequired().HasMaxLength(200).HasColumnName("ten_ky_danh_gia");
+                entity.Property(e => e.Nam).HasColumnName("nam");
+                entity.Property(e => e.NgayBatDau).HasColumnName("ngay_bat_dau");
+                entity.Property(e => e.NgayKetThuc).HasColumnName("ngay_ket_thuc");
+                entity.Property(e => e.TrangThai).HasConversion<string>().HasMaxLength(50).HasColumnName("trang_thai");
+            });
+
+            modelBuilder.Entity<PhieuDanhGiaNangLuc>(entity =>
+            {
+                entity.ToTable("phieu_danh_gia_nang_lucs");
+                entity.HasKey(e => e.IdPhieu).HasName("phieu_danh_gia_nang_lucs_pkey");
+
+                entity.Property(e => e.IdPhieu).HasColumnName("id_phieu").HasDefaultValueSql("gen_random_uuid()");
+                entity.Property(e => e.IdKyDanhGia).HasColumnName("id_ky_danh_gia");
+                entity.Property(e => e.CccdNhanVien).IsRequired().HasMaxLength(20).HasColumnName("cccd_nhan_vien");
+                entity.Property(e => e.CccdQuanLy).HasMaxLength(20).HasColumnName("cccd_quan_ly");
+                entity.Property(e => e.DiemTongHop).HasPrecision(5, 2).HasColumnName("diem_tong_hop");
+                entity.Property(e => e.HeSoP2).HasPrecision(5, 2).HasColumnName("he_so_p2");
+                entity.Property(e => e.XepLoai).HasMaxLength(100).HasColumnName("xep_loai");
+                entity.Property(e => e.NhanXetChung).HasMaxLength(1000).HasColumnName("nhan_xet_chung");
+                entity.Property(e => e.TrangThai).HasConversion<string>().HasMaxLength(50).HasColumnName("trang_thai");
+
+                entity.HasOne(d => d.KyDanhGia)
+                      .WithMany(p => p.PhieuDanhGias)
+                      .HasForeignKey(d => d.IdKyDanhGia)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .HasConstraintName("phieu_danh_gias_id_ky_danh_gia_fkey");
+
+                entity.HasOne(d => d.NhanVien)
+                      .WithMany()
+                      .HasForeignKey(d => d.CccdNhanVien)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .HasConstraintName("phieu_danh_gias_cccd_nhan_vien_fkey");
+
+                entity.HasOne(d => d.QuanLy)
+                      .WithMany()
+                      .HasForeignKey(d => d.CccdQuanLy)
+                      .OnDelete(DeleteBehavior.SetNull)
+                      .HasConstraintName("phieu_danh_gias_cccd_quan_ly_fkey");
+            });
+
+            modelBuilder.Entity<ChiTietDanhGiaNangLuc>(entity =>
+            {
+                entity.ToTable("chi_tiet_danh_gia_nang_lucs");
+                entity.HasKey(e => e.IdChiTiet).HasName("chi_tiet_danh_gia_nang_lucs_pkey");
+
+                entity.Property(e => e.IdChiTiet).HasColumnName("id_chi_tiet").HasDefaultValueSql("gen_random_uuid()");
+                entity.Property(e => e.IdPhieu).HasColumnName("id_phieu");
+                entity.Property(e => e.IdTieuChi).HasColumnName("id_tieu_chi");
+                entity.Property(e => e.DiemTuDanhGia).HasColumnName("diem_tu_danh_gia");
+                entity.Property(e => e.DiemQuanLyDanhGia).HasColumnName("diem_quan_ly_danh_gia");
+                entity.Property(e => e.NhanXetNhanVien).HasMaxLength(500).HasColumnName("nhan_xet_nhan_vien");
+                entity.Property(e => e.NhanXetQuanLy).HasMaxLength(500).HasColumnName("nhan_xet_quan_ly");
+
+                entity.HasOne(d => d.PhieuDanhGia)
+                      .WithMany(p => p.ChiTietDanhGias)
+                      .HasForeignKey(d => d.IdPhieu)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .HasConstraintName("chi_tiet_danh_gias_id_phieu_fkey");
+
+                entity.HasOne(d => d.TieuChi)
+                      .WithMany()
+                      .HasForeignKey(d => d.IdTieuChi)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .HasConstraintName("chi_tiet_danh_gias_id_tieu_chi_fkey");
+            });
+
+            modelBuilder.Entity<MucQuyDoiP2>(entity =>
+            {
+                entity.ToTable("muc_quy_doi_p2s");
+                entity.HasKey(e => e.IdQuyDoi).HasName("muc_quy_doi_p2s_pkey");
+
+                entity.Property(e => e.IdQuyDoi).HasColumnName("id_quy_doi").HasDefaultValueSql("gen_random_uuid()");
+                entity.Property(e => e.XepLoai).IsRequired().HasMaxLength(100).HasColumnName("xep_loai");
+                entity.Property(e => e.DiemToiThieu).HasPrecision(5, 2).HasColumnName("diem_toi_thieu");
+                entity.Property(e => e.DiemToiDa).HasPrecision(5, 2).HasColumnName("diem_toi_da");
+                entity.Property(e => e.HeSoP2).HasPrecision(5, 2).HasColumnName("he_so_p2");
+            });
+
+
 
             OnModelCreatingPartial(modelBuilder);
         }

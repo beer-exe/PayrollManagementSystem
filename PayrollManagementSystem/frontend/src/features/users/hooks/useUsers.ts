@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { message } from 'antd';
 import { userApi } from '../api/userApi';
-import { UserDto, RoleDto, CreateUserCommand, UpdateUserRoleCommand, ResetPasswordCommand } from '../types/user.types';
+import { UserDto, RoleDto, CreateUserCommand, UpdateUserRoleCommand, ResetPasswordCommand, EmployeeNoAccount } from '../types/user.types';
 
 export const useUsers = () => {
   const [users, setUsers] = useState<UserDto[]>([]);
@@ -19,7 +19,7 @@ const fetchData = useCallback(async () => {
       if (usersRes.succeeded) setUsers(usersRes.data);
       if (rolesRes.succeeded) setRoles(rolesRes.data);
       
-    } catch (error: any) {
+    } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       message.error(error?.response?.data?.Message || 'Lỗi khi tải dữ liệu.');
     } finally {
       setIsLoading(false);
@@ -39,7 +39,7 @@ const fetchData = useCallback(async () => {
         return true;
       }
       return false;
-    } catch (error: any) {
+    } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       message.error(error?.response?.data?.Message || 'Lỗi khi tạo tài khoản.');
       return false;
     }
@@ -54,7 +54,7 @@ const fetchData = useCallback(async () => {
         return true;
       }
       return false;
-    } catch (error: any) {
+    } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       message.error(error?.response?.data?.Message || 'Lỗi khi cập nhật quyền.');
       return false;
     }
@@ -67,7 +67,7 @@ const fetchData = useCallback(async () => {
         message.success('Đã thay đổi trạng thái tài khoản!');
         fetchData();
       }
-    } catch (error: any) {
+    } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       message.error(error?.response?.data?.Message || 'Lỗi khi thay đổi trạng thái.');
     }
   };
@@ -80,7 +80,7 @@ const fetchData = useCallback(async () => {
         return true;
       }
       return false;
-    } catch (error: any) {
+    } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       message.error(error?.response?.data?.Message || 'Lỗi khi đặt lại mật khẩu.');
       return false;
     }
@@ -96,4 +96,35 @@ const fetchData = useCallback(async () => {
     handleResetPassword,
     refreshUsers: fetchData
   };
+};
+
+export const useEmployeesNoAccount = (isOpen: boolean) => {
+  const [employees, setEmployees] = useState<EmployeeNoAccount[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const fetchEmployees = async () => {
+      setIsLoading(true);
+      try {
+        const response = await userApi.getEmployeesNoAccount();
+        
+        if (response && response.data) {
+           setEmployees(response.data);
+        } else {
+           setEmployees([]);
+        }
+      } catch (error) {
+        console.error("Lỗi:", error);
+        setEmployees([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEmployees();
+  }, [isOpen]);
+
+  return { employees, isLoading };
 };

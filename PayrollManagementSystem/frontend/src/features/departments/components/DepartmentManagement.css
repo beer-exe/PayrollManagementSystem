@@ -1,0 +1,92 @@
+@reference "tailwindcss";
+
+.dept-wrapper {
+  @apply p-4 sm:p-6 h-full flex flex-col bg-gray-50/50 dark:bg-gray-900;
+}
+
+.dept-header {
+  @apply flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4;
+}
+
+.dept-title {
+  @apply text-2xl font-bold text-gray-900 dark:text-white tracking-tight;
+}
+
+.dept-actions {
+  @apply flex flex-wrap items-center gap-3 w-full sm:w-auto;
+}
+
+.dept-btn-primary {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg shadow-sm shadow-violet-200 hover:bg-violet-700 hover:shadow-md font-medium transition-all focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-1;
+}
+
+.dept-btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-sm shadow-indigo-200 hover:bg-indigo-700 hover:shadow-md font-medium transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1;
+}
+
+.dept-btn-outline {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 rounded-lg shadow-sm hover:border-violet-300 dark:hover:border-violet-500 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-gray-700 font-medium transition-all focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-1;
+}
+
+.dept-content {
+  @apply flex flex-col md:flex-row gap-6 flex-1 overflow-hidden;
+}
+
+.dept-card {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-gray-700 flex flex-col overflow-hidden transition-colors;
+}
+
+.dept-card-left {
+  @apply w-full md:w-80 lg:w-96 shrink-0 h-64 md:h-auto bg-gray-50/30;
+}
+
+.dept-card-right {
+  @apply w-full flex-1 min-w-0;
+}
+
+.dept-card-header {
+  @apply px-5 py-4 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 flex justify-between items-center font-semibold text-gray-800 dark:text-gray-100;
+}
+
+.dept-list-body {
+  @apply overflow-y-auto p-3 flex-1 space-y-2;
+}
+
+.dept-table-body {
+  @apply p-0 overflow-y-auto flex-1 bg-white dark:bg-gray-800;
+}
+
+/* Nâng cấp giao diện List Item */
+.dept-list-item {
+  @apply flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all border block w-full text-left relative overflow-hidden;
+}
+
+.dept-list-item.active {
+  @apply bg-violet-50 border-violet-200 shadow-sm dark:bg-violet-900/20 dark:border-violet-800;
+}
+
+/* Viền trái làm điểm nhấn cho mục đang chọn */
+.dept-list-item.active::before {
+  content: "";
+  @apply absolute left-0 top-0 bottom-0 w-1 bg-violet-600 rounded-l-lg;
+}
+
+.dept-list-item:not(.active) {
+  @apply bg-white border-gray-100 text-gray-700 shadow-sm hover:border-violet-200 hover:shadow-md dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300;
+}
+
+.dept-item-title {
+  @apply font-semibold text-gray-900 dark:text-gray-100;
+}
+
+.dept-list-item.active .dept-item-title {
+  @apply text-violet-700 dark:text-violet-400;
+}
+
+.dept-item-subtitle {
+  @apply text-xs mt-1 text-gray-500 dark:text-gray-400 font-medium;
+}
+
+.dept-empty-state {
+  @apply h-full flex flex-col items-center justify-center p-8 w-full;
+}

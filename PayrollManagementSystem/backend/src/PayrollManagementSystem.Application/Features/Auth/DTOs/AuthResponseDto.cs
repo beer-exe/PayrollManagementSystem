@@ -1,4 +1,4 @@
-﻿namespace PayrollManagementSystem.Application.Features.Auth.DTOs
+namespace PayrollManagementSystem.Application.Features.Auth.DTOs
 {
     public class AuthResponseDto
     {
@@ -7,5 +7,6 @@
         public string Email { get; set; }
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
+        public bool HasDirectReports { get; set; }
     }
 }

@@ -1,11 +1,16 @@
-﻿namespace PayrollManagementSystem.Domain.Models
+﻿using PayrollManagementSystem.Domain.Enums;
+
+namespace PayrollManagementSystem.Domain.Models
 {
     public class BacLuong
     {
         public string IdBacLuong { get; set; } = null!;
         public string IdChucVu { get; set; } = null!;
+        public string TenBacLuong { get; set; } = null!;
         public decimal LuongP1 { get; set; }
         public DateOnly NgayApDung { get; set; }
+        public DateOnly? NgayKetThuc { get; set; }
+        public TrangThaiBacLuong TrangThai { get; set; } = TrangThaiBacLuong.HIEU_LUC;
 
         // Navigation properties
         public ChucVu ChucVu { get; set; } = null!;

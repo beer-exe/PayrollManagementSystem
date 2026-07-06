@@ -21,7 +21,7 @@ export const UserProfile: React.FC = () => {
         } else {
           setError(response.message || 'Không thể tải thông tin hồ sơ.');
         }
-      } catch (err: any) {
+      } catch (error) { const err = error as import('axios').AxiosError<{Message?: string}>;
         const errorMessage = err?.response?.data?.Message || err?.message || 'Đã xảy ra lỗi khi kết nối với máy chủ.';
         setError(errorMessage);
       } finally {

@@ -1,4 +1,4 @@
-﻿using PayrollManagementSystem.Application.Features.Profile.DTOs;
+using PayrollManagementSystem.Application.Features.Profile.DTOs;
 
 namespace PayrollManagementSystem.Application.Features.Employees.DTOs
 {
@@ -19,6 +19,17 @@ namespace PayrollManagementSystem.Application.Features.Employees.DTOs
         public string? SoBhyt { get; set; }
         public string? TenPhongBan { get; set; }
         public string? TenChucVu { get; set; }
+        
+        public string? SoTaiKhoan { get; set; }
+        public string? TenNganHang { get; set; }
+        public string? MaSoThue { get; set; }
+
+        public decimal? LuongP1 { get; set; }
+        public decimal? HeSoP2 { get; set; }
+        public string? SoHopDong { get; set; }
+        public string? LoaiHopDong { get; set; }
+        public string? NgayBatDauHopDong { get; set; }
+
         public List<ThanNhanDto> ThanNhans { get; set; } = new List<ThanNhanDto>();
     }
 }

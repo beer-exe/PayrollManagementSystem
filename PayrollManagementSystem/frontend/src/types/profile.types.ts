@@ -14,11 +14,25 @@ export interface UserProfileDetail {
   soBhyt: string | null;
   tenPhongBan: string | null;
   tenChucVu: string | null;
+  
+  soTaiKhoan?: string | null;
+  tenNganHang?: string | null;
+  maSoThue?: string | null;
+  
+  luongP1?: number | null;
+  heSoP2?: number | null;
+  soHopDong?: string | null;
+  loaiHopDong?: string | null;
+  ngayBatDauHopDong?: string | null;
+  
   thanNhans: ThanNhanDto[];
+  idPb?: string | null;
 }
 
 export interface ThanNhanDto {
+  maDinhDanh?: string;
   tenTn: string;
   ngaySinh: string | null;
+  idMqh?: string | null;
   moiQuanHe: string | null;
 }

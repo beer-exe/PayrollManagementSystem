@@ -1,24 +1,24 @@
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
-import { AuthResponseDto, ApiResponse } from '@/types/auth.types';
-import { useAuthStore } from '@/store/useAuthStore';
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
+import { AuthResponseDto, ApiResponse } from "@/types/auth.types";
+import { useAuthStore } from "@/store/useAuthStore";
 
-const getToken = () => localStorage.getItem('accessToken');
-const getRefreshToken = () => localStorage.getItem('refreshToken');
+const getToken = () => localStorage.getItem("accessToken");
+const getRefreshToken = () => localStorage.getItem("refreshToken");
 const setTokens = (access: string, refresh: string) => {
-  localStorage.setItem('accessToken', access);
-  localStorage.setItem('refreshToken', refresh);
+  localStorage.setItem("accessToken", access);
+  localStorage.setItem("refreshToken", refresh);
 };
 const clearTokens = () => {
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
 };
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
 const axiosClient = axios.create({
   baseURL: BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   timeout: 10000,
 });
@@ -29,7 +29,10 @@ let failedQueue: Array<{
   reject: (reason?: unknown) => void;
 }> = [];
 
-const processQueue = (error: AxiosError | null, token: string | null = null) => {
+const processQueue = (
+  error: AxiosError | null,
+  token: string | null = null,
+) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -48,15 +51,48 @@ axiosClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 axiosClient.interceptors.response.use(
-  (response) => response.data,
+  (response) => {
+    const data = response.data;
+    // Xử lý trường hợp HTTP 200 OK nhưng API trả về succeeded = false (Lỗi logic)
+    if (data && data.succeeded === false) {
+      if (!data.Message) {
+        if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+          data.Message = data.errors.join(", ");
+        } else if (data.message) {
+          data.Message = data.message;
+        }
+      }
+      return Promise.reject({ response: { data } });
+    }
+    return data;
+  },
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    // Chuẩn hóa message từ backend (ASP.NET Core trả về "message" chữ thường trong ApiResponse wrapper)
+    if (error.response && error.response.data) {
+      const data = error.response.data as Record<string, unknown>;
+      if (!data.Message) {
+        // Ưu tiên lấy chi tiết lỗi từ mảng errors nếu có, ngược lại lấy từ message
+        if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+          data.Message = data.errors.join(", ");
+        } else if (data.message) {
+          data.Message = data.message;
+        }
+      }
+    }
 
-    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
+
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry
+    ) {
       if (isRefreshing) {
         return new Promise(function (resolve, reject) {
           failedQueue.push({ resolve, reject });
@@ -73,7 +109,7 @@ axiosClient.interceptors.response.use(
 
       const accessToken = getToken();
       const refreshToken = getRefreshToken();
-      
+
       if (!refreshToken || !accessToken) {
         clearTokens();
         useAuthStore.getState().setSessionExpired(true);
@@ -83,12 +119,12 @@ axiosClient.interceptors.response.use(
       try {
         const response = await axios.post<ApiResponse<AuthResponseDto>>(
           `${BASE_URL}/Auth/refresh-token`,
-          { accessToken, refreshToken }
+          { accessToken, refreshToken },
         );
 
         const newAccessToken = response.data.data.accessToken;
         const newRefreshToken = response.data.data.refreshToken;
-        
+
         setTokens(newAccessToken, newRefreshToken);
         processQueue(null, newAccessToken);
 
@@ -105,7 +141,7 @@ axiosClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosClient;

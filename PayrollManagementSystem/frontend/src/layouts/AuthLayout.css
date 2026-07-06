@@ -1,7 +1,7 @@
 @reference "tailwindcss";
 
 .auth-layout-container {
-  @apply min-h-screen flex flex-col w-full bg-white;
+  @apply min-h-screen flex flex-col w-full bg-white dark:bg-gray-900;
 }
 
 @media (min-width: 768px) {

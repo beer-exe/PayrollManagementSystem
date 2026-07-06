@@ -1,0 +1,25 @@
+@reference "tailwindcss";
+
+.dept-modal-title {
+  @apply text-xl font-bold text-gray-900 dark:text-white tracking-tight pb-2 border-b border-gray-100 dark:border-gray-800 mb-4;
+}
+
+.dept-form-layout {
+  @apply mt-2;
+}
+
+.dept-form-label {
+  @apply font-semibold text-gray-700 dark:text-gray-300 text-sm;
+}
+
+.dept-form-input {
+  @apply w-full rounded-lg transition-shadow;
+}
+
+.ant-input, .ant-select-selector, .ant-picker {
+  @apply !rounded-lg;
+}
+
+.ant-input:focus, .ant-select-focused .ant-select-selector, .ant-picker-focused {
+  @apply !shadow-sm !shadow-violet-100 !border-violet-500;
+}

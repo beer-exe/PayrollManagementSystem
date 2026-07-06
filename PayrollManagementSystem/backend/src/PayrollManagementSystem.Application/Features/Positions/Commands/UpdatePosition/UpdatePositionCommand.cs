@@ -1,0 +1,12 @@
+﻿using MediatR;
+using PayrollManagementSystem.Application.Wrappers;
+
+namespace PayrollManagementSystem.Application.Features.Positions.Commands.UpdatePosition
+{
+    public class UpdatePositionCommand : IRequest<Response<bool>>
+    {
+        public string IdChucVu { get; set; } = null!;
+        public string TenChucVu { get; set; } = null!;
+        public string? MoTaCongViec { get; set; }
+    }
+}

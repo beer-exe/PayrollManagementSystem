@@ -9,7 +9,6 @@ export const MainLayout: React.FC = () => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const location = useLocation();
 
-  // Đóng sidebar trên mobile mỗi khi chuyển route
   useEffect(() => {
     setIsMobileSidebarOpen(false);
   }, [location.pathname]);
