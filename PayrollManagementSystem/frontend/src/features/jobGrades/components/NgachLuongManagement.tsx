@@ -100,11 +100,11 @@ export const NgachLuongManagement: React.FC = () => {
       title: 'Trạng thái',
       dataIndex: 'trangThai',
       key: 'trangThai',
-      render: (status: number) => {
+      render: (status: number, record: JobGrade) => {
         return status === 1 ? (
-          <Tag color="success" className="rounded-full px-3">Đang sử dụng</Tag>
+          <Tag color="success" className="rounded-full px-3">{record.tenTrangThai}</Tag>
         ) : (
-          <Tag color="default" className="rounded-full px-3 text-gray-500">Ngừng sử dụng</Tag>
+          <Tag color="default" className="rounded-full px-3 text-gray-500">{record.tenTrangThai}</Tag>
         );
       },
     },

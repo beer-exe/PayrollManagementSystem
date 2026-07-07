@@ -3,6 +3,7 @@ export interface JobGrade {
   tenNgachLuong: string;
   moTa: string | null;
   trangThai: number;
+  tenTrangThai?: string;
 }
 
 export interface CreateJobGradeDto {

@@ -38,12 +38,12 @@ export const TuDanhGia: React.FC = () => {
       title: 'Trạng thái', 
       dataIndex: 'trangThai', 
       key: 'trangThai',
-      render: (tt: string) => {
+      render: (tt: string, record: any) => {
         let color = 'default';
         if (tt === 'CHO_NV_DANH_GIA') color = 'blue';
         if (tt === 'CHO_QL_DANH_GIA') color = 'orange';
         if (tt === 'DA_HOAN_THANH') color = 'green';
-        return <Tag color={color}>{tt}</Tag>;
+        return <Tag color={color}>{record.tenTrangThai || tt}</Tag>;
       }
     },
     {
@@ -94,6 +94,7 @@ export const TuDanhGia: React.FC = () => {
           dataSource={myForms} 
           rowKey="idPhieu" 
           loading={formLoading || kyLoading} 
+          scroll={{ x: 'max-content' }}
         />
       </Card>
     </Space>

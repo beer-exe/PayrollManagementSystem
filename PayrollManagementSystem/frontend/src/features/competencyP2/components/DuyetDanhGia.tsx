@@ -18,10 +18,10 @@ export const DuyetDanhGia: React.FC = () => {
       title: 'Trạng thái', 
       dataIndex: 'trangThai', 
       key: 'trangThai',
-      render: (status: string) => {
-        if (status === 'CHO_QL_DANH_GIA') return <Tag color="blue">Chờ duyệt</Tag>;
-        if (status === 'DA_HOAN_THANH') return <Tag color="green">Đã hoàn thành</Tag>;
-        return <Tag>{status}</Tag>;
+      render: (status: string, record: any) => {
+        if (status === 'CHO_QL_DANH_GIA') return <Tag color="blue">{record.tenTrangThai || 'Chờ duyệt'}</Tag>;
+        if (status === 'DA_HOAN_THANH') return <Tag color="green">{record.tenTrangThai || 'Đã hoàn thành'}</Tag>;
+        return <Tag>{record.tenTrangThai || status}</Tag>;
       }
     },
     {
@@ -57,6 +57,7 @@ export const DuyetDanhGia: React.FC = () => {
         dataSource={data} 
         rowKey="idPhieu" 
         loading={loading}
+        scroll={{ x: 'max-content' }}
       />
     </Card>
   );

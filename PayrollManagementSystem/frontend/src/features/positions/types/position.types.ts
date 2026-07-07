@@ -5,6 +5,7 @@ export interface PositionDto {
   idNgachLuong?: string;
   tenNgachLuong?: string;
   trangThai: 'HOAT_DONG' | 'NGUNG_HOAT_DONG';
+  tenTrangThai?: string;
   idPhongBan: string;
   tenPhongBan?: string;
   idChucVuQuanLy?: string;

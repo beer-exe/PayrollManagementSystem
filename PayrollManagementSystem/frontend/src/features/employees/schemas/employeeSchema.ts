@@ -9,13 +9,12 @@ export const createEmployeeSchema = z.object({
   soHopDong: z.string().min(1, 'Số hợp đồng bắt buộc'),
   loaiHopDong: z.string().min(1, 'Vui lòng chọn loại hợp đồng'),
   
-  luongCoBan: z.number().min(1000000, 'Lương cơ bản tối thiểu 1,000,000 VNĐ'),
-
   ngayBatDauHopDong: z.string().min(1, 'Chọn ngày bắt đầu'),
 
   idPb: z.string().min(1, 'Vui lòng chọn phòng ban'),
   soQuyetDinh: z.string().min(1, 'Số quyết định bắt buộc'),
   idChucVu: z.string().min(1, 'Vui lòng chọn chức vụ'),
+  idBacLuong: z.string().optional(),
   
   soBhxh: z.string().optional(),
   soBhyt: z.string().optional(),

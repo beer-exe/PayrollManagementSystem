@@ -245,7 +245,7 @@ export const EmployeeDetailPanel: React.FC<Props> = ({ employee, isOpen, onClose
       placement="right"
       onClose={onClose}
       open={isOpen}
-      width={450}
+      width={typeof window !== 'undefined' && window.innerWidth < 576 ? '100%' : 450}
       closeIcon={
         <div className="p-1.5 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors border border-gray-200 dark:border-gray-700">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-gray-500">

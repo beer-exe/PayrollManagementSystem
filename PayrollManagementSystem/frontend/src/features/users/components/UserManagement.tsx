@@ -85,8 +85,8 @@ export const UserManagement: React.FC = () => {
               onChange={() => handleToggleStatus(record.idTaiKhoan)}
               className={isActive ? 'bg-emerald-500' : 'bg-gray-400'}
             />
-            <span className={`text-xs font-medium w-16 text-left ${isActive ? 'text-emerald-600' : 'text-gray-500'}`}>
-              {isActive ? 'Hoạt động' : 'Đã khóa'}
+            <span className={`text-xs font-medium w-max text-left ${isActive ? 'text-emerald-600' : 'text-gray-500'}`}>
+              {record.tenTrangThai}
             </span>
           </div>
         );

@@ -98,6 +98,7 @@ export const TuDanhGiaForm: React.FC = () => {
           rowKey="idChiTiet" 
           pagination={false} 
           bordered
+          scroll={{ x: 'max-content' }}
         />
 
         {isEditable && (

@@ -20,6 +20,7 @@ export interface PhieuDanhGiaDto {
   xepLoai: string | null;
   nhanXetChung: string | null;
   trangThai: string;
+  tenTrangThai?: string;
   canEvaluate: boolean;
   chiTietDanhGias: ChiTietDanhGiaDto[];
 }

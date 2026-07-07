@@ -84,7 +84,8 @@ export const UpdateEmployeeModal: React.FC<Props> = ({ isOpen, onClose, employee
       open={isOpen}
       onCancel={onClose}
       footer={null}
-      width={750}
+      width={typeof window !== 'undefined' && window.innerWidth < 768 ? '100%' : 750}
+      style={typeof window !== 'undefined' && window.innerWidth < 768 ? { top: 0, padding: 0, margin: 0, maxWidth: '100vw' } : undefined}
       destroyOnClose
     >
       <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-6 animate-[fadeIn_0.3s_ease-out]">

@@ -1,4 +1,7 @@
+using System;
 using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Extensions;
+
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.KyDanhGia.DTOs
 {
     public class KyDanhGiaDto
@@ -9,5 +12,6 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.KyDanhGia.DT
         public DateOnly NgayBatDau { get; set; }
         public DateOnly NgayKetThuc { get; set; }
         public TrangThaiKyDanhGia TrangThai { get; set; }
+        public string TenTrangThai => TrangThai.GetDescription();
     }
 }

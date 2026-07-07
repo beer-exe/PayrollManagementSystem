@@ -49,8 +49,12 @@ export const EmployeeManagement: React.FC = () => {
     }
   }, []);
 
-  const handleCreateSuccess = async (data: CreateEmployeeCommand) => {
-    const success = await createEmployee(data);
+  const handleCreateSuccess = async (data: any) => {
+    const command: CreateEmployeeCommand = {
+      ...data,
+      luongCoBan: 0
+    };
+    const success = await createEmployee(command);
     if (success) {
       setIsCreateModalOpen(false);
       setPageNumber(1); 
@@ -120,7 +124,8 @@ export const EmployeeManagement: React.FC = () => {
         open={isCreateModalOpen} 
         onCancel={() => setIsCreateModalOpen(false)}
         footer={null}
-        width={950}
+        width={typeof window !== 'undefined' && window.innerWidth < 768 ? '100%' : 950}
+        style={typeof window !== 'undefined' && window.innerWidth < 768 ? { top: 0, padding: 0, margin: 0, maxWidth: '100vw' } : undefined}
         destroyOnClose
         closeIcon={null}
         className="emp-split-modal"

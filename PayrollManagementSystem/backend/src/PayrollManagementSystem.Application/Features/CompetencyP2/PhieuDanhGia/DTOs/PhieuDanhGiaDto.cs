@@ -1,3 +1,7 @@
+using System;
+using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Extensions;
+
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.DTOs
 {
     public class ChiTietDanhGiaDto
@@ -24,6 +28,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
         public string? XepLoai { get; set; }
         public string? NhanXetChung { get; set; }
         public string TrangThai { get; set; } = null!;
+        public string TenTrangThai => Enum.TryParse<TrangThaiPhieuDanhGia>(TrangThai, out var e) ? e.GetDescription() : TrangThai;
         public bool CanEvaluate { get; set; }
         public List<ChiTietDanhGiaDto> ChiTietDanhGias { get; set; } = new List<ChiTietDanhGiaDto>();
     }

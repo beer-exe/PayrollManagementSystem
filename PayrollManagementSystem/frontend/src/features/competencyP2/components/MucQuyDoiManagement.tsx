@@ -148,7 +148,7 @@ export const MucQuyDoiManagement: React.FC = () => {
             rowKey="idQuyDoi" 
             loading={loading}
             pagination={false}
-            scroll={{ y: 'max-content', x: 800 }}
+            scroll={{ y: 'max-content', x: 'max-content' }}
             className="h-full"
           />
         </div>

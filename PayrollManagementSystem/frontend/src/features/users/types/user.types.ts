@@ -7,6 +7,7 @@ export interface UserDto {
   tenVaiTro: string;
   idVaiTro: string;
   trangThai: 'HOAT_DONG' | 'KHOA' | 'CHO_XAC_NHAN';
+  tenTrangThai?: string;
 }
 
 export interface RoleDto {

@@ -5,6 +5,7 @@ export interface KyDanhGiaDto {
   ngayBatDau: string;
   ngayKetThuc: string;
   trangThai: string;
+  tenTrangThai?: string;
 }
 
 export interface CreateKyDanhGiaDto {

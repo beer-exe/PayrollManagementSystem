@@ -96,12 +96,12 @@ export const UserProfile: React.FC = () => {
               {profile.trangThai === 'DANG_LAM_VIEC' ? (
                 <>
                   <span className="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5"></span>
-                  Đang làm việc
+                  {profile.tenTrangThai || 'Đang làm việc'}
                 </>
               ) : (
                 <>
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-500 mr-1.5"></span>
-                  Đã nghỉ việc
+                  {profile.tenTrangThai || 'Đã nghỉ việc'}
                 </>
               )}
             </span>

@@ -23,6 +23,12 @@ export interface CreateEmployeeCommand {
   ngayBatDauHopDong: string;
   soQuyetDinh: string;
   idChucVu: string;
+  idBacLuong?: string;
+  soBhxh?: string;
+  soBhyt?: string;
+  soTaiKhoan?: string;
+  tenNganHang?: string;
+  maSoThue?: string;
 }
 
 export interface UpdateEmployeeCommand {

@@ -8,6 +8,7 @@ export interface EmployeeInDepartmentDto {
   email: string;
   tenChucVu: string;
   trangThai: string;
+  tenTrangThai?: string;
   ngayVaoLam: string;
 }
 

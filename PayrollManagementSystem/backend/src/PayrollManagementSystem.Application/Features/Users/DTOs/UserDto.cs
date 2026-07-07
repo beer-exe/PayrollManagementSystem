@@ -1,4 +1,8 @@
-﻿namespace PayrollManagementSystem.Application.Features.Users.DTOs
+using System;
+using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Extensions;
+
+namespace PayrollManagementSystem.Application.Features.Users.DTOs
 {
     public class UserDto
     {
@@ -9,5 +13,6 @@
         public string? TenVaiTro { get; set; }
         public Guid? IdVaiTro { get; set; }
         public string TrangThai { get; set; } = null!;
+        public string TenTrangThai => Enum.TryParse<TrangThaiTaiKhoan>(TrangThai, out var e) ? e.GetDescription() : TrangThai;
     }
 }

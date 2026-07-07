@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, FormProvider, useFormContext } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,6 +18,8 @@ import {
 } from '@ant-design/icons';
 import { createEmployeeSchema, CreateEmployeeFormValues } from '../schemas/employeeSchema';
 import { useSystemData } from '../../departments/hooks/useSystemData';
+import { salaryStepApi } from '../../salarySteps/api/salaryStepApi';
+import { SalaryStepDto } from '../../salarySteps/types/salaryStep.types';
 import './EmployeeModals.css';
 
 // Custom Error Icon
@@ -33,7 +35,7 @@ const IconInput = ({ icon, ...props }: any) => (
     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
       {icon}
     </div>
-    <input {...props} className={`emp-form-input pl-10 ${props.className || ''}`} />
+    <input {...props} className={`emp-form-input !pl-10 ${props.className || ''}`} />
   </div>
 );
 
@@ -43,7 +45,7 @@ const IconSelect = ({ icon, children, ...props }: any) => (
     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
       {icon}
     </div>
-    <select {...props} className={`emp-form-input pl-10 appearance-none ${props.className || ''}`}>
+    <select {...props} className={`emp-form-input !pl-10 appearance-none ${props.className || ''}`}>
       {children}
     </select>
   </div>
@@ -153,18 +155,6 @@ const StepContract = () => {
               {errors.ngayBatDauHopDong && <p className="emp-form-error"><ErrorIcon />{errors.ngayBatDauHopDong.message}</p>}
             </div>
           </div>
-          
-          <div>
-            <label className="emp-form-label">Lương Cơ Bản (VNĐ) <span className="text-red-500">*</span></label>
-            <IconInput 
-              icon={<DollarOutlined />}
-              {...register('luongCoBan', { valueAsNumber: true })} 
-              type="number" 
-              className="font-mono text-lg text-violet-700 dark:text-violet-400 font-bold" 
-              placeholder="VD: 10000000" 
-            />
-            {errors.luongCoBan && <p className="emp-form-error"><ErrorIcon />{errors.luongCoBan.message}</p>}
-          </div>
         </div>
       </div>
     </div>
@@ -172,8 +162,52 @@ const StepContract = () => {
 };
 
 const StepPosition = () => {
-  const { register, formState: { errors } } = useFormContext<CreateEmployeeFormValues>();
+  const { register, watch, setValue, formState: { errors } } = useFormContext<CreateEmployeeFormValues>();
   const { departments, positions, isLoading } = useSystemData();
+  const [bacLuongs, setBacLuongs] = useState<SalaryStepDto[]>([]);
+  const [loadingBacLuong, setLoadingBacLuong] = useState(false);
+  
+  const selectedIdPb = watch('idPb');
+  const selectedIdChucVu = watch('idChucVu');
+
+  const filteredPositions = positions.filter(p => p.idPhongBan === selectedIdPb);
+
+  useEffect(() => {
+    if (!selectedIdPb) {
+      setValue('idChucVu', '');
+    }
+  }, [selectedIdPb, setValue]);
+
+  useEffect(() => {
+    const fetchBacLuongs = async () => {
+      if (!selectedIdChucVu) {
+        setBacLuongs([]);
+        setValue('idBacLuong', '');
+        return;
+      }
+      
+      const pos = positions.find(p => p.idChucVu === selectedIdChucVu);
+      if (pos?.idNgachLuong) {
+        setLoadingBacLuong(true);
+        try {
+          const res = await salaryStepApi.getActive(pos.idNgachLuong);
+          if (res.succeeded) {
+            setBacLuongs(res.data);
+          } else {
+            setBacLuongs([]);
+          }
+        } catch (error) {
+          setBacLuongs([]);
+        } finally {
+          setLoadingBacLuong(false);
+        }
+      } else {
+        setBacLuongs([]);
+        setValue('idBacLuong', '');
+      }
+    };
+    fetchBacLuongs();
+  }, [selectedIdChucVu, positions, setValue]);
   
   return (
     <div className="space-y-6">
@@ -197,11 +231,20 @@ const StepPosition = () => {
           
           <div>
             <label className="emp-form-label">Chức Vụ <span className="text-red-500">*</span></label>
-            <IconSelect icon={<UserOutlined />} {...register('idChucVu')}>
-              <option value="">{isLoading ? 'Đang tải dữ liệu...' : '-- Chọn chức vụ --'}</option>
-              {positions.map(p => <option key={p.idChucVu} value={p.idChucVu}>{p.tenChucVu}</option>)}
+            <IconSelect icon={<UserOutlined />} {...register('idChucVu')} disabled={!selectedIdPb || isLoading}>
+              <option value="">{isLoading ? 'Đang tải dữ liệu...' : (!selectedIdPb ? '-- Vui lòng chọn phòng ban trước --' : '-- Chọn chức vụ --')}</option>
+              {filteredPositions.map(p => <option key={p.idChucVu} value={p.idChucVu}>{p.tenChucVu}</option>)}
             </IconSelect>
             {errors.idChucVu && <p className="emp-form-error"><ErrorIcon />{errors.idChucVu.message}</p>}
+          </div>
+
+          <div>
+            <label className="emp-form-label">Bậc Lương (Ngạch Lương) <span className="text-red-500">*</span></label>
+            <IconSelect icon={<DollarOutlined />} {...register('idBacLuong')} disabled={!selectedIdChucVu || loadingBacLuong || bacLuongs.length === 0}>
+              <option value="">{loadingBacLuong ? 'Đang tải dữ liệu...' : (!selectedIdChucVu ? '-- Vui lòng chọn chức vụ trước --' : (bacLuongs.length === 0 ? '-- Không có dữ liệu bậc lương --' : '-- Chọn bậc lương --'))}</option>
+              {bacLuongs.map(b => <option key={b.id} value={b.id}>{b.stepName} - {b.p1Salary.toLocaleString()} VNĐ</option>)}
+            </IconSelect>
+            {errors.idBacLuong && <p className="emp-form-error"><ErrorIcon />{errors.idBacLuong.message}</p>}
           </div>
         </div>
       </div>
@@ -236,7 +279,7 @@ export const CreateEmployeeStepper: React.FC<Props> = ({ onSubmitSuccess, onCanc
 
   const onError = (errors: any) => {
     const step0Fields = ['cccd', 'hoTen', 'email', 'sdt', 'soTaiKhoan', 'tenNganHang', 'maSoThue', 'soBhxh', 'soBhyt'];
-    const step1Fields = ['soHopDong', 'loaiHopDong', 'luongCoBan', 'ngayBatDauHopDong'];
+    const step1Fields = ['soHopDong', 'loaiHopDong', 'ngayBatDauHopDong'];
     
     if (step0Fields.some(field => errors[field])) {
       setActiveStep(0);
@@ -259,7 +302,7 @@ export const CreateEmployeeStepper: React.FC<Props> = ({ onSubmitSuccess, onCanc
   };
 
   return (
-    <div className="flex h-[700px] bg-white dark:bg-gray-900 overflow-hidden w-full relative">
+    <div className="flex flex-col md:flex-row h-[85vh] md:h-[700px] min-h-[500px] bg-white dark:bg-gray-900 overflow-hidden w-full relative">
       
       {/* Nút Đóng Tuyệt Đối */}
       <button 
@@ -270,17 +313,23 @@ export const CreateEmployeeStepper: React.FC<Props> = ({ onSubmitSuccess, onCanc
       </button>
 
       {/* Sidebar Trái (Gradient) */}
-      <div className="w-[320px] bg-gradient-to-br from-violet-600 to-indigo-900 text-white p-8 flex flex-col justify-between shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.1)] relative z-10">
-        <div>
-          <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-sm border border-white/30 shadow-lg">
+      <div className="w-full md:w-[320px] bg-gradient-to-br from-violet-600 to-indigo-900 text-white p-5 md:p-8 flex flex-col justify-between shrink-0 shadow-md md:shadow-[4px_0_24px_rgba(0,0,0,0.1)] relative z-10">
+        <div className="flex flex-row md:flex-col items-center md:items-start gap-4 md:gap-0">
+          <div className="hidden md:flex w-12 h-12 bg-white/20 rounded-2xl items-center justify-center mb-6 backdrop-blur-sm border border-white/30 shadow-lg">
             <UserOutlined className="text-2xl text-white" />
           </div>
-          <h2 className="text-3xl font-bold mb-2 tracking-tight">Thêm Nhân Sự</h2>
-          <p className="text-indigo-200 text-sm mb-10 leading-relaxed">
-            Thiết lập hồ sơ nhân sự mới trong hệ thống chỉ với 3 bước đơn giản.
-          </p>
+          <div className="flex-1 md:flex-none">
+            <h2 className="text-xl md:text-3xl font-bold mb-1 md:mb-2 tracking-tight">Thêm Nhân Sự</h2>
+            <p className="hidden md:block text-indigo-200 text-sm mb-10 leading-relaxed">
+              Thiết lập hồ sơ nhân sự mới trong hệ thống chỉ với 3 bước đơn giản.
+            </p>
+          </div>
+          
+          <div className="md:hidden flex flex-col items-end">
+            <span className="text-sm font-bold text-white bg-white/20 px-3 py-1 rounded-full">Bước {activeStep + 1}/3</span>
+          </div>
 
-          <div className="space-y-8 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/20 before:to-transparent">
+          <div className="hidden md:block space-y-8 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/20 before:to-transparent">
             {steps.map((step) => (
               <div key={step.id} className="relative flex items-center gap-4 group">
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center z-10 transition-all duration-300 shadow-sm ${
@@ -299,7 +348,7 @@ export const CreateEmployeeStepper: React.FC<Props> = ({ onSubmitSuccess, onCanc
           </div>
         </div>
 
-        <div className="text-xs text-indigo-300/60 mt-10">
+        <div className="text-xs text-indigo-300/60 mt-4 md:mt-10">
           Hoàn thành: {Math.round((activeStep / 2) * 100)}%
           <div className="w-full bg-indigo-900/50 h-1.5 rounded-full mt-2 overflow-hidden">
             <div className="bg-green-400 h-full rounded-full transition-all duration-500" style={{ width: `${(activeStep / 2) * 100}%` }}></div>
@@ -308,12 +357,12 @@ export const CreateEmployeeStepper: React.FC<Props> = ({ onSubmitSuccess, onCanc
       </div>
 
       {/* Nội dung Form Bên Phải */}
-      <div className="flex-1 flex flex-col relative bg-gray-50/50 dark:bg-gray-900/50">
+      <div className="flex-1 flex flex-col min-h-0 relative bg-gray-50/50 dark:bg-gray-900/50">
         <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSubmit, onError)} className="flex flex-col h-full">
+          <form onSubmit={handleSubmit(onSubmit, onError)} className="flex flex-col h-full min-h-0">
             
             {/* Vùng cuộn */}
-            <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 md:p-10 custom-scrollbar">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeStep}

@@ -149,8 +149,12 @@ export const DuyetDanhGiaForm: React.FC = () => {
 
   return (
     <Card 
-      title={<Title level={4}>Duyệt Phiếu Đánh Giá</Title>}
-      extra={<Tag color={isCompleted ? "green" : "blue"}>{detail.trangThai}</Tag>}
+      title={
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 whitespace-normal">
+          <Title level={4} style={{ margin: 0 }}>Duyệt Phiếu Đánh Giá</Title>
+          <Tag color={isCompleted ? "green" : "blue"} style={{ margin: 0 }}>{detail.tenTrangThai || detail.trangThai}</Tag>
+        </div>
+      }
     >
       <div className="mb-6 bg-white dark:bg-gray-800 p-4 rounded-lg border dark:border-gray-700">
         <Space size="large" wrap>
@@ -159,9 +163,9 @@ export const DuyetDanhGiaForm: React.FC = () => {
         </Space>
       </div>
 
-      <div className="mb-6 grid grid-cols-2 gap-4">
+      <div className="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card title="Nhân viên Tự đánh giá" size="small" className="bg-gray-50">
-          <div className="flex justify-between items-center text-lg">
+          <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-2 text-base md:text-lg">
             <span>Tổng điểm: <strong>{empScore.toFixed(2)}</strong></span>
             <span>Hệ số P2: <strong className="text-green-600">{empResult.heSo}</strong></span>
             <span>Xếp loại: <Tag color="blue">{empResult.xepLoai}</Tag></span>
@@ -169,9 +173,9 @@ export const DuyetDanhGiaForm: React.FC = () => {
         </Card>
         
         <Card title="Quản lý Đánh giá (Dự kiến)" size="small" className="bg-blue-50 border-blue-200">
-          <div className="flex justify-between items-center text-lg">
+          <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-2 text-base md:text-lg">
             <span>Tổng điểm: <strong>{mgrScore.toFixed(2)}</strong></span>
-            <span>Hệ số P2: <strong className="text-green-600">{mgrResult.heSo}</strong></span>
+            <span>Hệ số P2: <strong className="text-blue-600">{mgrResult.heSo}</strong></span>
             <span>Xếp loại: <Tag color="blue">{mgrResult.xepLoai}</Tag></span>
           </div>
         </Card>
@@ -184,6 +188,7 @@ export const DuyetDanhGiaForm: React.FC = () => {
           rowKey="idChiTiet" 
           pagination={false}
           bordered
+          scroll={{ x: 'max-content' }}
         />
 
         <div className="mt-6">

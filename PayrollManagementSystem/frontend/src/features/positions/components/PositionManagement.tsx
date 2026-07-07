@@ -169,14 +169,14 @@ export const PositionManagement: React.FC = () => {
       key: "trangThai",
       width: 150,
       align: "center" as const,
-      render: (status: string) =>
+      render: (status: string, record: PositionDto) =>
         status === "HOAT_DONG" ? (
           <Tag color="success" className="rounded-full px-3">
-            Đang hoạt động
+            {record.tenTrangThai}
           </Tag>
         ) : (
           <Tag color="default" className="rounded-full px-3 text-gray-500">
-            Ngừng HĐ
+            {record.tenTrangThai}
           </Tag>
         ),
     },

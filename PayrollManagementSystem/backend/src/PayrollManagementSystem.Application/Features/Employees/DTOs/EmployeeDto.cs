@@ -1,4 +1,7 @@
+using System;
 using PayrollManagementSystem.Application.Features.Profile.DTOs;
+using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Extensions;
 
 namespace PayrollManagementSystem.Application.Features.Employees.DTOs
 {
@@ -15,6 +18,7 @@ namespace PayrollManagementSystem.Application.Features.Employees.DTOs
         public string? ChuyenNganh { get; set; }
         public string? NgayVaoLam { get; set; }
         public string? TrangThai { get; set; }
+        public string? TenTrangThai => TrangThai != null && Enum.TryParse<TrangThaiNhanVien>(TrangThai, out var e) ? e.GetDescription() : TrangThai;
         public string? SoBhxh { get; set; }
         public string? SoBhyt { get; set; }
         public string? TenPhongBan { get; set; }

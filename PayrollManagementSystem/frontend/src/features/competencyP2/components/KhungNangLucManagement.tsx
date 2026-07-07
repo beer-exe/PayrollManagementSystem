@@ -152,15 +152,17 @@ export const KhungNangLucManagement: React.FC = () => {
 
   return (
     <Card 
-      title="Cấu hình Khung Năng Lực (P2)" 
-      extra={
-        <Button 
-          type="primary" 
-          disabled={!selectedChucVu} 
-          onClick={handleOpenConfig}
-        >
-          Cấu hình tiêu chí
-        </Button>
+      title={
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 whitespace-normal">
+          <span>Cấu hình Khung Năng Lực (P2)</span>
+          <Button 
+            type="primary" 
+            disabled={!selectedChucVu} 
+            onClick={handleOpenConfig}
+          >
+            Cấu hình tiêu chí
+          </Button>
+        </div>
       }
     >
       <div className="mb-4">
@@ -189,6 +191,7 @@ export const KhungNangLucManagement: React.FC = () => {
           rowKey="idTieuChi" 
           loading={loading}
           pagination={false}
+          scroll={{ x: 'max-content' }}
           bordered
         />
       )}
@@ -201,8 +204,10 @@ export const KhungNangLucManagement: React.FC = () => {
         okButtonProps={{ disabled: isOverweight }}
         width={1000}
         destroyOnClose
+        style={{ top: 20 }}
+        styles={{ body: { maxHeight: 'calc(100vh - 150px)', overflowY: 'auto', overflowX: 'hidden' } }}
       >
-        <div className="flex flex-col md:flex-row gap-6 mt-4">
+        <div className="flex flex-col lg:flex-row gap-6 mt-4">
           
           {/* Left side: Dynamic Form List */}
           <div className="flex-1 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100">
@@ -220,7 +225,7 @@ export const KhungNangLucManagement: React.FC = () => {
                             hidden
                           ><Input /></Form.Item>
 
-                          <div className="flex gap-4">
+                          <div className="flex flex-col sm:flex-row gap-0 sm:gap-4">
                             <Form.Item
                               {...restField}
                               name={[name, 'tenNangLuc']}
@@ -235,7 +240,7 @@ export const KhungNangLucManagement: React.FC = () => {
                               {...restField}
                               name={[name, 'tyTrong']}
                               label="Tỷ trọng (%)"
-                              className="w-32 mb-2"
+                              className="w-full sm:w-32 mb-2"
                               rules={[{ required: true, message: 'Nhập %' }]}
                             >
                               <InputNumber min={0.1} max={100} step={1} className="w-full" addonAfter="%" />
@@ -278,7 +283,7 @@ export const KhungNangLucManagement: React.FC = () => {
           </div>
 
           {/* Right side: Donut Chart & Stats */}
-          <div className="w-full md:w-72 flex flex-col items-center">
+          <div className="w-full lg:w-72 flex flex-col items-center">
             <h3 className="font-semibold text-gray-700 mb-6">Phân Bổ Tỷ Trọng</h3>
             
             <div className="relative w-48 h-48 rounded-full shadow-inner flex items-center justify-center transition-all duration-300"

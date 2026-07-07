@@ -1,3 +1,7 @@
+using System;
+using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Extensions;
+
 namespace PayrollManagementSystem.Application.Features.JobGrades.DTOs
 {
     public class JobGradeDto
@@ -6,5 +10,6 @@ namespace PayrollManagementSystem.Application.Features.JobGrades.DTOs
         public string TenNgachLuong { get; set; } = null!;
         public string? MoTa { get; set; }
         public int TrangThai { get; set; }
+        public string TenTrangThai => ((TrangThaiNgachLuong)TrangThai).GetDescription();
     }
 }

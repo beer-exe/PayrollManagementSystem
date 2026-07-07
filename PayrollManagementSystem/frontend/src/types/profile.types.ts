@@ -10,6 +10,7 @@ export interface UserProfileDetail {
   chuyenNganh: string | null;
   ngayVaoLam: string | null;
   trangThai: string | null;
+  tenTrangThai?: string | null;
   soBhxh: string | null;
   soBhyt: string | null;
   tenPhongBan: string | null;

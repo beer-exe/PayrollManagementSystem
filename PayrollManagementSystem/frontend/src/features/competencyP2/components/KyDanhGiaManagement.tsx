@@ -69,13 +69,13 @@ export const KyDanhGiaManagement: React.FC = () => {
       title: 'Trạng thái',
       dataIndex: 'trangThai',
       key: 'trangThai',
-      render: (status: string) => {
+      render: (status: string, record: any) => {
         let color = 'default';
         if (status === 'DANG_DANH_GIA') color = 'green';
         if (status === 'KHOI_TAO') color = 'blue';
         if (status === 'DA_CHOT') color = 'orange';
         if (status === 'DA_HUY') color = 'red';
-        return <Tag color={color}>{status}</Tag>;
+        return <Tag color={color}>{record.tenTrangThai || status}</Tag>;
       }
     },
     {
@@ -109,12 +109,22 @@ export const KyDanhGiaManagement: React.FC = () => {
   ];
 
   return (
-    <Card title="Quản lý Kỳ đánh giá Năng lực" extra={<Button type="primary" onClick={() => setIsModalVisible(true)}>Tạo kỳ đánh giá</Button>}>
+    <Card 
+      title={
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 whitespace-normal">
+          <span>Quản lý Kỳ đánh giá Năng lực</span>
+          <Button type="primary" onClick={() => setIsModalVisible(true)}>
+            Tạo kỳ đánh giá
+          </Button>
+        </div>
+      }
+    >
       <Table 
         columns={columns} 
         dataSource={data} 
         rowKey="idKyDanhGia" 
         loading={loading}
+        scroll={{ x: 'max-content' }}
       />
       <Modal
         title="Tạo Kỳ đánh giá mới"

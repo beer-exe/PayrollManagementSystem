@@ -126,7 +126,7 @@ export const EmpTable: React.FC<EmpTableProps> = ({
                             : 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20'
                         }`}>
                           <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${row.trangThai === 'DANG_LAM_VIEC' ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
-                          {row.trangThai === 'DANG_LAM_VIEC' ? 'Đang làm việc' : 'Đã nghỉ'}
+                          {row.tenTrangThai || (row.trangThai === 'DANG_LAM_VIEC' ? 'Đang làm việc' : 'Đã nghỉ')}
                         </span>
                       </td>
                     )}
