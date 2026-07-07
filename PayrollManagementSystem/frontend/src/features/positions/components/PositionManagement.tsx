@@ -8,6 +8,7 @@ import {
   Form,
   Tag,
   Space,
+  Checkbox,
 } from "antd";
 import {
   PlusOutlined,
@@ -17,6 +18,9 @@ import {
 } from "@ant-design/icons";
 import { usePositions } from "../hooks/usePositions";
 import { PositionDto } from "../types/position.types";
+import { useJobGrades } from "../../jobGrades/hooks/useJobGrades";
+import { departmentApi } from "../../departments/api/departmentApi";
+import { DepartmentDto } from "../../departments/types/department.types";
 
 export const PositionManagement: React.FC = () => {
   const {
@@ -28,25 +32,45 @@ export const PositionManagement: React.FC = () => {
     toggleStatus,
   } = usePositions();
 
+  const { jobGrades, fetchJobGrades: fetchJobGradesData } = useJobGrades();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | undefined>(
     undefined,
   );
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | undefined>(
+    undefined,
+  );
+  
+  const [departments, setDepartments] = useState<DepartmentDto[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPos, setEditingPos] = useState<PositionDto | null>(null);
+  const [hasManager, setHasManager] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
-    fetchPositions(searchTerm, statusFilter);
-  }, [searchTerm, statusFilter, fetchPositions]);
+    fetchPositions(searchTerm, statusFilter, selectedDepartmentId);
+  }, [searchTerm, statusFilter, selectedDepartmentId, fetchPositions]);
+
+  useEffect(() => {
+    fetchJobGradesData();
+    departmentApi.getDepartments().then(res => {
+      if (res.succeeded) setDepartments(res.data);
+    });
+  }, [fetchJobGradesData]);
 
   const handleOpenModal = (record?: PositionDto) => {
     setEditingPos(record || null);
     if (record) {
       form.setFieldsValue(record);
+      setHasManager(!!record.idChucVuQuanLy);
     } else {
       form.resetFields();
+      setHasManager(false);
+      if (selectedDepartmentId) {
+        form.setFieldsValue({ idPhongBan: selectedDepartmentId });
+      }
     }
     setIsModalOpen(true);
   };
@@ -66,7 +90,7 @@ export const PositionManagement: React.FC = () => {
 
       if (success) {
         setIsModalOpen(false);
-        fetchPositions(searchTerm, statusFilter);
+        fetchPositions(searchTerm, statusFilter, selectedDepartmentId);
       }
     } catch (info) {
       console.log("Validate Failed:", info);
@@ -84,7 +108,7 @@ export const PositionManagement: React.FC = () => {
       cancelText: "Hủy",
       onOk: async () => {
         const success = await toggleStatus(record.idChucVu);
-        if (success) fetchPositions(searchTerm, statusFilter);
+        if (success) fetchPositions(searchTerm, statusFilter, selectedDepartmentId);
       },
     });
   };
@@ -108,10 +132,36 @@ export const PositionManagement: React.FC = () => {
       ),
     },
     {
+      title: "Phòng Ban",
+      dataIndex: "tenPhongBan",
+      key: "tenPhongBan",
+      render: (text: string) => (
+        <span className="text-gray-600 dark:text-gray-300">
+          {text || "Chưa gán"}
+        </span>
+      ),
+    },
+    {
+      title: "Quản Lý Trực Tiếp",
+      dataIndex: "tenChucVuQuanLy",
+      key: "tenChucVuQuanLy",
+      render: (text: string) => (
+        <span className="text-gray-600 dark:text-gray-300">
+          {text || "-"}
+        </span>
+      ),
+    },
+    {
       title: "Mô Tả Công Việc",
       dataIndex: "moTaCongViec",
       key: "moTaCongViec",
       ellipsis: true,
+    },
+    {
+      title: "Ngạch Lương",
+      dataIndex: "tenNgachLuong",
+      key: "tenNgachLuong",
+      render: (text: string) => text ? <Tag color="blue">{text}</Tag> : <span className="text-gray-400">Chưa gán</span>
     },
     {
       title: "Trạng Thái",
@@ -179,6 +229,7 @@ export const PositionManagement: React.FC = () => {
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => handleOpenModal()}
+          disabled={!selectedDepartmentId}
           className="bg-violet-600 hover:bg-violet-700 h-10 px-5 rounded-lg shadow-sm"
         >
           Thêm Chức Vụ
@@ -192,8 +243,15 @@ export const PositionManagement: React.FC = () => {
             prefix={<SearchOutlined className="text-gray-400" />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full sm:max-w-xs h-10 rounded-lg"
+          />
+          <Select
+            placeholder="Lọc theo phòng ban"
             allowClear
-            className="w-full sm:max-w-md h-10 rounded-lg"
+            value={selectedDepartmentId}
+            onChange={setSelectedDepartmentId}
+            className="w-full sm:w-64 h-10"
+            options={departments?.map((d: any) => ({ label: d.tenPb, value: d.idPb }))}
           />
           <Select
             placeholder="Lọc theo trạng thái"
@@ -282,6 +340,66 @@ export const PositionManagement: React.FC = () => {
               className="rounded-lg"
             />
           </Form.Item>
+          <Form.Item
+            name="idNgachLuong"
+            label={
+              <span className="font-semibold text-gray-700">Ngạch Lương</span>
+            }
+          >
+            <Select
+              placeholder="Chọn ngạch lương"
+              allowClear
+              size="large"
+              options={jobGrades?.filter((g: any) => g.trangThai === 1).map((g: any) => ({ label: g.tenNgachLuong, value: g.idNgachLuong }))}
+            />
+          </Form.Item>
+          
+          <Form.Item
+            name="idPhongBan"
+            label={
+              <span className="font-semibold text-gray-700">Phòng Ban</span>
+            }
+            rules={[{ required: true, message: "Vui lòng chọn phòng ban!" }]}
+          >
+            <Select
+              placeholder="Chọn phòng ban"
+              allowClear
+              size="large"
+              disabled={true}
+              options={departments?.map((d: any) => ({ label: d.tenPb, value: d.idPb }))}
+            />
+          </Form.Item>
+
+          <Form.Item className="mb-2">
+            <Checkbox
+              checked={hasManager}
+              onChange={(e) => {
+                setHasManager(e.target.checked);
+                if (!e.target.checked) {
+                  form.setFieldsValue({ idChucVuQuanLy: undefined });
+                }
+              }}
+            >
+              <span className="font-medium text-gray-700">Chức vụ này có báo cáo cho Quản lý trực tiếp?</span>
+            </Checkbox>
+          </Form.Item>
+
+          {hasManager && (
+            <Form.Item
+              name="idChucVuQuanLy"
+              label={
+                <span className="font-semibold text-gray-700">Quản Lý Trực Tiếp (Báo cáo cho)</span>
+              }
+              rules={[{ required: true, message: "Vui lòng chọn chức vụ quản lý trực tiếp!" }]}
+            >
+              <Select
+                placeholder="Chọn chức vụ quản lý"
+                allowClear
+                size="large"
+                options={positions?.filter(p => p.idChucVu !== editingPos?.idChucVu && p.trangThai === "HOAT_DONG").map((p: any) => ({ label: `${p.tenChucVu} - ${p.tenPhongBan}`, value: p.idChucVu }))}
+              />
+            </Form.Item>
+          )}
         </Form>
       </Modal>
     </div>

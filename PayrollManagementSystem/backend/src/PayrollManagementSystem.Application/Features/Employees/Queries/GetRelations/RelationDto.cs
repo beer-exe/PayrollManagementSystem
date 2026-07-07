@@ -1,5 +1,3 @@
-using System;
-
 namespace PayrollManagementSystem.Application.Features.Employees.Queries.GetRelations
 {
     public class RelationDto

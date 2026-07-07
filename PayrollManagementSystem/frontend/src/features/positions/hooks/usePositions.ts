@@ -7,10 +7,10 @@ export const usePositions = () => {
   const [positions, setPositions] = useState<PositionDto[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchPositions = useCallback(async (searchTerm?: string, trangThai?: string) => {
+  const fetchPositions = useCallback(async (searchTerm?: string, trangThai?: string, idPhongBan?: string) => {
     setLoading(true);
     try {
-      const res = await positionApi.getPositions({ searchTerm, trangThai });
+      const res = await positionApi.getPositions({ searchTerm, trangThai, idPhongBan });
       if (res.succeeded) setPositions(res.data);
     } catch (error) { const err = error as import('axios').AxiosError<{Message?: string}>;
       message.error(err?.response?.data?.Message || 'Lỗi tải danh sách chức vụ');

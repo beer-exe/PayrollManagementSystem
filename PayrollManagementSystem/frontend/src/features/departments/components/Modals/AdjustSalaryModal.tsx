@@ -27,10 +27,10 @@ export const AdjustSalaryModal: React.FC<AdjustSalaryModalProps> = ({
   const [salarySteps, setSalarySteps] = useState<SalaryStepDto[]>([]);
   const [loadingSteps, setLoadingSteps] = useState(false);
 
-  const fetchSalarySteps = async (positionId: string) => {
+  const fetchSalarySteps = async (jobGradeId: string) => {
     setLoadingSteps(true);
     try {
-      const res = await salaryStepApi.getActive(positionId);
+      const res = await salaryStepApi.getActive(jobGradeId);
       if (res.succeeded) {
         setSalarySteps(res.data);
       }
@@ -48,14 +48,14 @@ export const AdjustSalaryModal: React.FC<AdjustSalaryModalProps> = ({
       const currentPos = positions.find(
         (p) => p.tenChucVu === employee.tenChucVu,
       );
-      const positionId = (employee as any).idChucVu || currentPos?.idChucVu;
+      const jobGradeId = currentPos?.idNgachLuong;
 
-      if (positionId) {
-        fetchSalarySteps(positionId);
+      if (jobGradeId) {
+        fetchSalarySteps(jobGradeId);
       } else {
         setSalarySteps([]);
         message.warning(
-          "Không xác định được mã chức vụ hiện tại để lấy danh sách bậc lương.",
+          "Không xác định được ngạch lương của chức vụ hiện tại.",
         );
       }
     }

@@ -3,10 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc.DTOs;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc.Queries.GetKhungNangLucs
 {
@@ -24,7 +20,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc
                     IdTieuChi = x.IdTieuChi,
                     IdChucVu = x.IdChucVu,
                     TenNangLuc = x.TenNangLuc,
-                    YeuCauToiThieu = x.YeuCauToiThieu,
+                    MoTa = x.MoTa,
                     TyTrong = x.TyTrong
                 })
                 .ToListAsync(cancellationToken);

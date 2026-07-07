@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PayrollManagementSystem.Application.Features.SalarySteps.Commands.CreateSalaryStep;
@@ -21,21 +21,21 @@ namespace PayrollManagementSystem.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("active/{positionId}")]
-        public async Task<IActionResult> GetActiveSalarySteps(string positionId)
+        [HttpGet("active/{jobGradeId}")]
+        public async Task<IActionResult> GetActiveSalarySteps(string jobGradeId)
         {
-            var query = new GetActiveSalaryStepsQuery { PositionId = positionId };
+            var query = new GetActiveSalaryStepsQuery { JobGradeId = jobGradeId };
             var response = await _mediator.Send(query);
 
             return Ok(response);
         }
 
-        [HttpGet("history/{positionId}/{stepName}")]
-        public async Task<IActionResult> GetSalaryStepHistory(string positionId, string stepName)
+        [HttpGet("history/{jobGradeId}/{stepName}")]
+        public async Task<IActionResult> GetSalaryStepHistory(string jobGradeId, string stepName)
         {
             var query = new GetSalaryStepHistoryQuery
             {
-                PositionId = positionId,
+                JobGradeId = jobGradeId,
                 StepName = Uri.UnescapeDataString(stepName)
             };
             var response = await _mediator.Send(query);
@@ -59,12 +59,12 @@ namespace PayrollManagementSystem.API.Controllers
             return Ok(response);
         }
 
-        [HttpDelete("{positionId}/{stepName}")]
-        public async Task<IActionResult> DeleteSalaryStep(string positionId, string stepName)
+        [HttpDelete("{jobGradeId}/{stepName}")]
+        public async Task<IActionResult> DeleteSalaryStep(string jobGradeId, string stepName)
         {
             var command = new DeleteSalaryStepCommand
             {
-                PositionId = positionId,
+                JobGradeId = jobGradeId,
                 StepName = Uri.UnescapeDataString(stepName)
             };
             var response = await _mediator.Send(command);

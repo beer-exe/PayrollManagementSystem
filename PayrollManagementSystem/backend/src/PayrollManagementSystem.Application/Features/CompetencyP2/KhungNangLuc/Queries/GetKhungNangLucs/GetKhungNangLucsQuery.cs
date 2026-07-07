@@ -1,7 +1,6 @@
 using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc.DTOs;
-using System.Collections.Generic;
 
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc.Queries.GetKhungNangLucs
 {

@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 
@@ -16,6 +16,9 @@ namespace PayrollManagementSystem.Application.Features.Positions.Commands.Update
 
             chucVu.TenChucVu = request.TenChucVu;
             chucVu.MoTaCongViec = request.MoTaCongViec;
+            chucVu.IdNgachLuong = request.IdNgachLuong;
+            chucVu.IdPhongBan = request.IdPhongBan;
+            chucVu.IdChucVuQuanLy = request.IdChucVuQuanLy;
 
             await _context.SaveChangesAsync(cancellationToken);
             return new Response<bool>(true, "Cập nhật chức vụ thành công.");

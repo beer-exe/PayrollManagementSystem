@@ -30,11 +30,11 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("id_bac_luong");
 
-                    b.Property<string>("IdChucVu")
+                    b.Property<string>("IdNgachLuong")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("id_chuc_vu");
+                        .HasColumnName("id_ngach_luong");
 
                     b.Property<decimal>("LuongP1")
                         .HasPrecision(18, 2)
@@ -61,7 +61,7 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.HasKey("IdBacLuong")
                         .HasName("bac_luongs_pkey");
 
-                    b.HasIndex("IdChucVu");
+                    b.HasIndex("IdNgachLuong");
 
                     b.ToTable("bac_luongs", (string)null);
                 });
@@ -117,6 +117,22 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("id_chuc_vu");
 
+                    b.Property<string>("IdChucVuQuanLy")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("id_chuc_vu_quan_ly");
+
+                    b.Property<string>("IdNgachLuong")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("id_ngach_luong");
+
+                    b.Property<string>("IdPhongBan")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("id_phong_ban");
+
                     b.Property<string>("MoTaCongViec")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
@@ -133,6 +149,12 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
 
                     b.HasKey("IdChucVu")
                         .HasName("chuc_vus_pkey");
+
+                    b.HasIndex("IdChucVuQuanLy");
+
+                    b.HasIndex("IdNgachLuong");
+
+                    b.HasIndex("IdPhongBan");
 
                     b.ToTable("chuc_vus", (string)null);
                 });
@@ -197,6 +219,11 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("id_chuc_vu");
 
+                    b.Property<string>("MoTa")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("mo_ta");
+
                     b.Property<string>("TenNangLuc")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -207,12 +234,6 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasPrecision(5, 2)
                         .HasColumnType("numeric(5,2)")
                         .HasColumnName("ty_trong");
-
-                    b.Property<string>("YeuCauToiThieu")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("yeu_cau_toi_thieu");
 
                     b.HasKey("IdTieuChi")
                         .HasName("khung_nang_luc_p2_pkey");
@@ -315,17 +336,39 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.ToTable("muc_quy_doi_p2s", (string)null);
                 });
 
+            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.NgachLuong", b =>
+                {
+                    b.Property<string>("IdNgachLuong")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("id_ngach_luong");
+
+                    b.Property<string>("MoTa")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("mo_ta");
+
+                    b.Property<string>("TenNgachLuong")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("ten_ngach_luong");
+
+                    b.Property<int>("TrangThai")
+                        .HasColumnType("integer");
+
+                    b.HasKey("IdNgachLuong")
+                        .HasName("ngach_luongs_pkey");
+
+                    b.ToTable("ngach_luongs", (string)null);
+                });
+
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.NhanVien", b =>
                 {
                     b.Property<string>("Cccd")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("cccd");
-
-                    b.Property<string>("CccdNguoiQuanLy")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("cccd_nguoi_quan_ly");
 
                     b.Property<string>("ChuyenNganh")
                         .HasMaxLength(100)
@@ -368,8 +411,7 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasColumnName("id_pb");
 
                     b.Property<Guid?>("IdTaiKhoan")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id_tai_khoan");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("MaSoThue")
                         .HasMaxLength(50)
@@ -420,8 +462,6 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
 
                     b.HasKey("Cccd")
                         .HasName("nhan_viens_pkey");
-
-                    b.HasIndex("CccdNguoiQuanLy");
 
                     b.HasIndex("IdPb");
 
@@ -744,14 +784,14 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.BacLuong", b =>
                 {
-                    b.HasOne("PayrollManagementSystem.Domain.Models.ChucVu", "ChucVu")
+                    b.HasOne("PayrollManagementSystem.Domain.Models.NgachLuong", "NgachLuong")
                         .WithMany("BacLuongs")
-                        .HasForeignKey("IdChucVu")
+                        .HasForeignKey("IdNgachLuong")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("bac_luongs_id_chuc_vu_fkey");
+                        .HasConstraintName("bac_luongs_id_ngach_luong_fkey");
 
-                    b.Navigation("ChucVu");
+                    b.Navigation("NgachLuong");
                 });
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.ChiTietDanhGiaNangLuc", b =>
@@ -773,6 +813,34 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.Navigation("PhieuDanhGia");
 
                     b.Navigation("TieuChi");
+                });
+
+            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.ChucVu", b =>
+                {
+                    b.HasOne("PayrollManagementSystem.Domain.Models.ChucVu", "ChucVuQuanLy")
+                        .WithMany("ChucVuCapDuois")
+                        .HasForeignKey("IdChucVuQuanLy")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("chuc_vus_id_chuc_vu_quan_ly_fkey");
+
+                    b.HasOne("PayrollManagementSystem.Domain.Models.NgachLuong", "NgachLuong")
+                        .WithMany("ChucVus")
+                        .HasForeignKey("IdNgachLuong")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("chuc_vus_id_ngach_luong_fkey");
+
+                    b.HasOne("PayrollManagementSystem.Domain.Models.PhongBan", "PhongBan")
+                        .WithMany()
+                        .HasForeignKey("IdPhongBan")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("chuc_vus_id_phong_ban_fkey");
+
+                    b.Navigation("ChucVuQuanLy");
+
+                    b.Navigation("NgachLuong");
+
+                    b.Navigation("PhongBan");
                 });
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.HopDongLaoDong", b =>
@@ -801,12 +869,6 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.NhanVien", b =>
                 {
-                    b.HasOne("PayrollManagementSystem.Domain.Models.NhanVien", "NguoiQuanLy")
-                        .WithMany("NhanVienCapDuois")
-                        .HasForeignKey("CccdNguoiQuanLy")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("nhan_viens_cccd_nguoi_quan_ly_fkey");
-
                     b.HasOne("PayrollManagementSystem.Domain.Models.PhongBan", "PhongBan")
                         .WithMany("NhanViens")
                         .HasForeignKey("IdPb")
@@ -818,8 +880,6 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasForeignKey("PayrollManagementSystem.Domain.Models.NhanVien", "IdTaiKhoan")
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("nhan_viens_id_tai_khoan_fkey");
-
-                    b.Navigation("NguoiQuanLy");
 
                     b.Navigation("PhongBan");
 
@@ -933,7 +993,7 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.ChucVu", b =>
                 {
-                    b.Navigation("BacLuongs");
+                    b.Navigation("ChucVuCapDuois");
 
                     b.Navigation("KhungNangLucs");
                 });
@@ -948,11 +1008,16 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.Navigation("ThanNhanNhanViens");
                 });
 
+            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.NgachLuong", b =>
+                {
+                    b.Navigation("BacLuongs");
+
+                    b.Navigation("ChucVus");
+                });
+
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.NhanVien", b =>
                 {
                     b.Navigation("HopDongLaoDongs");
-
-                    b.Navigation("NhanVienCapDuois");
 
                     b.Navigation("NhatKyTrangThais");
 

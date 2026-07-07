@@ -15,7 +15,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc
             if (entity == null) return new Response<bool>("Không tìm thấy tiêu chí.");
 
             entity.TenNangLuc = request.TenNangLuc;
-            entity.YeuCauToiThieu = request.YeuCauToiThieu;
+            entity.MoTa = request.MoTa;
             entity.TyTrong = request.TyTrong;
 
             await _context.SaveChangesAsync(cancellationToken);

@@ -18,6 +18,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
 
         public virtual DbSet<BacLuong> BacLuongs { get; set; }
         public virtual DbSet<ChucVu> ChucVus { get; set; }
+        public virtual DbSet<NgachLuong> NgachLuongs { get; set; }
         public virtual DbSet<MoiQuanHe> MoiQuanHes { get; set; }
 
         public virtual DbSet<NhanVien> NhanViens { get; set; }
@@ -44,6 +45,25 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
         {
             modelBuilder.HasPostgresExtension("pgcrypto");
 
+            modelBuilder.Entity<NgachLuong>(entity =>
+            {
+                entity.HasKey(e => e.IdNgachLuong).HasName("ngach_luongs_pkey");
+                entity.ToTable("ngach_luongs");
+
+                entity.Property(e => e.IdNgachLuong)
+                    .HasMaxLength(50)
+                    .HasColumnName("id_ngach_luong");
+
+                entity.Property(e => e.TenNgachLuong)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnName("ten_ngach_luong");
+
+                entity.Property(e => e.MoTa)
+                    .HasMaxLength(500)
+                    .HasColumnName("mo_ta");
+            });
+
             modelBuilder.Entity<BacLuong>(entity =>
             {
                 entity.HasKey(e => e.IdBacLuong).HasName("bac_luongs_pkey");
@@ -53,9 +73,9 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                     .HasMaxLength(50)
                     .HasColumnName("id_bac_luong");
 
-                entity.Property(e => e.IdChucVu)
+                entity.Property(e => e.IdNgachLuong)
                     .HasMaxLength(50)
-                    .HasColumnName("id_chuc_vu");
+                    .HasColumnName("id_ngach_luong");
 
                 entity.Property(e => e.TenBacLuong)
                     .IsRequired()
@@ -72,11 +92,11 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                 entity.Property(e => e.NgayKetThuc)
                     .HasColumnName("ngay_ket_thuc");
 
-                entity.HasOne(d => d.ChucVu)
+                entity.HasOne(d => d.NgachLuong)
                     .WithMany(p => p.BacLuongs)
-                    .HasForeignKey(d => d.IdChucVu)
+                    .HasForeignKey(d => d.IdNgachLuong)
                     .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("bac_luongs_id_chuc_vu_fkey");
+                    .HasConstraintName("bac_luongs_id_ngach_luong_fkey");
             });
 
             modelBuilder.Entity<ChucVu>(entity =>
@@ -88,6 +108,18 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                     .HasMaxLength(50)
                     .HasColumnName("id_chuc_vu");
 
+                entity.Property(e => e.IdNgachLuong)
+                    .HasMaxLength(50)
+                    .HasColumnName("id_ngach_luong");
+
+                entity.Property(e => e.IdPhongBan)
+                    .HasMaxLength(50)
+                    .HasColumnName("id_phong_ban");
+
+                entity.Property(e => e.IdChucVuQuanLy)
+                    .HasMaxLength(50)
+                    .HasColumnName("id_chuc_vu_quan_ly");
+
                 entity.Property(e => e.TenChucVu)
                     .HasMaxLength(100)
                     .HasColumnName("ten_chuc_vu");
@@ -95,6 +127,24 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                 entity.Property(e => e.MoTaCongViec)
                     .HasMaxLength(500)
                     .HasColumnName("mo_ta_cong_viec");
+
+                entity.HasOne(d => d.NgachLuong)
+                    .WithMany(p => p.ChucVus)
+                    .HasForeignKey(d => d.IdNgachLuong)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("chuc_vus_id_ngach_luong_fkey");
+
+                entity.HasOne(d => d.PhongBan)
+                    .WithMany()
+                    .HasForeignKey(d => d.IdPhongBan)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("chuc_vus_id_phong_ban_fkey");
+
+                entity.HasOne(d => d.ChucVuQuanLy)
+                    .WithMany(p => p.ChucVuCapDuois)
+                    .HasForeignKey(d => d.IdChucVuQuanLy)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("chuc_vus_id_chuc_vu_quan_ly_fkey");
             });
 
             modelBuilder.Entity<MoiQuanHe>(entity =>
@@ -147,11 +197,6 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                 entity.Property(e => e.TenNganHang).HasMaxLength(100).HasColumnName("ten_ngan_hang");
                 entity.Property(e => e.MaSoThue).HasMaxLength(50).HasColumnName("ma_so_thue");
                 entity.Property(e => e.IdPb).HasMaxLength(50).HasColumnName("id_pb");
-                entity.Property(e => e.IdTaiKhoan).HasColumnName("id_tai_khoan");
-                entity.Property(e => e.CccdNguoiQuanLy)
-                    .HasMaxLength(20)
-                    .HasColumnName("cccd_nguoi_quan_ly");
-
                 entity.HasOne(d => d.PhongBan)
                     .WithMany(p => p.NhanViens)
                     .HasForeignKey(d => d.IdPb)
@@ -165,12 +210,6 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                     .HasConstraintName("nhan_viens_id_tai_khoan_fkey");
 
                 entity.Property(e => e.HeSoP2).HasPrecision(5, 2).HasColumnName("he_so_p2");
-
-                entity.HasOne(d => d.NguoiQuanLy)
-                    .WithMany(p => p.NhanVienCapDuois)
-                    .HasForeignKey(d => d.CccdNguoiQuanLy)
-                    .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("nhan_viens_cccd_nguoi_quan_ly_fkey");
             });
 
             modelBuilder.Entity<PhongBan>(entity =>
@@ -390,7 +429,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                 entity.Property(e => e.IdTieuChi).HasColumnName("id_tieu_chi").HasDefaultValueSql("gen_random_uuid()");
                 entity.Property(e => e.IdChucVu).IsRequired().HasMaxLength(50).HasColumnName("id_chuc_vu");
                 entity.Property(e => e.TenNangLuc).IsRequired().HasMaxLength(150).HasColumnName("ten_nang_luc");
-                entity.Property(e => e.YeuCauToiThieu).IsRequired().HasMaxLength(500).HasColumnName("yeu_cau_toi_thieu");
+                entity.Property(e => e.MoTa).HasMaxLength(500).HasColumnName("mo_ta");
                 entity.Property(e => e.TyTrong).HasPrecision(5, 2).HasColumnName("ty_trong");
 
                 entity.HasOne(d => d.ChucVu)

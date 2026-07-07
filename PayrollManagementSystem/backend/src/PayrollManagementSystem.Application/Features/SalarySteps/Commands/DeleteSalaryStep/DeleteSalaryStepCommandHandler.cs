@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
@@ -13,7 +13,7 @@ namespace PayrollManagementSystem.Application.Features.SalarySteps.Commands.Dele
         public async Task<Response<bool>> Handle(DeleteSalaryStepCommand request, CancellationToken cancellationToken)
         {
             var versions = await _context.BacLuongs
-                .Where(x => x.IdChucVu == request.PositionId && x.TenBacLuong == request.StepName)
+                .Where(x => x.IdNgachLuong == request.JobGradeId && x.TenBacLuong == request.StepName)
                 .ToListAsync(cancellationToken);
 
             if (!versions.Any()) throw new Common.Exceptions.ApiException("LỖI: Không tìm thấy dữ liệu bậc lương.");

@@ -46,9 +46,16 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       return;
     }
 
+    const selectedPos = positions.find((p) => p.idChucVu === positionId);
+    if (!selectedPos || !selectedPos.idNgachLuong) {
+      setSalarySteps([]);
+      message.warning("Chức vụ này chưa được cấu hình ngạch lương.");
+      return;
+    }
+
     setLoadingSteps(true);
     try {
-      const res = await salaryStepApi.getActive(positionId);
+      const res = await salaryStepApi.getActive(selectedPos.idNgachLuong);
       if (res.succeeded) {
         setSalarySteps(res.data);
       }
@@ -144,20 +151,30 @@ export const TransferModal: React.FC<TransferModalProps> = ({
         </Form.Item>
 
         <Form.Item
-          name="idChucVuMoi"
-          label="Chức vụ mới"
-          rules={[{ required: true, message: "Vui lòng chọn chức vụ mới" }]}
+          noStyle
+          shouldUpdate={(prevValues, currentValues) => prevValues.idPbMoi !== currentValues.idPbMoi}
         >
-          <Select
-            placeholder="-- Chọn chức vụ --"
-            showSearch
-            optionFilterProp="label"
-            onChange={handlePositionChange}
-            options={positions.map((p) => ({
-              label: p.tenChucVu,
-              value: p.idChucVu,
-            }))}
-          />
+          {({ getFieldValue }) => (
+            <Form.Item
+              name="idChucVuMoi"
+              label="Chức vụ mới"
+              rules={[{ required: true, message: "Vui lòng chọn chức vụ mới" }]}
+            >
+              <Select
+                placeholder="-- Chọn chức vụ --"
+                showSearch
+                optionFilterProp="label"
+                onChange={handlePositionChange}
+                disabled={!getFieldValue("idPbMoi")}
+                options={positions
+                  .filter((p) => p.idPhongBan === getFieldValue("idPbMoi"))
+                  .map((p) => ({
+                    label: p.tenChucVu,
+                    value: p.idChucVu,
+                  }))}
+              />
+            </Form.Item>
+          )}
         </Form.Item>
 
         <Form.Item

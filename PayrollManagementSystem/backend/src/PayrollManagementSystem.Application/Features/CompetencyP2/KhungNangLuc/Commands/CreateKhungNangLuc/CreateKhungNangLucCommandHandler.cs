@@ -16,7 +16,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc
             {
                 IdChucVu = request.IdChucVu,
                 TenNangLuc = request.TenNangLuc,
-                YeuCauToiThieu = request.YeuCauToiThieu,
+                MoTa = request.MoTa,
                 TyTrong = request.TyTrong
             };
 

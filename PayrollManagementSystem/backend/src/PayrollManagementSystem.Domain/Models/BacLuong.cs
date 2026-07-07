@@ -1,11 +1,11 @@
-﻿using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Enums;
 
 namespace PayrollManagementSystem.Domain.Models
 {
     public class BacLuong
     {
         public string IdBacLuong { get; set; } = null!;
-        public string IdChucVu { get; set; } = null!;
+        public string IdNgachLuong { get; set; } = null!;
         public string TenBacLuong { get; set; } = null!;
         public decimal LuongP1 { get; set; }
         public DateOnly NgayApDung { get; set; }
@@ -13,7 +13,7 @@ namespace PayrollManagementSystem.Domain.Models
         public TrangThaiBacLuong TrangThai { get; set; } = TrangThaiBacLuong.HIEU_LUC;
 
         // Navigation properties
-        public ChucVu ChucVu { get; set; } = null!;
+        public NgachLuong NgachLuong { get; set; } = null!;
         public ICollection<QuyetDinhNhanSu> QuyetDinhNhanSus { get; set; } = new List<QuyetDinhNhanSu>();
     }
 }

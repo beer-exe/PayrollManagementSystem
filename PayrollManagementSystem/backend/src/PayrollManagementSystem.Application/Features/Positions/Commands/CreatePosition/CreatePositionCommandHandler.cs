@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
@@ -19,7 +19,10 @@ namespace PayrollManagementSystem.Application.Features.Positions.Commands.Create
             {
                 IdChucVu = request.IdChucVu,
                 TenChucVu = request.TenChucVu,
-                MoTaCongViec = request.MoTaCongViec
+                MoTaCongViec = request.MoTaCongViec,
+                IdNgachLuong = request.IdNgachLuong,
+                IdPhongBan = request.IdPhongBan,
+                IdChucVuQuanLy = request.IdChucVuQuanLy
             };
 
             _context.ChucVus.Add(chucVu);

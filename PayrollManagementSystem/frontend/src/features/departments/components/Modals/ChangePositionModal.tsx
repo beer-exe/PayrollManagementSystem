@@ -41,9 +41,16 @@ export const ChangePositionModal: React.FC<ChangePositionModalProps> = ({
       return;
     }
 
+    const selectedPos = positions.find((p) => p.idChucVu === positionId);
+    if (!selectedPos || !selectedPos.idNgachLuong) {
+      setSalarySteps([]);
+      message.warning("Chức vụ này chưa được cấu hình ngạch lương.");
+      return;
+    }
+
     setLoadingSteps(true);
     try {
-      const res = await salaryStepApi.getActive(positionId);
+      const res = await salaryStepApi.getActive(selectedPos.idNgachLuong);
       if (res.succeeded) {
         setSalarySteps(res.data);
       }

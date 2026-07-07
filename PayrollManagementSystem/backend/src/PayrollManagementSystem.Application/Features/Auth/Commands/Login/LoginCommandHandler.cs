@@ -49,7 +49,17 @@ namespace PayrollManagementSystem.Application.Features.Auth.Commands.Login
             bool hasDirectReports = false;
             if (taiKhoan.NhanVien != null && !string.IsNullOrEmpty(taiKhoan.NhanVien.Cccd))
             {
-                hasDirectReports = await _context.NhanViens.AnyAsync(nv => nv.CccdNguoiQuanLy == taiKhoan.NhanVien.Cccd, cancellationToken);
+                // Determine if user has direct reports by checking if their current position manages any other positions
+                var activeQuyetDinh = await _context.QuyetDinhNhanSus
+                    .Where(q => q.Cccd == taiKhoan.NhanVien.Cccd && q.TrangThai == TrangThaiQuyetDinh.HIEU_LUC)
+                    .OrderByDescending(q => q.NgayHieuLuc)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (activeQuyetDinh != null && !string.IsNullOrEmpty(activeQuyetDinh.IdChucVuMoi))
+                {
+                    hasDirectReports = await _context.ChucVus
+                        .AnyAsync(c => c.IdChucVuQuanLy == activeQuyetDinh.IdChucVuMoi, cancellationToken);
+                }
             }
 
             AuthResponseDto? responseData = new AuthResponseDto

@@ -117,12 +117,16 @@ export const EmployeeManagement: React.FC = () => {
       />
 
       <Modal 
-        title={<h2 className="emp-modal-title">Thêm Mới Nhân Sự</h2>}
         open={isCreateModalOpen} 
         onCancel={() => setIsCreateModalOpen(false)}
         footer={null}
-        width={800}
+        width={950}
         destroyOnClose
+        closeIcon={null}
+        className="emp-split-modal"
+        styles={{ 
+          body: { padding: 0 } 
+        }}
       >
         <CreateEmployeeStepper 
           onSubmitSuccess={handleCreateSuccess}

@@ -46,7 +46,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
                     IdChiTiet = c.IdChiTiet,
                     IdTieuChi = c.IdTieuChi,
                     TenNangLuc = c.TieuChi.TenNangLuc,
-                    YeuCauToiThieu = c.TieuChi.YeuCauToiThieu,
+                    MoTa = c.TieuChi.MoTa,
                     TyTrong = c.TieuChi.TyTrong,
                     DiemTuDanhGia = c.DiemTuDanhGia,
                     DiemQuanLyDanhGia = c.DiemQuanLyDanhGia,

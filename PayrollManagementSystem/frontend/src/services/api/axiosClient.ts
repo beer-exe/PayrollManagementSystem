@@ -57,7 +57,6 @@ axiosClient.interceptors.request.use(
 axiosClient.interceptors.response.use(
   (response) => {
     const data = response.data;
-    // Xử lý trường hợp HTTP 200 OK nhưng API trả về succeeded = false (Lỗi logic)
     if (data && data.succeeded === false) {
       if (!data.Message) {
         if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
@@ -71,11 +70,9 @@ axiosClient.interceptors.response.use(
     return data;
   },
   async (error: AxiosError) => {
-    // Chuẩn hóa message từ backend (ASP.NET Core trả về "message" chữ thường trong ApiResponse wrapper)
     if (error.response && error.response.data) {
       const data = error.response.data as Record<string, unknown>;
       if (!data.Message) {
-        // Ưu tiên lấy chi tiết lỗi từ mảng errors nếu có, ngược lại lấy từ message
         if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
           data.Message = data.errors.join(", ");
         } else if (data.message) {

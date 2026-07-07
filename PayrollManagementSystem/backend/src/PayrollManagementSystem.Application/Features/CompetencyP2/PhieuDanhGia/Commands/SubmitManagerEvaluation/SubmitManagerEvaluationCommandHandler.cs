@@ -18,7 +18,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
             var phieu = await _context.PhieuDanhGiaNangLucs
                 .Include(x => x.ChiTietDanhGias)
                 .ThenInclude(c => c.TieuChi)
-                .FirstOrDefaultAsync(x => x.IdPhieu == request.IdPhieu && x.CccdQuanLy == manager.Cccd, cancellationToken);
+                .FirstOrDefaultAsync(x => x.IdPhieu == request.IdPhieu && (request.IsHr || x.CccdQuanLy == manager.Cccd), cancellationToken);
 
             if (phieu == null) return new Response<bool>("Không tìm thấy phiếu hoặc bạn không có quyền duyệt phiếu này.");
             if (phieu.TrangThai == Domain.Enums.TrangThaiPhieuDanhGia.DA_HOAN_THANH)

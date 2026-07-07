@@ -6,7 +6,6 @@ using PayrollManagementSystem.Application.Features.Employees.Commands.CreateEmpl
 using PayrollManagementSystem.Application.Features.Employees.Commands.UpdateEmployee;
 using PayrollManagementSystem.Application.Features.Employees.Queries.GetEmployees;
 using PayrollManagementSystem.Application.Wrappers;
-using PayrollManagementSystem.Domain.Enums;
 using System.IdentityModel.Tokens.Jwt;
 using PayrollManagementSystem.Application.Features.Employees.Queries.GetRelations;
 using PayrollManagementSystem.Application.Features.Employees.Queries.ExportEmployees;

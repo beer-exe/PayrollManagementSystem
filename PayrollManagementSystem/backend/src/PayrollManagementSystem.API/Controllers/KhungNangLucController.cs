@@ -10,7 +10,7 @@ namespace PayrollManagementSystem.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "HR")]
+    [Authorize]
     public class KhungNangLucController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -23,12 +23,14 @@ namespace PayrollManagementSystem.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "HR")]
         public async Task<IActionResult> Create([FromBody] CreateKhungNangLucCommand command)
         {
             return Ok(await _mediator.Send(command));
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "HR")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateKhungNangLucCommand command)
         {
             if (id != command.IdTieuChi) return BadRequest();
@@ -36,6 +38,7 @@ namespace PayrollManagementSystem.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "HR")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _mediator.Send(new DeleteKhungNangLucCommand { IdTieuChi = id }));

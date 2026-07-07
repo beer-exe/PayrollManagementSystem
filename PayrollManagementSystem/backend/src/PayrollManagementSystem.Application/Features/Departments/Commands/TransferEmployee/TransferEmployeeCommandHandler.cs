@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Common.Interfaces;
@@ -26,9 +26,13 @@ namespace PayrollManagementSystem.Application.Features.Departments.Commands.Tran
             if (!phongBanExists)
                 throw new ApiException($"Phòng ban mới với mã '{request.IdPbMoi}' không tồn tại.");
 
-            var bacLuongMoi = await _context.BacLuongs.FirstOrDefaultAsync(b => b.IdChucVu == request.IdChucVuMoi, cancellationToken);
+            var chucVuMoi = await _context.ChucVus.FindAsync(new object[] { request.IdChucVuMoi }, cancellationToken);
+            if (chucVuMoi?.IdNgachLuong == null)
+                throw new ApiException($"Chức vụ mới không được gán Ngạch lương hợp lệ.");
+            
+            var bacLuongMoi = await _context.BacLuongs.FirstOrDefaultAsync(b => b.IdNgachLuong == chucVuMoi.IdNgachLuong, cancellationToken);
             if (bacLuongMoi == null)
-                throw new ApiException($"Chưa có cấu hình Bậc lương nào cho chức vụ '{request.IdChucVuMoi}'. Vui lòng thiết lập bậc lương trước khi điều chuyển.");
+                throw new ApiException($"Chưa có cấu hình Bậc lương nào cho ngạch lương của chức vụ mới. Vui lòng thiết lập bậc lương trước khi điều chuyển.");
 
             nhanVien.IdPb = request.IdPbMoi;
 

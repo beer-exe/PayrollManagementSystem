@@ -81,6 +81,7 @@ namespace PayrollManagementSystem.API.Controllers
             if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out Guid userId)) return Unauthorized();
 
             command.TaiKhoanId = userId;
+            command.IsHr = User.IsInRole("HR");
             return Ok(await _mediator.Send(command));
         }
     }

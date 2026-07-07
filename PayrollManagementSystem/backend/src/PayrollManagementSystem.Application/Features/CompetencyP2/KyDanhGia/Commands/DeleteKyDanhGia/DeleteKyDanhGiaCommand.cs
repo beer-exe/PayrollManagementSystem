@@ -1,6 +1,5 @@
 using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
-using System;
 
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.KyDanhGia.Commands.DeleteKyDanhGia
 {

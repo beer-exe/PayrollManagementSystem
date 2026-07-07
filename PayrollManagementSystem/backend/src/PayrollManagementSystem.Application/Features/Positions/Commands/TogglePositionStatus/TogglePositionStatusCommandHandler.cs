@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
@@ -19,10 +19,9 @@ namespace PayrollManagementSystem.Application.Features.Positions.Commands.Toggle
             if (chucVu.TrangThai == TrangThaiChucVu.HOAT_DONG)
             {
                 bool hasActiveEmployee = await _context.QuyetDinhNhanSus.AnyAsync(q => q.IdChucVuMoi == request.IdChucVu && q.TrangThai == TrangThaiQuyetDinh.HIEU_LUC, cancellationToken);
-                bool hasActiveBacLuong = await _context.BacLuongs.AnyAsync(b => b.IdChucVu == request.IdChucVu && b.TrangThai == TrangThaiBacLuong.HIEU_LUC, cancellationToken);
 
-                if (hasActiveEmployee || hasActiveBacLuong)
-                    throw new Common.Exceptions.ApiException("Lỗi: Không thể vô hiệu hóa chức vụ này vì đang được gắn với nhân sự hoặc bậc lương đang áp dụng.");
+                if (hasActiveEmployee)
+                    throw new Common.Exceptions.ApiException("Lỗi: Không thể vô hiệu hóa chức vụ này vì đang được gắn với nhân sự đang làm việc.");
 
                 chucVu.TrangThai = TrangThaiChucVu.NGUNG_HOAT_DONG;
             }

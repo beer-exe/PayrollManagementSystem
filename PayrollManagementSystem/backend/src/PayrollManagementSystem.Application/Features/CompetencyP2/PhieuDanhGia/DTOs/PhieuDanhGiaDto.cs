@@ -5,7 +5,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
         public Guid IdChiTiet { get; set; }
         public Guid IdTieuChi { get; set; }
         public string TenNangLuc { get; set; } = null!;
-        public string YeuCauToiThieu { get; set; } = null!;
+        public string? MoTa { get; set; }
         public decimal TyTrong { get; set; }
         public int? DiemTuDanhGia { get; set; }
         public int? DiemQuanLyDanhGia { get; set; }

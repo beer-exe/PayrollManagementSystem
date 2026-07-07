@@ -3,10 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.Employees.DTOs;
 using PayrollManagementSystem.Domain.Enums;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PayrollManagementSystem.Application.Features.Employees.Queries.ExportEmployees
 {

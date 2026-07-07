@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.SalarySteps.DTOs;
@@ -14,7 +14,7 @@ namespace PayrollManagementSystem.Application.Features.SalarySteps.Queries.GetSa
         public async Task<Response<IEnumerable<SalaryStepDto>>> Handle(GetSalaryStepHistoryQuery request, CancellationToken cancellationToken)
         {
             var entities = await _context.BacLuongs
-                        .Where(x => x.IdChucVu == request.PositionId && x.TenBacLuong == request.StepName)
+                        .Where(x => x.IdNgachLuong == request.JobGradeId && x.TenBacLuong == request.StepName)
                         .OrderByDescending(x => x.NgayApDung)
                         .ToListAsync(cancellationToken);
 

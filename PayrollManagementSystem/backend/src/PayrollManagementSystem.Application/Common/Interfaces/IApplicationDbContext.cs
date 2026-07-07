@@ -8,6 +8,7 @@ namespace PayrollManagementSystem.Application.Common.Interfaces
     {
         DbSet<BacLuong> BacLuongs { get; set; }
         DbSet<ChucVu> ChucVus { get; set; }
+        DbSet<NgachLuong> NgachLuongs { get; set; }
         DbSet<MoiQuanHe> MoiQuanHes { get; set; }
 
         DbSet<NhanVien> NhanViens { get; set; }

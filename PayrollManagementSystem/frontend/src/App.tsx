@@ -14,7 +14,7 @@ import { EmployeeManagement } from "@/features/employees/components/EmployeeMana
 import { UserManagement } from "@/features/users/components/UserManagement";
 import { DepartmentManagement } from "@/features/departments/components/DepartmentManagement";
 import { PositionManagement } from "@/features/positions/components/PositionManagement";
-import { P1SalaryManagement } from "@/features/salarySteps/components/P1SalaryManagement";
+import { NgachLuongManagement } from "@/features/jobGrades/components/NgachLuongManagement";
 import { MucQuyDoiManagement } from "@/features/competencyP2/components/MucQuyDoiManagement";
 import { KyDanhGiaManagement } from "@/features/competencyP2/components/KyDanhGiaManagement";
 import { KhungNangLucManagement } from "@/features/competencyP2/components/KhungNangLucManagement";
@@ -62,8 +62,8 @@ function App() {
           <Route element={<ProtectedRoute allowedRoles={["HR"]} />}>
             <Route path="nhan-vien" element={<EmployeeManagement />} />
             <Route path="phong-ban" element={<DepartmentManagement />} />
+            <Route path="ngach-luong" element={<NgachLuongManagement />} />
             <Route path="chuc-vu" element={<PositionManagement />} />
-            <Route path="luong/luongtheochucvu" element={<P1SalaryManagement />} />
           </Route>
 
           {/* Đánh giá năng lực P2 */}

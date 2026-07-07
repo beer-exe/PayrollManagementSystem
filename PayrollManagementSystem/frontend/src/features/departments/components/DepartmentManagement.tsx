@@ -330,7 +330,6 @@ export const DepartmentManagement: React.FC = () => {
         positions={positions}
       />
 
-      {/* THÊM MODAL THAY ĐỔI CHỨC VỤ TẠI ĐÂY */}
       <ChangePositionModal
         isOpen={isChangePositionModalOpen}
         onClose={() => {
@@ -342,7 +341,7 @@ export const DepartmentManagement: React.FC = () => {
           if (selectedDeptId) fetchEmployees(selectedDeptId);
         }}
         employee={selectedEmployee}
-        positions={positions}
+        positions={positions.filter(p => p.idPhongBan === selectedDeptId)}
       />
     </div>
   );

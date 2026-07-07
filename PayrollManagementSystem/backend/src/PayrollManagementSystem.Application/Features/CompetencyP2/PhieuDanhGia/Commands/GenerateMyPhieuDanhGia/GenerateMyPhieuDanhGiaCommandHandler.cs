@@ -37,11 +37,27 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
             if (!khungNangLucs.Any())
                 return new Response<Guid>("Chức vụ này chưa được thiết lập Khung Năng Lực P2.");
 
+            // Determine manager based on ChucVuQuanLy
+            string? managerCccd = null;
+            var chucVuHienTai = await _context.ChucVus.FirstOrDefaultAsync(c => c.IdChucVu == quyetDinh.IdChucVuMoi, cancellationToken);
+            if (chucVuHienTai != null && !string.IsNullOrEmpty(chucVuHienTai.IdChucVuQuanLy))
+            {
+                var managerQd = await _context.QuyetDinhNhanSus
+                    .Where(q => q.IdChucVuMoi == chucVuHienTai.IdChucVuQuanLy && q.TrangThai == Domain.Enums.TrangThaiQuyetDinh.HIEU_LUC)
+                    .OrderByDescending(q => q.NgayHieuLuc)
+                    .FirstOrDefaultAsync(cancellationToken);
+                
+                if (managerQd != null)
+                {
+                    managerCccd = managerQd.Cccd;
+                }
+            }
+
             var phieu = new Domain.Models.PhieuDanhGiaNangLuc
             {
                 IdKyDanhGia = request.IdKyDanhGia,
                 CccdNhanVien = cccd,
-                CccdQuanLy = nhanVien.CccdNguoiQuanLy,
+                CccdQuanLy = managerCccd,
                 TrangThai = Domain.Enums.TrangThaiPhieuDanhGia.CHO_NV_DANH_GIA
             };
 

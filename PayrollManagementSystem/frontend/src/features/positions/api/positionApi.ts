@@ -3,7 +3,7 @@ import { ApiResponse } from '@/types/auth.types';
 import { PositionDto, CreatePositionCommand, UpdatePositionCommand } from '../types/position.types';
 
 export const positionApi = {
-  getPositions: (params?: { searchTerm?: string; trangThai?: string }) => 
+  getPositions: (params?: { searchTerm?: string; trangThai?: string; idPhongBan?: string }) => 
     axiosClient.get<unknown, ApiResponse<PositionDto[]>>('/Positions', { params }),
   createPosition: (data: CreatePositionCommand) => 
     axiosClient.post<unknown, ApiResponse<string>>('/Positions', data),

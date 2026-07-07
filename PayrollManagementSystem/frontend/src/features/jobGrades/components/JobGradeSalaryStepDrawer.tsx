@@ -2,17 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Drawer, Table, Button, Modal, Form, Input, InputNumber, DatePicker, message, Tag, Space } from 'antd';
 import { PlusOutlined, HistoryOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { salaryStepApi } from '../api/salaryStepApi';
-import { SalaryStepDto } from '../types/salaryStep.types';
+import { salaryStepApi } from '../../salarySteps/api/salaryStepApi';
+import { SalaryStepDto } from '../../salarySteps/types/salaryStep.types';
 
 interface Props {
-  positionId: string | null;
-  positionName: string;
+  jobGradeId: string | null;
+  jobGradeName: string;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const PositionSalaryStepDrawer: React.FC<Props> = ({ positionId, positionName, isOpen, onClose }) => {
+export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGradeName, isOpen, onClose }) => {
   const [activeSteps, setActiveSteps] = useState<SalaryStepDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [historyData, setHistoryData] = useState<SalaryStepDto[]>([]);
@@ -25,14 +25,14 @@ export const PositionSalaryStepDrawer: React.FC<Props> = ({ positionId, position
   const fetchActiveSteps = async () => {
     setLoading(true);
     try {
-      const res = await salaryStepApi.getActive(positionId!);
+      const res = await salaryStepApi.getActive(jobGradeId!);
       if (res.succeeded) setActiveSteps(res.data);
     } finally { setLoading(false); }
   };
 
   useEffect(() => {
-    if (isOpen && positionId) fetchActiveSteps();
-  }, [isOpen, positionId]);
+    if (isOpen && jobGradeId) fetchActiveSteps();
+  }, [isOpen, jobGradeId]);
 
   const handleOpenCreate = () => {
     setIsUpdatingVersion(false);
@@ -52,7 +52,7 @@ export const PositionSalaryStepDrawer: React.FC<Props> = ({ positionId, position
 
   const viewHistory = async (stepName: string) => {
     try {
-      const res = await salaryStepApi.getHistory(positionId!, stepName);
+      const res = await salaryStepApi.getHistory(jobGradeId!, stepName);
       if (res.succeeded) {
         setHistoryData(res.data);
         setHistoryModalOpen(true);
@@ -67,7 +67,7 @@ export const PositionSalaryStepDrawer: React.FC<Props> = ({ positionId, position
       okType: 'danger',
       onOk: async () => {
         try {
-          const res = await salaryStepApi.delete(positionId!, stepName);
+          const res = await salaryStepApi.delete(jobGradeId!, stepName);
           if (res.succeeded) {
             message.success("Đã xóa thành công");
             fetchActiveSteps();
@@ -82,7 +82,7 @@ export const PositionSalaryStepDrawer: React.FC<Props> = ({ positionId, position
       const values = await form.validateFields();
       if (isUpdatingVersion) {
         await salaryStepApi.updateVersion({
-          positionId: positionId!,
+          jobGradeId: jobGradeId!,
           stepName: values.stepName,
           newP1Salary: values.newP1Salary,
           newEffectiveDate: values.newEffectiveDate.format('YYYY-MM-DD')
@@ -90,7 +90,7 @@ export const PositionSalaryStepDrawer: React.FC<Props> = ({ positionId, position
         message.success("Cập nhật phiên bản lương mới thành công!");
       } else {
         await salaryStepApi.create({
-          positionId: positionId!,
+          jobGradeId: jobGradeId!,
           stepName: values.stepName,
           p1Salary: values.p1Salary,
           effectiveDate: values.effectiveDate.format('YYYY-MM-DD')
@@ -108,6 +108,7 @@ export const PositionSalaryStepDrawer: React.FC<Props> = ({ positionId, position
     { title: 'Tên Bậc', dataIndex: 'stepName', key: 'stepName', className: 'font-semibold' },
     { title: 'Mức Lương P1 (VNĐ)', dataIndex: 'p1Salary', key: 'p1Salary', render: (val: number) => val.toLocaleString('vi-VN') },
     { title: 'Ngày Áp Dụng', dataIndex: 'effectiveDate', key: 'effectiveDate', render: (val: string) => dayjs(val).format('DD/MM/YYYY') },
+    { title: 'Trạng Thái', dataIndex: 'status', key: 'status', render: (val: string) => val === 'CHUA_AP_DUNG' ? <Tag color="warning">Chưa áp dụng</Tag> : <Tag color="success">Đang áp dụng</Tag> },
     { title: 'Hành Động', key: 'actions', align: 'right' as const, render: (_: unknown, record: SalaryStepDto) => (
       <Space>
         <Button size="small" type="dashed" icon={<HistoryOutlined />} onClick={() => viewHistory(record.stepName)}>Lịch sử</Button>
@@ -125,13 +126,20 @@ export const PositionSalaryStepDrawer: React.FC<Props> = ({ positionId, position
   ];
 
   return (
-    <Drawer title={`Cấu Hình Bậc Lương - ${positionName}`} width={800} onClose={onClose} open={isOpen} destroyOnClose>
+    <Drawer title={`Cấu Hình Bậc Lương - Ngạch ${jobGradeName}`} width={800} onClose={onClose} open={isOpen} destroyOnClose>
       <div className="mb-4 flex justify-between">
         <span className="text-gray-500 italic">Lưu ý: Không dùng xóa để cập nhật tiền. Hãy chọn "Cập nhật mới" để lưu lịch sử.</span>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleOpenCreate}>Thêm Bậc Mới</Button>
       </div>
 
-      <Table dataSource={activeSteps} columns={columns} rowKey="id" loading={loading} pagination={false} />
+      <Table 
+        dataSource={activeSteps} 
+        columns={columns} 
+        rowKey="id" 
+        loading={loading} 
+        pagination={false} 
+        rowClassName={(record) => record.status === 'CHUA_AP_DUNG' ? 'opacity-60 bg-gray-50' : ''}
+      />
 
       <Modal title={isUpdatingVersion ? "Cập Nhật Phiên Bản Lương" : "Thêm Mới Bậc Lương"} open={formModalOpen} onOk={handleFormSubmit} onCancel={() => setFormModalOpen(false)} destroyOnClose>
         <Form form={form} layout="vertical" className="mt-4">

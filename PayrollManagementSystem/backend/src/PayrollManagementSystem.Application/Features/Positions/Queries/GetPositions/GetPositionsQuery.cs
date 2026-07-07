@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using PayrollManagementSystem.Application.Features.Positions.DTOs;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Enums;
@@ -9,5 +9,6 @@ namespace PayrollManagementSystem.Application.Features.Positions.Queries.GetPosi
     {
         public string? SearchTerm { get; set; }
         public TrangThaiChucVu? TrangThai { get; set; }
+        public string? IdPhongBan { get; set; }
     }
 }

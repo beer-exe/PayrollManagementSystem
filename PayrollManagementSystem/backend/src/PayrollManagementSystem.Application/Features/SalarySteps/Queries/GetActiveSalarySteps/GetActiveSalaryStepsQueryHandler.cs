@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.SalarySteps.DTOs;
@@ -17,10 +17,8 @@ namespace PayrollManagementSystem.Application.Features.SalarySteps.Queries.GetAc
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
             var entities = await _context.BacLuongs
-                .Where(x => x.IdChucVu == request.PositionId
-                         && x.TrangThai == TrangThaiBacLuong.HIEU_LUC
-                         && x.NgayApDung <= today
-                         && (x.NgayKetThuc == null || x.NgayKetThuc >= today))
+                .Where(x => x.IdNgachLuong == request.JobGradeId
+                         && x.TrangThai == TrangThaiBacLuong.HIEU_LUC)
                 .OrderBy(x => x.TenBacLuong)
                 .ToListAsync(cancellationToken);
 
@@ -31,7 +29,7 @@ namespace PayrollManagementSystem.Application.Features.SalarySteps.Queries.GetAc
                 P1Salary = x.LuongP1,
                 EffectiveDate = x.NgayApDung.ToDateTime(TimeOnly.MinValue),
                 EndDate = x.NgayKetThuc?.ToDateTime(TimeOnly.MinValue),
-                Status = x.TrangThai.ToString()
+                Status = x.NgayApDung > today ? "CHUA_AP_DUNG" : x.TrangThai.ToString()
             }).ToList();
 
             return new Response<IEnumerable<SalaryStepDto>>(list);

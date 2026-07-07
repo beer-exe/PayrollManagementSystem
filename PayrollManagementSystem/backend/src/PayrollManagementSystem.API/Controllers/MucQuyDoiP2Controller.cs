@@ -10,7 +10,7 @@ namespace PayrollManagementSystem.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "HR")]
+    [Authorize]
     public class MucQuyDoiP2Controller : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -23,12 +23,14 @@ namespace PayrollManagementSystem.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "HR")]
         public async Task<IActionResult> Post([FromBody] CreateMucQuyDoiCommand command)
         {
             return Ok(await _mediator.Send(command));
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "HR")]
         public async Task<IActionResult> Put(Guid id, [FromBody] UpdateMucQuyDoiCommand command)
         {
             if (id != command.IdQuyDoi)
@@ -39,6 +41,7 @@ namespace PayrollManagementSystem.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "HR")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _mediator.Send(new DeleteMucQuyDoiCommand(id)));

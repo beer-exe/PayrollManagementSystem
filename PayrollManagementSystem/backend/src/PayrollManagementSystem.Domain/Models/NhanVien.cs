@@ -24,13 +24,10 @@ namespace PayrollManagementSystem.Domain.Models
         public string? IdPb { get; set; }
         public Guid? IdTaiKhoan { get; set; }
         public decimal? HeSoP2 { get; set; }
-        public string? CccdNguoiQuanLy { get; set; }
 
         // Navigation properties
         public PhongBan? PhongBan { get; set; }
         public TaiKhoan? TaiKhoan { get; set; }
-        public NhanVien? NguoiQuanLy { get; set; }
-        public ICollection<NhanVien> NhanVienCapDuois { get; set; } = new List<NhanVien>();
         public ICollection<QuyetDinhNhanSu> QuyetDinhNhanSus { get; set; } = new List<QuyetDinhNhanSu>();
 
         public ICollection<ThanNhanNhanVien> ThanNhanNhanViens { get; set; } = new List<ThanNhanNhanVien>();

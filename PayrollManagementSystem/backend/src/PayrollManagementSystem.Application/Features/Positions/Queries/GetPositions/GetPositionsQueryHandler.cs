@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.Positions.DTOs;
@@ -13,7 +13,11 @@ namespace PayrollManagementSystem.Application.Features.Positions.Queries.GetPosi
 
         public async Task<Response<IEnumerable<PositionDto>>> Handle(GetPositionsQuery request, CancellationToken cancellationToken)
         {
-            var query = _context.ChucVus.AsQueryable();
+            var query = _context.ChucVus
+                .Include(x => x.NgachLuong)
+                .Include(x => x.PhongBan)
+                .Include(x => x.ChucVuQuanLy)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(request.SearchTerm))
             {
@@ -26,12 +30,23 @@ namespace PayrollManagementSystem.Application.Features.Positions.Queries.GetPosi
                 query = query.Where(x => x.TrangThai == request.TrangThai.Value);
             }
 
+            if (!string.IsNullOrEmpty(request.IdPhongBan))
+            {
+                query = query.Where(x => x.IdPhongBan == request.IdPhongBan);
+            }
+
             var positions = await query.OrderBy(x => x.IdChucVu).Select(cv => new PositionDto
             {
                 IdChucVu = cv.IdChucVu,
                 TenChucVu = cv.TenChucVu,
                 MoTaCongViec = cv.MoTaCongViec,
-                TrangThai = cv.TrangThai.ToString()
+                IdNgachLuong = cv.IdNgachLuong,
+                TenNgachLuong = cv.NgachLuong != null ? cv.NgachLuong.TenNgachLuong : null,
+                TrangThai = cv.TrangThai.ToString(),
+                IdPhongBan = cv.IdPhongBan,
+                TenPhongBan = cv.PhongBan != null ? cv.PhongBan.TenPb : null,
+                IdChucVuQuanLy = cv.IdChucVuQuanLy,
+                TenChucVuQuanLy = cv.ChucVuQuanLy != null ? cv.ChucVuQuanLy.TenChucVu : null
             }).ToListAsync(cancellationToken);
 
             return new Response<IEnumerable<PositionDto>>(positions, "Lấy danh sách chức vụ thành công.");

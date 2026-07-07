@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
@@ -15,7 +15,7 @@ namespace PayrollManagementSystem.Application.Features.SalarySteps.Commands.Upda
         public async Task<Response<string>> Handle(UpdateSalaryStepVersionCommand request, CancellationToken cancellationToken)
         {
             var currentActive = await _context.BacLuongs
-                        .Where(x => x.IdChucVu == request.PositionId && x.TenBacLuong == request.StepName && x.TrangThai == TrangThaiBacLuong.HIEU_LUC)
+                        .Where(x => x.IdNgachLuong == request.JobGradeId && x.TenBacLuong == request.StepName && x.TrangThai == TrangThaiBacLuong.HIEU_LUC)
                         .OrderByDescending(x => x.NgayApDung)
                         .FirstOrDefaultAsync(cancellationToken);
 
@@ -32,7 +32,7 @@ namespace PayrollManagementSystem.Application.Features.SalarySteps.Commands.Upda
             var newVersion = new BacLuong
             {
                 IdBacLuong = Guid.NewGuid().ToString(),
-                IdChucVu = request.PositionId,
+                IdNgachLuong = request.JobGradeId,
                 TenBacLuong = request.StepName,
                 LuongP1 = request.NewP1Salary,
                 NgayApDung = newEffectiveDateOnly,

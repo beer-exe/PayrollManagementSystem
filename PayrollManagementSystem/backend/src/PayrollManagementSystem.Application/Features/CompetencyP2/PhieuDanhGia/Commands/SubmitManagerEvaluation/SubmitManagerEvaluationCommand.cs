@@ -13,6 +13,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
     public class SubmitManagerEvaluationCommand : IRequest<Response<bool>>
     {
         public Guid TaiKhoanId { get; set; }
+        public bool IsHr { get; set; }
         public Guid IdPhieu { get; set; }
         public bool IsSubmit { get; set; } // true: Chốt, false: Lưu nháp
         public string? NhanXetChung { get; set; }
