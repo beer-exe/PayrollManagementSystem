@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +17,9 @@ namespace PayrollManagementSystem.Application
             {
                 options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
                 options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+                options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
+                options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
+                options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(CacheInvalidationBehavior<,>));
             });
 
             return services;

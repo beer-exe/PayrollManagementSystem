@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using PayrollManagementSystem.API.Middlewares;
 using PayrollManagementSystem.Application;
 using PayrollManagementSystem.Infrastructure;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 namespace PayrollManagementSystem.API
 {
@@ -110,6 +112,29 @@ namespace PayrollManagementSystem.API
                            .AllowCredentials();
                 });
             });
+
+            services.AddRateLimiter(options =>
+            {
+                options.AddPolicy("LoginRateLimit", context =>
+                {
+                    var ip = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                    return RateLimitPartition.GetFixedWindowLimiter(ip, _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 5,
+                        Window = TimeSpan.FromMinutes(1),
+                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                        QueueLimit = 0
+                    });
+                });
+
+                options.OnRejected = async (context, token) =>
+                {
+                    context.HttpContext.Response.StatusCode = 429;
+                    context.HttpContext.Response.ContentType = "application/json; charset=utf-8";
+                    var result = System.Text.Json.JsonSerializer.Serialize(new { Succeeded = false, Message = "Vui lòng thử lại sau 1 phút." });
+                    await context.HttpContext.Response.WriteAsync(result, token);
+                };
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -123,10 +148,14 @@ namespace PayrollManagementSystem.API
             }
 
             app.UseHttpsRedirection();
+            
+            app.UseSerilogRequestLogging();
 
             app.UseRouting();
 
             app.UseCors("AllowAll");
+
+            app.UseRateLimiter();
 
             app.UseAuthentication();
 

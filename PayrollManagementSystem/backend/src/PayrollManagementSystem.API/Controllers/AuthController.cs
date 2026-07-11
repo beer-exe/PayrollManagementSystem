@@ -1,10 +1,12 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PayrollManagementSystem.Application.Features.Auth.Commands.Login;
 using PayrollManagementSystem.Application.Features.Auth.Commands.RefreshToken;
 using PayrollManagementSystem.Application.Features.Auth.DTOs;
 using PayrollManagementSystem.Application.Wrappers;
+
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace PayrollManagementSystem.API.Controllers
 {
@@ -20,6 +22,7 @@ namespace PayrollManagementSystem.API.Controllers
         }
 
         [HttpPost("login")]
+        [EnableRateLimiting("LoginRateLimit")]
         public async Task<IActionResult> Login([FromBody] LoginCommand command)
         {
             Response<AuthResponseDto>? response = await _mediator.Send(command);

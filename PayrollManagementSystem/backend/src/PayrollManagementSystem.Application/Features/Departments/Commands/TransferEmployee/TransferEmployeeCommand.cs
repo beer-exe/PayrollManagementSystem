@@ -1,9 +1,10 @@
-﻿using MediatR;
+using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
+using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.Departments.Commands.TransferEmployee
 {
-    public class TransferEmployeeCommand : IRequest<Response<bool>>
+    public class TransferEmployeeCommand : IRequest<Response<bool>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
         public string Cccd { get; set; } = null!;
         public string IdPbMoi { get; set; } = null!;
@@ -11,5 +12,7 @@ namespace PayrollManagementSystem.Application.Features.Departments.Commands.Tran
         public string SoQuyetDinh { get; set; } = null!;
         public DateOnly NgayHieuLuc { get; set; }
         public string? NguoiKy { get; set; }
+
+        public string CacheKeyPrefix => "Departments_";
     }
 }

@@ -1,5 +1,6 @@
 using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
+using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Commands.SubmitManagerEvaluation
 {
@@ -10,7 +11,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
         public string? NhanXetQuanLy { get; set; }
     }
 
-    public class SubmitManagerEvaluationCommand : IRequest<Response<bool>>
+    public class SubmitManagerEvaluationCommand : IRequest<Response<bool>>, ITransactionalCommand
     {
         public Guid TaiKhoanId { get; set; }
         public bool IsHr { get; set; }
