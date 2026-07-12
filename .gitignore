@@ -17,7 +17,6 @@ appsettings.local.json
 appsettings.*.local.json
 appsettings.Development.json
 
-# Cache và Copilot files
 CopilotIndices/
 .dtbcache.v2
 *.vsidx
@@ -55,9 +54,9 @@ repomix-output.xml
 repomix-output.txt
 repomix-output.md
 
-# Missing standard rules
 .env
 *.db
 *.sqlite
 *.sqlite3
 .gemini/
+.agents/
