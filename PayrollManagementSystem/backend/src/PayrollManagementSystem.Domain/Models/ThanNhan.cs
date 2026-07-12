@@ -1,6 +1,7 @@
-﻿namespace PayrollManagementSystem.Domain.Models
+using PayrollManagementSystem.Domain.Common;
+namespace PayrollManagementSystem.Domain.Models
 {
-    public class ThanNhan
+    public class ThanNhan : BaseAuditableEntity
     {
         public string MaDinhDanh { get; set; } = null!;
         public string TenTn { get; set; } = null!;

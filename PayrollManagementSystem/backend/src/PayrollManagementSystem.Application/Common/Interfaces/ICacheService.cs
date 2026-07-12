@@ -6,4 +6,5 @@ public interface ICacheService
     Task SetAsync<T>(string key, T value, TimeSpan? slidingExpiration = null, CancellationToken cancellationToken = default);
     Task RemoveAsync(string key, CancellationToken cancellationToken = default);
     Task RemoveByPrefixAsync(string prefixKey, CancellationToken cancellationToken = default);
+    Task ClearAllAsync(CancellationToken cancellationToken = default);
 }

@@ -1,6 +1,7 @@
-﻿namespace PayrollManagementSystem.Domain.Models
+using PayrollManagementSystem.Domain.Common;
+namespace PayrollManagementSystem.Domain.Models
 {
-    public class MoiQuanHe
+    public class MoiQuanHe : BaseAuditableEntity
     {
         public Guid IdMqh { get; set; }
         public string TenQuanHe { get; set; } = null!;

@@ -1,6 +1,7 @@
-﻿namespace PayrollManagementSystem.Domain.Models
+using PayrollManagementSystem.Domain.Common;
+namespace PayrollManagementSystem.Domain.Models
 {
-    public class VaiTro
+    public class VaiTro : BaseAuditableEntity
     {
         public Guid IdVaiTro { get; set; }
         public string TenVaiTro { get; set; } = null!;

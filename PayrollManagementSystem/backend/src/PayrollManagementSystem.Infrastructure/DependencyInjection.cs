@@ -11,7 +11,12 @@ namespace PayrollManagementSystem.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+            services.AddScoped<Microsoft.EntityFrameworkCore.Diagnostics.ISaveChangesInterceptor, PayrollManagementSystem.Infrastructure.Persistence.Interceptors.AuditableEntitySaveChangesInterceptor>();
+
+            services.AddDbContext<ApplicationDbContext>((sp, options) => {
+                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+                options.AddInterceptors(sp.GetServices<Microsoft.EntityFrameworkCore.Diagnostics.ISaveChangesInterceptor>());
+            });
 
             services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
@@ -29,6 +34,12 @@ namespace PayrollManagementSystem.Infrastructure
 
             if (cacheSettings.Provider == "Redis")
             {
+                services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(sp => 
+                {
+                    var options = StackExchange.Redis.ConfigurationOptions.Parse(cacheSettings.RedisConnectionString);
+                    options.AllowAdmin = true;
+                    return StackExchange.Redis.ConnectionMultiplexer.Connect(options);
+                });
                 services.AddSingleton<ICacheService, RedisCacheService>();
             }
             else

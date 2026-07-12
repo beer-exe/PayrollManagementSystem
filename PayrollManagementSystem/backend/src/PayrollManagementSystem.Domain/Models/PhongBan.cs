@@ -1,6 +1,7 @@
-﻿namespace PayrollManagementSystem.Domain.Models
+using PayrollManagementSystem.Domain.Common;
+namespace PayrollManagementSystem.Domain.Models
 {
-    public class PhongBan
+    public class PhongBan : BaseAuditableEntity
     {
         public string IdPb { get; set; } = null!;
         public string TenPb { get; set; } = null!;

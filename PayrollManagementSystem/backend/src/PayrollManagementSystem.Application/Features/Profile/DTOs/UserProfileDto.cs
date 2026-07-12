@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Extensions;
 
@@ -22,5 +23,36 @@ namespace PayrollManagementSystem.Application.Features.Profile.DTOs
         public string? SoBhyt { get; set; }
         public string? TenPhongBan { get; set; }
         public string? TenChucVu { get; set; }
+        
+        public string? SoTaiKhoan { get; set; }
+        public string? TenNganHang { get; set; }
+        public string? MaSoThue { get; set; }
+        public decimal? LuongP1 { get; set; }
+        public decimal? HeSoP2 { get; set; }
+        public string? SoHopDong { get; set; }
+        public string? LoaiHopDong { get; set; }
+        public DateOnly? NgayBatDauHopDong { get; set; }
+        
+        public List<ProfileThanNhanDto> ThanNhans { get; set; } = new List<ProfileThanNhanDto>();
+        public List<LichSuCongTacDto> LichSuCongTac { get; set; } = new List<LichSuCongTacDto>();
+        public string? IdPb { get; set; }
+    }
+
+    public class ProfileThanNhanDto
+    {
+        public string? MaDinhDanh { get; set; }
+        public string TenTn { get; set; } = null!;
+        public DateOnly? NgaySinh { get; set; }
+        public string? MoiQuanHe { get; set; }
+    }
+
+    public class LichSuCongTacDto
+    {
+        public string SoQuyetDinh { get; set; } = null!;
+        public string LoaiQuyetDinh { get; set; } = null!;
+        public DateOnly NgayHieuLuc { get; set; }
+        public string? TenChucVuMoi { get; set; }
+        public decimal? LuongP1Moi { get; set; }
+        public string TrangThai { get; set; } = null!;
     }
 }

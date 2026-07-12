@@ -74,9 +74,9 @@ namespace PayrollManagementSystem.Application.Features.Employees.Commands.Update
 
                 if (relationsToRemove.Any())
                 {
-                    _context.TNhanNviens.RemoveRange(relationsToRemove);
+                    _context.SoftRemoveRange(relationsToRemove);
                     var thanNhansToRemove = relationsToRemove.Select(r => r.ThanNhan).ToList();
-                    _context.ThanNhans.RemoveRange(thanNhansToRemove);
+                    _context.SoftRemoveRange(thanNhansToRemove);
                 }
 
                 // 2. Cập nhật và thêm mới

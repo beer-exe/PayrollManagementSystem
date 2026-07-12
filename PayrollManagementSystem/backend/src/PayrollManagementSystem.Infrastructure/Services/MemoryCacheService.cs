@@ -50,4 +50,16 @@ public class MemoryCacheService(IMemoryCache memoryCache) : ICacheService
 
         return Task.CompletedTask;
     }
+
+    public Task ClearAllAsync(CancellationToken cancellationToken = default)
+    {
+        var allKeys = CacheKeys.Keys.ToList();
+        foreach (var key in allKeys)
+        {
+            memoryCache.Remove(key);
+            CacheKeys.TryRemove(key, out _);
+        }
+
+        return Task.CompletedTask;
+    }
 }

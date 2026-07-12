@@ -1,8 +1,9 @@
+using PayrollManagementSystem.Domain.Common;
 using PayrollManagementSystem.Domain.Enums;
 
 namespace PayrollManagementSystem.Domain.Models
 {
-    public class ChucVu
+    public class ChucVu : BaseAuditableEntity
     {
         public string IdChucVu { get; set; } = null!;
         public string? IdNgachLuong { get; set; }

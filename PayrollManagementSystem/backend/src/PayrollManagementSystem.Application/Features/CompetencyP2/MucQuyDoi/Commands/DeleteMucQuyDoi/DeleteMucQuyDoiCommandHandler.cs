@@ -22,7 +22,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.MucQuyDoi.Co
                 throw new ApiException($"Không tìm thấy cấu hình với Id {request.IdQuyDoi}");
             }
 
-            _context.MucQuyDoiP2s.Remove(entity);
+            _context.SoftRemove(entity);
             await _context.SaveChangesAsync(cancellationToken);
             return new Response<bool>(true, "Xóa thành công.");
         }

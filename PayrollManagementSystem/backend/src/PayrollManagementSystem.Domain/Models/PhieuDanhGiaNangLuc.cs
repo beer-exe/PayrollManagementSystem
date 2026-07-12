@@ -1,8 +1,9 @@
+using PayrollManagementSystem.Domain.Common;
 using PayrollManagementSystem.Domain.Enums;
 
 namespace PayrollManagementSystem.Domain.Models
 {
-    public class PhieuDanhGiaNangLuc
+    public class PhieuDanhGiaNangLuc : BaseAuditableEntity
     {
         public Guid IdPhieu { get; set; }
         public Guid IdKyDanhGia { get; set; }

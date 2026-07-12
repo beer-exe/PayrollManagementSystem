@@ -1,8 +1,9 @@
-﻿using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Common;
+using PayrollManagementSystem.Domain.Enums;
 
 namespace PayrollManagementSystem.Domain.Models
 {
-    public class HopDongLaoDong
+    public class HopDongLaoDong : BaseAuditableEntity
     {
         public string SoHopDong { get; set; } = null!;
         public string Cccd { get; set; } = null!;

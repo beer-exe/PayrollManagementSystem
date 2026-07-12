@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Common.Interfaces;
@@ -42,7 +42,60 @@ namespace PayrollManagementSystem.Application.Features.Profile.Queries.GetUserPr
                         .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC)
                         .OrderByDescending(qd => qd.NgayHieuLuc)
                         .Select(qd => _context.ChucVus.FirstOrDefault(cv => cv.IdChucVu == qd.IdChucVuMoi).TenChucVu)
-                        .FirstOrDefault()
+                        .FirstOrDefault(),
+
+                    SoTaiKhoan = nv.SoTaiKhoan,
+                    TenNganHang = nv.TenNganHang,
+                    MaSoThue = nv.MaSoThue,
+                    HeSoP2 = nv.HeSoP2,
+                    IdPb = nv.IdPb,
+
+                    LuongP1 = _context.QuyetDinhNhanSus
+                        .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC)
+                        .OrderByDescending(qd => qd.NgayHieuLuc)
+                        .Select(qd => (decimal?)_context.BacLuongs.FirstOrDefault(bl => bl.IdBacLuong == qd.IdBacLuongMoi).LuongP1)
+                        .FirstOrDefault(),
+
+                    SoHopDong = _context.HopDongLaoDongs
+                        .Where(hd => hd.Cccd == nv.Cccd && hd.TrangThai == TrangThaiHopDong.HIEU_LUC)
+                        .OrderByDescending(hd => hd.NgayBatDau)
+                        .Select(hd => hd.SoHopDong)
+                        .FirstOrDefault(),
+
+                    LoaiHopDong = _context.HopDongLaoDongs
+                        .Where(hd => hd.Cccd == nv.Cccd && hd.TrangThai == TrangThaiHopDong.HIEU_LUC)
+                        .OrderByDescending(hd => hd.NgayBatDau)
+                        .Select(hd => hd.LoaiHopDong)
+                        .FirstOrDefault(),
+
+                    NgayBatDauHopDong = _context.HopDongLaoDongs
+                        .Where(hd => hd.Cccd == nv.Cccd && hd.TrangThai == TrangThaiHopDong.HIEU_LUC)
+                        .OrderByDescending(hd => hd.NgayBatDau)
+                        .Select(hd => hd.NgayBatDau)
+                        .FirstOrDefault(),
+
+                    ThanNhans = _context.TNhanNviens
+                        .Where(tnnv => tnnv.Cccd == nv.Cccd)
+                        .Select(tnnv => new ProfileThanNhanDto
+                        {
+                            MaDinhDanh = tnnv.MaDinhDanh,
+                            TenTn = tnnv.ThanNhan.TenTn,
+                            NgaySinh = tnnv.ThanNhan.NgaySinh,
+                            MoiQuanHe = tnnv.MoiQuanHe != null ? tnnv.MoiQuanHe.TenQuanHe : null
+                        }).ToList(),
+
+                    LichSuCongTac = _context.QuyetDinhNhanSus
+                        .Where(qd => qd.Cccd == nv.Cccd)
+                        .OrderByDescending(qd => qd.NgayHieuLuc)
+                        .Select(qd => new LichSuCongTacDto
+                        {
+                            SoQuyetDinh = qd.SoQuyetDinh,
+                            LoaiQuyetDinh = qd.LoaiQuyetDinh,
+                            NgayHieuLuc = qd.NgayHieuLuc,
+                            TenChucVuMoi = _context.ChucVus.FirstOrDefault(cv => cv.IdChucVu == qd.IdChucVuMoi).TenChucVu,
+                            LuongP1Moi = (decimal?)_context.BacLuongs.FirstOrDefault(bl => bl.IdBacLuong == qd.IdBacLuongMoi).LuongP1,
+                            TrangThai = qd.TrangThai.ToString()
+                        }).ToList()
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 

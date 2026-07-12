@@ -1,6 +1,7 @@
+using PayrollManagementSystem.Domain.Common;
 namespace PayrollManagementSystem.Domain.Models
 {
-    public class KhungNangLucP2
+    public class KhungNangLucP2 : BaseAuditableEntity
     {
         public Guid IdTieuChi { get; set; }
         public string IdChucVu { get; set; } = null!;

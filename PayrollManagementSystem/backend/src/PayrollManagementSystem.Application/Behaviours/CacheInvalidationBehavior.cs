@@ -16,8 +16,15 @@ public class CacheInvalidationBehavior<TRequest, TResponse>(
         if (request is ICacheInvalidatorCommand invalidatorCommand)
         {
             var prefix = invalidatorCommand.CacheKeyPrefix;
-            await cacheService.RemoveByPrefixAsync(prefix, cancellationToken);
-            logger.LogInformation("Cache Invalidated for prefix -> '{Prefix}'", prefix);
+            try
+            {
+                await cacheService.RemoveByPrefixAsync(prefix, cancellationToken);
+                logger.LogInformation("Cache Invalidated for prefix -> '{Prefix}'", prefix);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Error clearing cache (Prefix: {Prefix}). Database was still updated successfully.", prefix);
+            }
         }
 
         return response;

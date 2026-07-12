@@ -24,7 +24,7 @@ namespace PayrollManagementSystem.Application.Features.SalarySteps.Commands.Dele
             if (isUsed)
                 throw new Common.Exceptions.ApiException("LỖI: Bậc lương này hiện đang được sử dụng. Vui lòng tạo phiên bản mới.");
 
-            _context.BacLuongs.RemoveRange(versions);
+            _context.SoftRemoveRange(versions);
             await _context.SaveChangesAsync(cancellationToken);
 
             return new Response<bool>(true, "Đã xóa thành công.");

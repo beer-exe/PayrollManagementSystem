@@ -14,7 +14,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc
             var entity = await _context.KhungNangLucP2s.FindAsync(new object[] { request.IdTieuChi }, cancellationToken);
             if (entity == null) return new Response<bool>("Không tìm thấy tiêu chí.");
 
-            _context.KhungNangLucP2s.Remove(entity);
+            _context.SoftRemove(entity);
             await _context.SaveChangesAsync(cancellationToken);
 
             return new Response<bool>(true, "Xóa tiêu chí thành công.");

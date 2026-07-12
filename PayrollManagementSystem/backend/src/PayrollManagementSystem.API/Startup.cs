@@ -8,6 +8,9 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using PayrollManagementSystem.Infrastructure.Persistence;
 
 namespace PayrollManagementSystem.API
 {
@@ -30,6 +33,9 @@ namespace PayrollManagementSystem.API
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
+
+            services.AddHttpContextAccessor();
+            services.AddScoped<PayrollManagementSystem.Application.Common.Interfaces.ICurrentUserService, PayrollManagementSystem.API.Services.CurrentUserService>();
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
@@ -135,6 +141,14 @@ namespace PayrollManagementSystem.API
                     await context.HttpContext.Response.WriteAsync(result, token);
                 };
             });
+
+            var healthChecks = services.AddHealthChecks()
+                .AddDbContextCheck<ApplicationDbContext>("PostgreSQL Database");
+
+            if (Configuration["CacheSettings:Provider"] == "Redis")
+            {
+                healthChecks.AddRedis(Configuration["CacheSettings:RedisConnectionString"] ?? "127.0.0.1:6379", name: "Redis Cache");
+            }
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -164,6 +178,10 @@ namespace PayrollManagementSystem.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/api/health", new HealthCheckOptions
+                {
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
             });
         }
     }

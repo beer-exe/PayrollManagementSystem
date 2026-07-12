@@ -6,6 +6,8 @@ namespace PayrollManagementSystem.API
     {
         public static void Main(string[] args)
         {
+            Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
+
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
                 .CreateBootstrapLogger();

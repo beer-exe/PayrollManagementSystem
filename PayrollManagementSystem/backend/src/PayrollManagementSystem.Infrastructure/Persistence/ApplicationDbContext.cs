@@ -45,6 +45,17 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
         {
             modelBuilder.HasPostgresExtension("pgcrypto");
 
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                if (typeof(PayrollManagementSystem.Domain.Common.BaseAuditableEntity).IsAssignableFrom(entityType.ClrType))
+                {
+                    var parameter = System.Linq.Expressions.Expression.Parameter(entityType.ClrType, "p");
+                    var property = System.Linq.Expressions.Expression.Property(parameter, "IsDeleted");
+                    var body = System.Linq.Expressions.Expression.Equal(property, System.Linq.Expressions.Expression.Constant(false));
+                    modelBuilder.Entity(entityType.ClrType).HasQueryFilter(System.Linq.Expressions.Expression.Lambda(body, parameter));
+                }
+            }
+
             modelBuilder.Entity<NgachLuong>(entity =>
             {
                 entity.HasKey(e => e.IdNgachLuong).HasName("ngach_luongs_pkey");
@@ -532,5 +543,20 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+        public void SoftRemove<TEntity>(TEntity entity) where TEntity : PayrollManagementSystem.Domain.Common.BaseAuditableEntity
+        {
+            entity.IsDeleted = true;
+            Entry(entity).State = EntityState.Modified;
+        }
+
+        public void SoftRemoveRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : PayrollManagementSystem.Domain.Common.BaseAuditableEntity
+        {
+            foreach (var entity in entities)
+            {
+                entity.IsDeleted = true;
+                Entry(entity).State = EntityState.Modified;
+            }
+        }
     }
 }

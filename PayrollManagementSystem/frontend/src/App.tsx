@@ -23,12 +23,16 @@ import { TuDanhGiaForm } from "@/features/competencyP2/components/TuDanhGiaForm"
 import { DuyetDanhGia } from "@/features/competencyP2/components/DuyetDanhGia";
 import { DuyetDanhGiaForm } from "@/features/competencyP2/components/DuyetDanhGiaForm";
 
-const ProtectedRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
+const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string[], requireManager?: boolean }) => {
   const { isAuthenticated, user } = useAuthStore();
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
 
   if (user?.role && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  if (requireManager && user?.role !== "Admin" && !user?.hasDirectReports) {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -79,6 +83,9 @@ function App() {
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
             <Route path="danh-gia/tu-danh-gia" element={<TuDanhGia />} />
             <Route path="danh-gia/tu-danh-gia/:id" element={<TuDanhGiaForm />} />
+          </Route>
+          
+          <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} requireManager={true} />}>
             <Route path="danh-gia/duyet-danh-gia" element={<DuyetDanhGia />} />
             <Route path="danh-gia/duyet-danh-gia/:id" element={<DuyetDanhGiaForm />} />
           </Route>

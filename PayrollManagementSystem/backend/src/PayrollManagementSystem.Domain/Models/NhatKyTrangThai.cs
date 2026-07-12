@@ -1,8 +1,9 @@
-﻿using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Common;
+using PayrollManagementSystem.Domain.Enums;
 
 namespace PayrollManagementSystem.Domain.Models
 {
-    public class NhatKyTrangThai
+    public class NhatKyTrangThai : BaseAuditableEntity
     {
         public Guid IdNhatKy { get; set; }
         public string Cccd { get; set; } = null!;

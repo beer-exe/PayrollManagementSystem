@@ -31,5 +31,8 @@ namespace PayrollManagementSystem.Application.Common.Interfaces
 
         DatabaseFacade Database { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+
+        void SoftRemove<TEntity>(TEntity entity) where TEntity : PayrollManagementSystem.Domain.Common.BaseAuditableEntity;
+        void SoftRemoveRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : PayrollManagementSystem.Domain.Common.BaseAuditableEntity;
     }
 }

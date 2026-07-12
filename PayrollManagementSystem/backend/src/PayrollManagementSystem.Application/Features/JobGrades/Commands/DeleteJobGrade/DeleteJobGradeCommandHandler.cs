@@ -18,7 +18,7 @@ namespace PayrollManagementSystem.Application.Features.JobGrades.Commands.Delete
             var hasPositions = await _context.ChucVus.AnyAsync(x => x.IdNgachLuong == request.IdNgachLuong, cancellationToken);
             if (hasPositions) throw new Common.Exceptions.ApiException("Không thể xóa ngạch lương này vì đã được gán cho chức vụ.");
 
-            _context.NgachLuongs.Remove(entity);
+            _context.SoftRemove(entity);
             await _context.SaveChangesAsync(cancellationToken);
             return new Response<bool>(true, "Xóa ngạch lương thành công.");
         }

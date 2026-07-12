@@ -21,7 +21,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.KyDanhGia.Co
                 return new Response<bool>("Không thể xóa kỳ đánh giá vì đã có phiếu đánh giá được tạo.");
             }
 
-            _context.KyDanhGias.Remove(entity);
+            _context.SoftRemove(entity);
             await _context.SaveChangesAsync(cancellationToken);
 
             return new Response<bool>(true, "Xóa kỳ đánh giá thành công.");

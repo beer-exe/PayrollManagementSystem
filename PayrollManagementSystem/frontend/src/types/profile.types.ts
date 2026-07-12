@@ -28,6 +28,7 @@ export interface UserProfileDetail {
   
   thanNhans: ThanNhanDto[];
   idPb?: string | null;
+  lichSuCongTac?: LichSuCongTacDto[];
 }
 
 export interface ThanNhanDto {
@@ -36,4 +37,13 @@ export interface ThanNhanDto {
   ngaySinh: string | null;
   idMqh?: string | null;
   moiQuanHe: string | null;
+}
+
+export interface LichSuCongTacDto {
+  soQuyetDinh: string;
+  loaiQuyetDinh: string;
+  ngayHieuLuc: string;
+  tenChucVuMoi: string | null;
+  luongP1Moi: number | null;
+  trangThai: string;
 }
