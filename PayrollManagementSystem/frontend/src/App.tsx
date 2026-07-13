@@ -22,6 +22,7 @@ import { TuDanhGia } from "@/features/competencyP2/components/TuDanhGia";
 import { TuDanhGiaForm } from "@/features/competencyP2/components/TuDanhGiaForm";
 import { DuyetDanhGia } from "@/features/competencyP2/components/DuyetDanhGia";
 import { DuyetDanhGiaForm } from "@/features/competencyP2/components/DuyetDanhGiaForm";
+import { WorkScheduleManagement } from "@/features/workSchedule/components/WorkScheduleManagement";
 
 const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string[], requireManager?: boolean }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -68,6 +69,7 @@ function App() {
             <Route path="phong-ban" element={<DepartmentManagement />} />
             <Route path="ngach-luong" element={<NgachLuongManagement />} />
             <Route path="chuc-vu" element={<PositionManagement />} />
+            <Route path="lich-lam-viec" element={<WorkScheduleManagement />} />
           </Route>
 
           {/* Đánh giá năng lực P2 */}
