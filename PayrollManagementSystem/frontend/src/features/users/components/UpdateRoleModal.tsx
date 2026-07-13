@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Select } from 'antd';
 import { UserDto, UpdateUserRoleCommand, RoleDto } from '../types/user.types';
 import './UserManagement.css';
 
@@ -19,8 +18,13 @@ export const UpdateRoleModal: React.FC<Props> = ({ user, isOpen, onClose, onSubm
     if (user) setSelectedRole(user.idVaiTro);
   }, [user]);
 
-  const handleSubmit = async () => {
-    if (!user) return;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !selectedRole) {
+      alert('Vui lòng chọn vai trò mới');
+      return;
+    }
+    
     setIsSubmitting(true);
     const success = await onSubmit(user.idTaiKhoan, { 
       idTaiKhoan: user.idTaiKhoan, 
@@ -30,41 +34,57 @@ export const UpdateRoleModal: React.FC<Props> = ({ user, isOpen, onClose, onSubm
     if (success) onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Modal
-      title={<h3 className="user-modal-title">Cập nhật quyền hạn</h3>}
-      open={isOpen}
-      onCancel={onClose}
-      onOk={handleSubmit}
-      confirmLoading={isSubmitting}
-      okText="Lưu thay đổi"
-      cancelText="Hủy bỏ"
-      okButtonProps={{ className: 'user-btn-primary !border-none !shadow-none' }}
-      cancelButtonProps={{ className: '!rounded-lg' }}
-      destroyOnClose
-    >
-      <div className="my-6">
-        <div className="p-3 mb-4 rounded-lg bg-gray-50 border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Tài khoản đang thao tác:
-          </p>
-          <p className="text-base font-bold text-gray-900 dark:text-white mt-1">
-            {user?.tenTaiKhoan} <span className="font-normal text-sm text-gray-500">({user?.hoTen})</span>
-          </p>
+    <div className="usr-modal-overlay">
+      <div className="usr-modal">
+        <div className="usr-modal-header">
+          <h3 className="usr-modal-title">Cập nhật quyền hạn</h3>
+          <button className="usr-modal-close" onClick={onClose} disabled={isSubmitting}>
+            &times;
+          </button>
         </div>
-        
-        <label className="user-form-label">Phân quyền mới</label>
-        <Select
-          size="large"
-          className="w-full"
-          value={selectedRole}
-          onChange={(value) => setSelectedRole(value)}
-          options={roles.map(role => ({
-            value: role.idVaiTro,
-            label: role.tenVaiTro
-          }))}
-        />
+
+        <div className="usr-modal-body">
+          <div style={{ padding: '1rem', marginBottom: '1.5rem', borderRadius: '8px', backgroundColor: '#f9fafb', border: '1px solid #f3f4f6' }}>
+            <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: '0 0 0.25rem 0' }}>
+              Tài khoản đang thao tác:
+            </p>
+            <p style={{ fontSize: '1rem', fontWeight: 700, color: '#111827', margin: 0 }}>
+              {user?.tenTaiKhoan} <span style={{ fontWeight: 400, fontSize: '0.875rem', color: '#6b7280' }}>({user?.hoTen})</span>
+            </p>
+          </div>
+          
+          <form id="update-role-form" onSubmit={handleSubmit}>
+            <div className="usr-form-group">
+              <label className="usr-form-label">Phân quyền mới <span className="required">*</span></label>
+              <select
+                className="usr-form-select"
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.target.value)}
+                required
+              >
+                <option value="">-- Chọn vai trò --</option>
+                {roles.map(role => (
+                  <option key={role.idVaiTro} value={role.idVaiTro}>
+                    {role.tenVaiTro}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </form>
+        </div>
+
+        <div className="usr-modal-footer">
+          <button type="button" className="usr-btn usr-btn-secondary" onClick={onClose} disabled={isSubmitting}>
+            Hủy bỏ
+          </button>
+          <button type="submit" form="update-role-form" className="usr-btn usr-btn-primary" disabled={isSubmitting}>
+            {isSubmitting ? 'Đang lưu...' : 'Lưu thay đổi'}
+          </button>
+        </div>
       </div>
-    </Modal>
+    </div>
   );
 };

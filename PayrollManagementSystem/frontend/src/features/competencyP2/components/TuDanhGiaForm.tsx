@@ -1,13 +1,15 @@
-import React, { useEffect } from 'react';
-import { Card, Table, Button, InputNumber, Input, Form, Tag, Spin, Result } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePhieuDanhGia } from '../hooks/usePhieuDanhGia';
+import './CompetencyManagement.css';
 
 export const TuDanhGiaForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { detail, loading, fetchById, submitTuDanhGia } = usePhieuDanhGia();
-  const [form] = Form.useForm();
+  
+  const [formData, setFormData] = useState<Record<string, string | number>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -17,107 +19,219 @@ export const TuDanhGiaForm: React.FC = () => {
 
   useEffect(() => {
     if (detail && detail.chiTietDanhGias) {
-      const formValues: any = {};
+      const initialValues: Record<string, string | number> = {};
       detail.chiTietDanhGias.forEach(c => {
-        formValues[`diem_${c.idChiTiet}`] = c.diemTuDanhGia;
-        formValues[`nhanXet_${c.idChiTiet}`] = c.nhanXetNhanVien;
+        initialValues[`diem_${c.idChiTiet}`] = c.diemTuDanhGia ?? '';
+        initialValues[`nhanXet_${c.idChiTiet}`] = c.nhanXetNhanVien || '';
       });
-      form.setFieldsValue(formValues);
+      setFormData(initialValues);
     }
-  }, [detail, form]);
+  }, [detail]);
+
+  const handleChange = (idChiTiet: string, field: 'diem' | 'nhanXet', value: string | number) => {
+    setFormData(prev => ({ ...prev, [`${field}_${idChiTiet}`]: value }));
+  };
 
   const handleSave = async (isSubmit: boolean) => {
-    const values = await form.validateFields();
     if (!detail) return;
 
-    const chiTiets = detail.chiTietDanhGias.map(c => ({
-      idChiTiet: c.idChiTiet,
-      diemTuDanhGia: values[`diem_${c.idChiTiet}`] || 0,
-      nhanXetNhanVien: values[`nhanXet_${c.idChiTiet}`] || ''
-    }));
+    if (isSubmit) {
+      // Validate all scores
+      const missingScores = detail.chiTietDanhGias.some(c => 
+        formData[`diem_${c.idChiTiet}`] === '' || formData[`diem_${c.idChiTiet}`] == null
+      );
+      if (missingScores) {
+        alert("Vui lòng chấm điểm cho tất cả các tiêu chí trước khi gửi duyệt.");
+        return;
+      }
+    }
 
-    const success = await submitTuDanhGia({
-      idPhieu: detail.idPhieu,
-      isSubmit,
-      chiTiets
-    });
+    setIsSubmitting(true);
+    try {
+      const chiTiets = detail.chiTietDanhGias.map(c => ({
+        idChiTiet: c.idChiTiet,
+        diemTuDanhGia: Number(formData[`diem_${c.idChiTiet}`] || 0),
+        nhanXetNhanVien: String(formData[`nhanXet_${c.idChiTiet}`] || '')
+      }));
 
-    if (success) {
-      navigate('/dashboard/danh-gia/tu-danh-gia');
+      const success = await submitTuDanhGia({
+        idPhieu: detail.idPhieu,
+        isSubmit,
+        chiTiets
+      });
+
+      if (success) {
+        navigate('/dashboard/danh-gia/tu-danh-gia');
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Đã xảy ra lỗi khi lưu phiếu.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  if (loading && !detail) return <Spin size="large" className="w-full mt-20 flex justify-center" />;
-  if (!detail && !loading) return <Result status="404" title="Không tìm thấy phiếu" />;
+  if (loading && !detail) {
+    return (
+      <div className="cp2-container" style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <div className="cp2-loader"><div className="cp2-spinner"></div></div>
+      </div>
+    );
+  }
+
+  if (!detail && !loading) {
+    return (
+      <div className="cp2-container" style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <div className="cp2-empty" style={{ width: '100%', maxWidth: '400px' }}>
+          <h3>Không tìm thấy phiếu</h3>
+          <p>Phiếu đánh giá không tồn tại hoặc bạn không có quyền truy cập.</p>
+          <button className="cp2-btn cp2-btn-secondary mt-4" onClick={() => navigate(-1)}>Quay lại</button>
+        </div>
+      </div>
+    );
+  }
 
   const isEditable = detail?.trangThai === 'CHO_NV_DANH_GIA';
-
-  const columns = [
-    { title: 'Tiêu chí', dataIndex: 'tenNangLuc', key: 'tenNangLuc', width: '20%' },
-    { title: 'Yêu cầu tối thiểu', dataIndex: 'yeuCauToiThieu', key: 'yeuCauToiThieu', width: '30%' },
-    { title: 'Tỷ trọng', dataIndex: 'tyTrong', key: 'tyTrong', align: 'center' as const },
-    {
-      title: 'Tự đánh giá',
-      key: 'diemTuDanhGia',
-      width: '15%',
-      render: (_: unknown, record: any) => (
-        <Form.Item 
-          name={`diem_${record.idChiTiet}`} 
-          style={{ marginBottom: 0 }}
-          rules={[{ required: isEditable, message: 'Nhập điểm' }]}
-        >
-          <InputNumber min={0} disabled={!isEditable} className="w-full" />
-        </Form.Item>
-      )
-    },
-    {
-      title: 'Nhận xét cá nhân',
-      key: 'nhanXetNhanVien',
-      width: '20%',
-      render: (_: unknown, record: any) => (
-        <Form.Item name={`nhanXet_${record.idChiTiet}`} style={{ marginBottom: 0 }}>
-          <Input.TextArea rows={2} disabled={!isEditable} placeholder="Giải trình thêm..." />
-        </Form.Item>
-      )
-    }
-  ];
+  
+  let badgeClass = "cp2-badge-gray";
+  if (detail?.trangThai === 'CHO_NV_DANH_GIA') badgeClass = "cp2-badge-blue";
+  if (detail?.trangThai === 'CHO_QL_DANH_GIA') badgeClass = "cp2-badge-warning";
+  if (detail?.trangThai === 'DA_HOAN_THANH') badgeClass = "cp2-badge-success";
 
   return (
-    <Card 
-      title={<span className="text-xl font-bold">Phiếu tự đánh giá: {detail?.tenKyDanhGia}</span>}
-      extra={
-        <Tag color={isEditable ? 'blue' : 'green'} className="text-sm px-3 py-1">
-          {detail?.trangThai}
-        </Tag>
-      }
-    >
-      <Form form={form} layout="vertical">
-        <Table 
-          columns={columns} 
-          dataSource={detail?.chiTietDanhGias} 
-          rowKey="idChiTiet" 
-          pagination={false} 
-          bordered
-          scroll={{ x: 'max-content' }}
-        />
+    <div className="cp2-container">
+      <div className="cp2-controls-wrapper" style={{ flex: 'none', height: '100%', display: 'flex', flexDirection: 'column' }}>
+        
+        <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid #f3f4f6' }}>
+          <div className="cp2-header-title">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <button 
+                className="cp2-btn-actions" 
+                onClick={() => navigate('/dashboard/danh-gia/tu-danh-gia')}
+                style={{ padding: '0.25rem' }}
+                title="Quay lại"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+              </button>
+              <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Phiếu tự đánh giá: {detail?.tenKyDanhGia}</h2>
+              <span className={`cp2-badge ${badgeClass}`}>{detail?.trangThai}</span>
+            </div>
+            <p style={{ marginLeft: '2.5rem' }}>Hãy đánh giá khách quan về năng lực của bạn trong kỳ này</p>
+          </div>
+        </div>
+
+        <div className="cp2-table-container custom-scrollbar" style={{ padding: '1.5rem', paddingBottom: 0 }}>
+          <table className="cp2-table" style={{ border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+            <thead>
+              <tr>
+                <th style={{ width: '25%' }}>Tiêu chí</th>
+                <th style={{ width: '30%' }}>Mô tả</th>
+                <th style={{ width: '10%', textAlign: 'center' }}>Tỷ trọng</th>
+                <th style={{ width: '15%' }}>Tự đánh giá</th>
+                <th style={{ width: '20%' }}>Nhận xét cá nhân</th>
+              </tr>
+            </thead>
+            <tbody>
+              {detail?.chiTietDanhGias.map((c) => (
+                <tr key={c.idChiTiet}>
+                  <td style={{ fontWeight: 600, color: '#111827' }}>{c.tenNangLuc}</td>
+                  <td style={{ fontSize: '0.85rem' }}>{c.moTa || '-'}</td>
+                  <td style={{ textAlign: 'center' }}>
+                    <span className="cp2-badge cp2-badge-blue">
+                      {Number((c.tyTrong * 100).toFixed(1))}%
+                    </span>
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      min="0"
+                      max="10"
+                      step="0.5"
+                      disabled={!isEditable}
+                      value={formData[`diem_${c.idChiTiet}`] ?? ''}
+                      onChange={(e) => handleChange(c.idChiTiet, 'diem', e.target.value)}
+                      className="cp2-form-input"
+                      placeholder="0-10"
+                      style={{ padding: '0.4rem' }}
+                    />
+                  </td>
+                  <td>
+                    <textarea
+                      disabled={!isEditable}
+                      value={formData[`nhanXet_${c.idChiTiet}`] ?? ''}
+                      onChange={(e) => handleChange(c.idChiTiet, 'nhanXet', e.target.value)}
+                      className="cp2-form-textarea"
+                      placeholder="Giải trình thêm..."
+                      style={{ minHeight: '60px', padding: '0.4rem' }}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          
+          {!isEditable && (
+            <div style={{ 
+              marginTop: '1.5rem', 
+              padding: '1.5rem', 
+              backgroundColor: '#f8fafc', 
+              border: '1px solid #e2e8f0', 
+              borderRadius: '8px' 
+            }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', color: '#1e293b' }}>
+                Kết quả đánh giá từ Quản lý
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                <div style={{ background: '#fff', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                  <p style={{ margin: '0 0 0.25rem 0', color: '#64748b', fontSize: '0.875rem' }}>Điểm tổng hợp</p>
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: '1.25rem', color: '#0f172a' }}>{detail?.diemTongHop ?? 'Chưa chấm'}</p>
+                </div>
+                <div style={{ background: '#fff', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                  <p style={{ margin: '0 0 0.25rem 0', color: '#64748b', fontSize: '0.875rem' }}>Hệ số P2</p>
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: '1.25rem', color: '#7c3aed' }}>{detail?.heSoP2 ?? 'Chưa chấm'}</p>
+                </div>
+                <div style={{ background: '#fff', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                  <p style={{ margin: '0 0 0.25rem 0', color: '#64748b', fontSize: '0.875rem' }}>Xếp loại</p>
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: '1.25rem', color: '#059669' }}>{detail?.xepLoai ?? 'Chưa xếp loại'}</p>
+                </div>
+              </div>
+              <div style={{ background: '#fff', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                <p style={{ margin: '0 0 0.25rem 0', color: '#64748b', fontSize: '0.875rem' }}>Nhận xét chung của Quản lý</p>
+                <p style={{ margin: 0, color: '#334155' }}>{detail?.nhanXetChung || <i>(Không có nhận xét)</i>}</p>
+              </div>
+            </div>
+          )}
+        </div>
 
         {isEditable && (
-          <div className="flex justify-end mt-6 gap-4">
-            <Button size="large" onClick={() => handleSave(false)}>Lưu nháp</Button>
-            <Button size="large" type="primary" onClick={() => handleSave(true)}>Gửi Quản lý duyệt</Button>
+          <div style={{ 
+            padding: '1.5rem', 
+            borderTop: '1px solid #f3f4f6', 
+            display: 'flex', 
+            justifyContent: 'flex-end', 
+            gap: '1rem',
+            backgroundColor: '#fff',
+            marginTop: 'auto'
+          }}>
+            <button 
+              className="cp2-btn cp2-btn-secondary" 
+              onClick={() => handleSave(false)} 
+              disabled={isSubmitting}
+            >
+              Lưu nháp
+            </button>
+            <button 
+              className="cp2-btn cp2-btn-primary" 
+              onClick={() => handleSave(true)} 
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Đang gửi...' : 'Gửi Quản lý duyệt'}
+            </button>
           </div>
         )}
-        
-        {!isEditable && (
-          <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 border dark:border-gray-700 rounded-lg">
-            <h3 className="font-bold mb-2">Kết quả đánh giá từ Quản lý:</h3>
-            <p><strong>Điểm tổng hợp:</strong> {detail?.diemTongHop ?? 'Chưa chấm'}</p>
-            <p><strong>Hệ số P2:</strong> {detail?.heSoP2 ?? 'Chưa chấm'}</p>
-            <p><strong>Xếp loại:</strong> {detail?.xepLoai ?? 'Chưa xếp loại'}</p>
-            <p><strong>Nhận xét chung:</strong> {detail?.nhanXetChung ?? 'Không có'}</p>
-          </div>
-        )}
-      </Form>
-    </Card>
+      </div>
+    </div>
   );
 };

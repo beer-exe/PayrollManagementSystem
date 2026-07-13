@@ -1,51 +1,60 @@
-import React, { useState, useEffect } from "react";
-import { Table, message, Empty, Dropdown, Button } from "antd";
-import {
-  MoreOutlined,
-  SwapOutlined,
-  RiseOutlined,
-  IdcardOutlined,
-} from "@ant-design/icons";
-import { useSystemData } from "../hooks/useSystemData";
-import { departmentApi } from "../api/departmentApi";
-import { EmployeeInDepartmentDto } from "../types/department.types";
+import React, { useState, useEffect } from 'react';
+import { useSystemData } from '../hooks/useSystemData';
+import { departmentApi } from '../api/departmentApi';
+import type { EmployeeInDepartmentDto } from '../types/department.types';
 
-import { CreateDeptModal } from "./Modals/CreateDeptModal";
-import { TransferModal } from "./Modals/TransferModal";
-import { AdjustSalaryModal } from "./Modals/AdjustSalaryModal";
-import { ChangePositionModal } from "./Modals/ChangePositionModal";
+import { CreateDeptModal } from './Modals/CreateDeptModal';
+import { TransferModal } from './Modals/TransferModal';
+import { AdjustSalaryModal } from './Modals/AdjustSalaryModal';
+import { ChangePositionModal } from './Modals/ChangePositionModal';
 
-import { usePositions } from "@/features/positions/hooks/usePositions";
-import "./DepartmentManagement.css";
+import { usePositions } from '@/features/positions/hooks/usePositions';
+import './DepartmentManagement.css';
 
 export const DepartmentManagement: React.FC = () => {
   const { departments, isLoading, refreshData } = useSystemData();
   const { positions, fetchPositions } = usePositions();
 
   const [selectedDeptId, setSelectedDeptId] = useState<string | null>(null);
-  const [deptEmployees, setDeptEmployees] = useState<EmployeeInDepartmentDto[]>(
-    [],
-  );
+  const [deptEmployees, setDeptEmployees] = useState<EmployeeInDepartmentDto[]>([]);
   const [loadingEmp, setLoadingEmp] = useState(false);
 
   const [isDeptModalOpen, setIsDeptModalOpen] = useState(false);
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
   const [isAdjustSalaryModalOpen, setIsAdjustSalaryModalOpen] = useState(false);
-  const [isChangePositionModalOpen, setIsChangePositionModalOpen] =
-    useState(false);
+  const [isChangePositionModalOpen, setIsChangePositionModalOpen] = useState(false);
 
-  const [selectedEmployee, setSelectedEmployee] =
-    useState<EmployeeInDepartmentDto | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeInDepartmentDto | null>(null);
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+  const totalPages = Math.ceil(deptEmployees.length / pageSize) || 1;
+  const currentData = deptEmployees.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   useEffect(() => {
-    fetchPositions("", "HOAT_DONG");
+    fetchPositions('', 'HOAT_DONG');
   }, [fetchPositions]);
 
   useEffect(() => {
     if (selectedDeptId) {
       fetchEmployees(selectedDeptId);
+      setCurrentPage(1); // Reset page on dept change
+    } else {
+      setDeptEmployees([]);
     }
   }, [selectedDeptId]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!(e.target as Element).closest('.dept-td-actions')) {
+        setOpenDropdownId(null);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   const fetchEmployees = async (idPb: string) => {
     setLoadingEmp(true);
@@ -53,7 +62,7 @@ export const DepartmentManagement: React.FC = () => {
       const res = await departmentApi.getEmployeesInDepartment(idPb);
       if (res.succeeded) setDeptEmployees(res.data);
     } catch (error) {
-      message.error("Lỗi tải danh sách nhân viên");
+      console.error('Lỗi tải danh sách nhân viên', error);
     } finally {
       setLoadingEmp(false);
     }
@@ -74,104 +83,22 @@ export const DepartmentManagement: React.FC = () => {
     setIsChangePositionModalOpen(true);
   };
 
-  const columns = [
-    {
-      title: "Mã NV",
-      dataIndex: "cccd",
-      key: "cccd",
-      className: "font-mono text-gray-500",
-    },
-    {
-      title: "Họ tên",
-      dataIndex: "hoTen",
-      key: "hoTen",
-      className: "font-semibold text-gray-900",
-    },
-    { title: "Chức vụ", dataIndex: "tenChucVu", key: "tenChucVu" },
-    {
-      title: "Trạng thái",
-      dataIndex: "trangThai",
-      key: "trangThai",
-      render: (text: string, record: EmployeeInDepartmentDto) => (
-        <span
-          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            text === "DANG_LAM_VIEC"
-              ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
-              : "bg-gray-100 text-gray-600 border border-gray-200"
-          }`}
-        >
-          {record.tenTrangThai || (text === "DANG_LAM_VIEC" ? "Đang làm việc" : "Đã nghỉ")}
-        </span>
-      ),
-    },
-    {
-      title: "",
-      key: "actions",
-      width: 60,
-      align: "center" as const,
-      render: (_: unknown, record: EmployeeInDepartmentDto) =>
-        record.trangThai === "DANG_LAM_VIEC" ? (
-          <Dropdown
-            menu={{
-              items: [
-                {
-                  key: "change_position",
-                  icon: <IdcardOutlined className="text-blue-600" />,
-                  label: "Thay đổi chức vụ",
-                  onClick: () => handleOpenChangePosition(record),
-                },
-                {
-                  key: "adjust_salary",
-                  icon: <RiseOutlined className="text-emerald-600" />,
-                  label: "Điều chỉnh bậc lương",
-                  onClick: () => handleOpenAdjustSalary(record),
-                },
-                {
-                  type: "divider",
-                },
-                {
-                  key: "transfer",
-                  icon: <SwapOutlined className="text-violet-600" />,
-                  label: "Điều chuyển phòng ban",
-                  onClick: () => handleOpenTransfer(record),
-                },
-              ],
-            }}
-            trigger={["click"]}
-            placement="bottomRight"
-          >
-            <Button
-              type="text"
-              icon={<MoreOutlined />}
-              className="text-gray-500 hover:text-violet-600 hover:bg-violet-50"
-            />
-          </Dropdown>
-        ) : null,
-    },
-  ];
-
   return (
-    <div className="dept-wrapper">
+    <div className="dept-container">
+      {/* Header */}
       <div className="dept-header">
-        <h2 className="dept-title">Phòng ban & Vị trí</h2>
-        <div className="dept-actions">
+        <div className="dept-header-left">
+          <h2 className="dept-title">🏢 Phòng ban & Vị trí</h2>
+          <p className="dept-subtitle">Quản lý cơ cấu phòng ban và nhân sự</p>
+        </div>
+        <div className="dept-header-actions">
           <button
             onClick={() => setIsDeptModalOpen(true)}
-            className="dept-btn-primary"
+            className="dept-btn-create"
+            title="Thêm phòng ban mới"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="w-5 h-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1rem', height: '1rem' }}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
             Phòng ban
           </button>
@@ -179,47 +106,40 @@ export const DepartmentManagement: React.FC = () => {
       </div>
 
       <div className="dept-content">
+        {/* Left Card: Department List */}
         <div className="dept-card dept-card-left">
           <div className="dept-card-header">
             Cơ cấu tổ chức
-            <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
-              {departments.length}
-            </span>
+            <span className="dept-badge-count">{departments.length}</span>
           </div>
           <div className="dept-list-body">
             {isLoading ? (
-              <div className="dept-empty-state">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-600"></div>
-              </div>
+              <div className="dept-spinner"></div>
             ) : departments.length === 0 ? (
-              <div className="dept-empty-state">
-                <Empty
-                  description="Chưa có phòng ban"
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                />
+              <div className="dept-empty">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
+                </svg>
+                <p>Chưa có phòng ban</p>
               </div>
             ) : (
               departments.map((d) => (
                 <button
                   key={d.idPb}
                   onClick={() => setSelectedDeptId(d.idPb)}
-                  className={`dept-list-item ${selectedDeptId === d.idPb ? "active" : ""}`}
+                  className={`dept-list-item ${selectedDeptId === d.idPb ? 'active' : ''}`}
                 >
-                  <div>
+                  <div className="dept-list-item-content">
                     <div className="dept-item-title">{d.tenPb}</div>
-                    <div className="dept-item-subtitle font-mono">{d.idPb}</div>
+                    <div className="dept-item-subtitle">{d.idPb}</div>
                   </div>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
-                    className={`w-5 h-5 transition-transform ${selectedDeptId === d.idPb ? "text-violet-600 translate-x-1" : "text-gray-400"}`}
+                    className={`dept-list-item-icon ${selectedDeptId === d.idPb ? 'active' : ''}`}
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                      clipRule="evenodd"
-                    />
+                    <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
                   </svg>
                 </button>
               ))
@@ -227,122 +147,214 @@ export const DepartmentManagement: React.FC = () => {
           </div>
         </div>
 
+        {/* Right Card: Employee List */}
         <div className="dept-card dept-card-right">
-          <div className="dept-card-header bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-            <span className="flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-5 h-5 text-gray-500"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
-                />
+          <div className="dept-card-header">
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem', color: '#6b7280' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
               </svg>
               Danh sách nhân sự
               {selectedDeptId && (
-                <span className="text-violet-600 ml-1">
+                <span className="dept-selected-name">
                   / {departments.find((d) => d.idPb === selectedDeptId)?.tenPb}
                 </span>
               )}
             </span>
           </div>
-          <div className="dept-table-body">
+
+          <div className="dept-table-wrapper">
             {!selectedDeptId ? (
-              <div className="dept-empty-state">
-                <Empty
-                  description={
-                    <span className="text-gray-500">
-                      Vui lòng chọn phòng ban ở danh sách bên trái để xem chi
-                      tiết nhân sự
-                    </span>
-                  }
-                  image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-                  imageStyle={{ height: 120 }}
-                />
+              <div className="dept-empty">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 15.97A4.004 4.004 0 0015.97 15m0 0v-4m0 4h4m-4 0l4 4m-8-12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <p>Vui lòng chọn phòng ban ở danh sách bên trái để xem chi tiết nhân sự</p>
+              </div>
+            ) : loadingEmp ? (
+              <div className="dept-spinner"></div>
+            ) : deptEmployees.length === 0 ? (
+              <div className="dept-empty">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+                <p>Phòng ban này hiện chưa có nhân sự</p>
               </div>
             ) : (
-              <Table
-                dataSource={deptEmployees}
-                columns={columns}
-                rowKey="cccd"
-                loading={loadingEmp}
-                pagination={{
-                  pageSize: 10,
-                  position: ["bottomRight"],
-                  className: "px-4",
-                }}
-                size="middle"
-                scroll={{ x: "max-content" }}
-                className="w-full"
-                locale={{
-                  emptyText: (
-                    <Empty
-                      description="Phòng ban này hiện chưa có nhân sự"
-                      image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    />
-                  ),
-                }}
-              />
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <div style={{ flex: 1, overflowY: 'auto' }}>
+                  <table className="dept-table" aria-label="Danh sách nhân sự">
+                    <thead>
+                      <tr>
+                        <th>Mã NV</th>
+                        <th>Họ tên</th>
+                        <th>Chức vụ</th>
+                        <th>Trạng thái</th>
+                        <th style={{ textAlign: 'center' }}>Thao tác</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentData.map((emp) => (
+                        <tr key={emp.cccd}>
+                          <td className="dept-td-mono">{emp.cccd}</td>
+                          <td className="dept-td-bold">{emp.hoTen}</td>
+                          <td>{emp.tenChucVu}</td>
+                          <td>
+                            <span className={`dept-badge ${emp.trangThai === 'DANG_LAM_VIEC' ? 'active' : 'inactive'}`}>
+                              <span className="dept-badge-dot"></span>
+                              {emp.tenTrangThai || (emp.trangThai === 'DANG_LAM_VIEC' ? 'Đang làm việc' : 'Đã nghỉ')}
+                            </span>
+                          </td>
+                          <td className="dept-td-actions">
+                            {emp.trangThai === 'DANG_LAM_VIEC' && (
+                              <div style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
+                                <button
+                                  className="dept-btn-actions"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setOpenDropdownId(openDropdownId === emp.cccd ? null : emp.cccd);
+                                  }}
+                                  aria-label="Thao tác"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+                                  </svg>
+                                </button>
+                                {openDropdownId === emp.cccd && (
+                                  <div className="dept-actions-dropdown">
+                                    <button
+                                      className="dept-dropdown-item"
+                                      onClick={() => {
+                                        handleOpenChangePosition(emp);
+                                        setOpenDropdownId(null);
+                                      }}
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1rem', height: '1rem', color: '#2563eb' }}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
+                                      </svg>
+                                      Thay đổi chức vụ
+                                    </button>
+                                    <button
+                                      className="dept-dropdown-item"
+                                      onClick={() => {
+                                        handleOpenAdjustSalary(emp);
+                                        setOpenDropdownId(null);
+                                      }}
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1rem', height: '1rem', color: '#059669' }}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                                      </svg>
+                                      Điều chỉnh bậc lương
+                                    </button>
+                                    <div className="dept-dropdown-divider"></div>
+                                    <button
+                                      className="dept-dropdown-item"
+                                      onClick={() => {
+                                        handleOpenTransfer(emp);
+                                        setOpenDropdownId(null);
+                                      }}
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1rem', height: '1rem', color: '#7c3aed' }}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                                      </svg>
+                                      Điều chuyển phòng ban
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Custom Pagination */}
+                {deptEmployees.length > 0 && (
+                  <div className="dept-pagination">
+                    <button 
+                      className="dept-btn-page" 
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Trước
+                    </button>
+                    <span className="dept-page-info">
+                      {currentPage} / {totalPages}
+                    </span>
+                    <button 
+                      className="dept-btn-page"
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Sau
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
       </div>
 
       {/* CÁC MODALS */}
-      <CreateDeptModal
-        isOpen={isDeptModalOpen}
-        onClose={() => setIsDeptModalOpen(false)}
-        onSuccess={refreshData}
-      />
+      {isDeptModalOpen && (
+        <CreateDeptModal
+          isOpen={isDeptModalOpen}
+          onClose={() => setIsDeptModalOpen(false)}
+          onSuccess={refreshData}
+        />
+      )}
 
-      <TransferModal
-        isOpen={isTransferModalOpen}
-        onClose={() => {
-          setIsTransferModalOpen(false);
-          setSelectedEmployee(null);
-        }}
-        onSuccess={() => {
-          refreshData();
-          if (selectedDeptId) fetchEmployees(selectedDeptId);
-        }}
-        departments={departments}
-        positions={positions}
-        employee={selectedEmployee}
-      />
+      {isTransferModalOpen && (
+        <TransferModal
+          isOpen={isTransferModalOpen}
+          onClose={() => {
+            setIsTransferModalOpen(false);
+            setSelectedEmployee(null);
+          }}
+          onSuccess={() => {
+            refreshData();
+            if (selectedDeptId) fetchEmployees(selectedDeptId);
+          }}
+          departments={departments}
+          positions={positions}
+          employee={selectedEmployee}
+        />
+      )}
 
-      <AdjustSalaryModal
-        isOpen={isAdjustSalaryModalOpen}
-        onClose={() => {
-          setIsAdjustSalaryModalOpen(false);
-          setSelectedEmployee(null);
-        }}
-        onSuccess={() => {
-          refreshData();
-          if (selectedDeptId) fetchEmployees(selectedDeptId);
-        }}
-        employee={selectedEmployee}
-        positions={positions}
-      />
+      {isAdjustSalaryModalOpen && (
+        <AdjustSalaryModal
+          isOpen={isAdjustSalaryModalOpen}
+          onClose={() => {
+            setIsAdjustSalaryModalOpen(false);
+            setSelectedEmployee(null);
+          }}
+          onSuccess={() => {
+            refreshData();
+            if (selectedDeptId) fetchEmployees(selectedDeptId);
+          }}
+          employee={selectedEmployee}
+          positions={positions}
+        />
+      )}
 
-      <ChangePositionModal
-        isOpen={isChangePositionModalOpen}
-        onClose={() => {
-          setIsChangePositionModalOpen(false);
-          setSelectedEmployee(null);
-        }}
-        onSuccess={() => {
-          refreshData();
-          if (selectedDeptId) fetchEmployees(selectedDeptId);
-        }}
-        employee={selectedEmployee}
-        positions={positions.filter(p => p.idPhongBan === selectedDeptId)}
-      />
+      {isChangePositionModalOpen && (
+        <ChangePositionModal
+          isOpen={isChangePositionModalOpen}
+          onClose={() => {
+            setIsChangePositionModalOpen(false);
+            setSelectedEmployee(null);
+          }}
+          onSuccess={() => {
+            refreshData();
+            if (selectedDeptId) fetchEmployees(selectedDeptId);
+          }}
+          employee={selectedEmployee}
+          positions={positions.filter(p => p.idPhongBan === selectedDeptId)}
+        />
+      )}
     </div>
   );
 };

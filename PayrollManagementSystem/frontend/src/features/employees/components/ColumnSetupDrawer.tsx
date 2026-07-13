@@ -1,5 +1,4 @@
 import React from 'react';
-import { Drawer, Checkbox } from 'antd';
 import './EmployeeModals.css';
 
 interface Props {
@@ -30,73 +29,81 @@ export const ColumnSetupDrawer: React.FC<Props> = ({ open, onClose, visibleColum
     }
   };
 
+  if (!open) return null;
+
   return (
-    <Drawer
-      title={<span className="text-gray-900 dark:text-white font-bold tracking-tight text-lg">Tùy chỉnh hiển thị</span>}
-      placement="right"
-      onClose={onClose}
-      open={open}
-      width={340}
-      /* Custom Icon nút X (Đóng) */
-      closeIcon={
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-gray-500 hover:text-gray-800 transition-colors">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      }
-      footer={
-        <div className="p-2">
-          <button onClick={onClose} className="emp-btn-submit w-full py-2.5 text-base">
+    <div className="emp-drawer-overlay" onClick={onClose}>
+      <div className="emp-drawer" onClick={e => e.stopPropagation()} style={{ maxWidth: '350px' }}>
+        <div className="emp-drawer-header">
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: '#111827' }}>Tùy chỉnh hiển thị</h2>
+          <button className="emp-drawer-close" onClick={onClose}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div className="emp-drawer-body custom-scrollbar" style={{ padding: '1.25rem' }}>
+          <p style={{ fontSize: '0.85rem', color: '#6b7280', marginBottom: '1.5rem', lineHeight: 1.5 }}>
+            Lựa chọn các cột dữ liệu bạn muốn hiển thị trên bảng. Cột Mã NV là thông tin bắt buộc.
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {availableColumns.map((col) => {
+              const isChecked = visibleColumns.includes(col.key);
+              
+              let bg = '#fff';
+              let border = '#e5e7eb';
+              if (col.required) { bg = '#f9fafb'; border = '#e5e7eb'; }
+              else if (isChecked) { bg = '#f5f3ff'; border = '#ddd6fe'; }
+
+              return (
+                <label
+                  key={col.key}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.85rem 1rem',
+                    borderRadius: '12px',
+                    border: `1px solid ${border}`,
+                    background: bg,
+                    cursor: col.required ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s',
+                    boxShadow: !col.required && !isChecked ? '0 1px 2px rgba(0,0,0,0.02)' : 'none'
+                  }}
+                  className={!col.required && !isChecked ? "hover-border-violet" : ""}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <input
+                      type="checkbox"
+                      checked={col.required ? true : isChecked}
+                      disabled={col.required}
+                      onChange={(e) => handleToggle(col.key, e.target.checked)}
+                      style={{ width: '1rem', height: '1rem', cursor: col.required ? 'not-allowed' : 'pointer', accentColor: '#7c3aed' }}
+                    />
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: col.required ? '#9ca3af' : '#374151' }}>
+                      {col.label}
+                    </span>
+                  </div>
+
+                  {col.required && (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style={{ width: '1rem', height: '1rem', color: '#9ca3af' }}>
+                      <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </label>
+              );
+            })}
+          </div>
+        </div>
+
+        <div style={{ padding: '1rem', borderTop: '1px solid #e5e7eb', background: '#fff' }}>
+          <button onClick={onClose} className="emp-btn-submit" style={{ width: '100%', padding: '0.75rem', justifyContent: 'center' }}>
             Hoàn tất
           </button>
         </div>
-      }
-      styles={{
-        body: { padding: '20px' },
-        header: { borderBottom: '1px solid #f3f4f6' }
-      }}
-    >
-      <div className="flex flex-col h-full">
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
-          Lựa chọn các cột dữ liệu bạn muốn hiển thị trên bảng. Cột Mã NV là thông tin bắt buộc.
-        </p>
-
-        <div className="space-y-3">
-          {availableColumns.map((col) => {
-            const isChecked = visibleColumns.includes(col.key);
-            
-            return (
-              <label
-                key={col.key}
-                className={`flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition-all ${
-                  col.required
-                    ? 'bg-gray-50 border-gray-200 dark:bg-gray-800/50 dark:border-gray-700'
-                    : isChecked
-                    ? 'bg-violet-50 border-violet-200 dark:bg-violet-900/20 dark:border-violet-800'
-                    : 'bg-white border-gray-100 hover:border-violet-300 shadow-sm hover:shadow-md dark:bg-gray-800 dark:border-gray-700 dark:hover:border-violet-500'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Checkbox
-                    checked={col.required ? true : isChecked}
-                    disabled={col.required}
-                    onChange={(e) => handleToggle(col.key, e.target.checked)}
-                  />
-                  <span className={`text-sm font-semibold ${col.required ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-200'}`}>
-                    {col.label}
-                  </span>
-                </div>
-
-                {/* Nếu là cột bắt buộc (CCCD), hiển thị ổ khóa */}
-                {col.required && (
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-400">
-                    <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
-                  </svg>
-                )}
-              </label>
-            );
-          })}
-        </div>
       </div>
-    </Drawer>
+    </div>
   );
 };
