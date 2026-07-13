@@ -41,6 +41,17 @@ export const KhungNangLucManagement: React.FC = () => {
   const totalWeightPercent = criteriaList.reduce((sum: number, item) => sum + (Number(item.tyTrong) || 0), 0);
   const isOverweight = totalWeightPercent > 100;
 
+  const fetchPositions = async () => {
+    try {
+      const res = await positionApi.getPositions();
+      if (res.succeeded) {
+        setPositions(res.data);
+      }
+    } catch (error) {
+      console.error("Lỗi khi tải danh sách chức vụ", error);
+    }
+  };
+
   useEffect(() => {
     fetchPositions();
     
@@ -59,17 +70,6 @@ export const KhungNangLucManagement: React.FC = () => {
       setCurrentPage(1);
     }
   }, [selectedChucVu, fetchByChucVu]);
-
-  const fetchPositions = async () => {
-    try {
-      const res = await positionApi.getPositions();
-      if (res.succeeded) {
-        setPositions(res.data);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
 
   const handleOpenConfig = () => {
     // Map existing data to form state, converting tyTrong from 0-1 to 0-100
@@ -153,10 +153,10 @@ export const KhungNangLucManagement: React.FC = () => {
         }));
 
       await Promise.all([...deletePromises, ...updatePromises, ...createPromises]);
-      
       setIsModalVisible(false);
       fetchByChucVu(selectedChucVu);
-    } catch (e) {
+    } catch (error) {
+      console.error("Lỗi khi lưu cấu hình:", error);
       alert("Có lỗi xảy ra khi lưu cấu hình");
     } finally {
       setIsSubmitting(false);
@@ -171,18 +171,20 @@ export const KhungNangLucManagement: React.FC = () => {
   };
 
   // Generate CSS background for conic-gradient pie chart
-  let cumulativePercent = 0;
-  const gradientStops = criteriaList.map((item, index) => {
+  const gradientResult = criteriaList.reduce((acc, item, index) => {
     const p = Number(item.tyTrong) || 0;
-    if (p <= 0) return null;
-    const start = cumulativePercent;
-    cumulativePercent += p;
+    if (p <= 0) return acc;
+    const start = acc.cumulative;
+    const newCumulative = start + p;
     const color = CHART_COLORS[index % CHART_COLORS.length];
-    return `${color} ${start}%, ${color} ${cumulativePercent}%`;
-  }).filter(Boolean);
-  
-  if (cumulativePercent < 100) {
-    gradientStops.push(`#e5e7eb ${cumulativePercent}%, #e5e7eb 100%`);
+    acc.stops.push(`${color} ${start}%, ${color} ${newCumulative}%`);
+    acc.cumulative = newCumulative;
+    return acc;
+  }, { cumulative: 0, stops: [] as string[] });
+
+  const gradientStops = gradientResult.stops;
+  if (gradientResult.cumulative < 100) {
+    gradientStops.push(`#e5e7eb ${gradientResult.cumulative}%, #e5e7eb 100%`);
   }
 
   const conicGradient = gradientStops.length > 0 
