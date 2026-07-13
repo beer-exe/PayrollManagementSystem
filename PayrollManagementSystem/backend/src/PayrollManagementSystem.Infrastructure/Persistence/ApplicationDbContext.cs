@@ -43,6 +43,8 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
         public virtual DbSet<LichLamViec> LichLamViecs { get; set; }
         public virtual DbSet<ChiTietLichLamViec> ChiTietLichLamViecs { get; set; }
 
+        public virtual DbSet<ChamCong> ChamCongs { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -603,6 +605,67 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
 
                 entity.HasIndex(e => new { e.IdLich, e.Ngay })
                     .HasDatabaseName("idx_chi_tiet_lich_ngay");
+            });
+
+            modelBuilder.Entity<ChamCong>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("cham_congs_pkey");
+                entity.ToTable("cham_congs");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id");
+
+                entity.Property(e => e.CccdNhanVien)
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasColumnName("cccd_nhan_vien");
+
+                entity.Property(e => e.NgayChamCong)
+                    .HasColumnName("ngay_cham_cong");
+
+                entity.Property(e => e.GioVao)
+                    .HasColumnName("gio_vao");
+
+                entity.Property(e => e.GioRa)
+                    .HasColumnName("gio_ra");
+
+                entity.Property(e => e.SoGioLamThucTe)
+                    .HasPrecision(5, 2)
+                    .HasColumnName("so_gio_lam_thuc_te");
+
+                entity.Property(e => e.SoNgayCong)
+                    .HasPrecision(5, 2)
+                    .HasColumnName("so_ngay_cong");
+
+                entity.Property(e => e.LoaiNgayCong)
+                    .HasConversion<string>()
+                    .HasMaxLength(30)
+                    .HasColumnName("loai_ngay_cong");
+
+                entity.Property(e => e.IsNhapTay)
+                    .HasDefaultValue(false)
+                    .HasColumnName("is_nhap_tay");
+
+                entity.Property(e => e.GhiChu)
+                    .HasMaxLength(500)
+                    .HasColumnName("ghi_chu");
+
+                entity.Property(e => e.TrangThai)
+                    .HasConversion<string>()
+                    .HasMaxLength(20)
+                    .HasColumnName("trang_thai");
+
+                entity.HasOne(d => d.NhanVien)
+                    .WithMany()
+                    .HasForeignKey(d => d.CccdNhanVien)
+                    .HasPrincipalKey(n => n.Cccd)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("cham_congs_cccd_nhan_vien_fkey");
+
+                // Mỗi nhân viên chỉ có 1 bản ghi chấm công / ngày
+                entity.HasIndex(e => new { e.CccdNhanVien, e.NgayChamCong })
+                    .IsUnique()
+                    .HasDatabaseName("cham_congs_cccd_ngay_unique");
             });
         }
 
