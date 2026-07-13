@@ -26,6 +26,9 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
             if (!string.IsNullOrWhiteSpace(request.CccdNhanVien))
                 query = query.Where(cc => cc.CccdNhanVien == request.CccdNhanVien);
 
+            if (!string.IsNullOrWhiteSpace(request.IdPhongBan))
+                query = query.Where(cc => cc.NhanVien.IdPb == request.IdPhongBan);
+
             var list = await query
                 .OrderBy(cc => cc.NgayChamCong)
                 .ThenBy(cc => cc.NhanVien.HoTen)

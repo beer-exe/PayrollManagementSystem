@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useChamCong } from '../hooks/useChamCong';
 import { chamCongApi } from '../api/chamCongApi';
+import { departmentApi } from '../../departments/api/departmentApi';
 import type { ChamCongDto, CreateChamCongRequest, UpdateChamCongRequest } from '../types/chamCong.types';
+import type { DepartmentDto } from '../../departments/types/department.types';
 import { ChamCongFormModal } from './ChamCongFormModal';
 import { ImportChamCongModal } from './ImportChamCongModal';
 import './ChamCongManagement.css';
@@ -30,6 +32,46 @@ export const ChamCongManagement: React.FC = () => {
   const [searchCccd, setSearchCccd] = useState('');
   const [activeTab, setActiveTab] = useState<'chi-tiet' | 'tong-hop'>('tong-hop');
 
+  // Lọc Phòng ban
+  const [departments, setDepartments] = useState<DepartmentDto[]>([]);
+  const [idPhongBan, setIdPhongBan] = useState('');
+  const [pbSearchTerm, setPbSearchTerm] = useState('');
+  const [isPbDropdownOpen, setIsPbDropdownOpen] = useState(false);
+  const pbDropdownRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    departmentApi.getDepartments()
+      .then(res => { if (res.data) setDepartments(res.data); })
+      .catch(console.error);
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (pbDropdownRef.current && !pbDropdownRef.current.contains(e.target as Node)) {
+        setIsPbDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filteredDepartments = departments.filter(d => 
+    d.tenPb.toLowerCase().includes(pbSearchTerm.toLowerCase())
+  );
+
+  const handleSelectDepartment = (d: DepartmentDto | null) => {
+    if (d) {
+      setIdPhongBan(d.idPb);
+      setPbSearchTerm(d.tenPb);
+    } else {
+      setIdPhongBan('');
+      setPbSearchTerm('');
+    }
+    setIsPbDropdownOpen(false);
+  };
+
+  const PAGE_SIZE = 10;
+  const [tongHopPage, setTongHopPage] = useState(1);
+  const [chiTietPage, setChiTietPage] = useState(1);
+
   const [showFormModal, setShowFormModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [editItem, setEditItem] = useState<ChamCongDto | null>(null);
@@ -40,11 +82,17 @@ export const ChamCongManagement: React.FC = () => {
   const { list, summary, loading, error, fetchList, fetchSummary, createChamCong, updateChamCong, deleteChamCong } = useChamCong();
 
   const loadData = useCallback(() => {
-    if (activeTab === 'chi-tiet') fetchList(thang, nam, searchCccd || undefined);
-    else fetchSummary(thang, nam);
-  }, [activeTab, thang, nam, searchCccd, fetchList, fetchSummary]);
+    if (activeTab === 'chi-tiet') fetchList(thang, nam, searchCccd || undefined, idPhongBan || undefined);
+    else fetchSummary(thang, nam, idPhongBan || undefined);
+  }, [activeTab, thang, nam, searchCccd, idPhongBan, fetchList, fetchSummary]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setTongHopPage(1);
+    setChiTietPage(1);
+  }, [thang, nam, searchCccd, idPhongBan, activeTab]);
 
   const showToast = (type: 'success' | 'error', text: string) => {
     setToastMsg({ type, text });
@@ -79,6 +127,13 @@ export const ChamCongManagement: React.FC = () => {
   const totalPresent = list.filter(r => r.loaiNgayCong === 'Làm đủ ca').length;
   const totalAbsent = list.filter(r => r.loaiNgayCong === 'Vắng không phép').length;
   const totalLate = list.filter(r => r.loaiNgayCong === 'Đi trễ / Về sớm').length;
+
+  // Pagination logic
+  const totalTongHopPages = Math.max(1, Math.ceil(summary.length / PAGE_SIZE));
+  const currentTongHopList = summary.slice((tongHopPage - 1) * PAGE_SIZE, tongHopPage * PAGE_SIZE);
+
+  const totalChiTietPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+  const currentChiTietList = list.slice((chiTietPage - 1) * PAGE_SIZE, chiTietPage * PAGE_SIZE);
 
   return (
     <div className="cc-page">
@@ -135,12 +190,57 @@ export const ChamCongManagement: React.FC = () => {
             ))}
           </select>
         </div>
-        {activeTab === 'chi-tiet' && (
-          <div className="cc-filter-group">
-            <label className="cc-filter-label">CCCD nhân viên</label>
+        <div className="cc-filter-group" style={{ flex: 1, minWidth: 200 }}>
+          <label className="cc-filter-label">Phòng ban</label>
+          <div className="cc-dropdown-select-wrap" ref={pbDropdownRef}>
             <input
               className="cc-input"
-              placeholder="Lọc theo CCCD..."
+              style={{ width: '100%' }}
+              placeholder="-- Tất cả --"
+              value={pbSearchTerm}
+              onChange={e => {
+                setPbSearchTerm(e.target.value);
+                setIdPhongBan(''); // Xóa selection cũ khi user gõ search mới
+                setIsPbDropdownOpen(true);
+              }}
+              onFocus={() => {
+                setPbSearchTerm('');
+                setIdPhongBan('');
+                setIsPbDropdownOpen(true);
+              }}
+              autoComplete="off"
+            />
+            {isPbDropdownOpen && (
+              <ul className="cc-dropdown-select-list">
+                <li 
+                  className={!idPhongBan ? 'selected' : ''}
+                  onClick={() => handleSelectDepartment(null)}
+                >
+                  -- Tất cả --
+                </li>
+                {filteredDepartments.length > 0 ? (
+                  filteredDepartments.map(d => (
+                    <li 
+                      key={d.idPb} 
+                      className={idPhongBan === d.idPb ? 'selected' : ''}
+                      onClick={() => handleSelectDepartment(d)}
+                    >
+                      {d.tenPb}
+                    </li>
+                  ))
+                ) : (
+                  <li className="cc-empty-option">Không tìm thấy phòng ban</li>
+                )}
+              </ul>
+            )}
+          </div>
+        </div>
+        {activeTab === 'chi-tiet' && (
+          <div className="cc-filter-group">
+            <label className="cc-filter-label">Tìm kiếm</label>
+            <input
+              className="cc-input"
+              placeholder="Lọc theo Tên, CCCD..."
               value={searchCccd}
               onChange={e => setSearchCccd(e.target.value)}
             />
@@ -206,7 +306,7 @@ export const ChamCongManagement: React.FC = () => {
             <tbody>
               {summary.length === 0 ? (
                 <tr><td colSpan={7} className="cc-empty">Không có dữ liệu tổng hợp cho tháng {thang}/{nam}</td></tr>
-              ) : summary.map(row => (
+              ) : currentTongHopList.map(row => (
                 <tr key={row.cccdNhanVien}>
                   <td>
                     <div className="cc-nv-name">{row.hoTenNhanVien}</div>
@@ -234,6 +334,25 @@ export const ChamCongManagement: React.FC = () => {
               ))}
             </tbody>
           </table>
+          {summary.length > 0 && (
+            <div className="cc-pagination">
+              <button 
+                className="cc-page-btn" 
+                disabled={tongHopPage === 1} 
+                onClick={() => setTongHopPage(p => p - 1)}
+              >
+                Trước
+              </button>
+              <span className="cc-page-info">{tongHopPage}/{totalTongHopPages}</span>
+              <button 
+                className="cc-page-btn" 
+                disabled={tongHopPage === totalTongHopPages} 
+                onClick={() => setTongHopPage(p => p + 1)}
+              >
+                Sau
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         /* BẢNG CHI TIẾT */
@@ -256,7 +375,7 @@ export const ChamCongManagement: React.FC = () => {
             <tbody>
               {list.length === 0 ? (
                 <tr><td colSpan={10} className="cc-empty">Không có dữ liệu chấm công cho kỳ này</td></tr>
-              ) : list.map(row => (
+              ) : currentChiTietList.map(row => (
                 <tr key={row.id}>
                   <td className="cc-date">
                     {new Date(row.ngayChamCong + 'T00:00:00').toLocaleDateString('vi-VN')}
@@ -294,6 +413,25 @@ export const ChamCongManagement: React.FC = () => {
               ))}
             </tbody>
           </table>
+          {list.length > 0 && (
+            <div className="cc-pagination">
+              <button 
+                className="cc-page-btn" 
+                disabled={chiTietPage === 1} 
+                onClick={() => setChiTietPage(p => p - 1)}
+              >
+                Trước
+              </button>
+              <span className="cc-page-info">{chiTietPage}/{totalChiTietPages}</span>
+              <button 
+                className="cc-page-btn" 
+                disabled={chiTietPage === totalChiTietPages} 
+                onClick={() => setChiTietPage(p => p + 1)}
+              >
+                Sau
+              </button>
+            </div>
+          )}
         </div>
       )}
 

@@ -27,11 +27,13 @@ namespace PayrollManagementSystem.API.Controllers
         public async Task<IActionResult> GetList(
             [FromQuery] int thang,
             [FromQuery] int nam,
-            [FromQuery] string? cccd = null)
+            [FromQuery] string? cccd = null,
+            [FromQuery] string? idPhongBan = null)
         {
             var response = await _mediator.Send(new GetChamCongByNhanVienQuery
             {
                 CccdNhanVien = cccd,
+                IdPhongBan = idPhongBan,
                 Thang = thang,
                 Nam = nam
             });

@@ -14,11 +14,11 @@ export const useChamCong = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchList = useCallback(async (thang: number, nam: number, cccd?: string) => {
+  const fetchList = useCallback(async (thang: number, nam: number, cccd?: string, idPhongBan?: string) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await chamCongApi.getList(thang, nam, cccd);
+      const res = await chamCongApi.getList(thang, nam, cccd, idPhongBan);
       if (res.succeeded) setList(res.data);
       else setError(res.message);
     } catch (err: unknown) {

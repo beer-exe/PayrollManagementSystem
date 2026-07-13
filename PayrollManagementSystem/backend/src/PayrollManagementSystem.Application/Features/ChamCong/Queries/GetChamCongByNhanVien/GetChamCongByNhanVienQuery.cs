@@ -8,10 +8,11 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
     public class GetChamCongByNhanVienQuery : IRequest<Response<List<ChamCongDto>>>, ICacheableQuery
     {
         public string? CccdNhanVien { get; set; }   // null = lấy tất cả nhân viên
+        public string? IdPhongBan { get; set; }
         public int Thang { get; set; }
         public int Nam { get; set; }
 
-        public string CacheKey => $"ChamCong_List_{CccdNhanVien ?? "ALL"}_{Thang}_{Nam}";
+        public string CacheKey => $"ChamCong_List_{CccdNhanVien ?? "ALL"}_{IdPhongBan ?? "ALL"}_{Thang}_{Nam}";
         public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
     }
 }

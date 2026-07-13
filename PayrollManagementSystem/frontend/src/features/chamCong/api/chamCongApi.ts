@@ -15,9 +15,10 @@ export const chamCongApi = {
   getList: (
     thang: number,
     nam: number,
-    cccd?: string
+    cccd?: string,
+    idPhongBan?: string
   ): Promise<ApiResponse<ChamCongDto[]>> =>
-    axiosClient.get(BASE_URL, { params: { thang, nam, cccd } }),
+    axiosClient.get(BASE_URL, { params: { thang, nam, cccd, idPhongBan } }),
 
   getSummary: (
     thang: number,

@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { ChamCongDto, CreateChamCongRequest, UpdateChamCongRequest } from '../types/chamCong.types';
+import { employeeApi } from '../../employees/api/employeeApi';
+import type { UserProfileDetail } from '../../../types/profile.types';
 
 interface Props {
   editItem: ChamCongDto | null;
@@ -18,6 +20,45 @@ export const ChamCongFormModal: React.FC<Props> = ({ editItem, onClose, onCreate
   const [ghiChu, setGhiChu] = useState(editItem?.ghiChu ?? '');
   const [submitting, setSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  // Employee Dropdown State
+  const [employees, setEmployees] = useState<UserProfileDetail[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isEdit) {
+      employeeApi.getEmployees({ PageNumber: 1, PageSize: 1000 })
+        .then(res => {
+          if (res.data) {
+            setEmployees(res.data);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [isEdit]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filteredEmployees = employees.filter(emp => 
+    `${emp.hoTen} - ${emp.cccd}`.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleSelectEmployee = (emp: UserProfileDetail) => {
+    setCccd(emp.cccd);
+    setSearchTerm(`${emp.hoTen} - ${emp.cccd}`);
+    setIsDropdownOpen(false);
+    setFieldErrors(prev => ({ ...prev, cccd: '' }));
+  };
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -67,14 +108,43 @@ export const ChamCongFormModal: React.FC<Props> = ({ editItem, onClose, onCreate
           <div className="cc-modal-body">
             {!isEdit && (
               <div className="cc-form-group">
-                <label htmlFor="cc-form-cccd">CCCD Nhân viên *</label>
-                <input
-                  id="cc-form-cccd"
-                  className="cc-form-control"
-                  placeholder="Nhập số CCCD..."
-                  value={cccd}
-                  onChange={e => setCccd(e.target.value)}
-                />
+                <label htmlFor="cc-form-cccd">Nhân viên *</label>
+                <div className="cc-dropdown-select-wrap" ref={dropdownRef}>
+                  <input
+                    id="cc-form-cccd"
+                    className="cc-form-control"
+                    placeholder="-- Chọn nhân viên --"
+                    value={searchTerm}
+                    onChange={e => {
+                      setSearchTerm(e.target.value);
+                      setCccd(''); // Clear selected cccd when typing
+                      setIsDropdownOpen(true);
+                    }}
+                    onFocus={() => {
+                      setSearchTerm('');
+                      setCccd('');
+                      setIsDropdownOpen(true);
+                    }}
+                    autoComplete="off"
+                  />
+                  {isDropdownOpen && (
+                    <ul className="cc-dropdown-select-list">
+                      {filteredEmployees.length > 0 ? (
+                        filteredEmployees.map(emp => (
+                          <li 
+                            key={emp.cccd} 
+                            className={cccd === emp.cccd ? 'selected' : ''}
+                            onClick={() => handleSelectEmployee(emp)}
+                          >
+                            {emp.hoTen} - {emp.cccd}
+                          </li>
+                        ))
+                      ) : (
+                        <li className="cc-empty-option">Không tìm thấy nhân viên</li>
+                      )}
+                    </ul>
+                  )}
+                </div>
                 {fieldErrors.cccd && <div className="cc-form-error">{fieldErrors.cccd}</div>}
               </div>
             )}
