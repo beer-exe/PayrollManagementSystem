@@ -159,7 +159,7 @@
   background: #fff;
   border-radius: 16px;
   border: 1px solid #e5e7eb;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 1px 6px rgba(0,0,0,0.06);
 }
 
@@ -171,6 +171,14 @@
 
 .ws-table thead {
   background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+}
+
+.ws-table thead th:first-child {
+  border-top-left-radius: 15px;
+}
+
+.ws-table thead th:last-child {
+  border-top-right-radius: 15px;
 }
 
 .ws-table th {
@@ -554,8 +562,80 @@
   .ws-container { padding: 1rem; }
   .ws-header { flex-direction: column; align-items: flex-start; }
   .ws-header-actions { width: 100%; justify-content: space-between; }
-  .ws-table-wrapper { overflow-x: auto; }
+  .ws-table-wrapper { overflow-x: visible; }
   .ws-modal { max-height: 95vh; border-radius: 16px 16px 0 0; margin-top: auto; }
   .ws-modal-overlay { align-items: flex-end; padding: 0; }
   .ws-month-tabs { padding: 0.75rem 1rem 0; }
 }
+
+/* ---- Actions Dropdown ---- */
+.ws-td-note {
+  max-width: 250px;
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+.ws-btn-actions {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.ws-btn-actions:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.ws-actions-dropdown {
+  position: absolute;
+  top: calc(100% - 4px);
+  right: 2rem;
+  z-index: 9999;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ws-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s, color 0.2s;
+}
+
+.ws-dropdown-item:hover {
+  background: #f3f4f6;
+}
+
+.ws-dropdown-item.delete {
+  color: #dc2626;
+}
+
+.ws-dropdown-item.delete:hover {
+  background: #fef2f2;
+}
+
