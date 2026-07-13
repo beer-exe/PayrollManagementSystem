@@ -24,28 +24,28 @@ import './EmployeeModals.css';
 
 // Custom Error Icon
 const ErrorIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0 mt-0.5">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style={{width: '1rem', height: '1rem', flexShrink: 0, marginTop: '0.1rem'}}>
     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
   </svg>
 );
 
 // Form Input Wrapper with Icon
 const IconInput = ({ icon, ...props }: any) => (
-  <div className="relative">
-    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+  <div className="emp-stepper-icon-input">
+    <div className="icon-wrapper">
       {icon}
     </div>
-    <input {...props} className={`emp-form-input !pl-10 ${props.className || ''}`} />
+    <input {...props} className={`emp-form-input ${props.className || ''}`} />
   </div>
 );
 
 // Form Select Wrapper
 const IconSelect = ({ icon, children, ...props }: any) => (
-  <div className="relative">
-    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+  <div className="emp-stepper-icon-input">
+    <div className="icon-wrapper">
       {icon}
     </div>
-    <select {...props} className={`emp-form-input !pl-10 appearance-none ${props.className || ''}`}>
+    <select {...props} className={`emp-form-select ${props.className || ''}`}>
       {children}
     </select>
   </div>
@@ -55,18 +55,18 @@ const StepPersonal = () => {
   const { register, formState: { errors } } = useFormContext<CreateEmployeeFormValues>();
   
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div>
-        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4 border-b pb-2">Thông tin định danh</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
-          <div className="sm:col-span-2">
-            <label className="emp-form-label">CCCD (Mã định danh) <span className="text-red-500">*</span></label>
+        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>Thông tin định danh</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label className="emp-form-label">CCCD (Mã định danh) <span className="required">*</span></label>
             <IconInput icon={<IdcardOutlined />} {...register('cccd')} placeholder="Nhập 9-12 số căn cước" />
             {errors.cccd && <p className="emp-form-error"><ErrorIcon />{errors.cccd.message}</p>}
           </div>
           
           <div>
-            <label className="emp-form-label">Họ và tên <span className="text-red-500">*</span></label>
+            <label className="emp-form-label">Họ và tên <span className="required">*</span></label>
             <IconInput icon={<UserOutlined />} {...register('hoTen')} placeholder="VD: Nguyễn Văn A" />
             {errors.hoTen && <p className="emp-form-error"><ErrorIcon />{errors.hoTen.message}</p>}
           </div>
@@ -77,7 +77,7 @@ const StepPersonal = () => {
             {errors.sdt && <p className="emp-form-error"><ErrorIcon />{errors.sdt.message}</p>}
           </div>
 
-          <div className="sm:col-span-2">
+          <div style={{ gridColumn: '1 / -1' }}>
             <label className="emp-form-label">Email công việc</label>
             <IconInput icon={<MailOutlined />} {...register('email')} type="email" placeholder="VD: email@congty.com" />
             {errors.email && <p className="emp-form-error"><ErrorIcon />{errors.email.message}</p>}
@@ -86,8 +86,8 @@ const StepPersonal = () => {
       </div>
 
       <div>
-        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4 border-b pb-2">Thông tin tài chính & BHXH</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
+        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>Thông tin tài chính & BHXH</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
           <div>
             <label className="emp-form-label">Số tài khoản ngân hàng</label>
             <IconInput icon={<DollarOutlined />} {...register('soTaiKhoan')} placeholder="VD: 123456789" />
@@ -100,7 +100,7 @@ const StepPersonal = () => {
             {errors.tenNganHang && <p className="emp-form-error"><ErrorIcon />{errors.tenNganHang.message}</p>}
           </div>
 
-          <div className="sm:col-span-2">
+          <div style={{ gridColumn: '1 / -1' }}>
             <label className="emp-form-label">Mã số thuế cá nhân</label>
             <IconInput icon={<FileTextOutlined />} {...register('maSoThue')} placeholder="VD: 8200123456" />
             {errors.maSoThue && <p className="emp-form-error"><ErrorIcon />{errors.maSoThue.message}</p>}
@@ -127,19 +127,19 @@ const StepContract = () => {
   const { register, formState: { errors } } = useFormContext<CreateEmployeeFormValues>();
   
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div>
-        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4 border-b pb-2">Hợp đồng lao động</h3>
-        <div className="grid grid-cols-1 gap-y-5">
+        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>Hợp đồng lao động</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div>
-            <label className="emp-form-label">Số Hợp Đồng <span className="text-red-500">*</span></label>
-            <IconInput icon={<FileTextOutlined />} {...register('soHopDong')} className="font-mono" placeholder="VD: HDLD-001/2026" />
+            <label className="emp-form-label">Số Hợp Đồng <span className="required">*</span></label>
+            <IconInput icon={<FileTextOutlined />} {...register('soHopDong')} style={{ fontFamily: 'monospace' }} placeholder="VD: HDLD-001/2026" />
             {errors.soHopDong && <p className="emp-form-error"><ErrorIcon />{errors.soHopDong.message}</p>}
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-5">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
             <div>
-              <label className="emp-form-label">Loại Hợp Đồng <span className="text-red-500">*</span></label>
+              <label className="emp-form-label">Loại Hợp Đồng <span className="required">*</span></label>
               <IconSelect icon={<FileTextOutlined />} {...register('loaiHopDong')}>
                 <option value="">-- Chọn loại HĐ --</option>
                 <option value="Thử việc">Thử việc (2 tháng)</option>
@@ -150,7 +150,7 @@ const StepContract = () => {
             </div>
             
             <div>
-              <label className="emp-form-label">Ngày bắt đầu <span className="text-red-500">*</span></label>
+              <label className="emp-form-label">Ngày bắt đầu <span className="required">*</span></label>
               <IconInput icon={<CalendarOutlined />} {...register('ngayBatDauHopDong')} type="date" />
               {errors.ngayBatDauHopDong && <p className="emp-form-error"><ErrorIcon />{errors.ngayBatDauHopDong.message}</p>}
             </div>
@@ -210,18 +210,18 @@ const StepPosition = () => {
   }, [selectedIdChucVu, positions, setValue]);
   
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div>
-        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4 border-b pb-2">Phân công công tác</h3>
-        <div className="grid grid-cols-1 gap-y-5">
+        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>Phân công công tác</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div>
-            <label className="emp-form-label">Số QĐ Bổ Nhiệm <span className="text-red-500">*</span></label>
-            <IconInput icon={<FileTextOutlined />} {...register('soQuyetDinh')} className="font-mono" placeholder="VD: QD-001/2026" />
+            <label className="emp-form-label">Số QĐ Bổ Nhiệm <span className="required">*</span></label>
+            <IconInput icon={<FileTextOutlined />} {...register('soQuyetDinh')} style={{ fontFamily: 'monospace' }} placeholder="VD: QD-001/2026" />
             {errors.soQuyetDinh && <p className="emp-form-error"><ErrorIcon />{errors.soQuyetDinh.message}</p>}
           </div>
           
           <div>
-            <label className="emp-form-label">Phòng Ban <span className="text-red-500">*</span></label>
+            <label className="emp-form-label">Phòng Ban <span className="required">*</span></label>
             <IconSelect icon={<ClusterOutlined />} {...register('idPb')}>
               <option value="">{isLoading ? 'Đang tải dữ liệu...' : '-- Chọn phòng ban --'}</option>
               {departments.map(d => <option key={d.idPb} value={d.idPb}>{d.tenPb}</option>)}
@@ -230,7 +230,7 @@ const StepPosition = () => {
           </div>
           
           <div>
-            <label className="emp-form-label">Chức Vụ <span className="text-red-500">*</span></label>
+            <label className="emp-form-label">Chức Vụ <span className="required">*</span></label>
             <IconSelect icon={<UserOutlined />} {...register('idChucVu')} disabled={!selectedIdPb || isLoading}>
               <option value="">{isLoading ? 'Đang tải dữ liệu...' : (!selectedIdPb ? '-- Vui lòng chọn phòng ban trước --' : '-- Chọn chức vụ --')}</option>
               {filteredPositions.map(p => <option key={p.idChucVu} value={p.idChucVu}>{p.tenChucVu}</option>)}
@@ -239,7 +239,7 @@ const StepPosition = () => {
           </div>
 
           <div>
-            <label className="emp-form-label">Bậc Lương (Ngạch Lương) <span className="text-red-500">*</span></label>
+            <label className="emp-form-label">Bậc Lương (Ngạch Lương) <span className="required">*</span></label>
             <IconSelect icon={<DollarOutlined />} {...register('idBacLuong')} disabled={!selectedIdChucVu || loadingBacLuong || bacLuongs.length === 0}>
               <option value="">{loadingBacLuong ? 'Đang tải dữ liệu...' : (!selectedIdChucVu ? '-- Vui lòng chọn chức vụ trước --' : (bacLuongs.length === 0 ? '-- Không có dữ liệu bậc lương --' : '-- Chọn bậc lương --'))}</option>
               {bacLuongs.map(b => <option key={b.id} value={b.id}>{b.stepName} - {b.p1Salary.toLocaleString()} VNĐ</option>)}
@@ -302,67 +302,69 @@ export const CreateEmployeeStepper: React.FC<Props> = ({ onSubmitSuccess, onCanc
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-[85vh] md:h-[700px] min-h-[500px] bg-white dark:bg-gray-900 overflow-hidden w-full relative">
+    <div className="emp-stepper-container">
       
       {/* Nút Đóng Tuyệt Đối */}
       <button 
         onClick={onCancel}
-        className="absolute top-4 right-4 z-50 p-2 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 transition-colors"
+        style={{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 50, background: 'transparent', border: 'none', color: '#9ca3af', cursor: 'pointer', padding: '0.5rem', borderRadius: '50%', transition: 'all 0.2s' }}
+        onMouseOver={e => { e.currentTarget.style.background = '#f3f4f6'; e.currentTarget.style.color = '#4b5563'; }}
+        onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#9ca3af'; }}
       >
-        <CloseOutlined className="text-xl" />
+        <CloseOutlined style={{ fontSize: '1.25rem' }} />
       </button>
 
-      {/* Sidebar Trái (Gradient) */}
-      <div className="w-full md:w-[320px] bg-gradient-to-br from-violet-600 to-indigo-900 text-white p-5 md:p-8 flex flex-col justify-between shrink-0 shadow-md md:shadow-[4px_0_24px_rgba(0,0,0,0.1)] relative z-10">
-        <div className="flex flex-row md:flex-col items-center md:items-start gap-4 md:gap-0">
-          <div className="hidden md:flex w-12 h-12 bg-white/20 rounded-2xl items-center justify-center mb-6 backdrop-blur-sm border border-white/30 shadow-lg">
-            <UserOutlined className="text-2xl text-white" />
+      {/* Sidebar Trái */}
+      <div className="emp-stepper-sidebar">
+        <div>
+          <div style={{ display: 'none', width: '3rem', height: '3rem', background: 'rgba(255,255,255,0.2)', borderRadius: '1rem', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(255,255,255,0.3)', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }} className="md-flex">
+            <UserOutlined style={{ fontSize: '1.5rem' }} />
           </div>
-          <div className="flex-1 md:flex-none">
-            <h2 className="text-xl md:text-3xl font-bold mb-1 md:mb-2 tracking-tight">Thêm Nhân Sự</h2>
-            <p className="hidden md:block text-indigo-200 text-sm mb-10 leading-relaxed">
+          <div>
+            <h2 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>Thêm Nhân Sự</h2>
+            <p style={{ color: '#c7d2fe', fontSize: '0.85rem', lineHeight: 1.5, margin: '0 0 2rem 0' }}>
               Thiết lập hồ sơ nhân sự mới trong hệ thống chỉ với 3 bước đơn giản.
             </p>
           </div>
-          
-          <div className="md:hidden flex flex-col items-end">
-            <span className="text-sm font-bold text-white bg-white/20 px-3 py-1 rounded-full">Bước {activeStep + 1}/3</span>
-          </div>
 
-          <div className="hidden md:block space-y-8 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/20 before:to-transparent">
-            {steps.map((step) => (
-              <div key={step.id} className="relative flex items-center gap-4 group">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center z-10 transition-all duration-300 shadow-sm ${
-                  activeStep > step.id ? 'bg-green-400 text-indigo-900 ring-4 ring-green-400/30' : 
-                  activeStep === step.id ? 'bg-white text-violet-600 ring-4 ring-white/30 scale-110' : 
-                  'bg-indigo-800/50 text-white/50 border border-white/20'
-                }`}>
-                  {activeStep > step.id ? <CheckCircleFilled className="text-sm" /> : <span className="text-xs font-bold">{step.id + 1}</span>}
+          <div className="emp-steps-list">
+            {steps.map((step) => {
+              let statusClass = 'future';
+              if (activeStep > step.id) statusClass = 'past';
+              else if (activeStep === step.id) statusClass = 'current';
+
+              let textClass = 'other';
+              if (activeStep === step.id) textClass = 'current';
+
+              return (
+                <div key={step.id} className="emp-step-item">
+                  <div className={`emp-step-icon ${statusClass}`}>
+                    {activeStep > step.id ? <CheckCircleFilled /> : <span>{step.id + 1}</span>}
+                  </div>
+                  <div className={`emp-step-text ${textClass}`}>
+                    <h4>{step.title}</h4>
+                    <p>{step.description}</p>
+                  </div>
                 </div>
-                <div className={`transition-all duration-300 ${activeStep === step.id ? 'opacity-100 translate-x-1' : 'opacity-60'}`}>
-                  <h4 className={`text-sm font-bold ${activeStep === step.id ? 'text-white' : 'text-indigo-200'}`}>{step.title}</h4>
-                  <p className="text-xs text-indigo-300/80">{step.description}</p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
-        <div className="text-xs text-indigo-300/60 mt-4 md:mt-10">
+        <div style={{ fontSize: '0.75rem', color: 'rgba(199, 210, 254, 0.6)', marginTop: '2.5rem' }}>
           Hoàn thành: {Math.round((activeStep / 2) * 100)}%
-          <div className="w-full bg-indigo-900/50 h-1.5 rounded-full mt-2 overflow-hidden">
-            <div className="bg-green-400 h-full rounded-full transition-all duration-500" style={{ width: `${(activeStep / 2) * 100}%` }}></div>
+          <div style={{ width: '100%', background: 'rgba(49, 46, 129, 0.5)', height: '0.35rem', borderRadius: '99px', marginTop: '0.5rem', overflow: 'hidden' }}>
+            <div style={{ background: '#4ade80', height: '100%', transition: 'width 0.5s', width: `${(activeStep / 2) * 100}%` }}></div>
           </div>
         </div>
       </div>
 
       {/* Nội dung Form Bên Phải */}
-      <div className="flex-1 flex flex-col min-h-0 relative bg-gray-50/50 dark:bg-gray-900/50">
+      <div className="emp-stepper-content">
         <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSubmit, onError)} className="flex flex-col h-full min-h-0">
+          <form onSubmit={handleSubmit(onSubmit, onError)} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             
-            {/* Vùng cuộn */}
-            <div className="flex-1 overflow-y-auto p-4 md:p-10 custom-scrollbar">
+            <div className="emp-stepper-body custom-scrollbar">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeStep}
@@ -371,7 +373,7 @@ export const CreateEmployeeStepper: React.FC<Props> = ({ onSubmitSuccess, onCanc
                   animate="animate"
                   exit="exit"
                   transition={{ duration: 0.3, ease: 'easeInOut' }}
-                  className="max-w-2xl mx-auto w-full"
+                  style={{ maxWidth: '42rem', margin: '0 auto', width: '100%' }}
                 >
                   {activeStep === 0 && <StepPersonal />}
                   {activeStep === 1 && <StepContract />}
@@ -380,35 +382,26 @@ export const CreateEmployeeStepper: React.FC<Props> = ({ onSubmitSuccess, onCanc
               </AnimatePresence>
             </div>
 
-            {/* Footer */}
-            <div className="p-6 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.02)] relative z-10">
+            <div className="emp-stepper-footer">
               {activeStep === 0 ? (
-                <button type="button" onClick={onCancel} className="emp-btn-cancel text-gray-500">Hủy bỏ</button>
+                <button type="button" onClick={onCancel} className="emp-btn-cancel">Hủy bỏ</button>
               ) : (
-                <button type="button" onClick={() => setActiveStep(prev => prev - 1)} className="emp-btn-cancel group flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 group-hover:-translate-x-1 transition-transform"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+                <button type="button" onClick={() => setActiveStep(prev => prev - 1)} className="emp-btn-cancel" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1rem', height: '1rem' }}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
                   Quay lại
                 </button>
               )}
 
-              <div className="flex items-center gap-3">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 {activeStep < 2 && (
-                  <button type="button" onClick={handleNext} className="emp-btn-cancel group flex items-center gap-2 text-violet-600 border-violet-200 hover:border-violet-300 hover:bg-violet-50">
+                  <button type="button" onClick={handleNext} className="emp-btn-cancel" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#7c3aed', borderColor: '#ddd6fe' }}>
                     Tiếp tục
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 group-hover:translate-x-1 transition-transform"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1rem', height: '1rem' }}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                   </button>
                 )}
                 
-                <button type="submit" disabled={isSubmitting} className="emp-btn-submit min-w-[140px]">
-                  {isSubmitting ? (
-                    <span className="flex items-center gap-2">
-                      <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Đang xử lý
-                    </span>
-                  ) : 'Lưu nhân viên'}
+                <button type="submit" disabled={isSubmitting} className="emp-btn-submit" style={{ minWidth: '140px', justifyContent: 'center' }}>
+                  {isSubmitting ? 'Đang xử lý...' : 'Lưu nhân viên'}
                 </button>
               </div>
             </div>

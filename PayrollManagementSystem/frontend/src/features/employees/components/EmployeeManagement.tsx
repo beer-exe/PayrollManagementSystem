@@ -8,7 +8,6 @@ import { UpdateEmployeeModal } from './UpdateEmployeeModal';
 import { UserProfileDetail } from '@/types/profile.types';
 import { CreateEmployeeCommand } from '../types/employee.types';
 import { useEmployees } from '../hooks/useEmployees';
-import { Modal } from 'antd';
 import './EmployeeManagement.css';
 import './EmployeeModals.css';
 
@@ -69,40 +68,43 @@ export const EmployeeManagement: React.FC = () => {
   };
 
   return (
-    <div className="emp-wrapper flex flex-col h-full min-w-0">
+    <div className="emp-wrapper">
       
       <div className="emp-header">
-        <h2 className="emp-title">Hồ sơ Nhân sự</h2>
-        <button 
-          onClick={() => setIsCreateModalOpen(true)}
-          className="emp-btn-primary"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-          Thêm Nhân Viên
-        </button>
-      </div>
-
-      <div className="flex-1 min-w-0 overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-        <div className="w-full overflow-x-auto h-full">
-          <EmpTable 
-            data={employees}
-            visibleColumns={visibleColumns}
-            isLoading={loading}
-            isExporting={isExporting}
-            searchTerm={searchTerm}
-            onSearchChange={(v) => { setSearchTerm(v); setPageNumber(1); }}
-            pageNumber={pageNumber}
-            pageSize={pageSize}
-            totalRecords={totalRecords}
-            onPageChange={setPageNumber}
-            onOpenSettings={() => setIsDrawerOpen(true)}
-            onRowClick={(emp) => { setSelectedEmp(emp); setIsPanelOpen(true); }}
-            onStatusClick={(emp) => setEmployeeToChangeStatus(emp)}
-            onEditClick={handleEditClick}
-            onExportExcel={() => exportExcel(searchTerm)}
-          />
+        <div className="emp-header-left">
+          <h2 className="emp-title">👨‍💼 Hồ sơ Nhân sự</h2>
+          <p className="emp-subtitle">Quản lý danh sách nhân sự toàn công ty</p>
+        </div>
+        <div className="emp-header-actions">
+          <button 
+            onClick={() => setIsCreateModalOpen(true)}
+            className="emp-btn-primary"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{width: '1.2rem', height: '1.2rem'}}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Thêm Nhân Viên
+          </button>
         </div>
       </div>
+
+      <EmpTable 
+        data={employees}
+        visibleColumns={visibleColumns}
+        isLoading={loading}
+        isExporting={isExporting}
+        searchTerm={searchTerm}
+        onSearchChange={(v) => { setSearchTerm(v); setPageNumber(1); }}
+        pageNumber={pageNumber}
+        pageSize={pageSize}
+        totalRecords={totalRecords}
+        onPageChange={setPageNumber}
+        onOpenSettings={() => setIsDrawerOpen(true)}
+        onRowClick={(emp) => { setSelectedEmp(emp); setIsPanelOpen(true); }}
+        onStatusClick={(emp) => setEmployeeToChangeStatus(emp)}
+        onEditClick={handleEditClick}
+        onExportExcel={() => exportExcel(searchTerm)}
+      />
 
       <ColumnSetupDrawer 
         open={isDrawerOpen} 
@@ -120,40 +122,34 @@ export const EmployeeManagement: React.FC = () => {
         onClose={() => setIsPanelOpen(false)} 
       />
 
-      <Modal 
-        open={isCreateModalOpen} 
-        onCancel={() => setIsCreateModalOpen(false)}
-        footer={null}
-        width={typeof window !== 'undefined' && window.innerWidth < 768 ? '100%' : 950}
-        style={typeof window !== 'undefined' && window.innerWidth < 768 ? { top: 0, padding: 0, margin: 0, maxWidth: '100vw' } : undefined}
-        destroyOnClose
-        closeIcon={null}
-        className="emp-split-modal"
-        styles={{ 
-          body: { padding: 0 } 
-        }}
-      >
-        <CreateEmployeeStepper 
-          onSubmitSuccess={handleCreateSuccess}
-          onCancel={() => setIsCreateModalOpen(false)}
-        />
-      </Modal>
+      {isCreateModalOpen && (
+        <div className="emp-modal-overlay">
+          <div className="emp-modal-large" style={{ background: '#f9fafb' }}>
+            <CreateEmployeeStepper 
+              onSubmitSuccess={handleCreateSuccess}
+              onCancel={() => setIsCreateModalOpen(false)}
+            />
+          </div>
+        </div>
+      )}
 
-      <UpdateEmployeeModal
-        isOpen={isUpdateModalOpen}
-        onClose={() => {
-          setIsUpdateModalOpen(false);
-          setEmployeeToUpdate(null);
-        }}
-        employee={employeeToUpdate}
-        onSubmitUpdate={async (cccd, data) => {
-          const success = await updateEmployee(cccd, data);
-          if (success) {
-            fetchEmployees(searchTerm, pageNumber, pageSize);
-          }
+      {isUpdateModalOpen && employeeToUpdate && (
+        <UpdateEmployeeModal
+          isOpen={isUpdateModalOpen}
+          onClose={() => {
+            setIsUpdateModalOpen(false);
+            setEmployeeToUpdate(null);
+          }}
+          employee={employeeToUpdate}
+          onSubmitUpdate={async (cccd, data) => {
+            const success = await updateEmployee(cccd, data);
+            if (success) {
+              fetchEmployees(searchTerm, pageNumber, pageSize);
+            }
             return success;
-        }}
-      />
+          }}
+        />
+      )}
 
       {employeeToChangeStatus && (
         <ChangeStatusModal 

@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Modal, Form, Select, DatePicker, Input, message, Alert } from "antd";
-import { departmentApi } from "../../api/departmentApi";
-import {
-  DepartmentDto,
-  EmployeeInDepartmentDto,
-} from "../../types/department.types";
-import { PositionDto } from "@/features/positions/types/position.types";
-import { salaryStepApi } from "@/features/salarySteps/api/salaryStepApi";
-import { SalaryStepDto } from "@/features/salarySteps/types/salaryStep.types";
+import React, { useState, useEffect } from 'react';
+import { departmentApi } from '../../api/departmentApi';
+import { DepartmentDto, EmployeeInDepartmentDto } from '../../types/department.types';
+import { PositionDto } from '@/features/positions/types/position.types';
+import { salaryStepApi } from '@/features/salarySteps/api/salaryStepApi';
+import { SalaryStepDto } from '@/features/salarySteps/types/salaryStep.types';
+import './DepartmentModals.css';
 
 interface TransferModalProps {
   isOpen: boolean;
@@ -26,21 +23,37 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   positions,
   employee,
 }) => {
-  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const [soQuyetDinh, setSoQuyetDinh] = useState('');
+  const [idPbMoi, setIdPbMoi] = useState('');
+  const [idChucVuMoi, setIdChucVuMoi] = useState('');
+  const [idBacLuongMoi, setIdBacLuongMoi] = useState('');
+  const [ngayHieuLuc, setNgayHieuLuc] = useState('');
+  const [lyDo, setLyDo] = useState('');
 
   const [salarySteps, setSalarySteps] = useState<SalaryStepDto[]>([]);
   const [loadingSteps, setLoadingSteps] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      form.resetFields();
+      setSoQuyetDinh('');
+      setIdPbMoi('');
+      setIdChucVuMoi('');
+      setIdBacLuongMoi('');
+      setNgayHieuLuc('');
+      setLyDo('');
+      setErrorMsg('');
       setSalarySteps([]);
     }
-  }, [isOpen, form]);
+  }, [isOpen]);
 
-  const handlePositionChange = async (positionId: string) => {
-    form.setFieldsValue({ idBacLuongMoi: undefined });
+  const handlePositionChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const positionId = e.target.value;
+    setIdChucVuMoi(positionId);
+    setIdBacLuongMoi('');
+    
     if (!positionId) {
       setSalarySteps([]);
       return;
@@ -49,7 +62,6 @@ export const TransferModal: React.FC<TransferModalProps> = ({
     const selectedPos = positions.find((p) => p.idChucVu === positionId);
     if (!selectedPos || !selectedPos.idNgachLuong) {
       setSalarySteps([]);
-      message.warning("Chức vụ này chưa được cấu hình ngạch lương.");
       return;
     }
 
@@ -60,7 +72,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
         setSalarySteps(res.data);
       }
     } catch (error) {
-      message.error("Không thể tải danh sách bậc lương cho chức vụ này.");
+      console.error(error);
     } finally {
       setLoadingSteps(false);
     }
@@ -68,144 +80,157 @@ export const TransferModal: React.FC<TransferModalProps> = ({
 
   const handleSubmit = async () => {
     if (!employee) return;
+    
+    if (!soQuyetDinh.trim() || !idPbMoi || !idChucVuMoi || !idBacLuongMoi || !ngayHieuLuc) {
+      setErrorMsg('Vui lòng điền đầy đủ các trường bắt buộc!');
+      return;
+    }
+
+    setLoading(true);
+    setErrorMsg('');
 
     try {
-      const values = await form.validateFields();
-      setLoading(true);
-
       const payload = {
-        soQuyetDinh: values.soQuyetDinh,
+        soQuyetDinh,
         cccd: employee.cccd,
-        idPbMoi: values.idPbMoi,
-        idChucVuMoi: values.idChucVuMoi,
-        idBacLuongMoi: values.idBacLuongMoi,
-        ngayHieuLuc: values.ngayHieuLuc.format("YYYY-MM-DD"),
-        lyDo: values.lyDo,
+        idPbMoi,
+        idChucVuMoi,
+        idBacLuongMoi,
+        ngayHieuLuc,
+        lyDo,
       };
 
       const res = await departmentApi.transferEmployee(payload);
       if (res.succeeded) {
-        message.success("Điều chuyển nhân sự thành công!");
         onSuccess();
         onClose();
       }
-    } catch (error) { const err = error as import('axios').AxiosError<{Message?: string}>;
-      if (err.response) {
-        message.error(err.response.data.Message || "Lỗi khi điều chuyển");
-      }
+    } catch (err) {
+      const error = err as import('axios').AxiosError<{Message?: string}>;
+      setErrorMsg(error.response?.data?.Message || 'Lỗi khi điều chuyển nhân sự');
     } finally {
       setLoading(false);
     }
   };
 
+  if (!isOpen || !employee) return null;
+
+  const availablePositions = positions.filter((p) => p.idPhongBan === idPbMoi);
+
   return (
-    <Modal
-      title="Quyết Định Điều Chuyển Nhân Sự"
-      open={isOpen}
-      onOk={handleSubmit}
-      onCancel={onClose}
-      confirmLoading={loading}
-      okText="Xác nhận điều chuyển"
-      cancelText="Hủy bỏ"
-      destroyOnClose
-      okButtonProps={{ className: "bg-violet-600 hover:bg-violet-700" }}
-    >
-      {employee && (
-        <Alert
-          message={
-            <span className="font-semibold text-violet-800">
-              Nhân sự: {employee.hoTen}
-            </span>
-          }
-          description={`Mã NV (CCCD): ${employee.cccd} - Đang làm việc tại: ${employee.tenChucVu}`}
-          type="info"
-          showIcon
-          className="mb-6 bg-violet-50 border-violet-200"
-        />
-      )}
-
-      <Form form={form} layout="vertical">
-        {/* ĐÃ THÊM Ô NHẬP SỐ QUYẾT ĐỊNH VÀO GIAO DIỆN */}
-        <Form.Item
-          name="soQuyetDinh"
-          label="Số quyết định"
-          rules={[{ required: true, message: "Vui lòng nhập số quyết định!" }]}
-        >
-          <Input placeholder="VD: 123/QĐ-NS" />
-        </Form.Item>
-
-        <Form.Item
-          name="idPbMoi"
-          label="Phòng ban mới"
-          rules={[{ required: true, message: "Vui lòng chọn phòng ban mới" }]}
-        >
-          <Select
-            placeholder="-- Chọn phòng ban --"
-            showSearch
-            optionFilterProp="label"
-            options={departments.map((d) => ({
-              label: d.tenPb,
-              value: d.idPb,
-            }))}
-          />
-        </Form.Item>
-
-        <Form.Item
-          noStyle
-          shouldUpdate={(prevValues, currentValues) => prevValues.idPbMoi !== currentValues.idPbMoi}
-        >
-          {({ getFieldValue }) => (
-            <Form.Item
-              name="idChucVuMoi"
-              label="Chức vụ mới"
-              rules={[{ required: true, message: "Vui lòng chọn chức vụ mới" }]}
-            >
-              <Select
-                placeholder="-- Chọn chức vụ --"
-                showSearch
-                optionFilterProp="label"
-                onChange={handlePositionChange}
-                disabled={!getFieldValue("idPbMoi")}
-                options={positions
-                  .filter((p) => p.idPhongBan === getFieldValue("idPbMoi"))
-                  .map((p) => ({
-                    label: p.tenChucVu,
-                    value: p.idChucVu,
-                  }))}
-              />
-            </Form.Item>
+    <div className="dept-modal-overlay">
+      <div className="dept-modal">
+        <div className="dept-modal-header">
+          <h2 className="dept-modal-title">Quyết Định Điều Chuyển Nhân Sự</h2>
+          <button className="dept-modal-close" onClick={onClose} disabled={loading} title="Đóng">
+            &times;
+          </button>
+        </div>
+        <div className="dept-modal-body">
+          {errorMsg && (
+            <div className="dept-alert error">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem', flexShrink: 0 }}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+              </svg>
+              {errorMsg}
+            </div>
           )}
-        </Form.Item>
 
-        <Form.Item
-          name="idBacLuongMoi"
-          label="Bậc lương áp dụng (P1)"
-          rules={[{ required: true, message: "Vui lòng chọn bậc lương" }]}
-        >
-          <Select
-            placeholder="-- Chọn bậc lương --"
-            loading={loadingSteps}
-            disabled={salarySteps.length === 0}
-            options={salarySteps.map((s) => ({
-              label: `${s.stepName} - ${s.p1Salary.toLocaleString("vi-VN")} VNĐ`,
-              value: s.id,
-            }))}
-            notFoundContent="Vui lòng chọn chức vụ trước hoặc chức vụ này chưa cấu hình bậc lương"
-          />
-        </Form.Item>
+          <div className="dept-modal-info-box">
+            <p><strong>Nhân sự:</strong> {employee.hoTen}</p>
+            <p style={{ margin: 0, fontSize: '0.85rem' }}>Mã NV (CCCD): {employee.cccd} - Đang làm việc tại: {employee.tenChucVu}</p>
+          </div>
 
-        <Form.Item
-          name="ngayHieuLuc"
-          label="Ngày hiệu lực"
-          rules={[{ required: true, message: "Vui lòng chọn ngày hiệu lực" }]}
-        >
-          <DatePicker format="DD/MM/YYYY" className="w-full" />
-        </Form.Item>
+          <div className="dept-form-group">
+            <label className="dept-form-label">Số quyết định <span className="dept-required">*</span></label>
+            <input 
+              type="text" 
+              className="dept-form-input" 
+              value={soQuyetDinh} 
+              onChange={e => setSoQuyetDinh(e.target.value)} 
+              placeholder="VD: 123/QĐ-NS" 
+            />
+          </div>
 
-        <Form.Item name="lyDo" label="Lý do điều chuyển">
-          <Input.TextArea rows={3} placeholder="Ghi chú lý do..." />
-        </Form.Item>
-      </Form>
-    </Modal>
+          <div className="dept-form-group">
+            <label className="dept-form-label">Phòng ban mới <span className="dept-required">*</span></label>
+            <select 
+              className="dept-form-select" 
+              value={idPbMoi} 
+              onChange={e => {
+                setIdPbMoi(e.target.value);
+                setIdChucVuMoi('');
+                setSalarySteps([]);
+              }}
+            >
+              <option value="">-- Chọn phòng ban --</option>
+              {departments.map((d) => (
+                <option key={d.idPb} value={d.idPb}>{d.tenPb}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="dept-form-group">
+            <label className="dept-form-label">Chức vụ mới <span className="dept-required">*</span></label>
+            <select 
+              className="dept-form-select" 
+              value={idChucVuMoi} 
+              onChange={handlePositionChange}
+              disabled={!idPbMoi}
+            >
+              <option value="">-- Chọn chức vụ --</option>
+              {availablePositions.map((p) => (
+                <option key={p.idChucVu} value={p.idChucVu}>{p.tenChucVu}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="dept-form-group">
+            <label className="dept-form-label">Bậc lương áp dụng (P1) <span className="dept-required">*</span></label>
+            <select 
+              className="dept-form-select" 
+              value={idBacLuongMoi} 
+              onChange={e => setIdBacLuongMoi(e.target.value)}
+              disabled={salarySteps.length === 0 || loadingSteps}
+            >
+              <option value="">
+                {loadingSteps ? 'Đang tải...' : salarySteps.length === 0 ? '-- Chọn chức vụ trước --' : '-- Chọn bậc lương --'}
+              </option>
+              {salarySteps.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.stepName} - {s.p1Salary.toLocaleString('vi-VN')} VNĐ
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="dept-form-group">
+            <label className="dept-form-label">Ngày hiệu lực <span className="dept-required">*</span></label>
+            <input 
+              type="date" 
+              className="dept-form-input" 
+              value={ngayHieuLuc} 
+              onChange={e => setNgayHieuLuc(e.target.value)} 
+            />
+          </div>
+
+          <div className="dept-form-group">
+            <label className="dept-form-label">Lý do điều chuyển</label>
+            <textarea 
+              className="dept-form-textarea" 
+              value={lyDo} 
+              onChange={e => setLyDo(e.target.value)} 
+              placeholder="Ghi chú lý do..." 
+            />
+          </div>
+        </div>
+        <div className="dept-modal-footer">
+          <button className="dept-btn-cancel" onClick={onClose} disabled={loading}>Hủy bỏ</button>
+          <button className="dept-btn-submit" onClick={handleSubmit} disabled={loading}>
+            {loading ? 'Đang xử lý...' : 'Xác nhận điều chuyển'}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };

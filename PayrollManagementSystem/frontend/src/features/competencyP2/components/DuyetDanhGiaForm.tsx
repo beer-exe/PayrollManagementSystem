@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Form, InputNumber, Input, Button, Table, Typography, Space, Tag, Spin } from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePhieuDanhGia } from '../hooks/usePhieuDanhGia';
 import { useMucQuyDoi } from '../hooks/useMucQuyDoi';
-
-const { Title, Text } = Typography;
+import './CompetencyManagement.css';
 
 export const DuyetDanhGiaForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { detail, loading, fetchById, submitManagerEvaluation } = usePhieuDanhGia();
   const { data: rules, fetchQuyDoi } = useMucQuyDoi();
-  const [form] = Form.useForm();
+  
   const [submitting, setSubmitting] = useState(false);
-  const chiTietsForm = Form.useWatch('chiTiets', form);
+  const [formData, setFormData] = useState<{
+    nhanXetChung: string;
+    chiTiets: Record<string, { diem: string | number; nhanXet: string }>;
+  }>({
+    nhanXetChung: '',
+    chiTiets: {}
+  });
 
   useEffect(() => {
     fetchQuyDoi();
@@ -27,36 +31,81 @@ export const DuyetDanhGiaForm: React.FC = () => {
 
   useEffect(() => {
     if (detail) {
-      const chiTiets = detail.chiTietDanhGias.map(item => ({
-        idChiTiet: item.idChiTiet,
-        diemQuanLyDanhGia: item.diemQuanLyDanhGia || item.diemTuDanhGia || 0,
-        nhanXetQuanLy: item.nhanXetQuanLy || ''
-      }));
+      const initialChiTiets: Record<string, { diem: string | number; nhanXet: string }> = {};
+      detail.chiTietDanhGias.forEach(item => {
+        initialChiTiets[item.idChiTiet] = {
+          diem: item.diemQuanLyDanhGia !== null ? item.diemQuanLyDanhGia : (item.diemTuDanhGia !== null ? item.diemTuDanhGia : ''),
+          nhanXet: item.nhanXetQuanLy || ''
+        };
+      });
       
-      form.setFieldsValue({
+      setFormData({
         nhanXetChung: detail.nhanXetChung || '',
-        chiTiets
+        chiTiets: initialChiTiets
       });
     }
-  }, [detail, form]);
+  }, [detail]);
 
-  const onFinish = async (values: any, isSubmit: boolean) => {
-    if (!id) return;
+  const handleChiTietChange = (idChiTiet: string, field: 'diem' | 'nhanXet', value: string | number) => {
+    setFormData(prev => ({
+      ...prev,
+      chiTiets: {
+        ...prev.chiTiets,
+        [idChiTiet]: {
+          ...prev.chiTiets[idChiTiet],
+          [field]: value
+        }
+      }
+    }));
+  };
+
+  const onFinish = async (isSubmit: boolean) => {
+    if (!id || !detail) return;
+    
+    if (isSubmit) {
+      const missingScores = detail.chiTietDanhGias.some(c => {
+        const val = formData.chiTiets[c.idChiTiet]?.diem;
+        return val === '' || val == null;
+      });
+      if (missingScores) {
+        alert("Vui lòng chấm điểm cho tất cả các tiêu chí trước khi chốt đánh giá.");
+        return;
+      }
+    }
+
     setSubmitting(true);
-    const success = await submitManagerEvaluation({
-      idPhieu: id,
-      isSubmit,
-      nhanXetChung: values.nhanXetChung,
-      chiTiets: values.chiTiets
-    });
-    setSubmitting(false);
+    try {
+      const chiTiets = detail.chiTietDanhGias.map(c => ({
+        idChiTiet: c.idChiTiet,
+        diemQuanLyDanhGia: Number(formData.chiTiets[c.idChiTiet]?.diem || 0),
+        nhanXetQuanLy: String(formData.chiTiets[c.idChiTiet]?.nhanXet || '')
+      }));
 
-    if (success) {
-      navigate('/dashboard/danh-gia/duyet-danh-gia');
+      const success = await submitManagerEvaluation({
+        idPhieu: id,
+        isSubmit,
+        nhanXetChung: formData.nhanXetChung,
+        chiTiets
+      });
+
+      if (success) {
+        navigate('/dashboard/danh-gia/duyet-danh-gia');
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Đã xảy ra lỗi khi lưu đánh giá.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  if (loading || !detail) return <Spin className="flex justify-center mt-20" size="large" />;
+  if (loading || !detail) {
+    return (
+      <div className="cp2-container" style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <div className="cp2-loader"><div className="cp2-spinner"></div></div>
+      </div>
+    );
+  }
 
   const isEditable = detail.canEvaluate && detail.trangThai === 'CHO_QL_DANH_GIA';
   const isCompleted = detail.trangThai === 'DA_HOAN_THANH';
@@ -65,15 +114,10 @@ export const DuyetDanhGiaForm: React.FC = () => {
   const empScore = detail.chiTietDanhGias.reduce((sum, item) => sum + (item.diemTuDanhGia || 0) * item.tyTrong, 0);
 
   // Tính điểm Quản lý (Live)
-  let mgrScore = 0;
-  if (chiTietsForm && Array.isArray(chiTietsForm)) {
-    mgrScore = chiTietsForm.reduce((sum, formItem, index) => {
-      const w = detail.chiTietDanhGias[index]?.tyTrong || 0;
-      return sum + (formItem?.diemQuanLyDanhGia || 0) * w;
-    }, 0);
-  } else if (detail) {
-    mgrScore = detail.chiTietDanhGias.reduce((sum, item) => sum + (item.diemQuanLyDanhGia || item.diemTuDanhGia || 0) * item.tyTrong, 0);
-  }
+  const mgrScore = detail.chiTietDanhGias.reduce((sum, item) => {
+    const diem = Number(formData.chiTiets[item.idChiTiet]?.diem || 0);
+    return sum + diem * item.tyTrong;
+  }, 0);
 
   // Tra cứu bảng quy đổi
   const getQuyDoi = (score: number) => {
@@ -85,143 +129,218 @@ export const DuyetDanhGiaForm: React.FC = () => {
   const empResult = getQuyDoi(empScore);
   const mgrResult = getQuyDoi(mgrScore);
 
-  const columns = [
-    { 
-      title: 'Tiêu chí Năng lực', 
-      dataIndex: 'tenNangLuc', 
-      key: 'tenNangLuc',
-      width: '20%',
-      render: (text: string, record: any) => (
-        <div>
-          <div className="font-bold">{text}</div>
-          <div className="text-gray-500 text-xs mt-1">Trọng số: {record.tyTrong}</div>
-        </div>
-      )
-    },
-    { title: 'Yêu cầu tối thiểu', dataIndex: 'yeuCauToiThieu', key: 'yeuCauToiThieu', width: '25%' },
-    { 
-      title: 'NV Tự đánh giá', 
-      key: 'tuDanhGia',
-      width: '20%',
-      render: (_: unknown, record: any) => (
-        <div className="bg-gray-50 p-2 rounded border">
-          <div className="font-bold text-blue-600">Điểm: {record.diemTuDanhGia}</div>
-          <div className="text-sm mt-1">{record.nhanXetNhanVien || <span className="italic text-gray-400">Không có nhận xét</span>}</div>
-        </div>
-      )
-    },
-    {
-      title: 'Quản lý Đánh giá',
-      key: 'quanLyDanhGia',
-      width: '25%',
-      render: (_: unknown, __: unknown, index: number) => {
-        return (
-          <div className="bg-blue-50 p-2 rounded border border-blue-200">
-            <Form.Item name={['chiTiets', index, 'idChiTiet']} hidden><Input /></Form.Item>
-            
-            <Form.Item 
-              name={['chiTiets', index, 'diemQuanLyDanhGia']} 
-              label="Điểm"
-              rules={[{ required: true, message: 'Nhập điểm' }]}
-              className="mb-2"
-            >
-              <InputNumber 
-                className="w-full" 
-                min={0} 
-                disabled={!isEditable} 
-              />
-            </Form.Item>
-            <Form.Item 
-              name={['chiTiets', index, 'nhanXetQuanLy']} 
-              className="mb-0"
-            >
-              <Input.TextArea 
-                placeholder="Nhận xét của QL..." 
-                rows={2} 
-                disabled={!isEditable} 
-              />
-            </Form.Item>
-          </div>
-        );
-      }
-    }
-  ];
+  let badgeClass = "cp2-badge-gray";
+  if (detail.trangThai === 'CHO_QL_DANH_GIA') badgeClass = "cp2-badge-blue";
+  if (detail.trangThai === 'DA_HOAN_THANH') badgeClass = "cp2-badge-success";
 
   return (
-    <Card 
-      title={
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 whitespace-normal">
-          <Title level={4} style={{ margin: 0 }}>Duyệt Phiếu Đánh Giá</Title>
-          <Tag color={isCompleted ? "green" : "blue"} style={{ margin: 0 }}>{detail.tenTrangThai || detail.trangThai}</Tag>
-        </div>
-      }
-    >
-      <div className="mb-6 bg-white dark:bg-gray-800 p-4 rounded-lg border dark:border-gray-700">
-        <Space size="large" wrap>
-          <Text><strong>Kỳ đánh giá:</strong> {detail.tenKyDanhGia}</Text>
-          <Text><strong>CCCD Nhân viên:</strong> {detail.cccdNhanVien}</Text>
-        </Space>
-      </div>
-
-      <div className="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card title="Nhân viên Tự đánh giá" size="small" className="bg-gray-50">
-          <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-2 text-base md:text-lg">
-            <span>Tổng điểm: <strong>{empScore.toFixed(2)}</strong></span>
-            <span>Hệ số P2: <strong className="text-green-600">{empResult.heSo}</strong></span>
-            <span>Xếp loại: <Tag color="blue">{empResult.xepLoai}</Tag></span>
-          </div>
-        </Card>
+    <div className="cp2-container">
+      <div className="cp2-controls-wrapper" style={{ flex: 'none', height: '100%', display: 'flex', flexDirection: 'column' }}>
         
-        <Card title="Quản lý Đánh giá (Dự kiến)" size="small" className="bg-blue-50 border-blue-200">
-          <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-2 text-base md:text-lg">
-            <span>Tổng điểm: <strong>{mgrScore.toFixed(2)}</strong></span>
-            <span>Hệ số P2: <strong className="text-blue-600">{mgrResult.heSo}</strong></span>
-            <span>Xếp loại: <Tag color="blue">{mgrResult.xepLoai}</Tag></span>
+        <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid #f3f4f6' }}>
+          <div className="cp2-header-title">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <button 
+                className="cp2-btn-actions" 
+                onClick={() => navigate('/dashboard/danh-gia/duyet-danh-gia')}
+                style={{ padding: '0.25rem' }}
+                title="Quay lại"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+              </button>
+              <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Duyệt Phiếu Đánh Giá</h2>
+              <span className={`cp2-badge ${badgeClass}`}>{detail.tenTrangThai || detail.trangThai}</span>
+            </div>
           </div>
-        </Card>
-      </div>
-
-      <Form form={form} layout="vertical">
-        <Table 
-          columns={columns} 
-          dataSource={detail.chiTietDanhGias} 
-          rowKey="idChiTiet" 
-          pagination={false}
-          bordered
-          scroll={{ x: 'max-content' }}
-        />
-
-        <div className="mt-6">
-          <Form.Item name="nhanXetChung" label={<span className="font-bold text-lg">Nhận xét chung của Quản lý</span>}>
-            <Input.TextArea rows={4} disabled={!isEditable} placeholder="Đánh giá tổng quan về nhân viên..." />
-          </Form.Item>
         </div>
 
-        <div className="flex justify-end gap-4 mt-6">
-          <Button 
-            onClick={() => navigate('/dashboard/danh-gia/duyet-danh-gia')}
+        <div className="custom-scrollbar" style={{ padding: '1.5rem', overflowY: 'auto' }}>
+          
+          <div style={{ 
+            marginBottom: '1.5rem', 
+            padding: '1rem 1.5rem', 
+            backgroundColor: '#fff', 
+            border: '1px solid #e5e7eb', 
+            borderRadius: '8px',
+            display: 'flex',
+            gap: '2rem',
+            flexWrap: 'wrap'
+          }}>
+            <div>
+              <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>Kỳ đánh giá:</span>
+              <div style={{ fontWeight: 600, color: '#111827' }}>{detail.tenKyDanhGia}</div>
+            </div>
+            <div>
+              <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>CCCD Nhân viên:</span>
+              <div style={{ fontWeight: 600, color: '#111827' }}>{detail.cccdNhanVien}</div>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
+            
+            {/* Nhân viên Tự đánh giá */}
+            <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1.25rem' }}>
+              <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', color: '#334155', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+                Nhân viên Tự đánh giá
+              </h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <span style={{ color: '#64748b', fontSize: '0.875rem', display: 'block' }}>Tổng điểm</span>
+                  <strong style={{ fontSize: '1.25rem' }}>{empScore.toFixed(2)}</strong>
+                </div>
+                <div>
+                  <span style={{ color: '#64748b', fontSize: '0.875rem', display: 'block' }}>Hệ số P2</span>
+                  <strong style={{ fontSize: '1.25rem', color: '#059669' }}>{empResult.heSo}</strong>
+                </div>
+                <div>
+                  <span style={{ color: '#64748b', fontSize: '0.875rem', display: 'block' }}>Xếp loại</span>
+                  <span className="cp2-badge cp2-badge-blue">{empResult.xepLoai}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quản lý Đánh giá */}
+            <div style={{ backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', padding: '1.25rem' }}>
+              <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', color: '#1e3a8a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Quản lý Đánh giá (Dự kiến)
+              </h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <span style={{ color: '#64748b', fontSize: '0.875rem', display: 'block' }}>Tổng điểm</span>
+                  <strong style={{ fontSize: '1.25rem' }}>{mgrScore.toFixed(2)}</strong>
+                </div>
+                <div>
+                  <span style={{ color: '#64748b', fontSize: '0.875rem', display: 'block' }}>Hệ số P2</span>
+                  <strong style={{ fontSize: '1.25rem', color: '#2563eb' }}>{mgrResult.heSo}</strong>
+                </div>
+                <div>
+                  <span style={{ color: '#64748b', fontSize: '0.875rem', display: 'block' }}>Xếp loại</span>
+                  <span className="cp2-badge cp2-badge-blue">{mgrResult.xepLoai}</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <table className="cp2-table" style={{ border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '1.5rem' }}>
+            <thead>
+              <tr>
+                <th style={{ width: '25%' }}>Tiêu chí Năng lực</th>
+                <th style={{ width: '25%' }}>Yêu cầu tối thiểu</th>
+                <th style={{ width: '20%' }}>NV Tự đánh giá</th>
+                <th style={{ width: '30%' }}>Quản lý Đánh giá</th>
+              </tr>
+            </thead>
+            <tbody>
+              {detail.chiTietDanhGias.map((c) => (
+                <tr key={c.idChiTiet}>
+                  <td>
+                    <div style={{ fontWeight: 600, color: '#111827' }}>{c.tenNangLuc}</div>
+                    <div style={{ color: '#6b7280', fontSize: '0.75rem', marginTop: '0.25rem' }}>Trọng số: {c.tyTrong}</div>
+                  </td>
+                  <td style={{ fontSize: '0.85rem' }}>{c.yeuCauToiThieu || '-'}</td>
+                  
+                  <td>
+                    <div style={{ backgroundColor: '#f9fafb', padding: '0.75rem', borderRadius: '6px', border: '1px solid #f3f4f6' }}>
+                      <div style={{ fontWeight: 600, color: '#2563eb', marginBottom: '0.25rem' }}>Điểm: {c.diemTuDanhGia ?? '-'}</div>
+                      <div style={{ fontSize: '0.85rem' }}>
+                        {c.nhanXetNhanVien || <span style={{ fontStyle: 'italic', color: '#9ca3af' }}>Không có nhận xét</span>}
+                      </div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div style={{ backgroundColor: '#eff6ff', padding: '0.75rem', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                        <span style={{ fontWeight: 600, fontSize: '0.85rem', color: '#1e3a8a' }}>Điểm:</span>
+                        <input
+                          type="number"
+                          min="0"
+                          max="10"
+                          step="0.5"
+                          disabled={!isEditable}
+                          value={formData.chiTiets[c.idChiTiet]?.diem ?? ''}
+                          onChange={(e) => handleChiTietChange(c.idChiTiet, 'diem', e.target.value)}
+                          className="cp2-form-input"
+                          style={{ padding: '0.25rem 0.5rem', width: '80px' }}
+                        />
+                      </div>
+                      <textarea
+                        disabled={!isEditable}
+                        value={formData.chiTiets[c.idChiTiet]?.nhanXet ?? ''}
+                        onChange={(e) => handleChiTietChange(c.idChiTiet, 'nhanXet', e.target.value)}
+                        className="cp2-form-textarea"
+                        placeholder="Nhận xét của QL..."
+                        style={{ minHeight: '60px', padding: '0.4rem' }}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div style={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1.25rem' }}>
+            <label style={{ display: 'block', fontWeight: 600, fontSize: '1.1rem', marginBottom: '0.75rem', color: '#111827' }}>
+              Nhận xét chung của Quản lý
+            </label>
+            <textarea
+              disabled={!isEditable}
+              value={formData.nhanXetChung}
+              onChange={(e) => setFormData(prev => ({ ...prev, nhanXetChung: e.target.value }))}
+              className="cp2-form-textarea"
+              placeholder="Đánh giá tổng quan về nhân viên..."
+              style={{ minHeight: '100px' }}
+            />
+          </div>
+
+        </div>
+
+        <div style={{ 
+          padding: '1.5rem', 
+          borderTop: '1px solid #f3f4f6', 
+          display: 'flex', 
+          justifyContent: 'flex-end', 
+          gap: '1rem',
+          backgroundColor: '#fff',
+          marginTop: 'auto'
+        }}>
+          <button 
+            className="cp2-btn cp2-btn-secondary" 
+            onClick={() => navigate('/dashboard/danh-gia/duyet-danh-gia')} 
+            disabled={submitting}
           >
             Quay lại
-          </Button>
+          </button>
+          
           {isEditable && (
             <>
-              <Button 
-                onClick={() => form.validateFields().then(v => onFinish(v, false))}
-                loading={submitting}
+              <button 
+                className="cp2-btn cp2-btn-secondary" 
+                onClick={() => onFinish(false)} 
+                disabled={submitting}
               >
                 Lưu nháp
-              </Button>
-              <Button 
-                type="primary" 
-                onClick={() => form.validateFields().then(v => onFinish(v, true))}
-                loading={submitting}
+              </button>
+              <button 
+                className="cp2-btn cp2-btn-primary" 
+                onClick={() => onFinish(true)} 
+                disabled={submitting}
               >
-                Chốt đánh giá
-              </Button>
+                {submitting ? 'Đang xử lý...' : 'Chốt đánh giá'}
+              </button>
             </>
           )}
         </div>
-      </Form>
-    </Card>
+      </div>
+    </div>
   );
 };
