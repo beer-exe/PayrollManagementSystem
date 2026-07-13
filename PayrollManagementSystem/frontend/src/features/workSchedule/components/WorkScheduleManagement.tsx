@@ -11,11 +11,12 @@ const YEAR_OPTIONS = Array.from({ length: 11 }, (_, i) => currentYear - 2 + i);
 export const WorkScheduleManagement: React.FC = () => {
   const { lichList, isLoading, isCreating, error, successMsg, fetchAll, create, remove, clearMessages } =
     useWorkSchedule();
-  
+
   const { user } = useAuthStore();
   const canManage = user?.role === 'Admin' || user?.role === 'HR';
 
   const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [viewLich, setViewLich] = useState<LichLamViecDto | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<LichLamViecDto | null>(null);
 
@@ -33,9 +34,12 @@ export const WorkScheduleManagement: React.FC = () => {
   const handleCreate = async () => {
     const yearExists = lichList.some((l) => l.nam === selectedYear);
     if (yearExists) {
-      return; // Backend sẽ trả lỗi, nhưng UX tốt hơn là check trước
+      return; 
     }
-    await create({ nam: selectedYear });
+    const success = await create({ nam: selectedYear });
+    if (success) {
+      setShowCreateModal(false);
+    }
   };
 
   const handleConfirmDelete = async () => {
@@ -57,42 +61,19 @@ export const WorkScheduleManagement: React.FC = () => {
         </div>
         <div className="ws-header-actions">
           {canManage && (
-            <select
-              id="ws-year-select"
-              className="ws-year-select"
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(Number(e.target.value))}
-              aria-label="Chọn năm"
-            >
-              {YEAR_OPTIONS.map((y) => (
-                <option key={y} value={y}>{y}</option>
-              ))}
-            </select>
-          )}
-
-          {canManage && (
             <button
               id="ws-btn-create"
               className="ws-btn-create"
-              onClick={handleCreate}
-              disabled={isCreating || isYearExists}
-              title={isYearExists ? `Lịch năm ${selectedYear} đã tồn tại` : `Tạo lịch làm việc năm ${selectedYear}`}
+              onClick={() => {
+                setSelectedYear(currentYear);
+                setShowCreateModal(true);
+              }}
+              title="Tạo lịch làm việc mới"
             >
-              {isCreating ? (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1rem', height: '1rem', animation: 'spin 0.7s linear infinite' }}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-                  </svg>
-                  Đang tạo...
-                </>
-              ) : (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1rem', height: '1rem' }}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                  </svg>
-                  Tạo lịch năm {selectedYear}
-                </>
-              )}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1rem', height: '1rem' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              Tạo lịch làm việc
             </button>
           )}
         </div>
@@ -113,16 +94,6 @@ export const WorkScheduleManagement: React.FC = () => {
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
           </svg>
           {error}
-        </div>
-      )}
-
-      {/* Year exists warning */}
-      {isYearExists && (
-        <div className="ws-alert" style={{ background: '#fff7ed', border: '1px solid #fed7aa', color: '#92400e' }} role="status">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem', flexShrink: 0 }}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-          </svg>
-          Lịch làm việc năm <strong>{selectedYear}</strong> đã tồn tại. Vui lòng chọn năm khác.
         </div>
       )}
 
@@ -250,6 +221,56 @@ export const WorkScheduleManagement: React.FC = () => {
                 onClick={handleConfirmDelete}
               >
                 Xác nhận xóa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Schedule Modal */}
+      {showCreateModal && (
+        <div className="ws-confirm-overlay">
+          <div className="ws-confirm-box" style={{ maxWidth: '450px' }}>
+            <h3 style={{ marginBottom: '1.2rem' }}>Tạo lịch làm việc</h3>
+            <div style={{ textAlign: 'left', marginBottom: '1.5rem' }}>
+              <label htmlFor="ws-modal-year" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: '#374151' }}>Chọn năm</label>
+              <select
+                id="ws-modal-year"
+                className="ws-year-select"
+                style={{ width: '100%' }}
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+              >
+                {YEAR_OPTIONS.map((y) => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
+              
+              {isYearExists && (
+                <div style={{ marginTop: '0.75rem', color: '#dc2626', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1rem', height: '1rem' }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                  </svg>
+                  Lịch năm {selectedYear} đã tồn tại!
+                </div>
+              )}
+            </div>
+            
+            <div className="ws-confirm-actions">
+              <button
+                className="ws-confirm-cancel"
+                onClick={() => setShowCreateModal(false)}
+                disabled={isCreating}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                className="ws-btn-create"
+                onClick={handleCreate}
+                disabled={isCreating || isYearExists}
+                style={{ padding: '0.55rem 1.25rem', borderRadius: '10px' }}
+              >
+                {isCreating ? 'Đang tạo...' : 'Tạo lịch'}
               </button>
             </div>
           </div>
