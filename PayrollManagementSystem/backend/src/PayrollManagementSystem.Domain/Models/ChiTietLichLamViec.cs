@@ -3,9 +3,6 @@ using PayrollManagementSystem.Domain.Enums;
 
 namespace PayrollManagementSystem.Domain.Models
 {
-    /// <summary>
-    /// Chi tiết từng ngày trong lịch làm việc (3NF: mỗi bản ghi là 1 ngày, phụ thuộc duy nhất vào PK)
-    /// </summary>
     public class ChiTietLichLamViec : BaseAuditableEntity
     {
         public Guid Id { get; set; } = Guid.NewGuid();

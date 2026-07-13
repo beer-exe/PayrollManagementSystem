@@ -10,7 +10,7 @@ namespace PayrollManagementSystem.API.Controllers
 {
     [ApiController]
     [Route("api/lich-lam-viec")]
-    [Authorize(Roles = "Admin,HR")]
+    [Authorize]
     public class LichLamViecController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -20,31 +20,30 @@ namespace PayrollManagementSystem.API.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>Lấy danh sách lịch làm việc theo năm</summary>
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             var response = await _mediator.Send(new GetLichLamViecsQuery());
             return Ok(response);
         }
 
-        /// <summary>Tạo lịch làm việc cho một năm</summary>
         [HttpPost]
+        [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> Create([FromBody] CreateLichLamViecCommand command)
         {
             var response = await _mediator.Send(command);
             return Ok(response);
         }
 
-        /// <summary>Xóa lịch làm việc (soft-delete)</summary>
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var response = await _mediator.Send(new DeleteLichLamViecCommand { IdLich = id });
             return Ok(response);
         }
 
-        /// <summary>Lấy chi tiết lịch làm việc theo tháng (phân trang)</summary>
         [HttpGet("{id:guid}/chi-tiet")]
         public async Task<IActionResult> GetChiTiet(
             Guid id,

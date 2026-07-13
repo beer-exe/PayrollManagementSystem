@@ -20,14 +20,12 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Cre
 
         public async Task<Response<Guid>> Handle(CreateLichLamViecCommand request, CancellationToken cancellationToken)
         {
-            // Kiểm tra năm đã tồn tại chưa
             var exists = await _context.LichLamViecs
                 .AnyAsync(l => l.Nam == request.Nam, cancellationToken);
 
             if (exists)
                 throw new ApiException($"Lịch làm việc năm {request.Nam} đã tồn tại trong hệ thống.");
 
-            // Tạo header lịch làm việc
             var lich = new LichLamViec
             {
                 IdLich = Guid.NewGuid(),
@@ -36,10 +34,8 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Cre
                 GhiChu = request.GhiChu
             };
 
-            // Lấy danh sách ngày lễ trong năm
             var holidays = VietnamHolidayService.GetHolidays(request.Nam);
 
-            // Tạo chi tiết từng ngày trong năm
             var chiTiets = new List<ChiTietLichLamViec>();
             var startDate = new DateOnly(request.Nam, 1, 1);
             var endDate = new DateOnly(request.Nam, 12, 31);
