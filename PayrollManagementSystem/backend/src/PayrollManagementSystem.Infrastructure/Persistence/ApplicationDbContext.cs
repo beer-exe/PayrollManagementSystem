@@ -40,6 +40,9 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
         public virtual DbSet<ChiTietDanhGiaNangLuc> ChiTietDanhGiaNangLucs { get; set; }
         public virtual DbSet<MucQuyDoiP2> MucQuyDoiP2s { get; set; }
 
+        public virtual DbSet<LichLamViec> LichLamViecs { get; set; }
+        public virtual DbSet<ChiTietLichLamViec> ChiTietLichLamViecs { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -539,10 +542,69 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
 
 
 
+            ConfigureLichLamViec(modelBuilder);
+
             OnModelCreatingPartial(modelBuilder);
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+        private void ConfigureLichLamViec(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<LichLamViec>(entity =>
+            {
+                entity.HasKey(e => e.IdLich).HasName("lich_lam_viecs_pkey");
+                entity.ToTable("lich_lam_viecs");
+
+                entity.Property(e => e.IdLich).HasColumnName("id_lich");
+                entity.Property(e => e.Nam).HasColumnName("nam");
+                entity.HasIndex(e => e.Nam).IsUnique().HasDatabaseName("idx_lich_lam_viec_nam_unique");
+
+                entity.Property(e => e.TrangThai)
+                    .HasConversion<string>()
+                    .HasMaxLength(20)
+                    .HasColumnName("trang_thai");
+
+                entity.Property(e => e.GhiChu)
+                    .HasMaxLength(500)
+                    .HasColumnName("ghi_chu");
+            });
+
+            modelBuilder.Entity<ChiTietLichLamViec>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("chi_tiet_lich_lam_viecs_pkey");
+                entity.ToTable("chi_tiet_lich_lam_viecs");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.IdLich).HasColumnName("id_lich");
+                entity.Property(e => e.Ngay).HasColumnName("ngay");
+
+                entity.Property(e => e.Thu)
+                    .HasMaxLength(20)
+                    .HasColumnName("thu");
+
+                entity.Property(e => e.LoaiNgay)
+                    .HasConversion<string>()
+                    .HasMaxLength(20)
+                    .HasColumnName("loai_ngay");
+
+                entity.Property(e => e.TenNgayNghi)
+                    .HasMaxLength(100)
+                    .HasColumnName("ten_ngay_nghi");
+
+                entity.Property(e => e.SoGioLam)
+                    .HasColumnType("decimal(4,1)")
+                    .HasColumnName("so_gio_lam");
+
+                entity.HasOne(e => e.LichLamViec)
+                    .WithMany(l => l.ChiTietLichLamViecs)
+                    .HasForeignKey(e => e.IdLich)
+                    .HasConstraintName("fk_chi_tiet_lich_lam_viec");
+
+                entity.HasIndex(e => new { e.IdLich, e.Ngay })
+                    .HasDatabaseName("idx_chi_tiet_lich_ngay");
+            });
+        }
 
         public void SoftRemove<TEntity>(TEntity entity) where TEntity : PayrollManagementSystem.Domain.Common.BaseAuditableEntity
         {
