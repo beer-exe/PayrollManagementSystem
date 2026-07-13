@@ -62,13 +62,9 @@ namespace PayrollManagementSystem.API.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Import chấm công hàng loạt từ file CSV.
-        /// Format CSV (có header): CCCD,NgayChamCong(dd/MM/yyyy),GioVao(HH:mm),GioRa(HH:mm),GhiChu
-        /// </summary>
         [HttpPost("import")]
         [Authorize(Roles = "Admin,HR")]
-        public async Task<IActionResult> Import([FromForm] IFormFile file)
+        public async Task<IActionResult> Import(IFormFile file)
         {
             var response = await _mediator.Send(new ImportChamCongCommand
             {

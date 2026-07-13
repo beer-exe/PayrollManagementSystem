@@ -28,7 +28,6 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.UpdateC
             if (chamCong == null)
                 throw new ApiException($"Không tìm thấy bản ghi chấm công.");
 
-            // Lấy lịch làm việc ngày đó để tính lại ngày công
             var chiTietLich = await _context.ChiTietLichLamViecs
                 .FirstOrDefaultAsync(ct => ct.Ngay == chamCong.NgayChamCong, cancellationToken);
 
@@ -40,7 +39,6 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.UpdateC
             chamCong.GhiChu = request.GhiChu;
             chamCong.IsNhapTay = true;
 
-            // Tính lại giờ và ngày công
             if (loaiNgayTrongLich is LoaiNgay.NGHI_LE or LoaiNgay.NGHI_CUOI_TUAN)
             {
                 chamCong.SoGioLamThucTe = 0;
