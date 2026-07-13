@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useKhungNangLuc } from '../hooks/useKhungNangLuc';
 import { positionApi } from '@/features/positions/api/positionApi';
 import { PositionDto } from '@/features/positions/types/position.types';
@@ -31,6 +31,11 @@ export const KhungNangLucManagement: React.FC = () => {
   const [criteriaList, setCriteriaList] = useState<CriteriaFormItem[]>([]);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
+  // Custom Dropdown State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
@@ -59,6 +64,9 @@ export const KhungNangLucManagement: React.FC = () => {
       if (activeDropdown && !(e.target as Element).closest('.cp2-actions')) {
         setActiveDropdown(null);
       }
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -70,6 +78,16 @@ export const KhungNangLucManagement: React.FC = () => {
       setCurrentPage(1);
     }
   }, [selectedChucVu, fetchByChucVu]);
+
+  const filteredPositions = positions.filter(p => 
+    p.tenChucVu.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleSelectPosition = (p: PositionDto) => {
+    setSelectedChucVu(p.idChucVu);
+    setSearchTerm(p.tenChucVu);
+    setIsDropdownOpen(false);
+  };
 
   const handleOpenConfig = () => {
     // Map existing data to form state, converting tyTrong from 0-1 to 0-100
@@ -214,16 +232,41 @@ export const KhungNangLucManagement: React.FC = () => {
         <div className="cp2-filters" style={{ borderBottom: 'none' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', width: '100%', maxWidth: '400px' }}>
             <span style={{ fontWeight: 600, color: '#374151', whiteSpace: 'nowrap' }}>Chọn Chức vụ:</span>
-            <select
-              value={selectedChucVu}
-              onChange={(e) => setSelectedChucVu(e.target.value)}
-              className="cp2-select"
-            >
-              <option value="">-- Chọn chức vụ cần cấu hình --</option>
-              {positions.map(p => (
-                <option key={p.idChucVu} value={p.idChucVu}>{p.tenChucVu}</option>
-              ))}
-            </select>
+            <div className="cp2-dropdown-select-wrap" ref={dropdownRef} style={{ flex: 1 }}>
+              <input
+                className="cp2-select"
+                placeholder="-- Chọn chức vụ cần cấu hình --"
+                value={searchTerm}
+                onChange={e => {
+                  setSearchTerm(e.target.value);
+                  setSelectedChucVu('');
+                  setIsDropdownOpen(true);
+                }}
+                onFocus={() => {
+                  setSearchTerm('');
+                  setSelectedChucVu('');
+                  setIsDropdownOpen(true);
+                }}
+                autoComplete="off"
+              />
+              {isDropdownOpen && (
+                <ul className="cp2-dropdown-select-list custom-scrollbar">
+                  {filteredPositions.length > 0 ? (
+                    filteredPositions.map(p => (
+                      <li
+                        key={p.idChucVu}
+                        className={selectedChucVu === p.idChucVu ? 'selected' : ''}
+                        onClick={() => handleSelectPosition(p)}
+                      >
+                        {p.tenChucVu}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="cp2-empty-option">Không tìm thấy chức vụ</li>
+                  )}
+                </ul>
+              )}
+            </div>
           </div>
         </div>
 

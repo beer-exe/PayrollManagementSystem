@@ -535,6 +535,54 @@ input:checked + .usr-slider:before {
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
+/* ---- Dropdown Select ---- */
+.usr-dropdown-select-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.usr-dropdown-select-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  margin: 4px 0 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.usr-dropdown-select-list li {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  color: #111827;
+  font-size: 0.875rem;
+  transition: background 0.2s;
+}
+
+.usr-dropdown-select-list li:hover {
+  background-color: #f9fafb;
+}
+
+.usr-dropdown-select-list li.selected {
+  background-color: #f3f4f6;
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.usr-empty-option {
+  padding: 0.5rem 1rem;
+  color: #6b7280;
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
 .usr-modal-footer {
   padding: 1rem 1.5rem;
   background: #f9fafb;
