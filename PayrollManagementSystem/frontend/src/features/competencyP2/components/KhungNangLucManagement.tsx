@@ -6,7 +6,7 @@ import './CompetencyManagement.css';
 
 // Array of vibrant colors for the donut chart slices
 const CHART_COLORS = [
-  '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', 
+  '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
   '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1'
 ];
 
@@ -21,12 +21,12 @@ interface CriteriaFormItem {
 export const KhungNangLucManagement: React.FC = () => {
   const [positions, setPositions] = useState<PositionDto[]>([]);
   const [selectedChucVu, setSelectedChucVu] = useState<string>('');
-  
+
   const { data, loading, fetchByChucVu, createCriteria, updateCriteria, deleteCriteria } = useKhungNangLuc();
-  
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Dynamic Form State
   const [criteriaList, setCriteriaList] = useState<CriteriaFormItem[]>([]);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -54,7 +54,7 @@ export const KhungNangLucManagement: React.FC = () => {
 
   useEffect(() => {
     fetchPositions();
-    
+
     const handleClickOutside = (e: MouseEvent) => {
       if (activeDropdown && !(e.target as Element).closest('.cp2-actions')) {
         setActiveDropdown(null);
@@ -80,14 +80,14 @@ export const KhungNangLucManagement: React.FC = () => {
       tyTrong: Number((item.tyTrong * 100).toFixed(1)),
       key: Math.random().toString(36).substring(7)
     }));
-    
+
     setCriteriaList(initialValues);
     setIsModalVisible(true);
   };
 
   const addCriteria = () => {
     setCriteriaList([
-      ...criteriaList, 
+      ...criteriaList,
       { tenNangLuc: '', moTa: '', tyTrong: '', key: Math.random().toString(36).substring(7) }
     ]);
   };
@@ -103,19 +103,19 @@ export const KhungNangLucManagement: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedChucVu) return;
-    
+
     // Validation
     if (totalWeightPercent > 100) {
       alert("Tổng tỷ trọng không được vượt quá 100%");
       return;
     }
-    
+
     const hasEmptyName = criteriaList.some(c => !c.tenNangLuc.trim());
     if (hasEmptyName) {
       alert("Vui lòng nhập đầy đủ tên tiêu chí năng lực.");
       return;
     }
-    
+
     const hasInvalidWeight = criteriaList.some(c => Number(c.tyTrong) <= 0);
     if (hasInvalidWeight) {
       alert("Tỷ trọng phải lớn hơn 0%.");
@@ -123,15 +123,15 @@ export const KhungNangLucManagement: React.FC = () => {
     }
 
     setIsSubmitting(true);
-    
+
     // Find what to create, update, delete
     const existingIdsInForm = criteriaList.map(c => c.idTieuChi).filter(Boolean);
     const deletedItems = data.filter(d => !existingIdsInForm.includes(d.idTieuChi));
-    
+
     try {
       // 1. Delete removed items
       const deletePromises = deletedItems.map(d => deleteCriteria(d.idTieuChi));
-      
+
       // 2. Update existing items
       const updatePromises = criteriaList
         .filter(c => c.idTieuChi)
@@ -141,7 +141,7 @@ export const KhungNangLucManagement: React.FC = () => {
           moTa: c.moTa || null,
           tyTrong: Number(c.tyTrong) / 100
         }));
-        
+
       // 3. Create new items
       const createPromises = criteriaList
         .filter(c => !c.idTieuChi)
@@ -187,7 +187,7 @@ export const KhungNangLucManagement: React.FC = () => {
     gradientStops.push(`#e5e7eb ${gradientResult.cumulative}%, #e5e7eb 100%`);
   }
 
-  const conicGradient = gradientStops.length > 0 
+  const conicGradient = gradientStops.length > 0
     ? `conic-gradient(${gradientStops.join(', ')})`
     : 'conic-gradient(#e5e7eb 0 100%)';
 
@@ -198,9 +198,9 @@ export const KhungNangLucManagement: React.FC = () => {
           <h2>Cấu hình Khung Năng Lực (P2)</h2>
           <p>Thiết lập các tiêu chí năng lực cốt lõi cho từng chức vụ</p>
         </div>
-        <button 
-          className="cp2-btn cp2-btn-primary" 
-          disabled={!selectedChucVu} 
+        <button
+          className="cp2-btn cp2-btn-primary"
+          disabled={!selectedChucVu}
           onClick={handleOpenConfig}
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
@@ -260,7 +260,7 @@ export const KhungNangLucManagement: React.FC = () => {
                         </td>
                         <td>
                           <div className="cp2-actions">
-                            <button 
+                            <button
                               className="cp2-btn-actions"
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -271,11 +271,11 @@ export const KhungNangLucManagement: React.FC = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
                               </svg>
                             </button>
-                            
+
                             {activeDropdown === record.idTieuChi && (
                               <div className="cp2-actions-dropdown">
-                                <button 
-                                  className="cp2-dropdown-item" 
+                                <button
+                                  className="cp2-dropdown-item"
                                   onClick={() => {
                                     handleOpenConfig();
                                     setActiveDropdown(null);
@@ -286,8 +286,8 @@ export const KhungNangLucManagement: React.FC = () => {
                                   </svg>
                                   Sửa tiêu chí
                                 </button>
-                                <button 
-                                  className="cp2-dropdown-item danger" 
+                                <button
+                                  className="cp2-dropdown-item danger"
                                   onClick={() => {
                                     handleDelete(record.idTieuChi);
                                     setActiveDropdown(null);
@@ -312,12 +312,12 @@ export const KhungNangLucManagement: React.FC = () => {
                 </div>
               )}
             </div>
-            
+
             {totalPages > 0 && (
               <div className="cp2-pagination">
-                <button 
-                  className="cp2-btn cp2-btn-secondary" 
-                  onClick={() => setCurrentPage(p => p - 1)} 
+                <button
+                  className="cp2-btn cp2-btn-secondary"
+                  onClick={() => setCurrentPage(p => p - 1)}
                   disabled={currentPage === 1 || loading}
                   style={{ padding: '0.35rem 0.75rem' }}
                 >
@@ -326,9 +326,9 @@ export const KhungNangLucManagement: React.FC = () => {
                 <div className="cp2-pagination-info">
                   Trang <span>{currentPage}</span> / <span>{totalPages}</span>
                 </div>
-                <button 
-                  className="cp2-btn cp2-btn-secondary" 
-                  onClick={() => setCurrentPage(p => p + 1)} 
+                <button
+                  className="cp2-btn cp2-btn-secondary"
+                  onClick={() => setCurrentPage(p => p + 1)}
                   disabled={currentPage === totalPages || loading}
                   style={{ padding: '0.35rem 0.75rem' }}
                 >
@@ -351,7 +351,7 @@ export const KhungNangLucManagement: React.FC = () => {
             </div>
 
             <div className="cp2-modal-body custom-scrollbar" style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', maxHeight: '70vh' }}>
-              
+
               {/* Left side: Dynamic Form List */}
               <div style={{ flex: '1 1 500px' }}>
                 <form id="config-form" onSubmit={handleSubmit}>
@@ -371,7 +371,7 @@ export const KhungNangLucManagement: React.FC = () => {
                               required
                             />
                           </div>
-                          
+
                           <div className="cp2-form-group" style={{ width: '120px' }}>
                             <label className="cp2-form-label">Tỷ trọng (%) <span className="required">*</span></label>
                             <div style={{ position: 'relative' }}>
@@ -402,9 +402,9 @@ export const KhungNangLucManagement: React.FC = () => {
                           />
                         </div>
                       </div>
-                      <button 
-                        type="button" 
-                        className="cp2-btn-remove" 
+                      <button
+                        type="button"
+                        className="cp2-btn-remove"
                         onClick={() => removeCriteria(item.key)}
                         title="Xóa tiêu chí"
                       >
@@ -414,7 +414,7 @@ export const KhungNangLucManagement: React.FC = () => {
                       </button>
                     </div>
                   ))}
-                  
+
                   <button type="button" className="cp2-btn cp2-btn-dashed" onClick={addCriteria}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -427,7 +427,7 @@ export const KhungNangLucManagement: React.FC = () => {
               {/* Right side: Donut Chart & Stats */}
               <div className="cp2-chart-container" style={{ width: '280px', flexShrink: 0 }}>
                 <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#374151', marginBottom: '1.5rem' }}>Phân Bổ Tỷ Trọng</h3>
-                
+
                 <div className="cp2-donut-chart" style={{ background: conicGradient }}>
                   <div className="cp2-donut-hole">
                     <span className="cp2-donut-value" style={{ color: isOverweight ? '#ef4444' : '#111827' }}>
@@ -461,10 +461,10 @@ export const KhungNangLucManagement: React.FC = () => {
               <button type="button" className="cp2-btn cp2-btn-secondary" onClick={() => setIsModalVisible(false)} disabled={isSubmitting}>
                 Hủy bỏ
               </button>
-              <button 
-                type="submit" 
-                form="config-form" 
-                className="cp2-btn cp2-btn-primary" 
+              <button
+                type="submit"
+                form="config-form"
+                className="cp2-btn cp2-btn-primary"
                 disabled={isSubmitting || isOverweight}
               >
                 {isSubmitting ? 'Đang lưu...' : 'Lưu lại'}
