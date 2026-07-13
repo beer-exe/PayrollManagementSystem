@@ -56,17 +56,19 @@ export const WorkScheduleManagement: React.FC = () => {
           <p>Tạo và quản lý lịch làm việc theo năm với ngày lễ Việt Nam</p>
         </div>
         <div className="ws-header-actions">
-          <select
-            id="ws-year-select"
-            className="ws-year-select"
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(Number(e.target.value))}
-            aria-label="Chọn năm"
-          >
-            {YEAR_OPTIONS.map((y) => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
+          {canManage && (
+            <select
+              id="ws-year-select"
+              className="ws-year-select"
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number(e.target.value))}
+              aria-label="Chọn năm"
+            >
+              {YEAR_OPTIONS.map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          )}
 
           {canManage && (
             <button
