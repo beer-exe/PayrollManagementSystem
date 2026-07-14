@@ -33,6 +33,11 @@ namespace PayrollManagementSystem.API.Controllers
         [Authorize(Roles = "HR")]
         public async Task<IActionResult> Put(Guid id, [FromBody] UpdateMucQuyDoiCommand command)
         {
+            if (command.IdQuyDoi == Guid.Empty)
+            {
+                command.IdQuyDoi = id;
+            }
+
             if (id != command.IdQuyDoi)
             {
                 return BadRequest("ID không khớp.");
