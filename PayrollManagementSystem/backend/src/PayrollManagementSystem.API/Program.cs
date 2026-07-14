@@ -30,10 +30,27 @@ namespace PayrollManagementSystem.API
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .UseSerilog((context, services, configuration) => configuration
-                    .ReadFrom.Configuration(context.Configuration)
-                    .ReadFrom.Services(services)
-                    .Enrich.FromLogContext())
+                .UseSerilog((context, services, configuration) => 
+                {
+                    // Expand environment variables for Serilog File sink path (e.g. %BASEDIR%)
+                    var writeToSections = context.Configuration.GetSection("Serilog:WriteTo").GetChildren();
+                    foreach (var section in writeToSections)
+                    {
+                        if (section["Name"] == "File")
+                        {
+                            var path = section["Args:path"];
+                            if (!string.IsNullOrEmpty(path))
+                            {
+                                section["Args:path"] = Environment.ExpandEnvironmentVariables(path);
+                            }
+                        }
+                    }
+
+                    configuration
+                        .ReadFrom.Configuration(context.Configuration)
+                        .ReadFrom.Services(services)
+                        .Enrich.FromLogContext();
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

@@ -16,6 +16,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
             if (nhanVien == null) return new Response<Guid>("Không tìm thấy nhân viên hợp lệ.");
 
             var cccd = nhanVien.Cccd;
+            var today = DateOnly.FromDateTime(DateTime.Today);
 
             var existing = await _context.PhieuDanhGiaNangLucs
                 .FirstOrDefaultAsync(x => x.IdKyDanhGia == request.IdKyDanhGia && x.CccdNhanVien == cccd, cancellationToken);
@@ -23,8 +24,9 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
                 return new Response<Guid>(existing.IdPhieu, "Phiếu đã tồn tại.");
 
             var quyetDinh = await _context.QuyetDinhNhanSus
-                .Where(x => x.Cccd == cccd && x.TrangThai == Domain.Enums.TrangThaiQuyetDinh.HIEU_LUC)
+                .Where(x => x.Cccd == cccd && x.TrangThai == Domain.Enums.TrangThaiQuyetDinh.HIEU_LUC && x.NgayHieuLuc <= today)
                 .OrderByDescending(x => x.NgayHieuLuc)
+                .ThenByDescending(x => x.CreatedAt)
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (quyetDinh == null || string.IsNullOrEmpty(quyetDinh.IdChucVuMoi))
@@ -43,8 +45,9 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
             if (chucVuHienTai != null && !string.IsNullOrEmpty(chucVuHienTai.IdChucVuQuanLy))
             {
                 var managerQd = await _context.QuyetDinhNhanSus
-                    .Where(q => q.IdChucVuMoi == chucVuHienTai.IdChucVuQuanLy && q.TrangThai == Domain.Enums.TrangThaiQuyetDinh.HIEU_LUC)
+                    .Where(q => q.IdChucVuMoi == chucVuHienTai.IdChucVuQuanLy && q.TrangThai == Domain.Enums.TrangThaiQuyetDinh.HIEU_LUC && q.NgayHieuLuc <= today)
                     .OrderByDescending(q => q.NgayHieuLuc)
+                    .ThenByDescending(q => q.CreatedAt)
                     .FirstOrDefaultAsync(cancellationToken);
                 
                 if (managerQd != null)
