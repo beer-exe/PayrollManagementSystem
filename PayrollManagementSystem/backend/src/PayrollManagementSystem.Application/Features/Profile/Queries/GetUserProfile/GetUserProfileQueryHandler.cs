@@ -19,6 +19,8 @@ namespace PayrollManagementSystem.Application.Features.Profile.Queries.GetUserPr
 
         public async Task<Response<UserProfileDto>> Handle(GetUserProfileQuery request, CancellationToken cancellationToken)
         {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
             var profile = await _context.NhanViens
                 .Where(nv => nv.IdTaiKhoan == request.TaiKhoanId)
                 .Select(nv => new UserProfileDto
@@ -39,8 +41,9 @@ namespace PayrollManagementSystem.Application.Features.Profile.Queries.GetUserPr
                     TenPhongBan = nv.PhongBan != null ? nv.PhongBan.TenPb : null,
 
                     TenChucVu = _context.QuyetDinhNhanSus
-                        .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC)
+                        .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC && qd.NgayHieuLuc <= today)
                         .OrderByDescending(qd => qd.NgayHieuLuc)
+                        .ThenByDescending(qd => qd.CreatedAt)
                         .Select(qd => _context.ChucVus.FirstOrDefault(cv => cv.IdChucVu == qd.IdChucVuMoi).TenChucVu)
                         .FirstOrDefault(),
 
@@ -51,8 +54,9 @@ namespace PayrollManagementSystem.Application.Features.Profile.Queries.GetUserPr
                     IdPb = nv.IdPb,
 
                     LuongP1 = _context.QuyetDinhNhanSus
-                        .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC)
+                        .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC && qd.NgayHieuLuc <= today)
                         .OrderByDescending(qd => qd.NgayHieuLuc)
+                        .ThenByDescending(qd => qd.CreatedAt)
                         .Select(qd => (decimal?)_context.BacLuongs.FirstOrDefault(bl => bl.IdBacLuong == qd.IdBacLuongMoi).LuongP1)
                         .FirstOrDefault(),
 
@@ -87,6 +91,7 @@ namespace PayrollManagementSystem.Application.Features.Profile.Queries.GetUserPr
                     LichSuCongTac = _context.QuyetDinhNhanSus
                         .Where(qd => qd.Cccd == nv.Cccd)
                         .OrderByDescending(qd => qd.NgayHieuLuc)
+                        .ThenByDescending(qd => qd.CreatedAt)
                         .Select(qd => new LichSuCongTacDto
                         {
                             SoQuyetDinh = qd.SoQuyetDinh,

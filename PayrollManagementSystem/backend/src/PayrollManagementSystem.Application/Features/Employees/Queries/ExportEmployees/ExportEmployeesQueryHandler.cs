@@ -19,6 +19,8 @@ namespace PayrollManagementSystem.Application.Features.Employees.Queries.ExportE
 
         public async Task<byte[]> Handle(ExportEmployeesQuery request, CancellationToken cancellationToken)
         {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
             var query = _context.NhanViens
                 .Include(nv => nv.PhongBan)
                 .AsQueryable();
@@ -56,8 +58,9 @@ namespace PayrollManagementSystem.Application.Features.Employees.Queries.ExportE
                     TenPhongBan = nv.PhongBan != null ? nv.PhongBan.TenPb : null,
 
                     TenChucVu = _context.QuyetDinhNhanSus
-                        .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC)
+                        .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC && qd.NgayHieuLuc <= today)
                         .OrderByDescending(qd => qd.NgayHieuLuc)
+                        .ThenByDescending(qd => qd.CreatedAt)
                         .Select(qd => _context.ChucVus.FirstOrDefault(cv => cv.IdChucVu == qd.IdChucVuMoi).TenChucVu)
                         .FirstOrDefault(),
 
@@ -66,8 +69,9 @@ namespace PayrollManagementSystem.Application.Features.Employees.Queries.ExportE
                     MaSoThue = nv.MaSoThue,
 
                     LuongP1 = _context.QuyetDinhNhanSus
-                        .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC)
+                        .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC && qd.NgayHieuLuc <= today)
                         .OrderByDescending(qd => qd.NgayHieuLuc)
+                        .ThenByDescending(qd => qd.CreatedAt)
                         .Select(qd => _context.BacLuongs.FirstOrDefault(bl => bl.IdBacLuong == qd.IdBacLuongMoi).LuongP1)
                         .FirstOrDefault(),
 

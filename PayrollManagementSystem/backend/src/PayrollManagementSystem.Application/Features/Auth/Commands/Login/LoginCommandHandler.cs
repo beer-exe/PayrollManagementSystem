@@ -50,9 +50,11 @@ namespace PayrollManagementSystem.Application.Features.Auth.Commands.Login
             if (taiKhoan.NhanVien != null && !string.IsNullOrEmpty(taiKhoan.NhanVien.Cccd))
             {
                 // Determine if user has direct reports by checking if their current position manages any other positions
+                var today = DateOnly.FromDateTime(DateTime.Today);
                 var activeQuyetDinh = await _context.QuyetDinhNhanSus
-                    .Where(q => q.Cccd == taiKhoan.NhanVien.Cccd && q.TrangThai == TrangThaiQuyetDinh.HIEU_LUC)
+                    .Where(q => q.Cccd == taiKhoan.NhanVien.Cccd && q.TrangThai == TrangThaiQuyetDinh.HIEU_LUC && q.NgayHieuLuc <= today)
                     .OrderByDescending(q => q.NgayHieuLuc)
+                    .ThenByDescending(q => q.CreatedAt)
                     .FirstOrDefaultAsync(cancellationToken);
 
                 if (activeQuyetDinh != null && !string.IsNullOrEmpty(activeQuyetDinh.IdChucVuMoi))
