@@ -246,6 +246,8 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                 entity.HasKey(e => e.SoQuyetDinh).HasName("quyet_dinh_nhan_sus_pkey");
                 entity.ToTable("quyet_dinh_nhan_sus");
 
+                entity.HasIndex(e => new { e.Cccd, e.TrangThai, e.NgayHieuLuc }, "idx_qd_nhansu_active");
+
                 entity.Property(e => e.SoQuyetDinh)
                     .HasMaxLength(50)
                     .HasColumnName("so_quyet_dinh");
@@ -261,6 +263,12 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                 entity.Property(e => e.IdChucVuMoi)
                     .HasMaxLength(50)
                     .HasColumnName("id_chuc_vu_moi");
+                entity.Property(e => e.IdBacLuongCu)
+                    .HasMaxLength(50)
+                    .HasColumnName("id_bac_luong_cu");
+                entity.Property(e => e.IdChucVuCu)
+                    .HasMaxLength(50)
+                    .HasColumnName("id_chuc_vu_cu");
                 entity.Property(e => e.NgayHieuLuc).HasColumnName("ngay_hieu_luc");
                 entity.Property(e => e.NgayHetHan).HasColumnName("ngay_het_han");
                 entity.Property(e => e.NguoiKy).HasMaxLength(100).HasColumnName("nguoi_ky");
@@ -281,6 +289,12 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                     .HasForeignKey(d => d.IdBacLuongMoi)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("quyet_dinh_nhan_sus_id_bac_luong_moi_fkey");
+
+                entity.HasOne(d => d.ChucVuMoi)
+                    .WithMany(p => p.QuyetDinhNhanSus)
+                    .HasForeignKey(d => d.IdChucVuMoi)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("quyet_dinh_nhan_sus_id_chuc_vu_moi_fkey");
             });
 
             modelBuilder.Entity<TaiKhoan>(entity =>

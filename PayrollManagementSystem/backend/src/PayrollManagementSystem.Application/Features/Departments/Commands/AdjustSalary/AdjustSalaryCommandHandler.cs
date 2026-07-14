@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
@@ -23,6 +23,7 @@ namespace PayrollManagementSystem.Application.Features.Departments.Commands.Adju
             var quyetDinhHienTai = await _context.QuyetDinhNhanSus
                 .Where(qd => qd.Cccd == request.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC)
                 .OrderByDescending(qd => qd.NgayHieuLuc)
+                .ThenByDescending(qd => qd.CreatedAt)
                 .FirstOrDefaultAsync(cancellationToken);
 
             var quyetDinh = new Domain.Models.QuyetDinhNhanSu
@@ -30,6 +31,8 @@ namespace PayrollManagementSystem.Application.Features.Departments.Commands.Adju
                 SoQuyetDinh = request.SoQuyetDinh,
                 Cccd = request.Cccd,
                 LoaiQuyetDinh = "Điều chỉnh lương",
+                IdChucVuCu = quyetDinhHienTai?.IdChucVuMoi,
+                IdBacLuongCu = quyetDinhHienTai?.IdBacLuongMoi,
                 IdChucVuMoi = quyetDinhHienTai?.IdChucVuMoi, // Giữ nguyên chức vụ cũ
                 IdBacLuongMoi = request.IdBacLuongMoi,
                 NgayHieuLuc = DateOnly.FromDateTime(request.NgayHieuLuc),
@@ -37,6 +40,14 @@ namespace PayrollManagementSystem.Application.Features.Departments.Commands.Adju
             };
 
             _context.QuyetDinhNhanSus.Add(quyetDinh);
+
+            if (quyetDinhHienTai != null && DateOnly.FromDateTime(request.NgayHieuLuc) <= DateOnly.FromDateTime(DateTime.Today))
+            {
+                quyetDinhHienTai.TrangThai = TrangThaiQuyetDinh.HET_HAN;
+                quyetDinhHienTai.NgayHetHan = DateOnly.FromDateTime(request.NgayHieuLuc);
+                _context.QuyetDinhNhanSus.Update(quyetDinhHienTai);
+            }
+
             await _context.SaveChangesAsync(cancellationToken);
 
             return new Response<bool>(true, "Điều chỉnh bậc lương thành công.");

@@ -131,8 +131,9 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
   if (!isOpen) return null;
 
   return (
-    <div className="jg-drawer-overlay" onClick={onClose}>
-      <div className="jg-drawer" onClick={e => e.stopPropagation()}>
+    <>
+      <div className="jg-drawer-overlay" onClick={onClose}>
+        <div className="jg-drawer" onClick={e => e.stopPropagation()}>
         <div className="jg-drawer-header">
           <h2 className="jg-drawer-title">Cấu Hình Bậc Lương - Ngạch {jobGradeName}</h2>
           <button className="jg-drawer-close" onClick={onClose}>
@@ -212,6 +213,7 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
             )}
           </div>
         </div>
+      </div>
       </div>
 
       {formModalOpen && (
@@ -323,6 +325,6 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };

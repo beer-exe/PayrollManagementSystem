@@ -19,5 +19,6 @@ namespace PayrollManagementSystem.Domain.Models
         public ChucVu? ChucVuQuanLy { get; set; }
         public ICollection<ChucVu> ChucVuCapDuois { get; set; } = new List<ChucVu>();
         public ICollection<KhungNangLucP2> KhungNangLucs { get; set; } = new List<KhungNangLucP2>();
+        public ICollection<QuyetDinhNhanSu> QuyetDinhNhanSus { get; set; } = new List<QuyetDinhNhanSu>();
     }
 }

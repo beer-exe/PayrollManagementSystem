@@ -25,6 +25,8 @@ namespace PayrollManagementSystem.Infrastructure
             services.AddTransient<IPasswordHasher, PasswordHasher>();
             services.AddTransient<IExcelService, ExcelService>();
 
+            services.AddHostedService<PayrollManagementSystem.Infrastructure.BackgroundJobs.UpdateExpiredDecisionsJob>();
+
             var cacheSettings = new PayrollManagementSystem.Application.Common.Models.CacheSettings
             {
                 Provider = configuration["CacheSettings:Provider"] ?? "Memory",
