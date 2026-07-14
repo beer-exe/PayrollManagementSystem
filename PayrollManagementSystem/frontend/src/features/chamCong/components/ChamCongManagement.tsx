@@ -4,6 +4,7 @@ import { chamCongApi } from '../api/chamCongApi';
 import { departmentApi } from '../../departments/api/departmentApi';
 import type { ChamCongDto, CreateChamCongRequest, UpdateChamCongRequest } from '../types/chamCong.types';
 import type { DepartmentDto } from '../../departments/types/department.types';
+import { useAuthStore } from '@/store/useAuthStore';
 import { ChamCongFormModal } from './ChamCongFormModal';
 import { ImportChamCongModal } from './ImportChamCongModal';
 import './ChamCongManagement.css';
@@ -31,6 +32,9 @@ export const ChamCongManagement: React.FC = () => {
   const [nam, setNam] = useState(now.getFullYear());
   const [searchCccd, setSearchCccd] = useState('');
   const [activeTab, setActiveTab] = useState<'chi-tiet' | 'tong-hop'>('tong-hop');
+
+  const { user } = useAuthStore();
+  const userRole = user?.role || '';
 
   // Lọc Phòng ban
   const [departments, setDepartments] = useState<DepartmentDto[]>([]);
@@ -148,28 +152,30 @@ export const ChamCongManagement: React.FC = () => {
           <h1 className="cc-title">Quản lý Chấm Công</h1>
           <p className="cc-subtitle">Theo dõi và quản lý dữ liệu chấm công nhân viên</p>
         </div>
-        <div className="cc-header__actions">
-          <button className="cc-btn cc-btn--outline" onClick={() => chamCongApi.downloadTemplate()}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width={16} height={16}>
-              <path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z" />
-              <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
-            </svg>
-            Tải mẫu CSV
-          </button>
-          <button className="cc-btn cc-btn--secondary" onClick={() => setShowImportModal(true)}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width={16} height={16}>
-              <path d="M9.25 13.25a.75.75 0 0 0 1.5 0V4.636l2.955 3.129a.75.75 0 0 0 1.09-1.03l-4.25-4.5a.75.75 0 0 0-1.09 0l-4.25 4.5a.75.75 0 1 0 1.09 1.03L9.25 4.636v8.614Z" />
-              <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
-            </svg>
-            Import CSV
-          </button>
-          <button className="cc-btn cc-btn--primary" onClick={() => { setEditItem(null); setShowFormModal(true); }}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width={16} height={16}>
-              <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-            </svg>
-            Nhập thủ công
-          </button>
-        </div>
+        {userRole !== 'Admin' && (
+          <div className="cc-header__actions">
+            <button className="cc-btn cc-btn--outline" onClick={() => chamCongApi.downloadTemplate()}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width={16} height={16}>
+                <path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z" />
+                <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
+              </svg>
+              Tải mẫu CSV
+            </button>
+            <button className="cc-btn cc-btn--secondary" onClick={() => setShowImportModal(true)}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width={16} height={16}>
+                <path d="M9.25 13.25a.75.75 0 0 0 1.5 0V4.636l2.955 3.129a.75.75 0 0 0 1.09-1.03l-4.25-4.5a.75.75 0 0 0-1.09 0l-4.25 4.5a.75.75 0 1 0 1.09 1.03L9.25 4.636v8.614Z" />
+                <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
+              </svg>
+              Import CSV
+            </button>
+            <button className="cc-btn cc-btn--primary" onClick={() => { setEditItem(null); setShowFormModal(true); }}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width={16} height={16}>
+                <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+              </svg>
+              Nhập thủ công
+            </button>
+          </div>
+        )}
       </div>
 
       {/* FILTER BAR */}
@@ -392,22 +398,24 @@ export const ChamCongManagement: React.FC = () => {
                   <td><span className={TRANG_THAI_COLOR[row.trangThai] ?? 'cc-status'}>{row.trangThai}</span></td>
                   <td className="cc-note">{row.ghiChu ?? '—'}</td>
                   <td className="cc-actions-cell">
-                    <div className="cc-dropdown-wrap">
-                      <button
-                        className="cc-actions-btn"
-                        onClick={() => setOpenMenuId(openMenuId === row.id ? null : row.id)}
-                      >•••</button>
-                      {openMenuId === row.id && (
-                        <div className="cc-dropdown">
-                          <button onClick={() => { setEditItem(row); setShowFormModal(true); setOpenMenuId(null); }}>
-                            ✏️ Chỉnh sửa
-                          </button>
-                          <button className="cc-dropdown__danger" onClick={() => handleDelete(row.id, row.hoTenNhanVien)}>
-                            🗑️ Xóa
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                    {userRole !== 'Admin' && (
+                      <div className="cc-dropdown-wrap">
+                        <button
+                          className="cc-actions-btn"
+                          onClick={() => setOpenMenuId(openMenuId === row.id ? null : row.id)}
+                        >•••</button>
+                        {openMenuId === row.id && (
+                          <div className="cc-dropdown">
+                            <button onClick={() => { setEditItem(row); setShowFormModal(true); setOpenMenuId(null); }}>
+                              ✏️ Chỉnh sửa
+                            </button>
+                            <button className="cc-dropdown__danger" onClick={() => handleDelete(row.id, row.hoTenNhanVien)}>
+                              🗑️ Xóa
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
