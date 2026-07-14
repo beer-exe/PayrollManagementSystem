@@ -70,6 +70,9 @@ function App() {
             <Route path="phong-ban" element={<DepartmentManagement />} />
             <Route path="ngach-luong" element={<NgachLuongManagement />} />
             <Route path="chuc-vu" element={<PositionManagement />} />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={["Admin", "HR"]} />}>
             <Route path="cham-cong" element={<ChamCongManagement />} />
           </Route>
 
