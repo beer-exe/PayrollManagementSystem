@@ -18,26 +18,26 @@ export const donNghiApi = {
     trangThai?: string;
     idPhongBan?: string;
   }) =>
-    axiosClient.get<{ data: DonNghiDto[]; succeeded: boolean }>(BASE_URL, { params }),
+    axiosClient.get<unknown, { data: DonNghiDto[]; succeeded: boolean }>(BASE_URL, { params }),
 
   create: (data: CreateDonNghiRequest) =>
-    axiosClient.post<{ data: string; succeeded: boolean }>(BASE_URL, data),
+    axiosClient.post<unknown, { data: string; succeeded: boolean }>(BASE_URL, data),
 
   duyet: (id: string) =>
-    axiosClient.patch<{ data: boolean; succeeded: boolean }>(`${BASE_URL}/${id}/duyet`),
+    axiosClient.patch<unknown, { data: boolean; succeeded: boolean }>(`${BASE_URL}/${id}/duyet`),
 
   tuChoi: (id: string, body: TuChoiRequest) =>
-    axiosClient.patch<{ data: boolean; succeeded: boolean }>(`${BASE_URL}/${id}/tu-choi`, body),
+    axiosClient.patch<unknown, { data: boolean; succeeded: boolean }>(`${BASE_URL}/${id}/tu-choi`, body),
 
   delete: (id: string) =>
-    axiosClient.delete<{ data: boolean; succeeded: boolean }>(`${BASE_URL}/${id}`),
+    axiosClient.delete<unknown, { data: boolean; succeeded: boolean }>(`${BASE_URL}/${id}`),
 
   // Quota phép
   getNgayPhep: (nam: number, idPhongBan?: string) =>
-    axiosClient.get<{ data: NgayPhepDto[]; succeeded: boolean }>(PHEP_URL, {
+    axiosClient.get<unknown, { data: NgayPhepDto[]; succeeded: boolean }>(PHEP_URL, {
       params: { nam, idPhongBan },
     }),
 
   updateNgayPhep: (data: UpdateNgayPhepRequest) =>
-    axiosClient.post<{ data: boolean; succeeded: boolean }>(PHEP_URL, data),
+    axiosClient.post<unknown, { data: boolean; succeeded: boolean }>(PHEP_URL, data),
 };

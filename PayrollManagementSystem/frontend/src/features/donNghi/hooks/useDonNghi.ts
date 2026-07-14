@@ -14,7 +14,7 @@ export const useDonNghi = () => {
     setLoading(true); setError(null);
     try {
       const res = await donNghiApi.getList(params);
-      setList(res.data?.data ?? []);
+      setList(res.data ?? []);
     } catch {
       setError('Không thể tải danh sách đơn nghỉ.');
     } finally {
@@ -26,7 +26,7 @@ export const useDonNghi = () => {
     setLoading(true); setError(null);
     try {
       const res = await donNghiApi.getNgayPhep(nam, idPhongBan);
-      setNgayPhepList(res.data?.data ?? []);
+      setNgayPhepList(res.data ?? []);
     } catch {
       setError('Không thể tải danh sách quota phép.');
     } finally {
@@ -39,8 +39,8 @@ export const useDonNghi = () => {
       await donNghiApi.create(data);
       return null;
     } catch (e: unknown) {
-      const err = e as { response?: { data?: { message?: string } } };
-      return err?.response?.data?.message ?? 'Tạo đơn nghỉ thất bại.';
+      const err = e as { response?: { data?: { message?: string; Message?: string } } };
+      return err?.response?.data?.Message ?? err?.response?.data?.message ?? 'Tạo đơn nghỉ thất bại.';
     }
   }, []);
 
@@ -49,8 +49,8 @@ export const useDonNghi = () => {
       await donNghiApi.duyet(id);
       return null;
     } catch (e: unknown) {
-      const err = e as { response?: { data?: { message?: string } } };
-      return err?.response?.data?.message ?? 'Duyệt đơn thất bại.';
+      const err = e as { response?: { data?: { message?: string; Message?: string } } };
+      return err?.response?.data?.Message ?? err?.response?.data?.message ?? 'Duyệt đơn thất bại.';
     }
   }, []);
 
@@ -59,8 +59,8 @@ export const useDonNghi = () => {
       await donNghiApi.tuChoi(id, body);
       return null;
     } catch (e: unknown) {
-      const err = e as { response?: { data?: { message?: string } } };
-      return err?.response?.data?.message ?? 'Từ chối đơn thất bại.';
+      const err = e as { response?: { data?: { message?: string; Message?: string } } };
+      return err?.response?.data?.Message ?? err?.response?.data?.message ?? 'Từ chối đơn thất bại.';
     }
   }, []);
 
@@ -79,8 +79,8 @@ export const useDonNghi = () => {
       await donNghiApi.updateNgayPhep(data);
       return null;
     } catch (e: unknown) {
-      const err = e as { response?: { data?: { message?: string } } };
-      return err?.response?.data?.message ?? 'Cập nhật quota phép thất bại.';
+      const err = e as { response?: { data?: { message?: string; Message?: string } } };
+      return err?.response?.data?.Message ?? err?.response?.data?.message ?? 'Cập nhật phép thất bại.';
     }
   }, []);
 

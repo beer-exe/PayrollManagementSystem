@@ -24,9 +24,19 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.TuChoiDo
                 throw new ApiException("Chỉ có thể từ chối đơn đang ở trạng thái 'Chờ duyệt'.");
 
             donNghi.TrangThai = TrangThaiDonNghi.TU_CHOI;
-            donNghi.CccdNguoiDuyet = request.CccdNguoiDuyet;
+            
+            if (Guid.TryParse(request.CccdNguoiDuyet, out var userId))
+            {
+                var nguoiDuyetAccount = await _context.TaiKhoans.Include(t => t.NhanVien).FirstOrDefaultAsync(t => t.IdTaiKhoan == userId, cancellationToken);
+                donNghi.CccdNguoiDuyet = nguoiDuyetAccount?.NhanVien?.Cccd ?? "SYSTEM";
+            }
+            else
+            {
+                donNghi.CccdNguoiDuyet = request.CccdNguoiDuyet;
+            }
+
             donNghi.LyDoTuChoi = request.LyDoTuChoi;
-            donNghi.NgayDuyet = DateTime.UtcNow;
+            donNghi.NgayDuyet = DateTime.Now;
 
             await _context.SaveChangesAsync(cancellationToken);
             return new Response<bool>(true, "Đã từ chối đơn nghỉ.");

@@ -39,8 +39,18 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DuyetDon
             }
 
             donNghi.TrangThai = TrangThaiDonNghi.DA_DUYET;
-            donNghi.CccdNguoiDuyet = request.CccdNguoiDuyet;
-            donNghi.NgayDuyet = DateTime.UtcNow;
+            
+            if (Guid.TryParse(request.CccdNguoiDuyet, out var userId))
+            {
+                var nguoiDuyetAccount = await _context.TaiKhoans.Include(t => t.NhanVien).FirstOrDefaultAsync(t => t.IdTaiKhoan == userId, cancellationToken);
+                donNghi.CccdNguoiDuyet = nguoiDuyetAccount?.NhanVien?.Cccd ?? "SYSTEM";
+            }
+            else
+            {
+                donNghi.CccdNguoiDuyet = request.CccdNguoiDuyet;
+            }
+
+            donNghi.NgayDuyet = DateTime.Now;
 
             await _context.SaveChangesAsync(cancellationToken);
             return new Response<bool>(true, "Duyệt đơn nghỉ thành công.");

@@ -241,7 +241,9 @@
 }
 .dn-actions-btn:hover { background: #f3f4f6; color: #374151; }
 .dn-dropdown {
-  position: fixed;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
   z-index: 9000;
   background: #fff;
   border: 1px solid #e5e7eb;
