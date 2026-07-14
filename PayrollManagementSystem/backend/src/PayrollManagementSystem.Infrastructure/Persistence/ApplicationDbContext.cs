@@ -45,6 +45,10 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
 
         public virtual DbSet<ChamCong> ChamCongs { get; set; }
 
+        public virtual DbSet<DonNghi> DonNghis { get; set; }
+        public virtual DbSet<NgayPhepNhanVien> NgayPhepNhanViens { get; set; }
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -680,6 +684,124 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                 entity.HasIndex(e => new { e.CccdNhanVien, e.NgayChamCong })
                     .IsUnique()
                     .HasDatabaseName("cham_congs_cccd_ngay_unique");
+            });
+
+            ConfigureDonNghi(modelBuilder);
+        }
+
+        private void ConfigureDonNghi(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<DonNghi>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("don_nghis_pkey");
+                entity.ToTable("don_nghis");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id");
+
+                entity.Property(e => e.CccdNhanVien)
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasColumnName("cccd_nhan_vien");
+
+                entity.Property(e => e.LoaiNghi)
+                    .HasConversion<string>()
+                    .HasMaxLength(30)
+                    .HasColumnName("loai_nghi");
+
+                entity.Property(e => e.NgayBatDau)
+                    .HasColumnName("ngay_bat_dau");
+
+                entity.Property(e => e.NgayKetThuc)
+                    .HasColumnName("ngay_ket_thuc");
+
+                entity.Property(e => e.SoNgayNghi)
+                    .HasPrecision(5, 1)
+                    .HasColumnName("so_ngay_nghi");
+
+                entity.Property(e => e.LyDo)
+                    .IsRequired()
+                    .HasMaxLength(500)
+                    .HasColumnName("ly_do");
+
+                entity.Property(e => e.TaiLieuDinhKem)
+                    .HasMaxLength(500)
+                    .HasColumnName("tai_lieu_dinh_kem");
+
+                entity.Property(e => e.TrangThai)
+                    .HasConversion<string>()
+                    .HasMaxLength(20)
+                    .HasColumnName("trang_thai");
+
+                entity.Property(e => e.CccdNguoiDuyet)
+                    .HasMaxLength(20)
+                    .HasColumnName("cccd_nguoi_duyet");
+
+                entity.Property(e => e.LyDoTuChoi)
+                    .HasMaxLength(500)
+                    .HasColumnName("ly_do_tu_choi");
+
+                entity.Property(e => e.NgayDuyet)
+                    .HasColumnType("timestamp without time zone")
+                    .HasColumnName("ngay_duyet");
+
+                entity.HasOne(d => d.NhanVien)
+                    .WithMany()
+                    .HasForeignKey(d => d.CccdNhanVien)
+                    .HasPrincipalKey(n => n.Cccd)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("don_nghis_cccd_nhan_vien_fkey");
+
+                entity.HasOne(d => d.NguoiDuyet)
+                    .WithMany()
+                    .HasForeignKey(d => d.CccdNguoiDuyet)
+                    .HasPrincipalKey(n => n.Cccd)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("don_nghis_cccd_nguoi_duyet_fkey");
+
+                entity.HasIndex(e => new { e.CccdNhanVien, e.NgayBatDau, e.NgayKetThuc })
+                    .HasDatabaseName("idx_don_nghis_nv_ngay");
+            });
+
+            modelBuilder.Entity<NgayPhepNhanVien>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("ngay_phep_nhan_viens_pkey");
+                entity.ToTable("ngay_phep_nhan_viens");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id");
+
+                entity.Property(e => e.CccdNhanVien)
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasColumnName("cccd_nhan_vien");
+
+                entity.Property(e => e.Nam)
+                    .HasColumnName("nam");
+
+                entity.Property(e => e.TongNgayPhep)
+                    .HasPrecision(5, 1)
+                    .HasDefaultValue(12m)
+                    .HasColumnName("tong_ngay_phep");
+
+                entity.Property(e => e.DaSuDung)
+                    .HasPrecision(5, 1)
+                    .HasDefaultValue(0m)
+                    .HasColumnName("da_su_dung");
+
+                entity.Ignore(e => e.ConLai); // computed property, not stored
+
+                entity.HasOne(d => d.NhanVien)
+                    .WithMany()
+                    .HasForeignKey(d => d.CccdNhanVien)
+                    .HasPrincipalKey(n => n.Cccd)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("ngay_phep_nhan_viens_cccd_fkey");
+
+                // Mỗi nhân viên chỉ có 1 record phép / năm
+                entity.HasIndex(e => new { e.CccdNhanVien, e.Nam })
+                    .IsUnique()
+                    .HasDatabaseName("ngay_phep_nhan_viens_cccd_nam_unique");
             });
         }
 
