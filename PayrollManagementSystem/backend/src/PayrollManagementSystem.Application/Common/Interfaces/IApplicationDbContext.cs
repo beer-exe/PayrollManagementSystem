@@ -32,6 +32,8 @@ namespace PayrollManagementSystem.Application.Common.Interfaces
         DbSet<LichLamViec> LichLamViecs { get; set; }
         DbSet<ChiTietLichLamViec> ChiTietLichLamViecs { get; set; }
 
+        DbSet<ChamCong> ChamCongs { get; set; }
+
         DatabaseFacade Database { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 

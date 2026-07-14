@@ -1,0 +1,75 @@
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using PayrollManagementSystem.Application.Common.Interfaces;
+using PayrollManagementSystem.Application.Features.ChamCong.DTOs;
+using PayrollManagementSystem.Application.Wrappers;
+using PayrollManagementSystem.Domain.Enums;
+
+namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamCongSummary
+{
+    public class GetChamCongSummaryQueryHandler : IRequestHandler<GetChamCongSummaryQuery, Response<List<ChamCongSummaryDto>>>
+    {
+        private readonly IApplicationDbContext _context;
+
+        public GetChamCongSummaryQueryHandler(IApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<Response<List<ChamCongSummaryDto>>> Handle(GetChamCongSummaryQuery request, CancellationToken cancellationToken)
+        {
+            var ngayCongChuan = await _context.ChiTietLichLamViecs
+                .CountAsync(ct => ct.Ngay.Month == request.Thang
+                               && ct.Ngay.Year == request.Nam
+                               && ct.LoaiNgay == LoaiNgay.NGAY_LAM_VIEC, cancellationToken);
+
+            var nvQuery = _context.NhanViens
+                .Include(nv => nv.PhongBan)
+                .Where(nv => nv.TrangThai == TrangThaiNhanVien.DANG_LAM_VIEC);
+
+            if (!string.IsNullOrWhiteSpace(request.IdPhongBan))
+                nvQuery = nvQuery.Where(nv => nv.IdPb == request.IdPhongBan);
+
+            var nhanViens = await nvQuery.ToListAsync(cancellationToken);
+
+            var allCccd = nhanViens.Select(nv => nv.Cccd).ToList();
+            var chamCongs = await _context.ChamCongs
+                .Where(cc => allCccd.Contains(cc.CccdNhanVien)
+                          && cc.NgayChamCong.Month == request.Thang
+                          && cc.NgayChamCong.Year == request.Nam)
+                .ToListAsync(cancellationToken);
+
+            var chamCongGroup = chamCongs
+                .GroupBy(cc => cc.CccdNhanVien)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var result = nhanViens.Select(nv =>
+            {
+                chamCongGroup.TryGetValue(nv.Cccd, out var ccList);
+                ccList ??= new List<Domain.Models.ChamCong>();
+
+                return new ChamCongSummaryDto
+                {
+                    CccdNhanVien = nv.Cccd,
+                    HoTenNhanVien = nv.HoTen,
+                    TenPhongBan = nv.PhongBan?.TenPb,
+                    Thang = request.Thang,
+                    Nam = request.Nam,
+                    NgayCongChuan = ngayCongChuan,
+                    TongNgayCongThucTe = ccList
+                        .Where(cc => cc.LoaiNgayCong == LoaiNgayCong.LAM_DU_CA
+                                  || cc.LoaiNgayCong == LoaiNgayCong.NUA_CA
+                                  || cc.LoaiNgayCong == LoaiNgayCong.DI_TRE_VE_SOM
+                                  || cc.LoaiNgayCong == LoaiNgayCong.VANG_CO_PHEP)
+                        .Sum(cc => cc.SoNgayCong),
+                    NgayNghiLe = ccList.Count(cc => cc.LoaiNgayCong == LoaiNgayCong.NGHI_LE),
+                    NgayNghiCuoiTuan = ccList.Count(cc => cc.LoaiNgayCong == LoaiNgayCong.NGHI_CUOI_TUAN),
+                    NgayVangKhongPhep = ccList.Count(cc => cc.LoaiNgayCong == LoaiNgayCong.VANG_KHONG_PHEP),
+                    NgayCanGiaiTrinh = ccList.Count(cc => cc.TrangThai == TrangThaiChamCong.CAN_GIAI_TRINH),
+                };
+            }).OrderBy(s => s.TenPhongBan).ThenBy(s => s.HoTenNhanVien).ToList();
+
+            return new Response<List<ChamCongSummaryDto>>(result);
+        }
+    }
+}
