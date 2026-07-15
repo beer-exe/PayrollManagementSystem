@@ -61,7 +61,7 @@ export const TuDanhGiaForm: React.FC = () => {
       });
 
       if (success) {
-        navigate('/dashboard/danh-gia/tu-danh-gia');
+        navigate('/performance/tu-danh-gia');
       }
     } catch (e) {
       console.error(e);
@@ -107,7 +107,7 @@ export const TuDanhGiaForm: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <button 
                 className="cp2-btn-actions" 
-                onClick={() => navigate('/dashboard/danh-gia/tu-danh-gia')}
+                onClick={() => navigate('/performance/tu-danh-gia')}
                 style={{ padding: '0.25rem' }}
                 title="Quay lại"
               >

@@ -89,7 +89,7 @@ export const DuyetDanhGiaForm: React.FC = () => {
       });
 
       if (success) {
-        navigate('/dashboard/danh-gia/duyet-danh-gia');
+        navigate('/performance/duyet-danh-gia');
       }
     } catch (e) {
       console.error(e);
@@ -142,7 +142,7 @@ export const DuyetDanhGiaForm: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <button 
                 className="cp2-btn-actions" 
-                onClick={() => navigate('/dashboard/danh-gia/duyet-danh-gia')}
+                onClick={() => navigate('/performance/duyet-danh-gia')}
                 style={{ padding: '0.25rem' }}
                 title="Quay lại"
               >
@@ -315,7 +315,7 @@ export const DuyetDanhGiaForm: React.FC = () => {
         }}>
           <button 
             className="cp2-btn cp2-btn-secondary" 
-            onClick={() => navigate('/dashboard/danh-gia/duyet-danh-gia')} 
+            onClick={() => navigate('/performance/duyet-danh-gia')} 
             disabled={submitting}
           >
             Quay lại

@@ -146,7 +146,7 @@ export const TuDanhGia: React.FC = () => {
                         <button 
                           className={`cp2-btn ${record.trangThai === 'CHO_NV_DANH_GIA' ? 'cp2-btn-primary' : 'cp2-btn-secondary'}`}
                           style={{ padding: '0.4rem 1rem' }}
-                          onClick={() => navigate(`/dashboard/danh-gia/tu-danh-gia/${record.idPhieu}`)}
+                          onClick={() => navigate(`/performance/tu-danh-gia/${record.idPhieu}`)}
                         >
                           {record.trangThai === 'CHO_NV_DANH_GIA' ? 'Làm phiếu' : 'Xem chi tiết'}
                         </button>
