@@ -199,7 +199,7 @@ export const ChamCongFormModal: React.FC<Props> = ({ editItem, onClose, onCreate
               />
             </div>
 
-            <div style={{ background: '#f5f3ff', borderRadius: 8, padding: '10px 14px', fontSize: 12, color: '#5b21b6' }}>
+            <div style={{ background: 'var(--primary-light)', borderRadius: 8, padding: '10px 14px', fontSize: 12, color: 'var(--primary)' }}>
               💡 Hệ thống sẽ tự động tính số ngày công dựa trên giờ vào/ra và lịch làm việc của công ty.
               Grace period: <strong>15 phút</strong>. Nghỉ trưa: <strong>1 tiếng</strong> (nếu làm &gt; 5 tiếng).
             </div>

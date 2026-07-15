@@ -112,13 +112,13 @@ export const UserManagement: React.FC = () => {
 
                   return (
                     <tr key={record.idTaiKhoan}>
-                      <td style={{ fontWeight: 600, color: '#111827' }}>
+                      <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
                         {record.tenTaiKhoan}
                       </td>
                       <td>
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <span style={{ fontWeight: 600, color: '#374151' }}>{record.hoTen}</span>
-                          <span style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                          <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{record.hoTen}</span>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
                             {record.email || 'Chưa cập nhật email'}
                           </span>
                         </div>

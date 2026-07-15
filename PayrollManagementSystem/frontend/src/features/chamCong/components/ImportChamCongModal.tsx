@@ -53,15 +53,15 @@ export const ImportChamCongModal: React.FC<Props> = ({ onClose, onSuccess }) => 
 
         <div className="cc-modal-body">
           {/* Format guide */}
-          <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, padding: '12px 16px', marginBottom: 18, fontSize: 13 }}>
-            <strong style={{ color: '#166534' }}>📋 Định dạng CSV (có header dòng đầu):</strong>
-            <pre style={{ margin: '8px 0 0', color: '#15803d', fontSize: 12, overflow: 'auto' }}>
+          <div style={{ background: 'var(--success-bg)', border: '1px solid var(--success-bg)', borderRadius: 8, padding: '12px 16px', marginBottom: 18, fontSize: 13 }}>
+            <strong style={{ color: 'var(--success-text)' }}>📋 Định dạng CSV (có header dòng đầu):</strong>
+            <pre style={{ margin: '8px 0 0', color: 'var(--success-text)', fontSize: 12, overflow: 'auto' }}>
 {`CCCD,NgayChamCong,GioVao,GioRa,GhiChu
 001234567890,15/07/2026,08:00,17:00,
 001234567891,15/07/2026,08:30,17:00,Đi trễ`}
             </pre>
             <button
-              style={{ marginTop: 8, background: 'none', border: '1px solid #166534', color: '#166534', borderRadius: 6, padding: '4px 12px', fontSize: 12, cursor: 'pointer' }}
+              style={{ marginTop: 8, background: 'none', border: '1px solid var(--success-text)', color: 'var(--success-text)', borderRadius: 6, padding: '4px 12px', fontSize: 12, cursor: 'pointer' }}
               onClick={() => chamCongApi.downloadTemplate()}
             >
               ⬇️ Tải file mẫu
@@ -87,11 +87,11 @@ export const ImportChamCongModal: React.FC<Props> = ({ onClose, onSuccess }) => 
               <div className="cc-dropzone__selected">
                 <span>📄</span>
                 <strong>{selectedFile.name}</strong>
-                <span style={{ color: '#6b7280', fontSize: 12 }}>
+                <span style={{ color: 'var(--text-secondary)', fontSize: 12 }}>
                   {(selectedFile.size / 1024).toFixed(1)} KB
                 </span>
                 <button
-                  style={{ fontSize: 12, color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}
+                  style={{ fontSize: 12, color: 'var(--danger-text)', background: 'none', border: 'none', cursor: 'pointer' }}
                   onClick={e => { e.stopPropagation(); setSelectedFile(null); setResult(null); }}
                 >
                   Xóa file
@@ -99,11 +99,11 @@ export const ImportChamCongModal: React.FC<Props> = ({ onClose, onSuccess }) => 
               </div>
             ) : (
               <div className="cc-dropzone__placeholder">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width={36} height={36} style={{ color: '#a78bfa' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width={36} height={36} style={{ color: 'var(--primary)' }}>
                   <path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clipRule="evenodd" />
                 </svg>
-                <p style={{ color: '#6b7280', margin: '8px 0 4px' }}>Kéo thả file CSV vào đây hoặc <span style={{ color: '#7c3aed', fontWeight: 600 }}>click để chọn</span></p>
-                <p style={{ color: '#9ca3af', fontSize: 12, margin: 0 }}>Chỉ hỗ trợ .csv</p>
+                <p style={{ color: 'var(--text-secondary)', margin: '8px 0 4px' }}>Kéo thả file CSV vào đây hoặc <span style={{ color: 'var(--primary)', fontWeight: 600 }}>click để chọn</span></p>
+                <p style={{ color: 'var(--text-muted)', fontSize: 12, margin: 0 }}>Chỉ hỗ trợ .csv</p>
               </div>
             )}
           </div>
@@ -127,7 +127,7 @@ export const ImportChamCongModal: React.FC<Props> = ({ onClose, onSuccess }) => 
               </div>
               {result.loiNhap.length > 0 && (
                 <div className="cc-import-errors">
-                  <strong style={{ color: '#991b1b', fontSize: 13 }}>⚠️ Chi tiết lỗi:</strong>
+                  <strong style={{ color: 'var(--danger-text)', fontSize: 13 }}>⚠️ Chi tiết lỗi:</strong>
                   <ul>
                     {result.loiNhap.map((err, i) => (
                       <li key={i}>{err}</li>
@@ -157,17 +157,17 @@ export const ImportChamCongModal: React.FC<Props> = ({ onClose, onSuccess }) => 
 
       <style>{`
         .cc-dropzone {
-          border: 2px dashed #c4b5fd;
+          border: 2px dashed var(--primary);
           border-radius: 12px;
           padding: 32px 20px;
           text-align: center;
           cursor: pointer;
           transition: all 0.2s;
-          background: #faf5ff;
+          background: var(--bg-hover);
           margin-bottom: 16px;
         }
-        .cc-dropzone:hover, .cc-dropzone--active { border-color: #7c3aed; background: #ede9fe; }
-        .cc-dropzone--selected { border-color: #16a34a; background: #f0fdf4; border-style: solid; }
+        .cc-dropzone:hover, .cc-dropzone--active { border-color: var(--primary); background: var(--primary-light); }
+        .cc-dropzone--selected { border-color: var(--success-text); background: var(--success-bg); border-style: solid; }
         .cc-dropzone__selected { display: flex; flex-direction: column; align-items: center; gap: 6px; }
         .cc-dropzone__placeholder {}
         .cc-import-result { margin-top: 8px; }
@@ -177,15 +177,15 @@ export const ImportChamCongModal: React.FC<Props> = ({ onClose, onSuccess }) => 
           border-radius: 10px; font-size: 12px; font-weight: 600;
         }
         .cc-import-stat__num { display: block; font-size: 22px; font-weight: 700; margin-bottom: 2px; }
-        .cc-import-stat--total  { background: #f1f5f9; color: #475569; }
-        .cc-import-stat--success { background: #dcfce7; color: #166534; }
-        .cc-import-stat--fail   { background: #fee2e2; color: #7f1d1d; }
+        .cc-import-stat--total  { background: var(--bg-main); color: var(--text-primary); }
+        .cc-import-stat--success { background: var(--success-bg); color: var(--success-text); }
+        .cc-import-stat--fail   { background: var(--danger-bg); color: var(--danger-text); }
         .cc-import-errors {
-          background: #fef2f2; border: 1px solid #fecaca;
+          background: var(--danger-bg); border: 1px solid var(--danger-bg);
           border-radius: 8px; padding: 12px 14px;
         }
         .cc-import-errors ul { margin: 8px 0 0; padding-left: 16px; }
-        .cc-import-errors li { font-size: 12px; color: #991b1b; margin-bottom: 4px; }
+        .cc-import-errors li { font-size: 12px; color: var(--danger-text); margin-bottom: 4px; }
       `}</style>
     </div>
   );

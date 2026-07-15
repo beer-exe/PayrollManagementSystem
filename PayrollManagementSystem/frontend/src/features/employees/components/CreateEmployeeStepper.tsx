@@ -57,7 +57,7 @@ const StepPersonal = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div>
-        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>Thông tin định danh</h3>
+        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Thông tin định danh</h3>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
           <div style={{ gridColumn: '1 / -1' }}>
             <label className="emp-form-label">CCCD (Mã định danh) <span className="required">*</span></label>
@@ -86,7 +86,7 @@ const StepPersonal = () => {
       </div>
 
       <div>
-        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>Thông tin tài chính & BHXH</h3>
+        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Thông tin tài chính & BHXH</h3>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
           <div>
             <label className="emp-form-label">Số tài khoản ngân hàng</label>
@@ -129,7 +129,7 @@ const StepContract = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div>
-        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>Hợp đồng lao động</h3>
+        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Hợp đồng lao động</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div>
             <label className="emp-form-label">Số Hợp Đồng <span className="required">*</span></label>
@@ -212,7 +212,7 @@ const StepPosition = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div>
-        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>Phân công công tác</h3>
+        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Phân công công tác</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div>
             <label className="emp-form-label">Số QĐ Bổ Nhiệm <span className="required">*</span></label>
@@ -307,9 +307,9 @@ export const CreateEmployeeStepper: React.FC<Props> = ({ onSubmitSuccess, onCanc
       {/* Nút Đóng Tuyệt Đối */}
       <button 
         onClick={onCancel}
-        style={{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 50, background: 'transparent', border: 'none', color: '#9ca3af', cursor: 'pointer', padding: '0.5rem', borderRadius: '50%', transition: 'all 0.2s' }}
-        onMouseOver={e => { e.currentTarget.style.background = '#f3f4f6'; e.currentTarget.style.color = '#4b5563'; }}
-        onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#9ca3af'; }}
+        style={{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 50, background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.5rem', borderRadius: '50%', transition: 'all 0.2s' }}
+        onMouseOver={e => { e.currentTarget.style.background = 'var(--bg-hover)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+        onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
       >
         <CloseOutlined style={{ fontSize: '1.25rem' }} />
       </button>
@@ -394,7 +394,7 @@ export const CreateEmployeeStepper: React.FC<Props> = ({ onSubmitSuccess, onCanc
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 {activeStep < 2 && (
-                  <button type="button" onClick={handleNext} className="emp-btn-cancel" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#7c3aed', borderColor: '#ddd6fe' }}>
+                  <button type="button" onClick={handleNext} className="emp-btn-cancel" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', borderColor: 'var(--primary-light)' }}>
                     Tiếp tục
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1rem', height: '1rem' }}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                   </button>
