@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import type { ChamCongDto, CreateChamCongRequest, UpdateChamCongRequest } from '../types/chamCong.types';
 import { employeeApi } from '../../employees/api/employeeApi';
 import type { UserProfileDetail } from '../../../types/profile.types';
+import { ClockTimePicker } from './ClockTimePicker';
 
 interface Props {
   editItem: ChamCongDto | null;
@@ -64,7 +65,9 @@ export const ChamCongFormModal: React.FC<Props> = ({ editItem, onClose, onCreate
     const errs: Record<string, string> = {};
     if (!isEdit && !cccd.trim()) errs.cccd = 'CCCD không được để trống.';
     if (!ngay) errs.ngay = 'Ngày chấm công không được để trống.';
-    if (gioVao && gioRa && gioRa <= gioVao) errs.gioRa = 'Giờ ra phải sau giờ vào.';
+    if (gioVao === 'INVALID' || (gioVao && gioVao.length < 5)) errs.gioVao = 'Giờ vào không hợp lệ (VD: 08:30)';
+    if (gioRa === 'INVALID' || (gioRa && gioRa.length < 5)) errs.gioRa = 'Giờ ra không hợp lệ (VD: 17:00)';
+    if (gioVao && gioVao !== 'INVALID' && gioRa && gioRa !== 'INVALID' && gioRa <= gioVao) errs.gioRa = 'Giờ ra phải sau giờ vào.';
     return errs;
   };
 
@@ -172,24 +175,13 @@ export const ChamCongFormModal: React.FC<Props> = ({ editItem, onClose, onCreate
 
             <div className="cc-form-row">
               <div className="cc-form-group">
-                <label htmlFor="cc-form-gio-vao">Giờ vào</label>
-                <input
-                  id="cc-form-gio-vao"
-                  type="time"
-                  className="cc-form-control"
-                  value={gioVao}
-                  onChange={e => setGioVao(e.target.value)}
-                />
+                <label>Giờ vào</label>
+                <ClockTimePicker value={gioVao} onChange={setGioVao} placeholder="08:00" error={!!fieldErrors.gioVao} />
+                {fieldErrors.gioVao && <div className="cc-form-error">{fieldErrors.gioVao}</div>}
               </div>
               <div className="cc-form-group">
-                <label htmlFor="cc-form-gio-ra">Giờ ra</label>
-                <input
-                  id="cc-form-gio-ra"
-                  type="time"
-                  className="cc-form-control"
-                  value={gioRa}
-                  onChange={e => setGioRa(e.target.value)}
-                />
+                <label>Giờ ra</label>
+                <ClockTimePicker value={gioRa} onChange={setGioRa} placeholder="17:00" error={!!fieldErrors.gioRa} />
                 {fieldErrors.gioRa && <div className="cc-form-error">{fieldErrors.gioRa}</div>}
               </div>
             </div>

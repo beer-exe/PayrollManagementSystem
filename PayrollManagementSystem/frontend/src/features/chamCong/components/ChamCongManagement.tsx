@@ -384,7 +384,7 @@ export const ChamCongManagement: React.FC = () => {
               ) : currentChiTietList.map(row => (
                 <tr key={row.id}>
                   <td className="cc-date">
-                    {new Date(row.ngayChamCong + 'T00:00:00').toLocaleDateString('vi-VN')}
+                    {new Date(row.ngayChamCong + 'T00:00:00').toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                   </td>
                   <td>
                     <div className="cc-nv-name">{row.hoTenNhanVien}</div>

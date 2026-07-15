@@ -457,3 +457,31 @@
   font-weight: 500;
   color: #4b5563;
 }
+
+/* Clock Time Picker */
+.cc-clock-picker { position: relative; width: 100%; }
+.cc-clock-input { cursor: pointer; background: #fff; text-align: center; }
+.cc-clock-popover { position: absolute; top: calc(100% + 4px); left: 0; width: 260px; background: #fff; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 9999; overflow: hidden; border: 1px solid #e5e7eb; animation: cc-fadeIn 0.2s ease; }
+.cc-clock-header { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; padding: 16px; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 32px; font-weight: 300; }
+.cc-clock-header span { opacity: 0.6; cursor: pointer; transition: opacity 0.2s; }
+.cc-clock-header span.active { opacity: 1; font-weight: 600; }
+.cc-clock-body { padding: 20px; display: flex; justify-content: center; }
+.cc-clock-face { position: relative; width: 200px; height: 200px; background: #f3f4f6; border-radius: 50%; touch-action: none; cursor: crosshair; }
+.cc-clock-center { position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: #7c3aed; border-radius: 50%; transform: translate(-50%, -50%); z-index: 10; }
+.cc-clock-hand { position: absolute; bottom: 50%; left: 50%; width: 2px; background: #7c3aed; transform-origin: bottom center; z-index: 5; margin-left: -1px; }
+.cc-clock-hand::after { content: ""; position: absolute; top: -14px; left: -13px; width: 28px; height: 28px; border-radius: 50%; background: rgba(124, 58, 237, 0.2); border: 2px solid #7c3aed; box-sizing: border-box; }
+.cc-clock-num { position: absolute; width: 28px; height: 28px; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 13px; color: #374151; pointer-events: none; z-index: 6; font-weight: 500; }
+.cc-clock-num.inner { font-size: 12px; color: #6b7280; }
+.cc-clock-num.active { color: #fff; }
+
+
+@media (max-width: 640px) {
+  .cc-clock-popover {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+  }
+}
+

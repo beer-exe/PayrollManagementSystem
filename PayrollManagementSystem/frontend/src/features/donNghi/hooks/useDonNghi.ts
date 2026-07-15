@@ -28,7 +28,7 @@ export const useDonNghi = () => {
       const res = await donNghiApi.getNgayPhep(nam, idPhongBan);
       setNgayPhepList(res.data ?? []);
     } catch {
-      setError('Không thể tải danh sách quota phép.');
+      setError('Không thể tải danh sách ngày phép.');
     } finally {
       setLoading(false);
     }

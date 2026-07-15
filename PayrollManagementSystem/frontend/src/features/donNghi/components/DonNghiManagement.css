@@ -161,9 +161,9 @@
   background: #fff;
   border-radius: 14px;
   box-shadow: 0 2px 16px rgba(109,40,217,0.08);
-  overflow: hidden;
+  overflow-x: auto;
 }
-.dn-table { width: 100%; border-collapse: collapse; }
+.dn-table { width: 100%; min-width: 1000px; border-collapse: collapse; }
 .dn-table thead tr {
   background: linear-gradient(135deg, #7c3aed, #6d28d9);
 }
