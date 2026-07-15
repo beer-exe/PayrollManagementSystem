@@ -159,12 +159,13 @@
   background: #fff;
   border-radius: 16px;
   border: 1px solid #e5e7eb;
-  overflow: visible;
+  overflow-x: auto;
   box-shadow: 0 1px 6px rgba(0,0,0,0.06);
 }
 
 .ws-table {
   width: 100%;
+  min-width: 1000px;
   border-collapse: collapse;
   font-size: 0.875rem;
 }
@@ -562,7 +563,7 @@
   .ws-container { padding: 1rem; }
   .ws-header { flex-direction: column; align-items: flex-start; }
   .ws-header-actions { width: 100%; justify-content: space-between; }
-  .ws-table-wrapper { overflow-x: visible; }
+  .ws-table-wrapper { overflow-x: auto; }
   .ws-modal { max-height: 95vh; border-radius: 16px 16px 0 0; margin-top: auto; }
   .ws-modal-overlay { align-items: flex-end; padding: 0; }
   .ws-month-tabs { padding: 0.75rem 1rem 0; }
