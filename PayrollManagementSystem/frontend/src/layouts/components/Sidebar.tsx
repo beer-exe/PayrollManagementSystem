@@ -148,6 +148,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, isOpenMobile, onC
   const userRole = user?.role || "";
   
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     menuItems.forEach(item => {
@@ -178,13 +179,37 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, isOpenMobile, onC
           <span className="sidebar-logo-text">HRMS Pro</span>
         </div>
 
+        {!isCollapsed && (
+          <div className="sidebar-search-area">
+            <div className="sidebar-search-input-wrapper">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="search-icon">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+              </svg>
+              <input 
+                type="text" 
+                placeholder="Tìm kiếm..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="sidebar-search-input"
+              />
+              {searchTerm && (
+                <button className="search-clear-btn" onClick={() => setSearchTerm("")}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         <nav className="sidebar-nav">
           <ul className="sidebar-nav-list">
             {filteredMenuItems.map((item) => {
-              const isDropdown = !!item.children;
-              const isOpen = openMenus[item.label];
-              
-              const visibleChildren = item.children?.filter(child => {
+              const term = searchTerm.toLowerCase().trim();
+              const itemLabelMatch = item.label.toLowerCase().includes(term);
+
+              let visibleChildren = item.children?.filter(child => {
                 if (!child.allowedRoles.includes(userRole)) return false;
                 // Ẩn menu Duyệt đánh giá nếu không phải HR và không có quyền quản lý
                 if (child.path === "/performance/duyet-danh-gia") {
@@ -192,6 +217,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, isOpenMobile, onC
                 }
                 return true;
               }) || [];
+
+              // Apply search filter
+              if (term) {
+                if (!itemLabelMatch) {
+                  visibleChildren = visibleChildren.filter(child => child.label.toLowerCase().includes(term));
+                  // If parent doesn't match and no children match, don't render this item at all
+                  if (visibleChildren.length === 0) return null;
+                }
+                // If parent matches, keep all visible children to match VS Solution Explorer behavior
+              }
+
+              const isDropdown = !!item.children;
+              // Auto-expand if searching and we have children, otherwise use regular state
+              const isOpen = term ? true : openMenus[item.label];
+              
               const hasActiveChild = isDropdown && visibleChildren.some(child => location.pathname === child.path || location.pathname.startsWith(`${child.path}/`));
 
               return (
@@ -252,6 +292,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, isOpenMobile, onC
                 </li>
               );
             })}
+            
+            {/* If there's a search term and no results returned at all across all mapping (not perfectly accurate to check here without external var, but we can do a quick check to see if the whole filtered list mapped to nulls) */}
           </ul>
         </nav>
       </aside>

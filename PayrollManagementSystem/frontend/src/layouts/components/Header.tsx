@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useThemeStore } from '@/store/useThemeStore';
 import './Header.css';
@@ -15,6 +15,25 @@ export const Header: React.FC<HeaderProps> = ({ isCollapsed, toggleCollapse, tog
   const { theme, toggleTheme } = useThemeStore();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+
+  const getPageTitle = (pathname: string) => {
+    if (pathname.startsWith('/profile')) return 'Hồ sơ cá nhân';
+    if (pathname.startsWith('/admin/tai-khoan')) return 'Quản lý tài khoản';
+    if (pathname.startsWith('/hr/nhan-vien')) return 'Quản lý nhân viên';
+    if (pathname.startsWith('/hr/phong-ban')) return 'Phòng ban & Vị trí';
+    if (pathname.startsWith('/hr/ngach-luong')) return 'Quản lý ngạch lương';
+    if (pathname.startsWith('/hr/chuc-vu')) return 'Quản lý chức vụ';
+    if (pathname.startsWith('/time/lich-lam-viec')) return 'Lịch làm việc';
+    if (pathname.startsWith('/time/cham-cong')) return 'Chấm công';
+    if (pathname.startsWith('/time/don-nghi')) return 'Đơn xin nghỉ';
+    if (pathname.startsWith('/performance/khung-nang-luc')) return 'Khung năng lực';
+    if (pathname.startsWith('/performance/cau-hinh')) return 'Cấu hình Mức quy đổi';
+    if (pathname.startsWith('/performance/ky-danh-gia')) return 'Kỳ Đánh giá';
+    if (pathname.startsWith('/performance/tu-danh-gia')) return 'Tự đánh giá';
+    if (pathname.startsWith('/performance/duyet-danh-gia')) return 'Duyệt đánh giá';
+    return 'Hệ thống HRMS';
+  };
 
   const getInitials = (name: string) => {
     if (!name) return 'U';
@@ -56,7 +75,7 @@ export const Header: React.FC<HeaderProps> = ({ isCollapsed, toggleCollapse, tog
         </button>
 
         <div className="header-breadcrumb">
-          <span className="header-breadcrumb-text">Dashboard</span>
+          <span className="header-breadcrumb-text">{getPageTitle(location.pathname)}</span>
         </div>
       </div>
 

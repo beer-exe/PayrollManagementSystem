@@ -179,7 +179,7 @@
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--text-primary);
-  max-width: 120px;
+  max-width: 250px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -188,7 +188,7 @@
 .header-user-role {
   font-size: 0.75rem;
   color: var(--text-secondary);
-  max-width: 120px;
+  max-width: 250px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -248,9 +248,7 @@
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-all;
 }
 
 .header-dropdown-list {
