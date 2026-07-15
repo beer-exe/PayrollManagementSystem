@@ -23,6 +23,8 @@ import { TuDanhGiaForm } from "@/features/competencyP2/components/TuDanhGiaForm"
 import { DuyetDanhGia } from "@/features/competencyP2/components/DuyetDanhGia";
 import { DuyetDanhGiaForm } from "@/features/competencyP2/components/DuyetDanhGiaForm";
 import { WorkScheduleManagement } from "@/features/workSchedule/components/WorkScheduleManagement";
+import { ChamCongManagement } from '@/features/chamCong/components/ChamCongManagement';
+import { DonNghiManagement } from '@/features/donNghi/components/DonNghiManagement';
 
 const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string[], requireManager?: boolean }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -69,6 +71,11 @@ function App() {
             <Route path="phong-ban" element={<DepartmentManagement />} />
             <Route path="ngach-luong" element={<NgachLuongManagement />} />
             <Route path="chuc-vu" element={<PositionManagement />} />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={["Admin", "HR"]} />}>
+            <Route path="cham-cong" element={<ChamCongManagement />} />
+            <Route path="don-nghi" element={<DonNghiManagement />} />
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>

@@ -56,22 +56,30 @@ export const UserProfile: React.FC = () => {
   };
 
   const getDecisionStatus = (history: any, idx: number, allHistories: any[]) => {
-    if (history.trangThai !== 'HIEU_LUC') {
-      return { text: history.trangThai === 'DA_HUY' ? 'Đã hủy' : 'Nháp/Chưa duyệt', color: 'text-gray-500 dark:text-gray-400', dot: 'bg-gray-400' };
+    if (history.trangThai === 'HUY_BO') {
+      return { text: history.tenTrangThai || 'Hủy bỏ', color: 'text-red-600 dark:text-red-400', dot: 'bg-red-400' };
+    }
+
+    if (history.trangThai === 'HET_HAN') {
+      return { text: history.tenTrangThai || 'Hết hạn', color: 'text-gray-500 dark:text-gray-400', dot: 'bg-gray-400' };
     }
 
     const todayStr = new Date().toLocaleDateString('en-CA'); 
-    const currentActiveIdx = allHistories.findIndex((h: any) => h.trangThai === 'HIEU_LUC' && h.ngayHieuLuc <= todayStr);
-
-    if (history.ngayHieuLuc > todayStr) {
-      return { text: 'Chờ áp dụng', color: 'text-yellow-600 dark:text-yellow-400', dot: 'bg-yellow-500 shadow-[0_0_0_3px_rgba(234,179,8,0.2)]' };
+    
+    if (history.trangThai === 'HIEU_LUC') {
+        if (history.ngayHieuLuc > todayStr) {
+            return { text: 'Chờ áp dụng', color: 'text-yellow-600 dark:text-yellow-400', dot: 'bg-yellow-500 shadow-[0_0_0_3px_rgba(234,179,8,0.2)]' };
+        }
+        
+        const currentActiveIdx = allHistories.findIndex((h: any) => h.trangThai === 'HIEU_LUC' && h.ngayHieuLuc <= todayStr);
+        if (idx === currentActiveIdx) {
+            return { text: 'Đang áp dụng', color: 'text-green-600 dark:text-green-400', dot: 'bg-green-500 shadow-[0_0_0_3px_rgba(34,197,94,0.2)]' };
+        }
+        
+        return { text: 'Đã qua', color: 'text-gray-500 dark:text-gray-400', dot: 'bg-gray-400' };
     }
 
-    if (idx === currentActiveIdx) {
-      return { text: 'Đang áp dụng', color: 'text-green-600 dark:text-green-400', dot: 'bg-green-500 shadow-[0_0_0_3px_rgba(34,197,94,0.2)]' };
-    }
-
-    return { text: 'Đã qua', color: 'text-gray-500 dark:text-gray-400', dot: 'bg-gray-400' };
+    return { text: history.tenTrangThai || history.trangThai, color: 'text-gray-500 dark:text-gray-400', dot: 'bg-gray-400' };
   };
 
   if (isLoading) {

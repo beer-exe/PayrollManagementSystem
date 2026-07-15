@@ -43,7 +43,8 @@ export interface LichSuCongTacDto {
   soQuyetDinh: string;
   loaiQuyetDinh: string;
   ngayHieuLuc: string;
-  tenChucVuMoi: string | null;
-  luongP1Moi: number | null;
+  tenChucVuMoi?: string;
+  luongP1Moi?: number;
   trangThai: string;
+  tenTrangThai?: string;
 }
