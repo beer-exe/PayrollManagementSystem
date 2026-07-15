@@ -187,15 +187,15 @@ export const PositionManagement: React.FC = () => {
                 {currentData.map(record => (
                   <tr key={record.idChucVu}>
                     <td className="mono">{record.idChucVu}</td>
-                    <td style={{ fontWeight: 600, color: '#111827' }}>{record.tenChucVu}</td>
-                    <td>{record.tenPhongBan || <span style={{ color: '#9ca3af' }}>Chưa gán</span>}</td>
+                    <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{record.tenChucVu}</td>
+                    <td>{record.tenPhongBan || <span style={{ color: 'var(--text-muted)' }}>Chưa gán</span>}</td>
                     <td>{record.tenChucVuQuanLy || '-'}</td>
                     <td><div className="truncate" title={record.moTaCongViec || ''}>{record.moTaCongViec}</div></td>
                     <td>
                       {record.tenNgachLuong ? (
                         <span className="pos-badge pos-badge-blue">{record.tenNgachLuong}</span>
                       ) : (
-                        <span style={{ color: '#9ca3af' }}>Chưa gán</span>
+                        <span style={{ color: 'var(--text-muted)' }}>Chưa gán</span>
                       )}
                     </td>
                     <td style={{ textAlign: 'center' }}>

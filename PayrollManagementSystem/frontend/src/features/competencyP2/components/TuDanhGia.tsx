@@ -36,7 +36,7 @@ export const TuDanhGia: React.FC = () => {
       
       {/* Active Periods Section */}
       <div className="cp2-controls-wrapper" style={{ flex: 'none' }}>
-        <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid #f3f4f6' }}>
+        <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid var(--border-color)' }}>
           <div className="cp2-header-title">
             <h2>Kỳ đánh giá đang mở</h2>
             <p>Danh sách các kỳ đánh giá bạn có thể tham gia</p>
@@ -60,17 +60,17 @@ export const TuDanhGia: React.FC = () => {
                     justifyContent: 'space-between', 
                     alignItems: 'center', 
                     padding: '1.25rem', 
-                    border: '1px solid #e5e7eb', 
+                    border: '1px solid var(--border-color)', 
                     borderRadius: '12px', 
-                    backgroundColor: '#fff',
+                    backgroundColor: 'var(--bg-surface)',
                     flexWrap: 'wrap',
                     gap: '1rem'
                   }}>
                     <div>
-                      <h4 style={{ margin: '0 0 0.25rem 0', fontWeight: 600, color: '#111827', fontSize: '1rem' }}>
+                      <h4 style={{ margin: '0 0 0.25rem 0', fontWeight: 600, color: 'var(--text-primary)', fontSize: '1rem' }}>
                         {ky.tenKyDanhGia}
                       </h4>
-                      <p style={{ margin: 0, color: '#6b7280', fontSize: '0.85rem' }}>
+                      <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
                         {ky.ngayBatDau} - {ky.ngayKetThuc}
                       </p>
                     </div>
@@ -96,7 +96,7 @@ export const TuDanhGia: React.FC = () => {
 
       {/* My Evaluations Section */}
       <div className="cp2-controls-wrapper">
-        <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid #f3f4f6' }}>
+        <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid var(--border-color)' }}>
           <div className="cp2-header-title">
             <h2>Danh sách phiếu đánh giá của tôi</h2>
             <p>Lịch sử tự đánh giá năng lực của bạn</p>
@@ -127,9 +127,9 @@ export const TuDanhGia: React.FC = () => {
 
                   return (
                     <tr key={record.idPhieu}>
-                      <td style={{ fontWeight: 600, color: '#111827' }}>{record.tenKyDanhGia}</td>
+                      <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{record.tenKyDanhGia}</td>
                       <td style={{ textAlign: 'center', fontWeight: 600 }}>{record.diemTongHop ?? '-'}</td>
-                      <td style={{ textAlign: 'center', fontWeight: 600, color: '#7c3aed' }}>{record.heSoP2 ?? '-'}</td>
+                      <td style={{ textAlign: 'center', fontWeight: 600, color: 'var(--primary)' }}>{record.heSoP2 ?? '-'}</td>
                       <td style={{ textAlign: 'center' }}>
                         {record.xepLoai ? (
                           <span className="cp2-badge cp2-badge-gray" style={{ fontWeight: 700 }}>

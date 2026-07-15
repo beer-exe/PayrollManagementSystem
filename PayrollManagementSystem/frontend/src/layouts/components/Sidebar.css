@@ -1,4 +1,4 @@
-@reference "tailwindcss";
+@reference "../../index.css";
 
 .sidebar-container {
   @apply fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transform -translate-x-full transition-all duration-300 ease-in-out lg:translate-x-0 flex flex-col;

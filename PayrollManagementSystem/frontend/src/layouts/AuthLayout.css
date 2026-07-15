@@ -1,4 +1,4 @@
-@reference "tailwindcss";
+@reference "../index.css";
 
 .auth-layout-container {
   @apply min-h-screen flex flex-col w-full bg-white dark:bg-gray-900;

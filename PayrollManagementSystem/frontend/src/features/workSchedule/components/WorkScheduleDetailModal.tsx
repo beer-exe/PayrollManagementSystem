@@ -88,15 +88,15 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
         {/* Month summary */}
         <div className="ws-month-summary">
           <span className="ws-month-summary-chip">
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--success-text)', display: 'inline-block' }} />
             Ngày làm: <strong>{totalWork}</strong>
           </span>
           <span className="ws-month-summary-chip">
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#3b82f6', display: 'inline-block' }} />
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--primary)', display: 'inline-block' }} />
             Nghỉ cuối tuần: <strong>{totalWeekend}</strong>
           </span>
           <span className="ws-month-summary-chip">
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f97316', display: 'inline-block' }} />
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--warning-text)', display: 'inline-block' }} />
             Nghỉ lễ: <strong>{totalHoliday}</strong>
           </span>
           <span className="ws-month-summary-chip" style={{ marginLeft: 'auto' }}>
@@ -123,25 +123,25 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
               <tbody>
                 {chiTiets.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: '#9ca3af' }}>
+                    <td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
                       Không có dữ liệu
                     </td>
                   </tr>
                 ) : (
                   chiTiets.map((c, idx) => (
                     <tr key={c.id} className={getRowClass(c.loaiNgay)}>
-                      <td style={{ color: '#9ca3af', fontSize: '0.8rem' }}>
+                      <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                         {(page - 1) * 31 + idx + 1}
                       </td>
-                      <td style={{ fontWeight: 600, color: '#1e293b' }}>{formatDate(c.ngay)}</td>
-                      <td style={{ color: '#64748b' }}>{c.thu}</td>
+                      <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{formatDate(c.ngay)}</td>
+                      <td style={{ color: 'var(--text-secondary)' }}>{c.thu}</td>
                       <td>
                         <span className={getBadgeClass(c.loaiNgay)}>{c.loaiNgay}</span>
                       </td>
-                      <td style={{ color: '#6b7280', fontSize: '0.82rem' }}>
+                      <td style={{ color: 'var(--text-secondary)', fontSize: '0.82rem' }}>
                         {c.tenNgayNghi ?? '—'}
                       </td>
-                      <td style={{ textAlign: 'center', fontWeight: 600, color: c.soGioLam > 0 ? '#166534' : '#9ca3af' }}>
+                      <td style={{ textAlign: 'center', fontWeight: 600, color: c.soGioLam > 0 ? 'var(--success-text)' : 'var(--text-muted)' }}>
                         {c.soGioLam > 0 ? `${c.soGioLam}h` : '0h'}
                       </td>
                     </tr>
@@ -169,7 +169,7 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
                 .filter(p => Math.abs(p - page) <= 2 || p === 1 || p === totalPages)
                 .map((p, i, arr) => (
                   <React.Fragment key={p}>
-                    {i > 0 && arr[i - 1] !== p - 1 && <span style={{ padding: '0 0.25rem', color: '#9ca3af' }}>…</span>}
+                    {i > 0 && arr[i - 1] !== p - 1 && <span style={{ padding: '0 0.25rem', color: 'var(--text-muted)' }}>…</span>}
                     <button
                       className={`ws-page-btn${p === page ? ' active' : ''}`}
                       onClick={() => setPage(p)}

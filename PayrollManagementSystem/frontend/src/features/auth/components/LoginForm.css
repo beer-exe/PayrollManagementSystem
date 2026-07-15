@@ -1,4 +1,4 @@
-@reference "tailwindcss";
+@reference "../../../index.css";
 
 .login-form-wrapper {
   @apply w-full max-w-md space-y-8 text-left;

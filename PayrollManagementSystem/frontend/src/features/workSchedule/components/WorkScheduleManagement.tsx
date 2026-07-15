@@ -142,26 +142,26 @@ export const WorkScheduleManagement: React.FC = () => {
                   <td className="ws-td-year">{lich.nam}</td>
                   <td>
                     <span className="ws-stat-chip work">
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--success-text)', display: 'inline-block' }} />
                       {lich.tongNgayLam}
                     </span>
                   </td>
                   <td>
                     <span className="ws-stat-chip weekend">
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#3b82f6', display: 'inline-block' }} />
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--primary)', display: 'inline-block' }} />
                       {lich.tongNgayNghiCuoiTuan}
                     </span>
                   </td>
                   <td>
                     <span className="ws-stat-chip holiday">
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f97316', display: 'inline-block' }} />
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--warning-text)', display: 'inline-block' }} />
                       {lich.tongNgayLe}
                     </span>
                   </td>
-                  <td style={{ fontWeight: 600, color: '#374151' }}>{lich.tongNgay}</td>
+                  <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{lich.tongNgay}</td>
                   <td>
                     <span className={`ws-badge ${lich.trangThai === 'Hiệu lực' ? 'active' : 'inactive'}`}>
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: lich.trangThai === 'Hiệu lực' ? '#22c55e' : '#94a3b8', display: 'inline-block' }} />
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: lich.trangThai === 'Hiệu lực' ? 'var(--success-text)' : 'var(--text-muted)', display: 'inline-block' }} />
                       {lich.trangThai}
                     </span>
                   </td>
@@ -231,7 +231,7 @@ export const WorkScheduleManagement: React.FC = () => {
       {confirmDelete && (
         <div className="ws-confirm-overlay">
           <div className="ws-confirm-box">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#dc2626" style={{ width: '2.5rem', height: '2.5rem', marginBottom: '0.75rem' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="var(--danger-text)" style={{ width: '2.5rem', height: '2.5rem', marginBottom: '0.75rem' }}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
             </svg>
             <h3>Xác nhận xóa lịch</h3>
@@ -277,7 +277,7 @@ export const WorkScheduleManagement: React.FC = () => {
             
             <div className="ws-modal-body" style={{ padding: '1.5rem', flex: 'none' }}>
               <div style={{ marginBottom: '1.25rem' }}>
-                <label htmlFor="ws-modal-year" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: '#374151' }}>Chọn năm <span style={{color: '#dc2626'}}>*</span></label>
+                <label htmlFor="ws-modal-year" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Chọn năm <span style={{color: 'var(--danger-text)'}}>*</span></label>
                 <select
                   id="ws-modal-year"
                   className="ws-year-select"
@@ -291,7 +291,7 @@ export const WorkScheduleManagement: React.FC = () => {
                 </select>
                 
                 {isYearExists && (
-                  <div style={{ marginTop: '0.5rem', color: '#dc2626', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <div style={{ marginTop: '0.5rem', color: 'var(--danger-text)', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1rem', height: '1rem' }}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                     </svg>
@@ -301,13 +301,13 @@ export const WorkScheduleManagement: React.FC = () => {
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <label htmlFor="ws-modal-notes" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: '#374151' }}>Ghi chú</label>
+                <label htmlFor="ws-modal-notes" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Ghi chú</label>
                 <textarea
                   id="ws-modal-notes"
                   value={createNotes}
                   onChange={(e) => setCreateNotes(e.target.value)}
                   placeholder="Nhập ghi chú (không bắt buộc)..."
-                  style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', minHeight: '100px', fontFamily: 'inherit', resize: 'vertical' }}
+                  style={{ width: '100%', padding: '0.75rem', border: '1px solid var(--border-color)', borderRadius: '8px', minHeight: '100px', fontFamily: 'inherit', resize: 'vertical' }}
                 />
               </div>
               
@@ -315,7 +315,7 @@ export const WorkScheduleManagement: React.FC = () => {
                 <button
                   onClick={() => setShowCreateModal(false)}
                   disabled={isCreating}
-                  style={{ padding: '0.625rem 1.25rem', border: '1px solid #d1d5db', background: '#fff', borderRadius: '8px', fontWeight: 600, color: '#4b5563', cursor: 'pointer' }}
+                  style={{ padding: '0.625rem 1.25rem', border: '1px solid var(--border-hover)', background: 'var(--bg-surface)', borderRadius: '8px', fontWeight: 600, color: 'var(--text-secondary)', cursor: 'pointer' }}
                 >
                   Hủy bỏ
                 </button>

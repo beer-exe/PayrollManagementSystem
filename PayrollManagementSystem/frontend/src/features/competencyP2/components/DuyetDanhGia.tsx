@@ -53,7 +53,7 @@ export const DuyetDanhGia: React.FC = () => {
 
                   return (
                     <tr key={record.idPhieu}>
-                      <td style={{ fontWeight: 600, color: '#111827' }}>{record.tenKyDanhGia}</td>
+                      <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{record.tenKyDanhGia}</td>
                       <td>{record.cccdNhanVien}</td>
                       <td style={{ textAlign: 'center' }}>
                         <span className={`cp2-badge ${badgeClass}`}>

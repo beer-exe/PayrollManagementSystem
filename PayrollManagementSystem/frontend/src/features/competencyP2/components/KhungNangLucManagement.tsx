@@ -6,7 +6,7 @@ import './CompetencyManagement.css';
 
 // Array of vibrant colors for the donut chart slices
 const CHART_COLORS = [
-  '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
+  '#3b82f6', '#10b981', '#f59e0b', 'var(--danger-text)', '#8b5cf6',
   '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1'
 ];
 
@@ -202,12 +202,12 @@ export const KhungNangLucManagement: React.FC = () => {
 
   const gradientStops = gradientResult.stops;
   if (gradientResult.cumulative < 100) {
-    gradientStops.push(`#e5e7eb ${gradientResult.cumulative}%, #e5e7eb 100%`);
+    gradientStops.push(`var(--border-color) ${gradientResult.cumulative}%, var(--border-color) 100%`);
   }
 
   const conicGradient = gradientStops.length > 0
     ? `conic-gradient(${gradientStops.join(', ')})`
-    : 'conic-gradient(#e5e7eb 0 100%)';
+    : 'conic-gradient(var(--border-color) 0 100%)';
 
   return (
     <div className="cp2-container">
@@ -231,7 +231,7 @@ export const KhungNangLucManagement: React.FC = () => {
       <div className="cp2-controls-wrapper">
         <div className="cp2-filters" style={{ borderBottom: 'none' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', width: '100%', maxWidth: '400px' }}>
-            <span style={{ fontWeight: 600, color: '#374151', whiteSpace: 'nowrap' }}>Chọn Chức vụ:</span>
+            <span style={{ fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>Chọn Chức vụ:</span>
             <div className="cp2-dropdown-select-wrap" ref={dropdownRef} style={{ flex: 1 }}>
               <input
                 className="cp2-select"
@@ -276,7 +276,7 @@ export const KhungNangLucManagement: React.FC = () => {
           </div>
         ) : (
           <>
-            <div className="cp2-table-container custom-scrollbar" style={{ borderTop: '1px solid #f3f4f6' }}>
+            <div className="cp2-table-container custom-scrollbar" style={{ borderTop: '1px solid var(--border-color)' }}>
               {loading ? (
                 <div className="cp2-loader">
                   <div className="cp2-spinner"></div>
@@ -294,7 +294,7 @@ export const KhungNangLucManagement: React.FC = () => {
                   <tbody>
                     {currentData.map(record => (
                       <tr key={record.idTieuChi}>
-                        <td style={{ fontWeight: 600, color: '#111827' }}>{record.tenNangLuc}</td>
+                        <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{record.tenNangLuc}</td>
                         <td>{record.moTa || '-'}</td>
                         <td style={{ textAlign: 'center' }}>
                           <span className="cp2-badge cp2-badge-blue">
@@ -429,7 +429,7 @@ export const KhungNangLucManagement: React.FC = () => {
                                 style={{ paddingRight: '1.5rem' }}
                                 required
                               />
-                              <span style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}>%</span>
+                              <span style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>%</span>
                             </div>
                           </div>
                         </div>
@@ -469,11 +469,11 @@ export const KhungNangLucManagement: React.FC = () => {
 
               {/* Right side: Donut Chart & Stats */}
               <div className="cp2-chart-container" style={{ width: '280px', flexShrink: 0 }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#374151', marginBottom: '1.5rem' }}>Phân Bổ Tỷ Trọng</h3>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '1.5rem' }}>Phân Bổ Tỷ Trọng</h3>
 
                 <div className="cp2-donut-chart" style={{ background: conicGradient }}>
                   <div className="cp2-donut-hole">
-                    <span className="cp2-donut-value" style={{ color: isOverweight ? '#ef4444' : '#111827' }}>
+                    <span className="cp2-donut-value" style={{ color: isOverweight ? 'var(--danger-text)' : 'var(--text-primary)' }}>
                       {totalWeightPercent.toFixed(1)}%
                     </span>
                     <span className="cp2-donut-label">Tổng cộng</span>
@@ -482,17 +482,17 @@ export const KhungNangLucManagement: React.FC = () => {
 
                 <div style={{ marginTop: '2rem', width: '100%' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
-                    <span style={{ color: '#6b7280' }}>Đã phân bổ:</span>
-                    <span style={{ fontWeight: 600, color: isOverweight ? '#ef4444' : '#111827' }}>{totalWeightPercent.toFixed(1)}%</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Đã phân bổ:</span>
+                    <span style={{ fontWeight: 600, color: isOverweight ? 'var(--danger-text)' : 'var(--text-primary)' }}>{totalWeightPercent.toFixed(1)}%</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                    <span style={{ color: '#6b7280' }}>Còn lại:</span>
-                    <span style={{ fontWeight: 600, color: '#111827' }}>{Math.max(0, 100 - totalWeightPercent).toFixed(1)}%</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Còn lại:</span>
+                    <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{Math.max(0, 100 - totalWeightPercent).toFixed(1)}%</span>
                   </div>
                 </div>
 
                 {isOverweight && (
-                  <div style={{ marginTop: '1rem', padding: '0.75rem', background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', fontSize: '0.875rem', borderRadius: '8px', textAlign: 'center' }}>
+                  <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'var(--danger-bg)', border: '1px solid var(--danger-bg)', color: 'var(--danger-text)', fontSize: '0.875rem', borderRadius: '8px', textAlign: 'center' }}>
                     Tổng tỷ trọng đang vượt quá 100%. Vui lòng điều chỉnh lại.
                   </div>
                 )}

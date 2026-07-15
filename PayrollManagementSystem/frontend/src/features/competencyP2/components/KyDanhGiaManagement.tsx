@@ -150,7 +150,7 @@ export const KyDanhGiaManagement: React.FC = () => {
 
                   return (
                     <tr key={record.idKyDanhGia}>
-                      <td style={{ fontWeight: 600, color: '#111827' }}>{record.tenKyDanhGia}</td>
+                      <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{record.tenKyDanhGia}</td>
                       <td>{record.ngayBatDau}</td>
                       <td>{record.ngayKetThuc}</td>
                       <td style={{ textAlign: 'center' }}>
@@ -239,7 +239,7 @@ export const KyDanhGiaManagement: React.FC = () => {
                               )}
                               
                               {record.trangThai !== 'KHOI_TAO' && record.trangThai !== 'DANG_DANH_GIA' && (
-                                <div style={{ padding: '0.5rem', color: '#9ca3af', fontSize: '0.85rem', textAlign: 'center' }}>
+                                <div style={{ padding: '0.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center' }}>
                                   Không có hành động
                                 </div>
                               )}
