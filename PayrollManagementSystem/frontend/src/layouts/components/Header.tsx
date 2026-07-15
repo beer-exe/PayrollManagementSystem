@@ -103,7 +103,7 @@ export const Header: React.FC<HeaderProps> = ({ isCollapsed, toggleCollapse, tog
               </div>
               <ul className="header-dropdown-list">
                 <li>
-                  <Link to="/dashboard/ho-so" className="header-dropdown-item" onClick={() => setIsDropdownOpen(false)}>
+                  <Link to="/profile" className="header-dropdown-item" onClick={() => setIsDropdownOpen(false)}>
                     Hồ sơ cá nhân
                   </Link>
                 </li>

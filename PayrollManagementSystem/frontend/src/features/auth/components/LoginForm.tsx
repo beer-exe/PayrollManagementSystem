@@ -17,7 +17,7 @@ export const LoginForm: React.FC = () => {
     
     const success = await login({ tenTaiKhoan, matKhau });
     if (success) {
-      navigate('/dashboard'); 
+      navigate('/profile'); 
     }
   };
 

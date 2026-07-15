@@ -19,18 +19,17 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   {
-    path: "/dashboard",
-    label: "Tổng quan",
-    allowedRoles: ["Admin", "HR"],
+    path: "/profile",
+    label: "Hồ sơ cá nhân",
+    allowedRoles: ["Admin", "HR", "Employee"],
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
       </svg>
     ),
   },
   {
-    path: "/dashboard/tai-khoan",
+    path: "/admin/tai-khoan",
     label: "Quản lý tài khoản",
     allowedRoles: ["Admin"],
     icon: (
@@ -40,17 +39,17 @@ const menuItems: MenuItem[] = [
     ),
   },
   {
-    path: "/dashboard/nhan-vien",
+    path: "/hr/nhan-vien",
     label: "Quản lý nhân viên",
     allowedRoles: ["HR"],
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
       </svg>
     ),
   },
   {
-    path: "/dashboard/phong-ban",
+    path: "/hr/phong-ban",
     label: "Phòng ban & Vị trí",
     allowedRoles: ["HR"],
     icon: (
@@ -60,7 +59,7 @@ const menuItems: MenuItem[] = [
     ),
   },
   {
-    path: "/dashboard/ngach-luong",
+    path: "/hr/ngach-luong",
     label: "Quản lý ngạch lương",
     allowedRoles: ["HR"],
     icon: (
@@ -70,7 +69,7 @@ const menuItems: MenuItem[] = [
     ),
   },
   {
-    path: "/dashboard/chuc-vu",
+    path: "/hr/chuc-vu",
     label: "Quản lý chức vụ",
     allowedRoles: ["HR"],
     icon: (
@@ -78,7 +77,7 @@ const menuItems: MenuItem[] = [
     ),
   },
   {
-    path: "/dashboard/lich-lam-viec",
+    path: "/time/lich-lam-viec",
     label: "Lịch làm việc",
     allowedRoles: ["Admin", "HR", "Employee"],
     icon: (
@@ -86,7 +85,7 @@ const menuItems: MenuItem[] = [
     ),
   },
   {
-    path: "/dashboard/cham-cong",
+    path: "/time/cham-cong",
     label: "Chấm công",
     allowedRoles: ["Admin", "HR"],
     icon: (
@@ -96,7 +95,7 @@ const menuItems: MenuItem[] = [
     ),
   },
   {
-    path: "/dashboard/don-nghi",
+    path: "/time/don-nghi",
     label: "Đơn xin nghỉ",
     allowedRoles: ["Admin", "HR"],
     icon: (
@@ -115,27 +114,27 @@ const menuItems: MenuItem[] = [
     ),
     children: [
       {
-        path: "/dashboard/danh-gia/khung-nang-luc",
+        path: "/performance/khung-nang-luc",
         label: "Khung năng lực",
         allowedRoles: ["HR"],
       },
       {
-        path: "/dashboard/danh-gia/cau-hinh",
+        path: "/performance/cau-hinh",
         label: "Cấu hình Mức quy đổi",
         allowedRoles: ["HR"],
       },
       {
-        path: "/dashboard/danh-gia/ky-danh-gia",
+        path: "/performance/ky-danh-gia",
         label: "Kỳ Đánh giá",
         allowedRoles: ["Admin", "HR"],
       },
       {
-        path: "/dashboard/danh-gia/tu-danh-gia",
+        path: "/performance/tu-danh-gia",
         label: "Tự đánh giá",
         allowedRoles: ["Employee", "Admin", "HR"],
       },
       {
-        path: "/dashboard/danh-gia/duyet-danh-gia",
+        path: "/performance/duyet-danh-gia",
         label: "Duyệt đánh giá của nhân viên",
         allowedRoles: ["Admin", "HR", "Employee"],
       },
@@ -152,7 +151,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, isOpenMobile, onC
 
   useEffect(() => {
     menuItems.forEach(item => {
-      if (item.children && item.children.some(child => location.pathname === child.path)) {
+      if (item.children && item.children.some(child => location.pathname === child.path || location.pathname.startsWith(`${child.path}/`))) {
         setOpenMenus(prev => ({ ...prev, [item.label]: true }));
       }
     });
@@ -188,12 +187,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, isOpenMobile, onC
               const visibleChildren = item.children?.filter(child => {
                 if (!child.allowedRoles.includes(userRole)) return false;
                 // Ẩn menu Duyệt đánh giá nếu không phải HR và không có quyền quản lý
-                if (child.path === "/dashboard/danh-gia/duyet-danh-gia") {
+                if (child.path === "/performance/duyet-danh-gia") {
                   if (userRole !== "Admin" && !user?.hasDirectReports) return false;
                 }
                 return true;
               }) || [];
-              const hasActiveChild = isDropdown && visibleChildren.some(child => location.pathname === child.path);
+              const hasActiveChild = isDropdown && visibleChildren.some(child => location.pathname === child.path || location.pathname.startsWith(`${child.path}/`));
 
               return (
                 <li key={item.label} className="nav-item-wrapper">
@@ -227,7 +226,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, isOpenMobile, onC
                               <li key={child.path}>
                                 <NavLink
                                   to={child.path}
-                                  className={({ isActive }) => `submenu-item ${isActive ? "active" : ""}`}
+                                  className={({ isActive }) => `submenu-item ${isActive || location.pathname.startsWith(`${child.path}/`) ? "active" : ""}`}
                                 >
                                   {child.label}
                                 </NavLink>
@@ -240,7 +239,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, isOpenMobile, onC
                   ) : (
                     <NavLink
                       to={item.path!}
-                      end={item.path === "/dashboard"}
+                      end={item.path === "/profile"}
                       className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
                       title={isCollapsed ? item.label : undefined}
                     >
