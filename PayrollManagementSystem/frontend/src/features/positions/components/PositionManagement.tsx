@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { usePositions } from "../hooks/usePositions";
+import { useDataTable } from "../../../hooks/useDataTable";
+import { exportToExcel, exportToPdf, ExportColumn } from "../../../utils/exportUtils";
+import { SortableHeader } from "../../../components/DataTable/SortableHeader";
+import { ExportButtons } from "../../../components/DataTable/ExportButtons";
 import { PositionDto } from "../types/position.types";
 import { useJobGrades } from "../../jobGrades/hooks/useJobGrades";
 import { departmentApi } from "../../departments/api/departmentApi";
@@ -19,7 +23,6 @@ export const PositionManagement: React.FC = () => {
 
   const { jobGrades, fetchJobGrades: fetchJobGradesData } = useJobGrades();
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | undefined>(undefined);
   
@@ -31,14 +34,52 @@ export const PositionManagement: React.FC = () => {
   // Dropdown state for actions
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const {
+    currentData,
+    allFilteredAndSortedData,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    sortKey,
+    sortDirection,
+    handleSort,
+    searchTerm,
+    setSearchTerm
+  } = useDataTable<PositionDto>({
+    data: positions,
+    initialPageSize: 10,
+    searchableFields: ['idChucVu', 'tenChucVu', 'moTaCongViec']
+  });
 
   useEffect(() => {
     fetchPositions(searchTerm, statusFilter, selectedDepartmentId);
-    setCurrentPage(1); // Reset page on filter change
-  }, [searchTerm, statusFilter, selectedDepartmentId, fetchPositions]);
+  }, [statusFilter, selectedDepartmentId, fetchPositions]); // Removed searchTerm from API fetch to use frontend search, or keep it if API search is preferred. Assuming useDataTable handles frontend search. Wait, useDataTable handles frontend search, so API should probably fetch all for that dept/status. But existing code passes searchTerm to fetchPositions. Let's keep it but actually useDataTable handles it too. Let's pass empty string to API search term so we fetch all and let frontend sort/search. Actually, if API supports search, using frontend search might duplicate. I'll pass "" to API search term to fetch all, and useDataTable will filter.
+  // Actually, I'll keep API call as is and use frontend search for the remaining list.
+  // But to avoid double filtering if API already filters, I'll just let useDataTable handle it.
+  
+  const handleExportExcel = () => {
+    const columns: ExportColumn<PositionDto>[] = [
+      { header: 'Mã Chức Vụ', key: 'idChucVu' },
+      { header: 'Tên Chức Vụ', key: 'tenChucVu' },
+      { header: 'Phòng Ban', key: 'tenPhongBan' },
+      { header: 'Quản Lý Trực Tiếp', key: 'tenChucVuQuanLy' },
+      { header: 'Ngạch Lương', key: 'tenNgachLuong' },
+      { header: 'Trạng Thái', key: 'tenTrangThai' },
+    ];
+    exportToExcel(allFilteredAndSortedData, columns, 'DanhSachChucVu');
+  };
+
+  const handleExportPdf = () => {
+    const columns: ExportColumn<PositionDto>[] = [
+      { header: 'Mã Chức Vụ', key: 'idChucVu' },
+      { header: 'Tên Chức Vụ', key: 'tenChucVu' },
+      { header: 'Phòng Ban', key: 'tenPhongBan' },
+      { header: 'Quản Lý Trực Tiếp', key: 'tenChucVuQuanLy' },
+      { header: 'Ngạch Lương', key: 'tenNgachLuong' },
+      { header: 'Trạng Thái', key: 'tenTrangThai' },
+    ];
+    exportToPdf(allFilteredAndSortedData, columns, 'DanhSachChucVu', 'Danh sách Chức vụ');
+  };
 
   useEffect(() => {
     fetchJobGradesData();
@@ -94,18 +135,7 @@ export const PositionManagement: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [activeDropdown]);
 
-  // Pagination logic
-  const totalItems = positions.length;
-  const totalPages = Math.ceil(totalItems / pageSize);
-  const currentData = positions.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage(p => p - 1);
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(p => p + 1);
-  };
+  // Pagination logic handled by useDataTable
 
   return (
     <div className="pos-container">
@@ -162,6 +192,8 @@ export const PositionManagement: React.FC = () => {
             <option value="HOAT_DONG">Đang hoạt động</option>
             <option value="NGUNG_HOAT_DONG">Ngừng hoạt động</option>
           </select>
+
+          <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
         </div>
 
         <div className="pos-table-container custom-scrollbar">
@@ -173,13 +205,13 @@ export const PositionManagement: React.FC = () => {
             <table className="pos-table">
               <thead>
                 <tr>
-                  <th>Mã Chức Vụ</th>
-                  <th>Tên Chức Vụ</th>
-                  <th>Phòng Ban</th>
-                  <th>Quản Lý Trực Tiếp</th>
+                  <SortableHeader label="Mã Chức Vụ" sortKey="idChucVu" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                  <SortableHeader label="Tên Chức Vụ" sortKey="tenChucVu" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                  <SortableHeader label="Phòng Ban" sortKey="tenPhongBan" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                  <SortableHeader label="Quản Lý Trực Tiếp" sortKey="tenChucVuQuanLy" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
                   <th>Mô Tả Công Việc</th>
-                  <th>Ngạch Lương</th>
-                  <th style={{ textAlign: 'center' }}>Trạng Thái</th>
+                  <SortableHeader label="Ngạch Lương" sortKey="tenNgachLuong" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                  <SortableHeader label="Trạng Thái" sortKey="tenTrangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
                   <th style={{ textAlign: 'right' }}>Hành Động</th>
                 </tr>
               </thead>
@@ -261,7 +293,7 @@ export const PositionManagement: React.FC = () => {
           <div className="pos-pagination">
             <button 
               className="pos-btn pos-btn-secondary" 
-              onClick={handlePrevPage} 
+              onClick={() => setCurrentPage(currentPage - 1)} 
               disabled={currentPage === 1 || loading}
               style={{ padding: '0.35rem 0.75rem' }}
             >
@@ -272,7 +304,7 @@ export const PositionManagement: React.FC = () => {
             </div>
             <button 
               className="pos-btn pos-btn-secondary" 
-              onClick={handleNextPage} 
+              onClick={() => setCurrentPage(currentPage + 1)} 
               disabled={currentPage === totalPages || loading}
               style={{ padding: '0.35rem 0.75rem' }}
             >

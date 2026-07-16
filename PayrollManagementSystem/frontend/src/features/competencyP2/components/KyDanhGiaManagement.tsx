@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useKyDanhGia } from '../hooks/useKyDanhGia';
 import { kyDanhGiaApi } from '../api/kyDanhGiaApi';
+import { useDataTable } from '../../../hooks/useDataTable';
+import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import './CompetencyManagement.css';
 
 export const KyDanhGiaManagement: React.FC = () => {
@@ -16,12 +20,42 @@ export const KyDanhGiaManagement: React.FC = () => {
   
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
-  const totalItems = data.length;
-  const totalPages = Math.ceil(totalItems / pageSize);
-  const currentData = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const {
+    currentData,
+    allFilteredAndSortedData,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    sortKey,
+    sortDirection,
+    handleSort,
+    searchTerm,
+    setSearchTerm
+  } = useDataTable<any>({
+    data: data,
+    initialPageSize: 10,
+    searchableFields: ['tenKyDanhGia', 'ngayBatDau', 'ngayKetThuc']
+  });
+
+  const handleExportExcel = () => {
+    const columns: ExportColumn<any>[] = [
+      { header: 'Tên kỳ đánh giá', key: 'tenKyDanhGia' },
+      { header: 'Ngày bắt đầu', key: 'ngayBatDau' },
+      { header: 'Ngày kết thúc', key: 'ngayKetThuc' },
+      { header: 'Trạng thái', key: 'tenTrangThai' },
+    ];
+    exportToExcel(allFilteredAndSortedData, columns, 'KyDanhGia');
+  };
+
+  const handleExportPdf = () => {
+    const columns: ExportColumn<any>[] = [
+      { header: 'Tên kỳ đánh giá', key: 'tenKyDanhGia' },
+      { header: 'Ngày bắt đầu', key: 'ngayBatDau' },
+      { header: 'Ngày kết thúc', key: 'ngayKetThuc' },
+      { header: 'Trạng thái', key: 'tenTrangThai' },
+    ];
+    exportToPdf(allFilteredAndSortedData, columns, 'KyDanhGia', 'Danh sách Kỳ đánh giá');
+  };
 
   useEffect(() => {
     fetchKyDanhGia();
@@ -124,6 +158,19 @@ export const KyDanhGiaManagement: React.FC = () => {
       </div>
 
       <div className="cp2-controls-wrapper">
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', borderBottom: '1px solid var(--border-color)', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="cp2-input-wrapper" style={{ flex: 1, minWidth: '250px', position: 'relative' }}>
+            <input
+              type="text"
+              placeholder="Tìm kiếm kỳ đánh giá..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="cp2-select"
+              style={{ width: '100%', paddingLeft: '0.75rem' }}
+            />
+          </div>
+          <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
+        </div>
         <div className="cp2-table-container custom-scrollbar">
           {loading ? (
             <div className="cp2-loader">
@@ -133,10 +180,10 @@ export const KyDanhGiaManagement: React.FC = () => {
             <table className="cp2-table">
               <thead>
                 <tr>
-                  <th>Tên kỳ đánh giá</th>
-                  <th>Ngày bắt đầu</th>
-                  <th>Ngày kết thúc</th>
-                  <th style={{ textAlign: 'center' }}>Trạng thái</th>
+                  <SortableHeader label="Tên kỳ đánh giá" sortKey="tenKyDanhGia" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                  <SortableHeader label="Ngày bắt đầu" sortKey="ngayBatDau" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                  <SortableHeader label="Ngày kết thúc" sortKey="ngayKetThuc" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                  <SortableHeader label="Trạng thái" sortKey="trangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
                   <th style={{ textAlign: 'right' }}>Hành động</th>
                 </tr>
               </thead>

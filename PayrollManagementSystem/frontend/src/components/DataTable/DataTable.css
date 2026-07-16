@@ -1,0 +1,92 @@
+/* Sortable Header */
+.sortable-header {
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.sortable-header:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.sortable-header.active {
+  background-color: rgba(124, 58, 237, 0.05); /* very light primary color */
+}
+
+.sortable-header-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sort-icon-container {
+  display: flex;
+  flex-direction: column;
+  color: var(--text-secondary); /* Changed from text-muted to text-secondary for better contrast */
+  opacity: 0.6; /* Increased base opacity */
+  transition: opacity 0.2s ease;
+}
+
+.sortable-header:hover .sort-icon-container {
+  opacity: 0.9;
+}
+
+.sortable-header.active .sort-icon-container {
+  opacity: 1;
+}
+
+.sort-icon {
+  width: 0.85rem; /* Slightly larger */
+  height: 0.85rem;
+  margin: -0.15rem 0; /* Adjust gap for larger icon */
+}
+
+.sort-icon.active {
+  color: var(--primary);
+}
+
+
+/* Export Buttons */
+.dt-export-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.dt-btn-export {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  background-color: var(--bg-surface);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dt-btn-export svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.dt-btn-excel {
+  color: #10b981; /* Emerald 500 */
+  border-color: #10b981;
+}
+
+.dt-btn-excel:hover {
+  background-color: #10b981;
+  color: white;
+}
+
+.dt-btn-pdf {
+  color: #ef4444; /* Red 500 */
+  border-color: #ef4444;
+}
+
+.dt-btn-pdf:hover {
+  background-color: #ef4444;
+  color: white;
+}
