@@ -7,6 +7,10 @@ import type { DepartmentDto } from '../../departments/types/department.types';
 import { useAuthStore } from '@/store/useAuthStore';
 import { ChamCongFormModal } from './ChamCongFormModal';
 import { ImportChamCongModal } from './ImportChamCongModal';
+import { useDataTable } from '../../../hooks/useDataTable';
+import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import './ChamCongManagement.css';
 
 const LOAI_NGAY_COLOR: Record<string, string> = {
@@ -30,7 +34,6 @@ const now = new Date();
 export const ChamCongManagement: React.FC = () => {
   const [thang, setThang] = useState(now.getMonth() + 1);
   const [nam, setNam] = useState(now.getFullYear());
-  const [searchCccd, setSearchCccd] = useState('');
   const [activeTab, setActiveTab] = useState<'chi-tiet' | 'tong-hop'>('tong-hop');
 
   const { user } = useAuthStore();
@@ -72,10 +75,6 @@ export const ChamCongManagement: React.FC = () => {
     setIsPbDropdownOpen(false);
   };
 
-  const PAGE_SIZE = 10;
-  const [tongHopPage, setTongHopPage] = useState(1);
-  const [chiTietPage, setChiTietPage] = useState(1);
-
   const [showFormModal, setShowFormModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [editItem, setEditItem] = useState<ChamCongDto | null>(null);
@@ -86,17 +85,51 @@ export const ChamCongManagement: React.FC = () => {
   const { list, summary, loading, error, fetchList, fetchSummary, createChamCong, updateChamCong, deleteChamCong } = useChamCong();
 
   const loadData = useCallback(() => {
-    if (activeTab === 'chi-tiet') fetchList(thang, nam, searchCccd || undefined, idPhongBan || undefined);
+    if (activeTab === 'chi-tiet') fetchList(thang, nam, undefined, idPhongBan || undefined);
     else fetchSummary(thang, nam, idPhongBan || undefined);
-  }, [activeTab, thang, nam, searchCccd, idPhongBan, fetchList, fetchSummary]);
+  }, [activeTab, thang, nam, idPhongBan, fetchList, fetchSummary]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  const {
+    currentData: currentTongHopList,
+    allFilteredAndSortedData: allTongHop,
+    currentPage: tongHopPage,
+    totalPages: totalTongHopPages,
+    setCurrentPage: setTongHopPage,
+    sortKey: tongHopSortKey,
+    sortDirection: tongHopSortDirection,
+    handleSort: handleTongHopSort,
+    searchTerm: tongHopSearchTerm,
+    setSearchTerm: setTongHopSearchTerm
+  } = useDataTable<any>({
+    data: summary,
+    initialPageSize: 10,
+    searchableFields: ['hoTenNhanVien', 'cccdNhanVien']
+  });
+
+  const {
+    currentData: currentChiTietList,
+    allFilteredAndSortedData: allChiTiet,
+    currentPage: chiTietPage,
+    totalPages: totalChiTietPages,
+    setCurrentPage: setChiTietPage,
+    sortKey: chiTietSortKey,
+    sortDirection: chiTietSortDirection,
+    handleSort: handleChiTietSort,
+    searchTerm: chiTietSearchTerm,
+    setSearchTerm: setChiTietSearchTerm
+  } = useDataTable<ChamCongDto>({
+    data: list,
+    initialPageSize: 10,
+    searchableFields: ['hoTenNhanVien', 'cccdNhanVien']
+  });
 
   // Reset pagination when filters change
   useEffect(() => {
     setTongHopPage(1);
     setChiTietPage(1);
-  }, [thang, nam, searchCccd, idPhongBan, activeTab]);
+  }, [thang, nam, tongHopSearchTerm, chiTietSearchTerm, idPhongBan, activeTab]);
 
   const showToast = (type: 'success' | 'error', text: string) => {
     setToastMsg({ type, text });
@@ -132,12 +165,64 @@ export const ChamCongManagement: React.FC = () => {
   const totalAbsent = list.filter(r => r.loaiNgayCong === 'Vắng không phép').length;
   const totalLate = list.filter(r => r.loaiNgayCong === 'Đi trễ / Về sớm').length;
 
-  // Pagination logic
-  const totalTongHopPages = Math.max(1, Math.ceil(summary.length / PAGE_SIZE));
-  const currentTongHopList = summary.slice((tongHopPage - 1) * PAGE_SIZE, tongHopPage * PAGE_SIZE);
 
-  const totalChiTietPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
-  const currentChiTietList = list.slice((chiTietPage - 1) * PAGE_SIZE, chiTietPage * PAGE_SIZE);
+  const handleExportExcel = () => {
+    if (activeTab === 'tong-hop') {
+      const columns: ExportColumn<any>[] = [
+        { header: 'Nhân viên', key: 'hoTenNhanVien' },
+        { header: 'CCCD', key: 'cccdNhanVien' },
+        { header: 'Phòng ban', key: 'tenPhongBan' },
+        { header: 'Ngày chuẩn', key: 'ngayCongChuan' },
+        { header: 'Ngày thực tế', key: 'tongNgayCongThucTe' },
+        { header: 'Nghỉ lễ', key: 'ngayNghiLe' },
+        { header: 'Vắng không phép', key: 'ngayVangKhongPhep' },
+        { header: 'Cần giải trình', key: 'ngayCanGiaiTrinh' },
+      ];
+      exportToExcel(allTongHop, columns, 'TongHopChamCong');
+    } else {
+      const columns: ExportColumn<ChamCongDto>[] = [
+        { header: 'Ngày', key: 'ngayChamCong' },
+        { header: 'Nhân viên', key: 'hoTenNhanVien' },
+        { header: 'CCCD', key: 'cccdNhanVien' },
+        { header: 'Giờ vào', key: 'gioVao' },
+        { header: 'Giờ ra', key: 'gioRa' },
+        { header: 'Số giờ', key: 'soGioLamThucTe' },
+        { header: 'Ngày công', key: 'soNgayCong' },
+        { header: 'Loại ngày', key: 'loaiNgayCong' },
+        { header: 'Trạng thái', key: 'trangThai' },
+      ];
+      exportToExcel(allChiTiet, columns, 'ChiTietChamCong');
+    }
+  };
+
+  const handleExportPdf = () => {
+    if (activeTab === 'tong-hop') {
+      const columns: ExportColumn<any>[] = [
+        { header: 'Nhân viên', key: 'hoTenNhanVien' },
+        { header: 'CCCD', key: 'cccdNhanVien' },
+        { header: 'Phòng ban', key: 'tenPhongBan' },
+        { header: 'Ngày chuẩn', key: 'ngayCongChuan' },
+        { header: 'Ngày thực tế', key: 'tongNgayCongThucTe' },
+        { header: 'Nghỉ lễ', key: 'ngayNghiLe' },
+        { header: 'Vắng không phép', key: 'ngayVangKhongPhep' },
+        { header: 'Cần giải trình', key: 'ngayCanGiaiTrinh' },
+      ];
+      exportToPdf(allTongHop, columns, 'TongHopChamCong', 'Tổng hợp chấm công');
+    } else {
+      const columns: ExportColumn<ChamCongDto>[] = [
+        { header: 'Ngày', key: 'ngayChamCong' },
+        { header: 'Nhân viên', key: 'hoTenNhanVien' },
+        { header: 'CCCD', key: 'cccdNhanVien' },
+        { header: 'Giờ vào', key: 'gioVao' },
+        { header: 'Giờ ra', key: 'gioRa' },
+        { header: 'Số giờ', key: 'soGioLamThucTe' },
+        { header: 'Ngày công', key: 'soNgayCong' },
+        { header: 'Loại ngày', key: 'loaiNgayCong' },
+        { header: 'Trạng thái', key: 'trangThai' },
+      ];
+      exportToPdf(allChiTiet, columns, 'ChiTietChamCong', 'Chi tiết chấm công');
+    }
+  };
 
   return (
     <div className="cc-page">
@@ -241,17 +326,18 @@ export const ChamCongManagement: React.FC = () => {
             )}
           </div>
         </div>
-        {activeTab === 'chi-tiet' && (
-          <div className="cc-filter-group">
-            <label className="cc-filter-label">Tìm kiếm</label>
-            <input
-              className="cc-input"
-              placeholder="Lọc theo Tên, CCCD..."
-              value={searchCccd}
-              onChange={e => setSearchCccd(e.target.value)}
-            />
-          </div>
-        )}
+        <div className="cc-filter-group">
+          <label className="cc-filter-label">Tìm kiếm</label>
+          <input
+            className="cc-input"
+            placeholder="Tìm Tên, CCCD..."
+            value={activeTab === 'tong-hop' ? tongHopSearchTerm : chiTietSearchTerm}
+            onChange={e => activeTab === 'tong-hop' ? setTongHopSearchTerm(e.target.value) : setChiTietSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="cc-filter-group" style={{ display: 'flex', alignItems: 'flex-end' }}>
+          <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
+        </div>
       </div>
 
       {/* SUMMARY CARDS (chỉ hiện ở tab chi tiết) */}
@@ -300,13 +386,13 @@ export const ChamCongManagement: React.FC = () => {
           <table className="cc-table">
             <thead>
               <tr>
-                <th>Nhân viên</th>
-                <th>Phòng ban</th>
-                <th>Ngày chuẩn</th>
-                <th>Ngày thực tế</th>
-                <th>Nghỉ lễ</th>
-                <th>Vắng không phép</th>
-                <th>Cần giải trình</th>
+                <SortableHeader label="Nhân viên" sortKey="hoTenNhanVien" currentSortKey={tongHopSortKey} currentSortDirection={tongHopSortDirection} onSort={handleTongHopSort} />
+                <SortableHeader label="Phòng ban" sortKey="tenPhongBan" currentSortKey={tongHopSortKey} currentSortDirection={tongHopSortDirection} onSort={handleTongHopSort} />
+                <SortableHeader label="Ngày chuẩn" sortKey="ngayCongChuan" currentSortKey={tongHopSortKey} currentSortDirection={tongHopSortDirection} onSort={handleTongHopSort} />
+                <SortableHeader label="Ngày thực tế" sortKey="tongNgayCongThucTe" currentSortKey={tongHopSortKey} currentSortDirection={tongHopSortDirection} onSort={handleTongHopSort} />
+                <SortableHeader label="Nghỉ lễ" sortKey="ngayNghiLe" currentSortKey={tongHopSortKey} currentSortDirection={tongHopSortDirection} onSort={handleTongHopSort} />
+                <SortableHeader label="Vắng không phép" sortKey="ngayVangKhongPhep" currentSortKey={tongHopSortKey} currentSortDirection={tongHopSortDirection} onSort={handleTongHopSort} />
+                <SortableHeader label="Cần giải trình" sortKey="ngayCanGiaiTrinh" currentSortKey={tongHopSortKey} currentSortDirection={tongHopSortDirection} onSort={handleTongHopSort} />
               </tr>
             </thead>
             <tbody>
@@ -340,7 +426,7 @@ export const ChamCongManagement: React.FC = () => {
               ))}
             </tbody>
           </table>
-          {summary.length > 0 && (
+          {totalTongHopPages > 0 && (
             <div className="cc-pagination">
               <button 
                 className="cc-page-btn" 
@@ -366,14 +452,14 @@ export const ChamCongManagement: React.FC = () => {
           <table className="cc-table">
             <thead>
               <tr>
-                <th>Ngày</th>
-                <th>Nhân viên</th>
-                <th>Giờ vào</th>
-                <th>Giờ ra</th>
-                <th>Số giờ</th>
-                <th>Ngày công</th>
-                <th>Loại ngày</th>
-                <th>Trạng thái</th>
+                <SortableHeader label="Ngày" sortKey="ngayChamCong" currentSortKey={chiTietSortKey} currentSortDirection={chiTietSortDirection} onSort={handleChiTietSort} />
+                <SortableHeader label="Nhân viên" sortKey="hoTenNhanVien" currentSortKey={chiTietSortKey} currentSortDirection={chiTietSortDirection} onSort={handleChiTietSort} />
+                <SortableHeader label="Giờ vào" sortKey="gioVao" currentSortKey={chiTietSortKey} currentSortDirection={chiTietSortDirection} onSort={handleChiTietSort} />
+                <SortableHeader label="Giờ ra" sortKey="gioRa" currentSortKey={chiTietSortKey} currentSortDirection={chiTietSortDirection} onSort={handleChiTietSort} />
+                <SortableHeader label="Số giờ" sortKey="soGioLamThucTe" currentSortKey={chiTietSortKey} currentSortDirection={chiTietSortDirection} onSort={handleChiTietSort} />
+                <SortableHeader label="Ngày công" sortKey="soNgayCong" currentSortKey={chiTietSortKey} currentSortDirection={chiTietSortDirection} onSort={handleChiTietSort} />
+                <SortableHeader label="Loại ngày" sortKey="loaiNgayCong" currentSortKey={chiTietSortKey} currentSortDirection={chiTietSortDirection} onSort={handleChiTietSort} />
+                <SortableHeader label="Trạng thái" sortKey="trangThai" currentSortKey={chiTietSortKey} currentSortDirection={chiTietSortDirection} onSort={handleChiTietSort} />
                 <th>Ghi chú</th>
                 <th></th>
               </tr>
@@ -421,7 +507,7 @@ export const ChamCongManagement: React.FC = () => {
               ))}
             </tbody>
           </table>
-          {list.length > 0 && (
+          {totalChiTietPages > 0 && (
             <div className="cc-pagination">
               <button 
                 className="cc-page-btn" 

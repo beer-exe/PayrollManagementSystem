@@ -137,7 +137,7 @@ export const TuDanhGiaForm: React.FC = () => {
               {detail?.chiTietDanhGias.map((c) => (
                 <tr key={c.idChiTiet}>
                   <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{c.tenNangLuc}</td>
-                  <td style={{ fontSize: '0.85rem' }}>{c.moTa || '-'}</td>
+                  <td style={{ fontSize: '0.85rem' }}>-</td>
                   <td style={{ textAlign: 'center' }}>
                     <span className="cp2-badge cp2-badge-blue">
                       {Number((c.tyTrong * 100).toFixed(1))}%
