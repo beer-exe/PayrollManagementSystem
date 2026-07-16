@@ -168,10 +168,10 @@ export const MucQuyDoiManagement: React.FC = () => {
                       <td style={{ textAlign: 'right', fontWeight: 600 }}>
                         {record.diemToiThieu.toLocaleString('vi-VN')}
                       </td>
-                      <td style={{ textAlign: 'right', fontWeight: 600, color: '#7c3aed' }}>
+                      <td style={{ textAlign: 'right', fontWeight: 600, color: 'var(--primary)' }}>
                         {record.diemToiDa.toLocaleString('vi-VN')}
                       </td>
-                      <td style={{ textAlign: 'center', fontWeight: 700, color: '#059669' }}>
+                      <td style={{ textAlign: 'center', fontWeight: 700, color: 'var(--success-text)' }}>
                         {record.heSoP2.toLocaleString('vi-VN')}
                       </td>
                       <td>

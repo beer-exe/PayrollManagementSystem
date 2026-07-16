@@ -157,7 +157,7 @@ export const NgachLuongManagement: React.FC = () => {
                 {currentData.map(record => (
                   <tr key={record.idNgachLuong}>
                     <td className="mono">{record.idNgachLuong}</td>
-                    <td style={{ fontWeight: 600, color: '#111827' }}>{record.tenNgachLuong}</td>
+                    <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{record.tenNgachLuong}</td>
                     <td>{record.moTa || '-'}</td>
                     <td style={{ textAlign: 'center' }}>
                       {record.trangThai === 1 ? (

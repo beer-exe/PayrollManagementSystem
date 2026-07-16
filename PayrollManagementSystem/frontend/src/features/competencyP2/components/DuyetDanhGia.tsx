@@ -53,7 +53,7 @@ export const DuyetDanhGia: React.FC = () => {
 
                   return (
                     <tr key={record.idPhieu}>
-                      <td style={{ fontWeight: 600, color: '#111827' }}>{record.tenKyDanhGia}</td>
+                      <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{record.tenKyDanhGia}</td>
                       <td>{record.cccdNhanVien}</td>
                       <td style={{ textAlign: 'center' }}>
                         <span className={`cp2-badge ${badgeClass}`}>
@@ -74,7 +74,7 @@ export const DuyetDanhGia: React.FC = () => {
                         <button 
                           className={`cp2-btn ${record.canEvaluate && record.trangThai === 'CHO_QL_DANH_GIA' ? 'cp2-btn-primary' : 'cp2-btn-secondary'}`}
                           style={{ padding: '0.4rem 1rem' }}
-                          onClick={() => navigate(`/dashboard/danh-gia/duyet-danh-gia/${record.idPhieu}`)}
+                          onClick={() => navigate(`/performance/duyet-danh-gia/${record.idPhieu}`)}
                         >
                           {record.canEvaluate && record.trangThai === 'CHO_QL_DANH_GIA' ? 'Chấm điểm' : 'Xem chi tiết'}
                         </button>

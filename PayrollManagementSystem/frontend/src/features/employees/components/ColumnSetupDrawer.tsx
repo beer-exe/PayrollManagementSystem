@@ -35,7 +35,7 @@ export const ColumnSetupDrawer: React.FC<Props> = ({ open, onClose, visibleColum
     <div className="emp-drawer-overlay" onClick={onClose}>
       <div className="emp-drawer" onClick={e => e.stopPropagation()} style={{ maxWidth: '350px' }}>
         <div className="emp-drawer-header">
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: '#111827' }}>Tùy chỉnh hiển thị</h2>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>Tùy chỉnh hiển thị</h2>
           <button className="emp-drawer-close" onClick={onClose}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -44,7 +44,7 @@ export const ColumnSetupDrawer: React.FC<Props> = ({ open, onClose, visibleColum
         </div>
         
         <div className="emp-drawer-body custom-scrollbar" style={{ padding: '1.25rem' }}>
-          <p style={{ fontSize: '0.85rem', color: '#6b7280', marginBottom: '1.5rem', lineHeight: 1.5 }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.5 }}>
             Lựa chọn các cột dữ liệu bạn muốn hiển thị trên bảng. Cột Mã NV là thông tin bắt buộc.
           </p>
 
@@ -52,10 +52,10 @@ export const ColumnSetupDrawer: React.FC<Props> = ({ open, onClose, visibleColum
             {availableColumns.map((col) => {
               const isChecked = visibleColumns.includes(col.key);
               
-              let bg = '#fff';
-              let border = '#e5e7eb';
-              if (col.required) { bg = '#f9fafb'; border = '#e5e7eb'; }
-              else if (isChecked) { bg = '#f5f3ff'; border = '#ddd6fe'; }
+              let bg = 'var(--bg-surface)';
+              let border = 'var(--border-color)';
+              if (col.required) { bg = 'var(--bg-main)'; border = 'var(--border-color)'; }
+              else if (isChecked) { bg = 'var(--primary-light)'; border = 'var(--primary)'; }
 
               return (
                 <label
@@ -82,13 +82,13 @@ export const ColumnSetupDrawer: React.FC<Props> = ({ open, onClose, visibleColum
                       onChange={(e) => handleToggle(col.key, e.target.checked)}
                       style={{ width: '1rem', height: '1rem', cursor: col.required ? 'not-allowed' : 'pointer', accentColor: '#7c3aed' }}
                     />
-                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: col.required ? '#9ca3af' : '#374151' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: col.required ? 'var(--text-muted)' : 'var(--text-primary)' }}>
                       {col.label}
                     </span>
                   </div>
 
                   {col.required && (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style={{ width: '1rem', height: '1rem', color: '#9ca3af' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style={{ width: '1rem', height: '1rem', color: 'var(--text-muted)' }}>
                       <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
                     </svg>
                   )}
@@ -98,7 +98,7 @@ export const ColumnSetupDrawer: React.FC<Props> = ({ open, onClose, visibleColum
           </div>
         </div>
 
-        <div style={{ padding: '1rem', borderTop: '1px solid #e5e7eb', background: '#fff' }}>
+        <div style={{ padding: '1rem', borderTop: '1px solid var(--border-color)', background: 'var(--bg-surface)' }}>
           <button onClick={onClose} className="emp-btn-submit" style={{ width: '100%', padding: '0.75rem', justifyContent: 'center' }}>
             Hoàn tất
           </button>

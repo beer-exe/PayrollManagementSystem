@@ -61,7 +61,7 @@ export const TuDanhGiaForm: React.FC = () => {
       });
 
       if (success) {
-        navigate('/dashboard/danh-gia/tu-danh-gia');
+        navigate('/performance/tu-danh-gia');
       }
     } catch (e) {
       console.error(e);
@@ -102,12 +102,12 @@ export const TuDanhGiaForm: React.FC = () => {
     <div className="cp2-container">
       <div className="cp2-controls-wrapper" style={{ flex: 'none', height: '100%', display: 'flex', flexDirection: 'column' }}>
         
-        <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid #f3f4f6' }}>
+        <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid var(--border-color)' }}>
           <div className="cp2-header-title">
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <button 
                 className="cp2-btn-actions" 
-                onClick={() => navigate('/dashboard/danh-gia/tu-danh-gia')}
+                onClick={() => navigate('/performance/tu-danh-gia')}
                 style={{ padding: '0.25rem' }}
                 title="Quay lại"
               >
@@ -123,7 +123,7 @@ export const TuDanhGiaForm: React.FC = () => {
         </div>
 
         <div className="cp2-table-container custom-scrollbar" style={{ padding: '1.5rem', paddingBottom: 0 }}>
-          <table className="cp2-table" style={{ border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+          <table className="cp2-table" style={{ border: '1px solid var(--border-color)', borderRadius: '8px' }}>
             <thead>
               <tr>
                 <th style={{ width: '25%' }}>Tiêu chí</th>
@@ -136,7 +136,7 @@ export const TuDanhGiaForm: React.FC = () => {
             <tbody>
               {detail?.chiTietDanhGias.map((c) => (
                 <tr key={c.idChiTiet}>
-                  <td style={{ fontWeight: 600, color: '#111827' }}>{c.tenNangLuc}</td>
+                  <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{c.tenNangLuc}</td>
                   <td style={{ fontSize: '0.85rem' }}>{c.moTa || '-'}</td>
                   <td style={{ textAlign: 'center' }}>
                     <span className="cp2-badge cp2-badge-blue">
@@ -176,30 +176,30 @@ export const TuDanhGiaForm: React.FC = () => {
             <div style={{ 
               marginTop: '1.5rem', 
               padding: '1.5rem', 
-              backgroundColor: '#f8fafc', 
-              border: '1px solid #e2e8f0', 
+              backgroundColor: 'var(--bg-hover)', 
+              border: '1px solid var(--border-color)', 
               borderRadius: '8px' 
             }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', color: '#1e293b' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', color: 'var(--text-primary)' }}>
                 Kết quả đánh giá từ Quản lý
               </h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
-                <div style={{ background: '#fff', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                  <p style={{ margin: '0 0 0.25rem 0', color: '#64748b', fontSize: '0.875rem' }}>Điểm tổng hợp</p>
-                  <p style={{ margin: 0, fontWeight: 700, fontSize: '1.25rem', color: '#0f172a' }}>{detail?.diemTongHop ?? 'Chưa chấm'}</p>
+                <div style={{ background: 'var(--bg-surface)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <p style={{ margin: '0 0 0.25rem 0', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Điểm tổng hợp</p>
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: '1.25rem', color: 'var(--text-primary)' }}>{detail?.diemTongHop ?? 'Chưa chấm'}</p>
                 </div>
-                <div style={{ background: '#fff', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                  <p style={{ margin: '0 0 0.25rem 0', color: '#64748b', fontSize: '0.875rem' }}>Hệ số P2</p>
-                  <p style={{ margin: 0, fontWeight: 700, fontSize: '1.25rem', color: '#7c3aed' }}>{detail?.heSoP2 ?? 'Chưa chấm'}</p>
+                <div style={{ background: 'var(--bg-surface)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <p style={{ margin: '0 0 0.25rem 0', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Hệ số P2</p>
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: '1.25rem', color: 'var(--primary)' }}>{detail?.heSoP2 ?? 'Chưa chấm'}</p>
                 </div>
-                <div style={{ background: '#fff', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                  <p style={{ margin: '0 0 0.25rem 0', color: '#64748b', fontSize: '0.875rem' }}>Xếp loại</p>
-                  <p style={{ margin: 0, fontWeight: 700, fontSize: '1.25rem', color: '#059669' }}>{detail?.xepLoai ?? 'Chưa xếp loại'}</p>
+                <div style={{ background: 'var(--bg-surface)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <p style={{ margin: '0 0 0.25rem 0', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Xếp loại</p>
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: '1.25rem', color: 'var(--success-text)' }}>{detail?.xepLoai ?? 'Chưa xếp loại'}</p>
                 </div>
               </div>
-              <div style={{ background: '#fff', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                <p style={{ margin: '0 0 0.25rem 0', color: '#64748b', fontSize: '0.875rem' }}>Nhận xét chung của Quản lý</p>
-                <p style={{ margin: 0, color: '#334155' }}>{detail?.nhanXetChung || <i>(Không có nhận xét)</i>}</p>
+              <div style={{ background: 'var(--bg-surface)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                <p style={{ margin: '0 0 0.25rem 0', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Nhận xét chung của Quản lý</p>
+                <p style={{ margin: 0, color: 'var(--text-primary)' }}>{detail?.nhanXetChung || <i>(Không có nhận xét)</i>}</p>
               </div>
             </div>
           )}
@@ -208,11 +208,11 @@ export const TuDanhGiaForm: React.FC = () => {
         {isEditable && (
           <div style={{ 
             padding: '1.5rem', 
-            borderTop: '1px solid #f3f4f6', 
+            borderTop: '1px solid var(--border-color)', 
             display: 'flex', 
             justifyContent: 'flex-end', 
             gap: '1rem',
-            backgroundColor: '#fff',
+            backgroundColor: 'var(--bg-surface)',
             marginTop: 'auto'
           }}>
             <button 

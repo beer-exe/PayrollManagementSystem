@@ -143,7 +143,7 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
 
         <div className="jg-drawer-body custom-scrollbar">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-            <span style={{ fontSize: '0.85rem', color: '#6b7280', fontStyle: 'italic', background: '#fffbeb', padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #fde68a' }}>
+            <span style={{ fontSize: '0.85rem', color: 'var(--warning-text)', fontStyle: 'italic', background: 'var(--warning-bg)', padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid var(--warning-bg)' }}>
               <strong>Lưu ý:</strong> Không dùng chức năng xóa để cập nhật tiền. Hãy chọn "Cập nhật mới" để lưu lịch sử.
             </span>
             <button className="jg-btn jg-btn-primary" onClick={handleOpenCreate}>
@@ -154,7 +154,7 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
             </button>
           </div>
 
-          <div className="jg-table-container custom-scrollbar" style={{ border: '1px solid #e5e7eb', borderRadius: '12px', background: '#fff' }}>
+          <div className="jg-table-container custom-scrollbar" style={{ border: '1px solid var(--border-color)', borderRadius: '12px', background: 'var(--bg-surface)' }}>
             {loading ? (
               <div className="jg-loader">
                 <div className="jg-spinner"></div>
@@ -173,8 +173,8 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
                 <tbody>
                   {activeSteps.map(record => (
                     <tr key={record.id} className={record.status === 'CHUA_AP_DUNG' ? 'muted' : ''}>
-                      <td style={{ fontWeight: 600, color: '#111827' }}>{record.stepName}</td>
-                      <td style={{ color: '#047857', fontWeight: 600 }}>{record.p1Salary.toLocaleString('vi-VN')}</td>
+                      <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{record.stepName}</td>
+                      <td style={{ color: 'var(--success-text)', fontWeight: 600 }}>{record.p1Salary.toLocaleString('vi-VN')}</td>
                       <td>{dayjs(record.effectiveDate).format('DD/MM/YYYY')}</td>
                       <td style={{ textAlign: 'center' }}>
                         {record.status === 'CHUA_AP_DUNG' ? (
@@ -302,7 +302,7 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
                 <tbody>
                   {historyData.map(record => (
                     <tr key={record.id}>
-                      <td style={{ color: '#047857', fontWeight: 600 }}>{record.p1Salary.toLocaleString('vi-VN')}</td>
+                      <td style={{ color: 'var(--success-text)', fontWeight: 600 }}>{record.p1Salary.toLocaleString('vi-VN')}</td>
                       <td>{dayjs(record.effectiveDate).format('DD/MM/YYYY')}</td>
                       <td>{record.endDate ? dayjs(record.endDate).format('DD/MM/YYYY') : 'Hiện tại'}</td>
                       <td style={{ textAlign: 'center' }}>

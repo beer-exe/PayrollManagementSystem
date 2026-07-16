@@ -1,5 +1,5 @@
 /* src/features/profile/components/UserProfile.css */
-@reference "tailwindcss";
+@reference "../../../index.css";
 
 .profile-layout {
   @apply flex flex-col md:flex-row gap-6 max-w-7xl mx-auto md:h-[calc(100vh-8rem)] md:overflow-hidden;
