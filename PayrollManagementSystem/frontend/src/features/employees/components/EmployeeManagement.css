@@ -70,9 +70,9 @@
 
 /* ---- Content Area ---- */
 .emp-card {
-  background: #fff;
+  background: var(--bg-surface);
   border-radius: 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   box-shadow: 0 1px 6px rgba(0,0,0,0.06);
   display: flex;
   flex-direction: column;
@@ -86,8 +86,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid #e5e7eb;
-  background: #fdfcff;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-hover);
   gap: 1rem;
   flex-wrap: wrap;
 }
@@ -95,8 +95,8 @@
 .emp-search-box {
   display: flex;
   align-items: center;
-  background: #fff;
-  border: 1.5px solid #d1d5db;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-hover);
   border-radius: 10px;
   padding: 0.4rem 0.75rem;
   width: 300px;
@@ -104,7 +104,7 @@
 }
 
 .emp-search-box:focus-within {
-  border-color: #7c3aed;
+  border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
@@ -115,7 +115,7 @@
   width: 100%;
   font-size: 0.9rem;
   margin-left: 0.5rem;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .emp-toolbar-actions {
@@ -129,9 +129,9 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: #fff;
-  color: #4b5563;
-  border: 1.5px solid #d1d5db;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border-hover);
   border-radius: 10px;
   font-size: 0.85rem;
   font-weight: 600;
@@ -140,8 +140,8 @@
 }
 
 .emp-btn-outline:hover:not(:disabled) {
-  background: #f9fafb;
-  border-color: #7c3aed;
+  background: var(--bg-hover);
+  border-color: var(--primary);
   color: #6d28d9;
 }
 
@@ -156,18 +156,18 @@
   justify-content: center;
   width: 2.3rem;
   height: 2.3rem;
-  background: #fff;
-  color: #6b7280;
-  border: 1.5px solid #d1d5db;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border-hover);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .emp-btn-icon:hover {
-  background: #f9fafb;
-  color: #7c3aed;
-  border-color: #7c3aed;
+  background: var(--bg-hover);
+  color: var(--primary);
+  border-color: var(--primary);
 }
 
 /* ---- Table ---- */
@@ -187,7 +187,7 @@
 .emp-table thead {
   position: sticky;
   top: 0;
-  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  background: var(--bg-hover);
   z-index: 10;
 }
 
@@ -206,16 +206,16 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #6d28d9;
-  border-bottom: 2px solid #e5e7eb;
+  color: var(--primary);
+  border-bottom: 2px solid var(--border-color);
   white-space: nowrap;
 }
 
 .emp-table td {
   padding: 0.85rem 1.1rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .emp-tr {
@@ -224,12 +224,12 @@
 }
 
 .emp-tr:hover {
-  background: #faf9ff;
+  background: var(--bg-hover);
 }
 
 .emp-td-mono {
   font-family: monospace;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 /* Avatar Info */
@@ -243,7 +243,7 @@
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background: #ede9fe;
+  background: var(--primary-light);
   color: #6d28d9;
   display: flex;
   align-items: center;
@@ -255,7 +255,7 @@
 
 .emp-name {
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   white-space: nowrap;
 }
 
@@ -278,8 +278,8 @@
 }
 
 .emp-badge.active {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--success-bg);
+  color: var(--success-text);
 }
 
 .emp-badge.active .emp-badge-dot {
@@ -287,8 +287,8 @@
 }
 
 .emp-badge.inactive {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--danger-bg);
+  color: var(--danger-text);
 }
 
 .emp-badge.inactive .emp-badge-dot {
@@ -307,7 +307,7 @@
 }
 
 .emp-action-link.edit {
-  color: #7c3aed;
+  color: var(--primary);
 }
 .emp-action-link.edit:hover {
   color: #5b21b6;
@@ -328,16 +328,16 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem;
-  background: #fdfcff;
-  border-top: 1px solid #e5e7eb;
+  background: var(--bg-hover);
+  border-top: 1px solid var(--border-color);
 }
 
 .emp-pagination-total {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 .emp-pagination-total strong {
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .emp-pagination-controls {
@@ -348,10 +348,10 @@
 
 .emp-btn-page {
   padding: 0.45rem 1rem;
-  background: #fff;
-  border: 1px solid #d1d5db;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hover);
   border-radius: 8px;
-  color: #374151;
+  color: var(--text-primary);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -359,8 +359,8 @@
 }
 
 .emp-btn-page:hover:not(:disabled) {
-  background: #f9fafb;
-  border-color: #7c3aed;
+  background: var(--bg-hover);
+  border-color: var(--primary);
 }
 
 .emp-btn-page:disabled {
@@ -371,10 +371,10 @@
 .emp-page-info {
   font-size: 0.85rem;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 .emp-page-info strong {
-  color: #7c3aed;
+  color: var(--primary);
 }
 
 /* Spinner & Empty */
@@ -389,8 +389,8 @@
 }
 .emp-spinner {
   width: 2.5rem; height: 2.5rem;
-  border: 3px solid #e5e7eb;
-  border-top-color: #7c3aed;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -401,13 +401,13 @@
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: #9ca3af;
+  color: var(--text-muted);
   text-align: center;
 }
 .emp-empty svg {
   width: 4rem; height: 4rem;
   margin-bottom: 1rem;
-  color: #d1d5db;
+  color: var(--border-hover);
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -426,7 +426,7 @@
 }
 
 .emp-modal-large {
-  background: #fff;
+  background: var(--bg-surface);
   border-radius: 16px;
   width: 100%;
   max-width: 1000px;

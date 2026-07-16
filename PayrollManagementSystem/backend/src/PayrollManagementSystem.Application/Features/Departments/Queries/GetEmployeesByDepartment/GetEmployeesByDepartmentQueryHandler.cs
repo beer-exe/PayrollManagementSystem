@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.Departments.DTOs;
@@ -14,6 +14,8 @@ namespace PayrollManagementSystem.Application.Features.Departments.Queries.GetEm
 
         public async Task<Response<IEnumerable<EmployeeInDepartmentDto>>> Handle(GetEmployeesByDepartmentQuery request, CancellationToken cancellationToken)
         {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
             var employees = await _context.NhanViens
                 .Where(nv => nv.IdPb == request.IdPb)
                 .Select(nv => new EmployeeInDepartmentDto
@@ -25,8 +27,9 @@ namespace PayrollManagementSystem.Application.Features.Departments.Queries.GetEm
                     NgayVaoLam = nv.NgayVaoLam,
 
                     TenChucVu = _context.QuyetDinhNhanSus
-                        .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC)
+                        .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC && qd.NgayHieuLuc <= today)
                         .OrderByDescending(qd => qd.NgayHieuLuc)
+                        .ThenByDescending(qd => qd.CreatedAt)
                         .Select(qd => _context.ChucVus.FirstOrDefault(cv => cv.IdChucVu == qd.IdChucVuMoi).TenChucVu)
                         .FirstOrDefault()
                 })

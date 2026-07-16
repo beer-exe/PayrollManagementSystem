@@ -15,7 +15,7 @@
 }
 
 .dept-modal {
-  background: #fff;
+  background: var(--bg-surface);
   border-radius: 16px;
   width: 100%;
   max-width: 550px;
@@ -71,8 +71,8 @@
 
 /* Alert Info in Modals */
 .dept-modal-info-box {
-  background: #f5f3ff;
-  border: 1px solid #ddd6fe;
+  background: var(--bg-hover);
+  border: 1px solid var(--border-hover);
   border-radius: 10px;
   padding: 1rem;
   margin-bottom: 1.5rem;
@@ -81,11 +81,11 @@
 .dept-modal-info-box p {
   margin: 0 0 0.35rem 0;
   font-size: 0.9rem;
-  color: #4c1d95;
+  color: var(--primary);
 }
 
 .dept-modal-info-box p strong {
-  color: #5b21b6;
+  color: var(--primary);
 }
 
 /* Alerts */
@@ -102,9 +102,9 @@
 }
 
 .dept-alert.error {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-bg);
+  color: var(--danger-text);
 }
 
 /* Forms */
@@ -115,13 +115,13 @@
 .dept-form-label {
   display: block;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-primary);
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
 }
 
 .dept-required {
-  color: #dc2626;
+  color: var(--danger-text);
   margin-left: 0.25rem;
 }
 
@@ -130,13 +130,13 @@
 .dept-form-textarea {
   width: 100%;
   padding: 0.65rem 1rem;
-  border: 1.5px solid #d1d5db;
+  border: 1.5px solid var(--border-hover);
   border-radius: 8px;
   font-size: 0.9rem;
-  color: #111827;
+  color: var(--text-primary);
   transition: all 0.2s;
   font-family: inherit;
-  background: #fff;
+  background: var(--bg-surface);
 }
 
 .dept-form-select {
@@ -157,22 +157,22 @@
 .dept-form-select:focus,
 .dept-form-textarea:focus {
   outline: none;
-  border-color: #7c3aed;
+  border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
 .dept-form-input:disabled,
 .dept-form-select:disabled {
-  background: #f3f4f6;
-  color: #9ca3af;
+  background: var(--bg-main);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 
 /* Modal Footer */
 .dept-modal-footer {
   padding: 1rem 1.5rem;
-  background: #f9fafb;
-  border-top: 1px solid #e5e7eb;
+  background: var(--bg-hover);
+  border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
@@ -181,17 +181,17 @@
 
 .dept-btn-cancel {
   padding: 0.6rem 1.25rem;
-  background: #fff;
-  border: 1.5px solid #d1d5db;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-hover);
   border-radius: 8px;
-  color: #4b5563;
+  color: var(--text-secondary);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .dept-btn-cancel:hover:not(:disabled) {
-  background: #f3f4f6;
+  background: var(--bg-main);
 }
 
 .dept-btn-submit {

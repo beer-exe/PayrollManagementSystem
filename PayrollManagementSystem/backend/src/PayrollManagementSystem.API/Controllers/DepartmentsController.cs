@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PayrollManagementSystem.Application.Features.Departments.Commands.AdjustSalary;
@@ -12,7 +12,7 @@ namespace PayrollManagementSystem.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "HR")]
+    [Authorize(Roles = "Admin,HR")]
     public class DepartmentsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -31,6 +31,7 @@ namespace PayrollManagementSystem.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "HR")]
         public async Task<IActionResult> CreateDepartment([FromBody] CreateDepartmentCommand command)
         {
             var response = await _mediator.Send(command);
@@ -38,6 +39,7 @@ namespace PayrollManagementSystem.API.Controllers
         }
 
         [HttpPost("transfer-employee")]
+        [Authorize(Roles = "HR")]
         public async Task<IActionResult> TransferEmployee([FromBody] TransferEmployeeCommand command)
         {
             var response = await _mediator.Send(command);
@@ -57,6 +59,7 @@ namespace PayrollManagementSystem.API.Controllers
         }
 
         [HttpPost("adjust-salary")]
+        [Authorize(Roles = "HR")]
         public async Task<IActionResult> AdjustSalary([FromBody] AdjustSalaryCommand command)
         {
             var response = await _mediator.Send(command);
@@ -64,6 +67,7 @@ namespace PayrollManagementSystem.API.Controllers
         }
 
         [HttpPost("change-position")]
+        [Authorize(Roles = "HR")]
         public async Task<IActionResult> ChangePosition([FromBody] ChangePositionCommand command)
         {
             var response = await _mediator.Send(command);

@@ -81,6 +81,89 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.ToTable("bac_luongs", (string)null);
                 });
 
+            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.ChamCong", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("CccdNhanVien")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("cccd_nhan_vien");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("GhiChu")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("ghi_chu");
+
+                    b.Property<TimeOnly?>("GioRa")
+                        .HasColumnType("time without time zone")
+                        .HasColumnName("gio_ra");
+
+                    b.Property<TimeOnly?>("GioVao")
+                        .HasColumnType("time without time zone")
+                        .HasColumnName("gio_vao");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsNhapTay")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_nhap_tay");
+
+                    b.Property<string>("LoaiNgayCong")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("loai_ngay_cong");
+
+                    b.Property<DateOnly>("NgayChamCong")
+                        .HasColumnType("date")
+                        .HasColumnName("ngay_cham_cong");
+
+                    b.Property<decimal>("SoGioLamThucTe")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)")
+                        .HasColumnName("so_gio_lam_thuc_te");
+
+                    b.Property<decimal>("SoNgayCong")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)")
+                        .HasColumnName("so_ngay_cong");
+
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("trang_thai");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id")
+                        .HasName("cham_congs_pkey");
+
+                    b.HasIndex("CccdNhanVien", "NgayChamCong")
+                        .IsUnique()
+                        .HasDatabaseName("cham_congs_cccd_ngay_unique");
+
+                    b.ToTable("cham_congs", (string)null);
+                });
+
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.ChiTietDanhGiaNangLuc", b =>
                 {
                     b.Property<Guid>("IdChiTiet")
@@ -262,6 +345,95 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.HasIndex("IdPhongBan");
 
                     b.ToTable("chuc_vus", (string)null);
+                });
+
+            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.DonNghi", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("CccdNguoiDuyet")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("cccd_nguoi_duyet");
+
+                    b.Property<string>("CccdNhanVien")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("cccd_nhan_vien");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LoaiNghi")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("loai_nghi");
+
+                    b.Property<string>("LyDo")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("ly_do");
+
+                    b.Property<string>("LyDoTuChoi")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("ly_do_tu_choi");
+
+                    b.Property<DateOnly>("NgayBatDau")
+                        .HasColumnType("date")
+                        .HasColumnName("ngay_bat_dau");
+
+                    b.Property<DateTime?>("NgayDuyet")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("ngay_duyet");
+
+                    b.Property<DateOnly>("NgayKetThuc")
+                        .HasColumnType("date")
+                        .HasColumnName("ngay_ket_thuc");
+
+                    b.Property<decimal>("SoNgayNghi")
+                        .HasPrecision(5, 1)
+                        .HasColumnType("numeric(5,1)")
+                        .HasColumnName("so_ngay_nghi");
+
+                    b.Property<string>("TaiLieuDinhKem")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("tai_lieu_dinh_kem");
+
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("trang_thai");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id")
+                        .HasName("don_nghis_pkey");
+
+                    b.HasIndex("CccdNguoiDuyet");
+
+                    b.HasIndex("CccdNhanVien", "NgayBatDau", "NgayKetThuc")
+                        .HasDatabaseName("idx_don_nghis_nv_ngay");
+
+                    b.ToTable("don_nghis", (string)null);
                 });
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.HopDongLaoDong", b =>
@@ -605,6 +777,62 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.ToTable("ngach_luongs", (string)null);
                 });
 
+            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.NgayPhepNhanVien", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("CccdNhanVien")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("cccd_nhan_vien");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("DaSuDung")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(5, 1)
+                        .HasColumnType("numeric(5,1)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("da_su_dung");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Nam")
+                        .HasColumnType("integer")
+                        .HasColumnName("nam");
+
+                    b.Property<decimal>("TongNgayPhep")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(5, 1)
+                        .HasColumnType("numeric(5,1)")
+                        .HasDefaultValue(12m)
+                        .HasColumnName("tong_ngay_phep");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id")
+                        .HasName("ngay_phep_nhan_viens_pkey");
+
+                    b.HasIndex("CccdNhanVien", "Nam")
+                        .IsUnique()
+                        .HasDatabaseName("ngay_phep_nhan_viens_cccd_nam_unique");
+
+                    b.ToTable("ngay_phep_nhan_viens", (string)null);
+                });
+
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.NhanVien", b =>
                 {
                     b.Property<string>("Cccd")
@@ -923,10 +1151,20 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("IdBacLuongCu")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("id_bac_luong_cu");
+
                     b.Property<string>("IdBacLuongMoi")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("id_bac_luong_moi");
+
+                    b.Property<string>("IdChucVuCu")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("id_chuc_vu_cu");
 
                     b.Property<string>("IdChucVuMoi")
                         .HasMaxLength(50)
@@ -970,9 +1208,11 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.HasKey("SoQuyetDinh")
                         .HasName("quyet_dinh_nhan_sus_pkey");
 
-                    b.HasIndex("Cccd");
-
                     b.HasIndex("IdBacLuongMoi");
+
+                    b.HasIndex("IdChucVuMoi");
+
+                    b.HasIndex(new[] { "Cccd", "TrangThai", "NgayHieuLuc" }, "idx_qd_nhansu_active");
 
                     b.ToTable("quyet_dinh_nhan_sus", (string)null);
                 });
@@ -1171,6 +1411,18 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.Navigation("NgachLuong");
                 });
 
+            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.ChamCong", b =>
+                {
+                    b.HasOne("PayrollManagementSystem.Domain.Models.NhanVien", "NhanVien")
+                        .WithMany()
+                        .HasForeignKey("CccdNhanVien")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("cham_congs_cccd_nhan_vien_fkey");
+
+                    b.Navigation("NhanVien");
+                });
+
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.ChiTietDanhGiaNangLuc", b =>
                 {
                     b.HasOne("PayrollManagementSystem.Domain.Models.PhieuDanhGiaNangLuc", "PhieuDanhGia")
@@ -1232,6 +1484,26 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.Navigation("PhongBan");
                 });
 
+            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.DonNghi", b =>
+                {
+                    b.HasOne("PayrollManagementSystem.Domain.Models.NhanVien", "NguoiDuyet")
+                        .WithMany()
+                        .HasForeignKey("CccdNguoiDuyet")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("don_nghis_cccd_nguoi_duyet_fkey");
+
+                    b.HasOne("PayrollManagementSystem.Domain.Models.NhanVien", "NhanVien")
+                        .WithMany()
+                        .HasForeignKey("CccdNhanVien")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("don_nghis_cccd_nhan_vien_fkey");
+
+                    b.Navigation("NguoiDuyet");
+
+                    b.Navigation("NhanVien");
+                });
+
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.HopDongLaoDong", b =>
                 {
                     b.HasOne("PayrollManagementSystem.Domain.Models.NhanVien", "NhanVien")
@@ -1254,6 +1526,18 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasConstraintName("khung_nang_luc_id_chuc_vu_fkey");
 
                     b.Navigation("ChucVu");
+                });
+
+            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.NgayPhepNhanVien", b =>
+                {
+                    b.HasOne("PayrollManagementSystem.Domain.Models.NhanVien", "NhanVien")
+                        .WithMany()
+                        .HasForeignKey("CccdNhanVien")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("ngay_phep_nhan_viens_cccd_fkey");
+
+                    b.Navigation("NhanVien");
                 });
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.NhanVien", b =>
@@ -1330,7 +1614,15 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("quyet_dinh_nhan_sus_id_bac_luong_moi_fkey");
 
+                    b.HasOne("PayrollManagementSystem.Domain.Models.ChucVu", "ChucVuMoi")
+                        .WithMany("QuyetDinhNhanSus")
+                        .HasForeignKey("IdChucVuMoi")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("quyet_dinh_nhan_sus_id_chuc_vu_moi_fkey");
+
                     b.Navigation("BacLuong");
+
+                    b.Navigation("ChucVuMoi");
 
                     b.Navigation("NhanVien");
                 });
@@ -1385,6 +1677,8 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.Navigation("ChucVuCapDuois");
 
                     b.Navigation("KhungNangLucs");
+
+                    b.Navigation("QuyetDinhNhanSus");
                 });
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.KyDanhGia", b =>
