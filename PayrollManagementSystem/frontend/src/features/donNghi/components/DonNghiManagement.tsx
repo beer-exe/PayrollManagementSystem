@@ -5,6 +5,11 @@ import { useAuthStore } from '@/store/useAuthStore';
 import type { DonNghiDto, NgayPhepDto, UpdateNgayPhepRequest } from '../types/donNghi.types';
 import type { DepartmentDto } from '../../departments/types/department.types';
 import { DonNghiFormModal } from './DonNghiFormModal';
+import { employeeApi } from '../../employees/api/employeeApi';
+import { useDataTable } from '../../../hooks/useDataTable';
+import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import './DonNghiManagement.css';
 
 const TRANG_THAI_COLOR: Record<string, string> = {
@@ -42,9 +47,8 @@ export const DonNghiManagement: React.FC = () => {
   const [isPbOpen, setIsPbOpen] = useState(false);
   const pbRef = useRef<HTMLDivElement>(null);
 
-  // Pagination
-  const [donNghiPage, setDonNghiPage] = useState(1);
-  const [ngayPhepPage, setNgayPhepPage] = useState(1);
+  // Navigation between tabs handled outside of pagination
+  // Pagination handled by useDataTable
 
   // Modals
   const [showFormModal, setShowFormModal] = useState(false);
@@ -55,9 +59,49 @@ export const DonNghiManagement: React.FC = () => {
   const [ngayPhepForm, setNgayPhepForm] = useState({ cccd: '', nam: now.getFullYear(), tong: 12 });
   const [showNgayPhepModal, setShowNgayPhepModal] = useState(false);
 
+  // --- Employee search for Modal ---
+  const [empList, setEmpList] = useState<any[]>([]);
+  const [cccdSearchTerm, setCccdSearchTerm] = useState('');
+  const [cccdDropdownOpen, setCccdDropdownOpen] = useState(false);
+  const cccdDropdownRef = useRef<HTMLDivElement>(null);
+
   const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const { list, ngayPhepList, loading, error, fetchList, fetchNgayPhep, createDonNghi, duyetDonNghi, tuChoiDonNghi, deleteDonNghi, updateNgayPhep } = useDonNghi();
+
+  const {
+    currentData: currentDonNghiList,
+    allFilteredAndSortedData: allDonNghi,
+    currentPage: donNghiPage,
+    totalPages: totalDonNghiPages,
+    setCurrentPage: setDonNghiPage,
+    sortKey: donNghiSortKey,
+    sortDirection: donNghiSortDirection,
+    handleSort: handleDonNghiSort,
+    searchTerm: donNghiSearchTerm,
+    setSearchTerm: setDonNghiSearchTerm
+  } = useDataTable<DonNghiDto>({
+    data: list,
+    initialPageSize: 10,
+    searchableFields: ['hoTenNhanVien', 'cccdNhanVien']
+  });
+
+  const {
+    currentData: currentNgayPhepList,
+    allFilteredAndSortedData: allNgayPhep,
+    currentPage: ngayPhepPage,
+    totalPages: totalNgayPhepPages,
+    setCurrentPage: setNgayPhepPage,
+    sortKey: ngayPhepSortKey,
+    sortDirection: ngayPhepSortDirection,
+    handleSort: handleNgayPhepSort,
+    searchTerm: ngayPhepSearchTerm,
+    setSearchTerm: setNgayPhepSearchTerm
+  } = useDataTable<NgayPhepDto>({
+    data: ngayPhepList,
+    initialPageSize: 10,
+    searchableFields: ['hoTenNhanVien', 'cccdNhanVien']
+  });
 
   useEffect(() => {
     departmentApi.getDepartments()
@@ -85,20 +129,36 @@ export const DonNghiManagement: React.FC = () => {
 
   useEffect(() => { setDonNghiPage(1); setNgayPhepPage(1); }, [thang, nam, filterTrangThai, idPhongBan, activeTab]);
 
+  useEffect(() => {
+    if (showNgayPhepModal && empList.length === 0) {
+      employeeApi.getEmployees({ PageNumber: 1, PageSize: 1000 })
+        .then(res => setEmpList(res.data || []))
+        .catch(console.error);
+    }
+  }, [showNgayPhepModal, empList.length]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (cccdDropdownRef.current && !cccdDropdownRef.current.contains(e.target as Node)) {
+        setCccdDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filteredEmpList = empList.filter(e =>
+    !cccdSearchTerm ||
+    e.hoTen?.toLowerCase().includes(cccdSearchTerm.toLowerCase()) ||
+    e.cccd?.includes(cccdSearchTerm)
+  );
+
   const showToast = (type: 'success' | 'error', text: string) => {
     setToastMsg({ type, text });
     setTimeout(() => setToastMsg(null), 3500);
   };
 
-  // Filtered list (client-side search on name)
-  const filteredList = list.filter(r =>
-    !searchText || r.hoTenNhanVien.toLowerCase().includes(searchText.toLowerCase()) || r.cccdNhanVien.includes(searchText)
-  );
-
-  const totalDonNghiPages = Math.max(1, Math.ceil(filteredList.length / PAGE_SIZE));
-  const currentDonNghiList = filteredList.slice((donNghiPage - 1) * PAGE_SIZE, donNghiPage * PAGE_SIZE);
-  const totalNgayPhepPages = Math.max(1, Math.ceil(ngayPhepList.length / PAGE_SIZE));
-  const currentNgayPhepList = ngayPhepList.slice((ngayPhepPage - 1) * PAGE_SIZE, ngayPhepPage * PAGE_SIZE);
+  // Removed custom filtering and pagination array slicing since useDataTable handles it
 
   const handleCreate = async (data: Parameters<typeof createDonNghi>[0]) => {
     const err = await createDonNghi(data);
@@ -139,18 +199,70 @@ export const DonNghiManagement: React.FC = () => {
     };
     const err = await updateNgayPhep(req);
     if (err) showToast('error', err);
-    else { showToast('success', 'Cập nhật quota phép thành công!'); setShowNgayPhepModal(false); loadData(); }
+    else { showToast('success', 'Cập nhật ngày phép thành công!'); setShowNgayPhepModal(false); loadData(); }
   };
 
   const openNgayPhepModal = (row?: NgayPhepDto) => {
     if (row) {
       setNgayPhepForm({ cccd: row.cccdNhanVien, nam: row.nam, tong: row.tongNgayPhep });
+      setCccdSearchTerm(`${row.hoTenNhanVien} - ${row.cccdNhanVien}`);
       setNgayPhepEdit(row);
     } else {
       setNgayPhepForm({ cccd: '', nam: now.getFullYear(), tong: 12 });
+      setCccdSearchTerm('');
       setNgayPhepEdit(null);
     }
     setShowNgayPhepModal(true);
+  };
+
+  const handleExportExcel = () => {
+    if (activeTab === 'don-nghi') {
+      const columns: ExportColumn<DonNghiDto>[] = [
+        { header: 'Mã NV', key: 'cccdNhanVien' },
+        { header: 'Họ Tên', key: 'hoTenNhanVien' },
+        { header: 'Phòng ban', key: 'tenPhongBan' },
+        { header: 'Loại nghỉ', key: 'loaiNghi' },
+        { header: 'Số ngày', key: 'soNgayNghi' },
+        { header: 'Trạng thái', key: 'trangThai' },
+      ];
+      exportToExcel(allDonNghi, columns, 'DanhSachDonNghi');
+    } else {
+      const columns: ExportColumn<NgayPhepDto>[] = [
+        { header: 'Mã NV', key: 'cccdNhanVien' },
+        { header: 'Họ Tên', key: 'hoTenNhanVien' },
+        { header: 'Phòng ban', key: 'tenPhongBan' },
+        { header: 'Năm', key: 'nam' },
+        { header: 'Tổng phép', key: 'tongNgayPhep' },
+        { header: 'Đã dùng', key: 'daSuDung' },
+        { header: 'Còn lại', key: 'conLai' },
+      ];
+      exportToExcel(allNgayPhep, columns, 'DanhSachNgayPhep');
+    }
+  };
+
+  const handleExportPdf = () => {
+    if (activeTab === 'don-nghi') {
+      const columns: ExportColumn<DonNghiDto>[] = [
+        { header: 'Mã NV', key: 'cccdNhanVien' },
+        { header: 'Họ Tên', key: 'hoTenNhanVien' },
+        { header: 'Phòng ban', key: 'tenPhongBan' },
+        { header: 'Loại nghỉ', key: 'loaiNghi' },
+        { header: 'Số ngày', key: 'soNgayNghi' },
+        { header: 'Trạng thái', key: 'trangThai' },
+      ];
+      exportToPdf(allDonNghi, columns, 'DanhSachDonNghi', 'Danh sách đơn nghỉ');
+    } else {
+      const columns: ExportColumn<NgayPhepDto>[] = [
+        { header: 'Mã NV', key: 'cccdNhanVien' },
+        { header: 'Họ Tên', key: 'hoTenNhanVien' },
+        { header: 'Phòng ban', key: 'tenPhongBan' },
+        { header: 'Năm', key: 'nam' },
+        { header: 'Tổng phép', key: 'tongNgayPhep' },
+        { header: 'Đã dùng', key: 'daSuDung' },
+        { header: 'Còn lại', key: 'conLai' },
+      ];
+      exportToPdf(allNgayPhep, columns, 'DanhSachNgayPhep', 'Danh sách ngày phép');
+    }
   };
 
   return (
@@ -162,7 +274,7 @@ export const DonNghiManagement: React.FC = () => {
       <div className="dn-header">
         <div className="dn-header__left">
           <h1 className="dn-title">Quản lý Đơn Xin Nghỉ</h1>
-          <p className="dn-subtitle">Quản lý đơn nghỉ và quota phép năm của nhân viên</p>
+          <p className="dn-subtitle">Quản lý đơn nghỉ và ngày phép năm của nhân viên</p>
         </div>
         {isHR && (
           <div className="dn-header__actions">
@@ -230,22 +342,23 @@ export const DonNghiManagement: React.FC = () => {
           </div>
         </div>
         {activeTab === 'don-nghi' && (
-          <>
-            <div className="dn-filter-group">
-              <label className="dn-filter-label">Trạng thái</label>
-              <select className="dn-select" value={filterTrangThai} onChange={e => setFilterTrangThai(e.target.value)}>
-                <option value="">-- Tất cả --</option>
-                <option value="CHO_DUYET">Chờ duyệt</option>
-                <option value="DA_DUYET">Đã duyệt</option>
-                <option value="TU_CHOI">Từ chối</option>
-              </select>
-            </div>
-            <div className="dn-filter-group">
-              <label className="dn-filter-label">Tìm kiếm</label>
-              <input className="dn-input" placeholder="Tên, CCCD..." value={searchText} onChange={e => setSearchText(e.target.value)} />
-            </div>
-          </>
+          <div className="dn-filter-group">
+            <label className="dn-filter-label">Trạng thái</label>
+            <select className="dn-select" value={filterTrangThai} onChange={e => setFilterTrangThai(e.target.value)}>
+              <option value="">-- Tất cả --</option>
+              <option value="CHO_DUYET">Chờ duyệt</option>
+              <option value="DA_DUYET">Đã duyệt</option>
+              <option value="TU_CHOI">Từ chối</option>
+            </select>
+          </div>
         )}
+        <div className="dn-filter-group">
+          <label className="dn-filter-label">Tìm kiếm</label>
+          <input className="dn-input" placeholder="Tên, CCCD..." value={activeTab === 'don-nghi' ? donNghiSearchTerm : ngayPhepSearchTerm} onChange={e => activeTab === 'don-nghi' ? setDonNghiSearchTerm(e.target.value) : setNgayPhepSearchTerm(e.target.value)} />
+        </div>
+        <div className="dn-filter-group" style={{ display: 'flex', alignItems: 'flex-end' }}>
+          <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
+        </div>
       </div>
 
       {/* TABS */}
@@ -254,7 +367,7 @@ export const DonNghiManagement: React.FC = () => {
           Danh sách đơn nghỉ
         </button>
         <button className={`dn-tab ${activeTab === 'ngay-phep' ? 'active' : ''}`} onClick={() => setActiveTab('ngay-phep')}>
-          Quota phép năm
+          Ngày phép năm
         </button>
       </div>
 
@@ -269,14 +382,14 @@ export const DonNghiManagement: React.FC = () => {
           <table className="dn-table">
             <thead>
               <tr>
-                <th>Nhân viên</th>
-                <th>Phòng ban</th>
-                <th>Loại nghỉ</th>
-                <th>Từ ngày</th>
-                <th>Đến ngày</th>
-                <th>Số ngày</th>
+                <SortableHeader label="Nhân viên" sortKey="hoTenNhanVien" currentSortKey={donNghiSortKey} currentSortDirection={donNghiSortDirection} onSort={handleDonNghiSort} />
+                <SortableHeader label="Phòng ban" sortKey="tenPhongBan" currentSortKey={donNghiSortKey} currentSortDirection={donNghiSortDirection} onSort={handleDonNghiSort} />
+                <SortableHeader label="Loại nghỉ" sortKey="loaiNghi" currentSortKey={donNghiSortKey} currentSortDirection={donNghiSortDirection} onSort={handleDonNghiSort} />
+                <SortableHeader label="Từ ngày" sortKey="ngayBatDau" currentSortKey={donNghiSortKey} currentSortDirection={donNghiSortDirection} onSort={handleDonNghiSort} />
+                <SortableHeader label="Đến ngày" sortKey="ngayKetThuc" currentSortKey={donNghiSortKey} currentSortDirection={donNghiSortDirection} onSort={handleDonNghiSort} />
+                <SortableHeader label="Số ngày" sortKey="soNgayNghi" currentSortKey={donNghiSortKey} currentSortDirection={donNghiSortDirection} onSort={handleDonNghiSort} />
                 <th>Lý do</th>
-                <th>Trạng thái</th>
+                <SortableHeader label="Trạng thái" sortKey="trangThai" currentSortKey={donNghiSortKey} currentSortDirection={donNghiSortDirection} onSort={handleDonNghiSort} />
                 <th>Người duyệt</th>
                 {isHR && <th></th>}
               </tr>
@@ -292,8 +405,8 @@ export const DonNghiManagement: React.FC = () => {
                   </td>
                   <td>{row.tenPhongBan ?? '—'}</td>
                   <td><span className={LOAI_NGHI_COLOR[row.loaiNghi] ?? 'dn-badge'}>{row.loaiNghi}</span></td>
-                  <td className="dn-date">{new Date(row.ngayBatDau + 'T00:00:00').toLocaleDateString('vi-VN')}</td>
-                  <td className="dn-date">{new Date(row.ngayKetThuc + 'T00:00:00').toLocaleDateString('vi-VN')}</td>
+                  <td className="dn-date">{new Date(row.ngayBatDau + 'T00:00:00').toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
+                  <td className="dn-date">{new Date(row.ngayKetThuc + 'T00:00:00').toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
                   <td className="dn-num">{row.soNgayNghi}</td>
                   <td className="dn-note" title={row.lyDo}>{row.lyDo}</td>
                   <td>
@@ -326,7 +439,7 @@ export const DonNghiManagement: React.FC = () => {
               ))}
             </tbody>
           </table>
-          {filteredList.length > 0 && (
+          {totalDonNghiPages > 0 && (
             <div className="dn-pagination">
               <button className="dn-page-btn" disabled={donNghiPage === 1} onClick={() => setDonNghiPage(p => p - 1)}>Trước</button>
               <span className="dn-page-info">{donNghiPage}/{totalDonNghiPages}</span>
@@ -335,23 +448,23 @@ export const DonNghiManagement: React.FC = () => {
           )}
         </div>
       ) : (
-        /* BẢNG QUOTA PHÉP */
+        /* BẢNG NGÀY PHÉP */
         <div className="dn-table-wrap">
           <table className="dn-table">
             <thead>
               <tr>
-                <th>Nhân viên</th>
-                <th>Phòng ban</th>
-                <th>Năm</th>
-                <th>Tổng phép</th>
-                <th>Đã dùng</th>
-                <th>Còn lại</th>
+                <SortableHeader label="Nhân viên" sortKey="hoTenNhanVien" currentSortKey={ngayPhepSortKey} currentSortDirection={ngayPhepSortDirection} onSort={handleNgayPhepSort} />
+                <SortableHeader label="Phòng ban" sortKey="tenPhongBan" currentSortKey={ngayPhepSortKey} currentSortDirection={ngayPhepSortDirection} onSort={handleNgayPhepSort} />
+                <SortableHeader label="Năm" sortKey="nam" currentSortKey={ngayPhepSortKey} currentSortDirection={ngayPhepSortDirection} onSort={handleNgayPhepSort} />
+                <SortableHeader label="Tổng phép" sortKey="tongNgayPhep" currentSortKey={ngayPhepSortKey} currentSortDirection={ngayPhepSortDirection} onSort={handleNgayPhepSort} />
+                <SortableHeader label="Đã dùng" sortKey="daSuDung" currentSortKey={ngayPhepSortKey} currentSortDirection={ngayPhepSortDirection} onSort={handleNgayPhepSort} />
+                <SortableHeader label="Còn lại" sortKey="conLai" currentSortKey={ngayPhepSortKey} currentSortDirection={ngayPhepSortDirection} onSort={handleNgayPhepSort} />
                 {isHR && <th></th>}
               </tr>
             </thead>
             <tbody>
               {currentNgayPhepList.length === 0 ? (
-                <tr><td colSpan={isHR ? 7 : 6} className="dn-empty">Chưa có cấu hình quota phép cho năm {nam}</td></tr>
+                <tr><td colSpan={isHR ? 7 : 6} className="dn-empty">Chưa có cấu hình ngày phép cho năm {nam}</td></tr>
               ) : currentNgayPhepList.map((row: NgayPhepDto) => (
                 <tr key={row.id}>
                   <td>
@@ -422,24 +535,41 @@ export const DonNghiManagement: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL: Cấu hình quota phép */}
+      {/* MODAL: Cấu hình ngày phép */}
       {showNgayPhepModal && (
         <div className="dn-modal-overlay">
           <div className="dn-modal dn-modal--sm">
             <div className="dn-modal-header">
-              <h2>{ngayPhepEdit ? 'Cập nhật quota phép' : 'Tạo quota phép'}</h2>
+              <h2>{ngayPhepEdit ? 'Cập nhật ngày phép' : 'Tạo ngày phép'}</h2>
               <button className="dn-modal-close" onClick={() => setShowNgayPhepModal(false)}>✕</button>
             </div>
             <div className="dn-modal-body">
               <div className="dn-form-row">
-                <label className="dn-label">CCCD Nhân viên <span className="dn-required">*</span></label>
-                <input
-                  className="dn-input"
-                  placeholder="Nhập CCCD..."
-                  value={ngayPhepForm.cccd}
-                  onChange={e => setNgayPhepForm(f => ({ ...f, cccd: e.target.value }))}
-                  disabled={!!ngayPhepEdit}
-                />
+                <label className="dn-label">Nhân viên<span className="dn-required">*</span></label>
+                <div className="dn-dropdown-select-wrap" ref={cccdDropdownRef}>
+                  <input
+                    className="dn-input"
+                    style={{ width: '100%' }}
+                    placeholder="Tìm theo tên hoặc CCCD..."
+                    value={cccdSearchTerm}
+                    onChange={e => { setCccdSearchTerm(e.target.value); setNgayPhepForm(f => ({ ...f, cccd: '' })); setCccdDropdownOpen(true); }}
+                    onFocus={() => { if (!ngayPhepEdit) { setCccdSearchTerm(''); setNgayPhepForm(f => ({ ...f, cccd: '' })); setCccdDropdownOpen(true); } }}
+                    disabled={!!ngayPhepEdit}
+                    autoComplete="off"
+                  />
+                  {cccdDropdownOpen && !ngayPhepEdit && (
+                    <ul className="dn-dropdown-select-list">
+                      {filteredEmpList.length > 0
+                        ? filteredEmpList.map(e => (
+                          <li key={e.cccd} className={ngayPhepForm.cccd === e.cccd ? 'selected' : ''}
+                            onClick={() => { setNgayPhepForm(f => ({ ...f, cccd: e.cccd })); setCccdSearchTerm(`${e.hoTen} - ${e.cccd}`); setCccdDropdownOpen(false); }}>
+                            {e.hoTen} - {e.cccd}
+                          </li>
+                        ))
+                        : <li className="dn-empty-option">Không tìm thấy nhân viên</li>}
+                    </ul>
+                  )}
+                </div>
               </div>
               <div className="dn-form-row">
                 <label className="dn-label">Năm</label>

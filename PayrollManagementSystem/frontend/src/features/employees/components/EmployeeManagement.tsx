@@ -13,13 +13,11 @@ import './EmployeeModals.css';
 
 export const EmployeeManagement: React.FC = () => {
   const { 
-    employees, totalRecords, loading, isExporting,
-    fetchEmployees, exportExcel, changeStatus, createEmployee, updateEmployee 
+    employees, loading,
+    fetchEmployees, changeStatus, createEmployee, updateEmployee 
   } = useEmployees();
   
-  const [searchTerm, setSearchTerm] = useState('');
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize] = useState(15); 
+  const [pageSize] = useState(10000); // Fetch all for client-side DataTable 
 
   const [selectedEmp, setSelectedEmp] = useState<UserProfileDetail | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
@@ -33,11 +31,8 @@ export const EmployeeManagement: React.FC = () => {
   const [employeeToUpdate, setEmployeeToUpdate] = useState<UserProfileDetail | null>(null);
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      fetchEmployees(searchTerm, pageNumber, pageSize);
-    }, 400);
-    return () => clearTimeout(timeoutId);
-  }, [searchTerm, pageNumber, pageSize, fetchEmployees]);
+    fetchEmployees('', 1, pageSize);
+  }, [pageSize, fetchEmployees]);
 
   useEffect(() => {
     const saved = localStorage.getItem('empTableColumns');
@@ -56,8 +51,7 @@ export const EmployeeManagement: React.FC = () => {
     const success = await createEmployee(command);
     if (success) {
       setIsCreateModalOpen(false);
-      setPageNumber(1); 
-      fetchEmployees(searchTerm, 1, pageSize);
+      fetchEmployees('', 1, pageSize);
     }
     return success;
   };
@@ -92,18 +86,10 @@ export const EmployeeManagement: React.FC = () => {
         data={employees}
         visibleColumns={visibleColumns}
         isLoading={loading}
-        isExporting={isExporting}
-        searchTerm={searchTerm}
-        onSearchChange={(v) => { setSearchTerm(v); setPageNumber(1); }}
-        pageNumber={pageNumber}
-        pageSize={pageSize}
-        totalRecords={totalRecords}
-        onPageChange={setPageNumber}
         onOpenSettings={() => setIsDrawerOpen(true)}
         onRowClick={(emp) => { setSelectedEmp(emp); setIsPanelOpen(true); }}
         onStatusClick={(emp) => setEmployeeToChangeStatus(emp)}
         onEditClick={handleEditClick}
-        onExportExcel={() => exportExcel(searchTerm)}
       />
 
       <ColumnSetupDrawer 
@@ -144,7 +130,7 @@ export const EmployeeManagement: React.FC = () => {
           onSubmitUpdate={async (cccd, data) => {
             const success = await updateEmployee(cccd, data);
             if (success) {
-              fetchEmployees(searchTerm, pageNumber, pageSize);
+              fetchEmployees('', 1, pageSize);
             }
             return success;
           }}
@@ -159,7 +145,7 @@ export const EmployeeManagement: React.FC = () => {
           currentStatus={employeeToChangeStatus.trangThai || 'DANG_LAM_VIEC'}
           onSubmitStatus={async (data) => {
             const success = await changeStatus(employeeToChangeStatus.cccd, data);
-            if (success) fetchEmployees(searchTerm, pageNumber, pageSize);
+            if (success) fetchEmployees('', 1, pageSize);
             return success;
           }}
         />

@@ -3,6 +3,10 @@ import { useWorkSchedule } from '../hooks/useWorkSchedule';
 import { WorkScheduleDetailModal } from './WorkScheduleDetailModal';
 import { useAuthStore } from '@/store/useAuthStore';
 import type { LichLamViecDto } from '../types/workSchedule.types';
+import { useDataTable } from '../../../hooks/useDataTable';
+import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import './WorkScheduleManagement.css';
 
 const currentYear = new Date().getFullYear();
@@ -42,6 +46,49 @@ export const WorkScheduleManagement: React.FC = () => {
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
+
+  const {
+    currentData,
+    allFilteredAndSortedData,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    sortKey,
+    sortDirection,
+    handleSort,
+    searchTerm,
+    setSearchTerm
+  } = useDataTable<any>({
+    data: lichList,
+    initialPageSize: 10,
+    searchableFields: ['nam', 'ghiChu', 'trangThai']
+  });
+
+  const handleExportExcel = () => {
+    const columns: ExportColumn<any>[] = [
+      { header: 'Năm', key: 'nam' },
+      { header: 'Ngày làm việc', key: 'tongNgayLam' },
+      { header: 'Nghỉ T7 & CN', key: 'tongNgayNghiCuoiTuan' },
+      { header: 'Nghỉ lễ', key: 'tongNgayLe' },
+      { header: 'Tổng ngày', key: 'tongNgay' },
+      { header: 'Trạng thái', key: 'trangThai' },
+      { header: 'Ghi chú', key: 'ghiChu' },
+    ];
+    exportToExcel(allFilteredAndSortedData, columns, 'LichLamViec');
+  };
+
+  const handleExportPdf = () => {
+    const columns: ExportColumn<any>[] = [
+      { header: 'Năm', key: 'nam' },
+      { header: 'Ngày làm việc', key: 'tongNgayLam' },
+      { header: 'Nghỉ T7 & CN', key: 'tongNgayNghiCuoiTuan' },
+      { header: 'Nghỉ lễ', key: 'tongNgayLe' },
+      { header: 'Tổng ngày', key: 'tongNgay' },
+      { header: 'Trạng thái', key: 'trangThai' },
+      { header: 'Ghi chú', key: 'ghiChu' },
+    ];
+    exportToPdf(allFilteredAndSortedData, columns, 'LichLamViec', 'Lịch làm việc');
+  };
 
   const handleCreate = async () => {
     const yearExists = lichList.some((l) => l.nam === selectedYear);
@@ -92,6 +139,20 @@ export const WorkScheduleManagement: React.FC = () => {
           )}
         </div>
       </div>
+      
+      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', borderBottom: '1px solid var(--border-color)', gap: '1rem', flexWrap: 'wrap' }}>
+        <div className="ws-input-wrapper" style={{ flex: 1, minWidth: '250px', position: 'relative' }}>
+          <input
+            type="text"
+            placeholder="Tìm kiếm lịch..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="ws-input"
+            style={{ width: '100%', padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}
+          />
+        </div>
+        <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
+      </div>
 
       {/* Alert messages */}
       {successMsg && (
@@ -126,42 +187,42 @@ export const WorkScheduleManagement: React.FC = () => {
           <table className="ws-table" aria-label="Danh sách lịch làm việc">
             <thead>
               <tr>
-                <th>Năm</th>
-                <th>Ngày làm việc</th>
-                <th>Nghỉ T7 &amp; CN</th>
-                <th>Nghỉ lễ</th>
-                <th>Tổng ngày</th>
-                <th>Trạng thái</th>
+                <SortableHeader label="Năm" sortKey="nam" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                <SortableHeader label="Ngày làm việc" sortKey="tongNgayLam" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                <SortableHeader label="Nghỉ T7 & CN" sortKey="tongNgayNghiCuoiTuan" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                <SortableHeader label="Nghỉ lễ" sortKey="tongNgayLe" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                <SortableHeader label="Tổng ngày" sortKey="tongNgay" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                <SortableHeader label="Trạng thái" sortKey="trangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
                 <th>Ghi chú</th>
                 <th style={{ textAlign: 'center' }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
-              {lichList.map((lich) => (
+              {currentData.map((lich) => (
                 <tr key={lich.idLich}>
                   <td className="ws-td-year">{lich.nam}</td>
                   <td>
                     <span className="ws-stat-chip work">
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--success-text)', display: 'inline-block' }} />
                       {lich.tongNgayLam}
                     </span>
                   </td>
                   <td>
                     <span className="ws-stat-chip weekend">
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#3b82f6', display: 'inline-block' }} />
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--primary)', display: 'inline-block' }} />
                       {lich.tongNgayNghiCuoiTuan}
                     </span>
                   </td>
                   <td>
                     <span className="ws-stat-chip holiday">
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f97316', display: 'inline-block' }} />
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--warning-text)', display: 'inline-block' }} />
                       {lich.tongNgayLe}
                     </span>
                   </td>
-                  <td style={{ fontWeight: 600, color: '#374151' }}>{lich.tongNgay}</td>
+                  <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{lich.tongNgay}</td>
                   <td>
                     <span className={`ws-badge ${lich.trangThai === 'Hiệu lực' ? 'active' : 'inactive'}`}>
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: lich.trangThai === 'Hiệu lực' ? '#22c55e' : '#94a3b8', display: 'inline-block' }} />
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: lich.trangThai === 'Hiệu lực' ? 'var(--success-text)' : 'var(--text-muted)', display: 'inline-block' }} />
                       {lich.trangThai}
                     </span>
                   </td>
@@ -220,6 +281,30 @@ export const WorkScheduleManagement: React.FC = () => {
             </tbody>
           </table>
         )}
+        
+        {totalPages > 0 && (
+          <div className="ws-pagination" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem', padding: '0 1rem 1rem 1rem' }}>
+            <button 
+              className="ws-btn-secondary" 
+              onClick={() => setCurrentPage(p => p - 1)} 
+              disabled={currentPage === 1 || isLoading}
+              style={{ padding: '0.35rem 0.75rem', border: '1px solid var(--border-color)', borderRadius: '4px', background: 'var(--bg-surface)' }}
+            >
+              Trước
+            </button>
+            <div className="ws-pagination-info" style={{ display: 'flex', alignItems: 'center' }}>
+              Trang <span>{currentPage}</span> / <span>{totalPages}</span>
+            </div>
+            <button 
+              className="ws-btn-secondary" 
+              onClick={() => setCurrentPage(p => p + 1)} 
+              disabled={currentPage === totalPages || isLoading}
+              style={{ padding: '0.35rem 0.75rem', border: '1px solid var(--border-color)', borderRadius: '4px', background: 'var(--bg-surface)' }}
+            >
+              Sau
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Detail Modal */}
@@ -231,7 +316,7 @@ export const WorkScheduleManagement: React.FC = () => {
       {confirmDelete && (
         <div className="ws-confirm-overlay">
           <div className="ws-confirm-box">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#dc2626" style={{ width: '2.5rem', height: '2.5rem', marginBottom: '0.75rem' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="var(--danger-text)" style={{ width: '2.5rem', height: '2.5rem', marginBottom: '0.75rem' }}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
             </svg>
             <h3>Xác nhận xóa lịch</h3>
@@ -277,7 +362,7 @@ export const WorkScheduleManagement: React.FC = () => {
             
             <div className="ws-modal-body" style={{ padding: '1.5rem', flex: 'none' }}>
               <div style={{ marginBottom: '1.25rem' }}>
-                <label htmlFor="ws-modal-year" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: '#374151' }}>Chọn năm <span style={{color: '#dc2626'}}>*</span></label>
+                <label htmlFor="ws-modal-year" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Chọn năm <span style={{color: 'var(--danger-text)'}}>*</span></label>
                 <select
                   id="ws-modal-year"
                   className="ws-year-select"
@@ -291,7 +376,7 @@ export const WorkScheduleManagement: React.FC = () => {
                 </select>
                 
                 {isYearExists && (
-                  <div style={{ marginTop: '0.5rem', color: '#dc2626', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <div style={{ marginTop: '0.5rem', color: 'var(--danger-text)', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1rem', height: '1rem' }}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                     </svg>
@@ -301,13 +386,13 @@ export const WorkScheduleManagement: React.FC = () => {
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <label htmlFor="ws-modal-notes" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: '#374151' }}>Ghi chú</label>
+                <label htmlFor="ws-modal-notes" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Ghi chú</label>
                 <textarea
                   id="ws-modal-notes"
                   value={createNotes}
                   onChange={(e) => setCreateNotes(e.target.value)}
                   placeholder="Nhập ghi chú (không bắt buộc)..."
-                  style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', minHeight: '100px', fontFamily: 'inherit', resize: 'vertical' }}
+                  style={{ width: '100%', padding: '0.75rem', border: '1px solid var(--border-color)', borderRadius: '8px', minHeight: '100px', fontFamily: 'inherit', resize: 'vertical' }}
                 />
               </div>
               
@@ -315,7 +400,7 @@ export const WorkScheduleManagement: React.FC = () => {
                 <button
                   onClick={() => setShowCreateModal(false)}
                   disabled={isCreating}
-                  style={{ padding: '0.625rem 1.25rem', border: '1px solid #d1d5db', background: '#fff', borderRadius: '8px', fontWeight: 600, color: '#4b5563', cursor: 'pointer' }}
+                  style={{ padding: '0.625rem 1.25rem', border: '1px solid var(--border-hover)', background: 'var(--bg-surface)', borderRadius: '8px', fontWeight: 600, color: 'var(--text-secondary)', cursor: 'pointer' }}
                 >
                   Hủy bỏ
                 </button>

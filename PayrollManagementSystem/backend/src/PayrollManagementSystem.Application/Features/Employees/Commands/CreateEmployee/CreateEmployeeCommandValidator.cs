@@ -24,8 +24,8 @@ namespace PayrollManagementSystem.Application.Features.Employees.Commands.Create
             RuleFor(x => x.SoHopDong)
                 .NotEmpty().WithMessage("Số hợp đồng không được để trống.");
 
-            RuleFor(x => x.LuongCoBan)
-                .GreaterThan(0).WithMessage("Lương cơ bản phải lớn hơn 0.");
+            //RuleFor(x => x.LuongCoBan)
+            //    .GreaterThan(0).WithMessage("Lương cơ bản phải lớn hơn 0.");
 
             RuleFor(x => x.SoQuyetDinh)
                 .NotEmpty().WithMessage("Số quyết định không được để trống.");

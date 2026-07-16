@@ -33,11 +33,11 @@ const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string
   if (!isAuthenticated) return <Navigate to="/login" replace />;
 
   if (user?.role && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/profile" replace />;
   }
 
   if (requireManager && user?.role !== "Admin" && !user?.hasDirectReports) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/profile" replace />;
   }
 
   return <Outlet />;
@@ -47,7 +47,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<Navigate to="/profile" replace />} />
 
         <Route
           path="/login"
@@ -58,16 +58,28 @@ function App() {
           }
         />
 
-        <Route path="/dashboard" element={<MainLayout />}>
-          <Route index element={<Navigate to="ho-so" replace />} />
+        {/* Use a pathless route for MainLayout to wrap all protected routes */}
+        <Route element={<MainLayout />}>
+          
+          {/* 1. Personal Group */}
+          <Route path="/profile" element={<UserProfile />} />
 
-          <Route path="ho-so" element={<UserProfile />} />
-
+          {/* 2. System Administration Group */}
           <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
-            <Route path="tai-khoan" element={<UserManagement />} />
+            <Route path="/admin/tai-khoan" element={<UserManagement />} />
           </Route>
 
+          {/* 3. Human Resources Group */}
           <Route element={<ProtectedRoute allowedRoles={["HR"]} />}>
+            <Route path="/hr/nhan-vien" element={<EmployeeManagement />} />
+            <Route path="/hr/phong-ban" element={<DepartmentManagement />} />
+            <Route path="/hr/ngach-luong" element={<NgachLuongManagement />} />
+            <Route path="/hr/chuc-vu" element={<PositionManagement />} />
+          </Route>
+
+          {/* 4. Time & Attendance Group */}
+          <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
+            <Route path="/time/lich-lam-viec" element={<WorkScheduleManagement />} />
             <Route path="/hr/nhan-vien" element={<EmployeeManagement />} />
             <Route path="/hr/phong-ban" element={<DepartmentManagement />} />
             <Route path="/hr/ngach-luong" element={<NgachLuongManagement />} />
@@ -82,6 +94,8 @@ function App() {
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR"]} />}>
             <Route path="/time/cham-cong" element={<ChamCongManagement />} />
             <Route path="/time/don-nghi" element={<DonNghiManagement />} />
+            <Route path="/time/cham-cong" element={<ChamCongManagement />} />
+            <Route path="/time/don-nghi" element={<DonNghiManagement />} />
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
@@ -90,26 +104,26 @@ function App() {
 
           {/* Đánh giá năng lực P2 */}
           <Route element={<ProtectedRoute allowedRoles={["HR"]} />}>
-            <Route path="danh-gia/khung-nang-luc" element={<KhungNangLucManagement />} />
-            <Route path="danh-gia/cau-hinh" element={<MucQuyDoiManagement />} />
+            <Route path="/performance/khung-nang-luc" element={<KhungNangLucManagement />} />
+            <Route path="/performance/cau-hinh" element={<MucQuyDoiManagement />} />
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR"]} />}>
-            <Route path="danh-gia/ky-danh-gia" element={<KyDanhGiaManagement />} />
+            <Route path="/performance/ky-danh-gia" element={<KyDanhGiaManagement />} />
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
-            <Route path="danh-gia/tu-danh-gia" element={<TuDanhGia />} />
-            <Route path="danh-gia/tu-danh-gia/:id" element={<TuDanhGiaForm />} />
+            <Route path="/performance/tu-danh-gia" element={<TuDanhGia />} />
+            <Route path="/performance/tu-danh-gia/:id" element={<TuDanhGiaForm />} />
           </Route>
           
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} requireManager={true} />}>
-            <Route path="danh-gia/duyet-danh-gia" element={<DuyetDanhGia />} />
-            <Route path="danh-gia/duyet-danh-gia/:id" element={<DuyetDanhGiaForm />} />
+            <Route path="/performance/duyet-danh-gia" element={<DuyetDanhGia />} />
+            <Route path="/performance/duyet-danh-gia/:id" element={<DuyetDanhGiaForm />} />
           </Route>
         </Route>
 
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/profile" replace />} />
       </Routes>
     </BrowserRouter>
   );

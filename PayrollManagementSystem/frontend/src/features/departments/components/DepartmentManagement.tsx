@@ -9,6 +9,10 @@ import { AdjustSalaryModal } from './Modals/AdjustSalaryModal';
 import { ChangePositionModal } from './Modals/ChangePositionModal';
 
 import { usePositions } from '@/features/positions/hooks/usePositions';
+import { useDataTable } from '../../../hooks/useDataTable';
+import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import './DepartmentManagement.css';
 
 export const DepartmentManagement: React.FC = () => {
@@ -27,11 +31,42 @@ export const DepartmentManagement: React.FC = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeInDepartmentDto | null>(null);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
-  const totalPages = Math.ceil(deptEmployees.length / pageSize) || 1;
-  const currentData = deptEmployees.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const {
+    currentData,
+    allFilteredAndSortedData,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    sortKey,
+    sortDirection,
+    handleSort,
+    searchTerm,
+    setSearchTerm
+  } = useDataTable<EmployeeInDepartmentDto>({
+    data: deptEmployees,
+    initialPageSize: 10,
+    searchableFields: ['cccd', 'hoTen', 'tenChucVu']
+  });
+
+  const handleExportExcel = () => {
+    const columns: ExportColumn<EmployeeInDepartmentDto>[] = [
+      { header: 'Mã NV', key: 'cccd' },
+      { header: 'Họ Tên', key: 'hoTen' },
+      { header: 'Chức Vụ', key: 'tenChucVu' },
+      { header: 'Trạng Thái', key: 'tenTrangThai' },
+    ];
+    exportToExcel(allFilteredAndSortedData, columns, 'NhanSuPhongBan');
+  };
+
+  const handleExportPdf = () => {
+    const columns: ExportColumn<EmployeeInDepartmentDto>[] = [
+      { header: 'Mã NV', key: 'cccd' },
+      { header: 'Họ Tên', key: 'hoTen' },
+      { header: 'Chức Vụ', key: 'tenChucVu' },
+      { header: 'Trạng Thái', key: 'tenTrangThai' },
+    ];
+    exportToPdf(allFilteredAndSortedData, columns, 'NhanSuPhongBan', 'Danh sách nhân sự phòng ban');
+  };
 
   useEffect(() => {
     fetchPositions('', 'HOAT_DONG');
@@ -40,7 +75,6 @@ export const DepartmentManagement: React.FC = () => {
   useEffect(() => {
     if (selectedDeptId) {
       fetchEmployees(selectedDeptId);
-      setCurrentPage(1); // Reset page on dept change
     } else {
       setDeptEmployees([]);
     }
@@ -151,7 +185,7 @@ export const DepartmentManagement: React.FC = () => {
         <div className="dept-card dept-card-right">
           <div className="dept-card-header">
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem', color: '#6b7280' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem', color: 'var(--text-secondary)' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
               </svg>
               Danh sách nhân sự
@@ -163,6 +197,21 @@ export const DepartmentManagement: React.FC = () => {
             </span>
           </div>
 
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', borderBottom: '1px solid var(--border-color)', gap: '1rem', flexWrap: 'wrap' }}>
+              <div className="dept-search-box" style={{ flex: 1, minWidth: '250px' }}>
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm nhân sự (Tên, CCCD)..."
+                  className="dept-search-input"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}
+                  disabled={!selectedDeptId}
+                />
+              </div>
+              <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
+            </div>
+            
           <div className="dept-table-wrapper">
             {!selectedDeptId ? (
               <div className="dept-empty">
@@ -186,10 +235,10 @@ export const DepartmentManagement: React.FC = () => {
                   <table className="dept-table" aria-label="Danh sách nhân sự">
                     <thead>
                       <tr>
-                        <th>Mã NV</th>
-                        <th>Họ tên</th>
-                        <th>Chức vụ</th>
-                        <th>Trạng thái</th>
+                        <SortableHeader label="Mã NV" sortKey="cccd" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                        <SortableHeader label="Họ tên" sortKey="hoTen" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                        <SortableHeader label="Chức vụ" sortKey="tenChucVu" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                        <SortableHeader label="Trạng thái" sortKey="tenTrangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
                         <th style={{ textAlign: 'center' }}>Thao tác</th>
                       </tr>
                     </thead>
@@ -229,7 +278,7 @@ export const DepartmentManagement: React.FC = () => {
                                         setOpenDropdownId(null);
                                       }}
                                     >
-                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1rem', height: '1rem', color: '#2563eb' }}>
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1rem', height: '1rem', color: 'var(--primary)' }}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
                                       </svg>
                                       Thay đổi chức vụ
@@ -241,7 +290,7 @@ export const DepartmentManagement: React.FC = () => {
                                         setOpenDropdownId(null);
                                       }}
                                     >
-                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1rem', height: '1rem', color: '#059669' }}>
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1rem', height: '1rem', color: 'var(--success-text)' }}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
                                       </svg>
                                       Điều chỉnh bậc lương
@@ -254,7 +303,7 @@ export const DepartmentManagement: React.FC = () => {
                                         setOpenDropdownId(null);
                                       }}
                                     >
-                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1rem', height: '1rem', color: '#7c3aed' }}>
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1rem', height: '1rem', color: 'var(--primary)' }}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
                                       </svg>
                                       Điều chuyển phòng ban
@@ -270,8 +319,7 @@ export const DepartmentManagement: React.FC = () => {
                   </table>
                 </div>
 
-                {/* Custom Pagination */}
-                {deptEmployees.length > 0 && (
+                {totalPages > 0 && (
                   <div className="dept-pagination">
                     <button 
                       className="dept-btn-page" 

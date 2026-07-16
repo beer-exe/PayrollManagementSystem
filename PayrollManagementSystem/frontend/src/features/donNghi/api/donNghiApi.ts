@@ -32,7 +32,7 @@ export const donNghiApi = {
   delete: (id: string) =>
     axiosClient.delete<unknown, { data: boolean; succeeded: boolean }>(`${BASE_URL}/${id}`),
 
-  // Quota phép
+  // Ngày phép
   getNgayPhep: (nam: number, idPhongBan?: string) =>
     axiosClient.get<unknown, { data: NgayPhepDto[]; succeeded: boolean }>(PHEP_URL, {
       params: { nam, idPhongBan },
