@@ -315,3 +315,75 @@
   .mdp-form-grid { grid-template-columns: 1fr; }
   .mdp-cards { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* --- Dark Mode ---------------------------------------- */
+[data-theme='dark'] .mdp-page {
+  background: #111827;
+}
+
+[data-theme='dark'] .mdp-card,
+[data-theme='dark'] .mdp-filter-bar,
+[data-theme='dark'] .mdp-table-wrap,
+[data-theme='dark'] .mdp-modal {
+  background: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='dark'] .mdp-subtitle,
+[data-theme='dark'] .mdp-filter-label,
+[data-theme='dark'] .mdp-card__sub,
+[data-theme='dark'] .mdp-date,
+[data-theme='dark'] .mdp-empty {
+  color: #9ca3af;
+}
+
+[data-theme='dark'] .mdp-card__value,
+[data-theme='dark'] .mdp-card__value--gray,
+[data-theme='dark'] .mdp-num,
+[data-theme='dark'] .mdp-table td,
+[data-theme='dark'] .mdp-label {
+  color: #f3f4f6;
+}
+
+[data-theme='dark'] .mdp-table tbody tr {
+  border-bottom-color: #374151;
+}
+[data-theme='dark'] .mdp-table tbody tr:hover {
+  background: #374151;
+}
+
+[data-theme='dark'] .mdp-select, 
+[data-theme='dark'] .mdp-input,
+[data-theme='dark'] .mdp-textarea,
+[data-theme='dark'] .mdp-page-btn {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+[data-theme='dark'] .mdp-select:focus, 
+[data-theme='dark'] .mdp-input:focus,
+[data-theme='dark'] .mdp-textarea:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+[data-theme='dark'] .mdp-page-btn:hover:not(:disabled) {
+  border-color: #8b5cf6;
+  color: #8b5cf6;
+}
+
+[data-theme='dark'] .mdp-modal-footer {
+  border-top-color: #374151;
+}
+
+[data-theme='dark'] .mdp-badge--gray {
+  background: #374151;
+  color: #d1d5db;
+}
+
+[data-theme='dark'] .mdp-status--pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+[data-theme='dark'] .mdp-status--approved { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+[data-theme='dark'] .mdp-status--rejected { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
