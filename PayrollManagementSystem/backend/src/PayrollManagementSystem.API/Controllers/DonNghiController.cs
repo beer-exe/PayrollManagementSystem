@@ -18,6 +18,8 @@ namespace PayrollManagementSystem.API.Controllers
         private readonly IMediator _mediator;
         public DonNghiController(IMediator mediator) => _mediator = mediator;
 
+        // ─── HR/Admin Management Endpoints ─────────────────────────────────────────
+
         [HttpGet]
         public async Task<IActionResult> GetList(
             [FromQuery] int? thang,
