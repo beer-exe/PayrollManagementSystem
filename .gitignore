@@ -60,3 +60,6 @@ repomix-output.md
 *.sqlite3
 .gemini/
 .agents/
+
+# Custom Scripts
+run.bat
