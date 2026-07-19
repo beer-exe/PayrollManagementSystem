@@ -21,13 +21,20 @@ export const SortableHeader: React.FC<SortableHeaderProps> = ({
 }) => {
   const isActive = currentSortKey === sortKey;
 
+  let justifyContent = 'flex-start';
+  if (style?.textAlign === 'right') {
+    justifyContent = 'flex-end';
+  } else if (style?.textAlign === 'center') {
+    justifyContent = 'center';
+  }
+
   return (
     <th 
       onClick={() => onSort(sortKey)} 
       style={{ cursor: 'pointer', ...style }}
       className={`sortable-header ${isActive ? 'active' : ''}`}
     >
-      <div className="sortable-header-content">
+      <div className="sortable-header-content" style={{ justifyContent }}>
         <span>{label}</span>
         <span className="sort-icon-container">
           <svg 
