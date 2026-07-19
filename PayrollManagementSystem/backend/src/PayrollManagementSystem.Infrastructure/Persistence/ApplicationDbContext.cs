@@ -43,6 +43,9 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
         public virtual DbSet<LichLamViec> LichLamViecs { get; set; }
         public virtual DbSet<ChiTietLichLamViec> ChiTietLichLamViecs { get; set; }
 
+        public virtual DbSet<CaLamViec> CaLamViecs { get; set; }
+        public virtual DbSet<KhungGioNghi> KhungGioNghis { get; set; }
+
         public virtual DbSet<ChamCong> ChamCongs { get; set; }
 
         public virtual DbSet<DonNghi> DonNghis { get; set; }
@@ -687,6 +690,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
             });
 
             ConfigureDonNghi(modelBuilder);
+            ConfigureCaLamViec(modelBuilder);
         }
 
         private void ConfigureDonNghi(ModelBuilder modelBuilder)
@@ -818,6 +822,42 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                 entity.IsDeleted = true;
                 Entry(entity).State = EntityState.Modified;
             }
+        }
+
+        private void ConfigureCaLamViec(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CaLamViec>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("ca_lam_viecs_pkey");
+                entity.ToTable("ca_lam_viecs");
+
+                entity.Property(e => e.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+                entity.Property(e => e.TenCa).IsRequired().HasMaxLength(150).HasColumnName("ten_ca");
+                entity.Property(e => e.GioBatDau).HasColumnName("gio_bat_dau");
+                entity.Property(e => e.GioKetThuc).HasColumnName("gio_ket_thuc");
+                entity.Property(e => e.XuyenNgay).HasDefaultValue(false).HasColumnName("xuyen_ngay");
+                entity.Property(e => e.HeSoLuong).HasPrecision(5, 2).HasDefaultValue(1.0m).HasColumnName("he_so_luong");
+                entity.Property(e => e.TrangThai).HasDefaultValue(true).HasColumnName("trang_thai");
+            });
+
+            modelBuilder.Entity<KhungGioNghi>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("khung_gio_nghis_pkey");
+                entity.ToTable("khung_gio_nghis");
+
+                entity.Property(e => e.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+                entity.Property(e => e.IdCaLamViec).HasColumnName("id_ca_lam_viec");
+                entity.Property(e => e.TenKhoangNghi).IsRequired().HasMaxLength(150).HasColumnName("ten_khoang_nghi");
+                entity.Property(e => e.GioBatDau).HasColumnName("gio_bat_dau");
+                entity.Property(e => e.GioKetThuc).HasColumnName("gio_ket_thuc");
+                entity.Property(e => e.TinhVaoGioLam).HasDefaultValue(false).HasColumnName("tinh_vao_gio_lam");
+
+                entity.HasOne(d => d.CaLamViec)
+                      .WithMany(p => p.KhungGioNghis)
+                      .HasForeignKey(d => d.IdCaLamViec)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .HasConstraintName("khung_gio_nghis_id_ca_lam_viec_fkey");
+            });
         }
     }
 }

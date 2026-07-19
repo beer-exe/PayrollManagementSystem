@@ -81,6 +81,68 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.ToTable("bac_luongs", (string)null);
                 });
 
+            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.CaLamViec", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeSpan>("GioBatDau")
+                        .HasColumnType("interval")
+                        .HasColumnName("gio_bat_dau");
+
+                    b.Property<TimeSpan>("GioKetThuc")
+                        .HasColumnType("interval")
+                        .HasColumnName("gio_ket_thuc");
+
+                    b.Property<decimal>("HeSoLuong")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)")
+                        .HasDefaultValue(1.0m)
+                        .HasColumnName("he_so_luong");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("TenCa")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
+                        .HasColumnName("ten_ca");
+
+                    b.Property<bool>("TrangThai")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("trang_thai");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("XuyenNgay")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("xuyen_ngay");
+
+                    b.HasKey("Id")
+                        .HasName("ca_lam_viecs_pkey");
+
+                    b.ToTable("ca_lam_viecs", (string)null);
+                });
+
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.ChamCong", b =>
                 {
                     b.Property<Guid>("Id")
@@ -495,6 +557,61 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.HasIndex("Cccd");
 
                     b.ToTable("hop_dong_lao_dongs", (string)null);
+                });
+
+            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.KhungGioNghi", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeSpan>("GioBatDau")
+                        .HasColumnType("interval")
+                        .HasColumnName("gio_bat_dau");
+
+                    b.Property<TimeSpan>("GioKetThuc")
+                        .HasColumnType("interval")
+                        .HasColumnName("gio_ket_thuc");
+
+                    b.Property<Guid?>("IdCaLamViec")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id_ca_lam_viec");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("TenKhoangNghi")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
+                        .HasColumnName("ten_khoang_nghi");
+
+                    b.Property<bool>("TinhVaoGioLam")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("tinh_vao_gio_lam");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id")
+                        .HasName("khung_gio_nghis_pkey");
+
+                    b.HasIndex("IdCaLamViec");
+
+                    b.ToTable("khung_gio_nghis", (string)null);
                 });
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.KhungNangLucP2", b =>
@@ -1516,6 +1633,17 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.Navigation("NhanVien");
                 });
 
+            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.KhungGioNghi", b =>
+                {
+                    b.HasOne("PayrollManagementSystem.Domain.Models.CaLamViec", "CaLamViec")
+                        .WithMany("KhungGioNghis")
+                        .HasForeignKey("IdCaLamViec")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("khung_gio_nghis_id_ca_lam_viec_fkey");
+
+                    b.Navigation("CaLamViec");
+                });
+
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.KhungNangLucP2", b =>
                 {
                     b.HasOne("PayrollManagementSystem.Domain.Models.ChucVu", "ChucVu")
@@ -1670,6 +1798,11 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.BacLuong", b =>
                 {
                     b.Navigation("QuyetDinhNhanSus");
+                });
+
+            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.CaLamViec", b =>
+                {
+                    b.Navigation("KhungGioNghis");
                 });
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.ChucVu", b =>

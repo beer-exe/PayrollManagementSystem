@@ -17,7 +17,6 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Queries.GetMyDonN
 
         public async Task<Response<List<DonNghiDto>>> Handle(GetMyDonNghiListQuery request, CancellationToken cancellationToken)
         {
-            // Lookup CCCD from UserId
             var taiKhoan = await _context.TaiKhoans
                 .Include(t => t.NhanVien)
                 .FirstOrDefaultAsync(t => t.IdTaiKhoan == request.UserId, cancellationToken);

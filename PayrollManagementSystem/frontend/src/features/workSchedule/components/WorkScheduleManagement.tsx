@@ -309,7 +309,15 @@ export const WorkScheduleManagement: React.FC = () => {
 
       {/* Detail Modal */}
       {viewLich && (
-        <WorkScheduleDetailModal lich={viewLich} onClose={() => setViewLich(null)} />
+        <WorkScheduleDetailModal 
+          lich={viewLich} 
+          onClose={(hasChanges?: boolean) => {
+            setViewLich(null);
+            if (hasChanges) {
+              fetchAll();
+            }
+          }} 
+        />
       )}
 
       {/* Confirm Delete Dialog */}

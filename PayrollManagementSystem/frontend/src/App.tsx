@@ -23,6 +23,7 @@ import { TuDanhGiaForm } from "@/features/competencyP2/components/TuDanhGiaForm"
 import { DuyetDanhGia } from "@/features/competencyP2/components/DuyetDanhGia";
 import { DuyetDanhGiaForm } from "@/features/competencyP2/components/DuyetDanhGiaForm";
 import { WorkScheduleManagement } from "@/features/workSchedule/components/WorkScheduleManagement";
+import { WorkShiftManagement } from "@/features/workShifts/components/WorkShiftManagement";
 import { ChamCongManagement } from '@/features/chamCong/components/ChamCongManagement';
 import { DonNghiManagement } from '@/features/donNghi/components/DonNghiManagement';
 import { MyDonNghiPortal } from '@/features/donNghi/components/MyDonNghiPortal';
@@ -79,21 +80,11 @@ function App() {
 
           {/* 4. Time & Attendance Group */}
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
-            <Route path="/time/lich-lam-viec" element={<WorkScheduleManagement />} />
-            <Route path="/hr/nhan-vien" element={<EmployeeManagement />} />
-            <Route path="/hr/phong-ban" element={<DepartmentManagement />} />
-            <Route path="/hr/ngach-luong" element={<NgachLuongManagement />} />
-            <Route path="/hr/chuc-vu" element={<PositionManagement />} />
-          </Route>
-
-          {/* 4. Time & Attendance Group */}
-          <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
+            <Route path="/time/ca-lam-viec" element={<WorkShiftManagement />} />
             <Route path="/time/lich-lam-viec" element={<WorkScheduleManagement />} />
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR"]} />}>
-            <Route path="/time/cham-cong" element={<ChamCongManagement />} />
-            <Route path="/time/don-nghi" element={<DonNghiManagement />} />
             <Route path="/time/cham-cong" element={<ChamCongManagement />} />
             <Route path="/time/don-nghi" element={<DonNghiManagement />} />
           </Route>

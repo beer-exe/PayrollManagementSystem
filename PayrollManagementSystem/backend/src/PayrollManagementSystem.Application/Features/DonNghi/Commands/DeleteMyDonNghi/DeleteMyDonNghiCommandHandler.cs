@@ -15,7 +15,6 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DeleteMy
 
         public async Task<Response<bool>> Handle(DeleteMyDonNghiCommand request, CancellationToken cancellationToken)
         {
-            // Lookup CCCD from UserId for ownership verification
             var taiKhoan = await _context.TaiKhoans
                 .Include(t => t.NhanVien)
                 .FirstOrDefaultAsync(t => t.IdTaiKhoan == request.UserId, cancellationToken);
@@ -31,7 +30,6 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DeleteMy
             if (donNghi == null)
                 throw new ApiException("Không tìm thấy đơn nghỉ.");
 
-            // Ownership check
             if (donNghi.CccdNhanVien != cccdHienTai)
                 throw new ApiException("Bạn không có quyền hủy đơn nghỉ này.");
 
