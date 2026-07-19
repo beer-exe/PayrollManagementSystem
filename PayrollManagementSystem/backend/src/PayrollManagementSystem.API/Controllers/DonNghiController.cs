@@ -18,6 +18,8 @@ namespace PayrollManagementSystem.API.Controllers
         private readonly IMediator _mediator;
         public DonNghiController(IMediator mediator) => _mediator = mediator;
 
+        // ─── HR/Admin Management Endpoints ─────────────────────────────────────────
+
         [HttpGet]
         public async Task<IActionResult> GetList(
             [FromQuery] int? thang,
@@ -33,6 +35,22 @@ namespace PayrollManagementSystem.API.Controllers
                 CccdNhanVien = cccd,
                 TrangThai = trangThai,
                 IdPhongBan = idPhongBan,
+            });
+            return Ok(response);
+        }
+
+        [HttpGet("calculate-days")]
+        [AllowAnonymous]
+        public async Task<IActionResult> CalculateDays(
+            [FromQuery] DateOnly start,
+            [FromQuery] DateOnly end,
+            [FromQuery] string loaiNghi)
+        {
+            var response = await _mediator.Send(new PayrollManagementSystem.Application.Features.DonNghi.Queries.CalculateSoNgayNghi.CalculateSoNgayNghiQuery
+            {
+                NgayBatDau = start,
+                NgayKetThuc = end,
+                LoaiNghi = loaiNghi
             });
             return Ok(response);
         }
@@ -68,6 +86,17 @@ namespace PayrollManagementSystem.API.Controllers
                 Id = id,
                 CccdNguoiDuyet = cccdNguoiDuyet,
                 LyDoTuChoi = request.LyDoTuChoi,
+            });
+            return Ok(response);
+        }
+
+        [HttpPatch("{id:guid}/huy-da-duyet")]
+        [Authorize(Roles = "HR")]
+        public async Task<IActionResult> HuyDaDuyet(Guid id)
+        {
+            var response = await _mediator.Send(new PayrollManagementSystem.Application.Features.DonNghi.Commands.HuyDonNghiDaDuyet.HuyDonNghiDaDuyetCommand
+            {
+                Id = id
             });
             return Ok(response);
         }

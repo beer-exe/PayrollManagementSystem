@@ -13,6 +13,11 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.UpdateNg
 
         public async Task<Response<bool>> Handle(UpdateNgayPhepCommand request, CancellationToken cancellationToken)
         {
+            var hasLich = await _context.LichLamViecs.AnyAsync(l => l.Nam == request.Nam, cancellationToken);
+            if (!hasLich)
+            {
+                throw new ApiException($"Chưa có lịch làm việc nào được tạo cho năm {request.Nam}. Vui lòng tạo lịch làm việc trước khi cấu hình ngày phép.");
+            }
             var existing = await _context.NgayPhepNhanViens
                 .FirstOrDefaultAsync(n => n.CccdNhanVien == request.CccdNhanVien && n.Nam == request.Nam, cancellationToken);
 

@@ -186,9 +186,9 @@ export const KhungNangLucManagement: React.FC = () => {
       const updatePromises = criteriaList
         .filter(c => c.idTieuChi)
         .map(c => updateCriteria(c.idTieuChi!, {
-          idTieuChi: c.idTieuChi,
+          idTieuChi: c.idTieuChi!,
           tenNangLuc: c.tenNangLuc,
-          moTa: c.moTa || null,
+          moTa: c.moTa || undefined,
           tyTrong: Number(c.tyTrong) / 100
         }));
 
@@ -198,7 +198,7 @@ export const KhungNangLucManagement: React.FC = () => {
         .map(c => createCriteria({
           idChucVu: selectedChucVu,
           tenNangLuc: c.tenNangLuc,
-          moTa: c.moTa || null,
+          moTa: c.moTa || undefined,
           tyTrong: Number(c.tyTrong) / 100
         }));
 

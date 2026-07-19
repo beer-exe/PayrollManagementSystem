@@ -6,6 +6,7 @@ import type { DonNghiDto, NgayPhepDto, UpdateNgayPhepRequest } from '../types/do
 import type { DepartmentDto } from '../../departments/types/department.types';
 import { DonNghiFormModal } from './DonNghiFormModal';
 import { employeeApi } from '../../employees/api/employeeApi';
+import { workScheduleApi } from '../../workSchedule/api/workScheduleApi';
 import { useDataTable } from '../../../hooks/useDataTable';
 import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
 import { SortableHeader } from '../../../components/DataTable/SortableHeader';
@@ -27,7 +28,7 @@ const LOAI_NGHI_COLOR: Record<string, string> = {
 };
 
 const now = new Date();
-const PAGE_SIZE = 10;
+
 
 export const DonNghiManagement: React.FC = () => {
   const { user } = useAuthStore();
@@ -38,7 +39,7 @@ export const DonNghiManagement: React.FC = () => {
   const [thang, setThang] = useState(now.getMonth() + 1);
   const [nam, setNam] = useState(now.getFullYear());
   const [filterTrangThai, setFilterTrangThai] = useState('');
-  const [searchText, setSearchText] = useState('');
+
 
   // Phòng ban filter
   const [departments, setDepartments] = useState<DepartmentDto[]>([]);
@@ -65,9 +66,11 @@ export const DonNghiManagement: React.FC = () => {
   const [cccdDropdownOpen, setCccdDropdownOpen] = useState(false);
   const cccdDropdownRef = useRef<HTMLDivElement>(null);
 
+  const [validYears, setValidYears] = useState<number[]>([]);
+
   const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const { list, ngayPhepList, loading, error, fetchList, fetchNgayPhep, createDonNghi, duyetDonNghi, tuChoiDonNghi, deleteDonNghi, updateNgayPhep } = useDonNghi();
+  const { list, ngayPhepList, loading, error, fetchList, fetchNgayPhep, createDonNghi, duyetDonNghi, tuChoiDonNghi, deleteDonNghi, updateNgayPhep, huyDonNghiDaDuyet } = useDonNghi();
 
   const {
     currentData: currentDonNghiList,
@@ -138,6 +141,14 @@ export const DonNghiManagement: React.FC = () => {
   }, [showNgayPhepModal, empList.length]);
 
   useEffect(() => {
+    workScheduleApi.getAll()
+      .then(res => {
+        if (res.data) setValidYears(Array.from(new Set(res.data.map(w => w.nam))).sort((a, b) => b - a));
+      })
+      .catch(console.error);
+  }, []);
+
+  useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (cccdDropdownRef.current && !cccdDropdownRef.current.contains(e.target as Node)) {
         setCccdDropdownOpen(false);
@@ -191,6 +202,14 @@ export const DonNghiManagement: React.FC = () => {
     setOpenMenuId(null);
   };
 
+  const handleHuyDaDuyet = async (id: string, name: string) => {
+    if (!confirm(`Xác nhận hủy đơn nghỉ ĐÃ DUYỆT của "${name}"?\n(Hành động này sẽ hoàn trả lại ngày phép và cập nhật lại lịch chấm công)`)) return;
+    const err = await huyDonNghiDaDuyet(id);
+    if (err) showToast('error', err);
+    else { showToast('success', 'Hủy đơn thành công!'); loadData(); }
+    setOpenMenuId(null);
+  };
+
   const handleUpdateNgayPhep = async () => {
     const req: UpdateNgayPhepRequest = {
       cccdNhanVien: ngayPhepForm.cccd,
@@ -202,17 +221,33 @@ export const DonNghiManagement: React.FC = () => {
     else { showToast('success', 'Cập nhật ngày phép thành công!'); setShowNgayPhepModal(false); loadData(); }
   };
 
-  const openNgayPhepModal = (row?: NgayPhepDto) => {
-    if (row) {
-      setNgayPhepForm({ cccd: row.cccdNhanVien, nam: row.nam, tong: row.tongNgayPhep });
-      setCccdSearchTerm(`${row.hoTenNhanVien} - ${row.cccdNhanVien}`);
-      setNgayPhepEdit(row);
-    } else {
-      setNgayPhepForm({ cccd: '', nam: now.getFullYear(), tong: 12 });
-      setCccdSearchTerm('');
-      setNgayPhepEdit(null);
+  const openNgayPhepModal = async (row?: NgayPhepDto) => {
+    try {
+      let years = validYears;
+      if (years.length === 0) {
+        const res = await workScheduleApi.getAll();
+        years = Array.from(new Set((res.data || []).map(w => w.nam))).sort((a, b) => b - a);
+        setValidYears(years);
+      }
+      
+      if (years.length === 0) {
+        showToast('error', 'Chưa có lịch làm việc nào được tạo. Vui lòng tạo lịch làm việc trước khi cấu hình ngày phép!');
+        return;
+      }
+
+      if (row) {
+        setNgayPhepForm({ cccd: row.cccdNhanVien, nam: row.nam, tong: row.tongNgayPhep });
+        setCccdSearchTerm(`${row.hoTenNhanVien} - ${row.cccdNhanVien}`);
+        setNgayPhepEdit(row);
+      } else {
+        setNgayPhepForm({ cccd: '', nam: years.includes(now.getFullYear()) ? now.getFullYear() : years[0], tong: 12 });
+        setCccdSearchTerm('');
+        setNgayPhepEdit(null);
+      }
+      setShowNgayPhepModal(true);
+    } catch (err) {
+      showToast('error', 'Lỗi khi kiểm tra dữ liệu năm!');
     }
-    setShowNgayPhepModal(true);
   };
 
   const handleExportExcel = () => {
@@ -310,8 +345,10 @@ export const DonNghiManagement: React.FC = () => {
         </div>
         <div className="dn-filter-group">
           <label className="dn-filter-label">Năm</label>
-          <select className="dn-select" value={nam} onChange={e => setNam(+e.target.value)}>
-            {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
+          <select className="dn-select" value={nam} onChange={e => setNam(+e.target.value)} disabled={validYears.length === 0}>
+            {validYears.length > 0 
+              ? validYears.map(y => <option key={y} value={y}>{y}</option>) 
+              : <option value={now.getFullYear()}>Chưa có lịch làm việc nào được tạo.</option>}
           </select>
         </div>
         <div className="dn-filter-group" style={{ flex: 1, minWidth: 200 }}>
@@ -408,10 +445,10 @@ export const DonNghiManagement: React.FC = () => {
                   <td className="dn-date">{new Date(row.ngayBatDau + 'T00:00:00').toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
                   <td className="dn-date">{new Date(row.ngayKetThuc + 'T00:00:00').toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
                   <td className="dn-num">{row.soNgayNghi}</td>
-                  <td className="dn-note" title={row.lyDo}>{row.lyDo}</td>
+                  <td><div style={{ maxWidth: 200, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.lyDo}>{row.lyDo}</div></td>
                   <td>
                     <span className={TRANG_THAI_COLOR[row.trangThai] ?? 'dn-status'}>{row.trangThai}</span>
-                    {row.lyDoTuChoi && <div className="dn-tu-choi-note" title={row.lyDoTuChoi}>↳ {row.lyDoTuChoi}</div>}
+                    {row.lyDoTuChoi && <div style={{ fontSize: 11, color: 'var(--danger-text)', marginTop: 3, maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={row.lyDoTuChoi}>↳ {row.lyDoTuChoi}</div>}
                   </td>
                   <td>{row.hoTenNguoiDuyet ?? '—'}</td>
                   {isHR && (
@@ -427,7 +464,10 @@ export const DonNghiManagement: React.FC = () => {
                                 <button className="dn-dropdown__danger" onClick={() => handleDelete(row.id, row.hoTenNhanVien)}>🗑️ Xóa</button>
                               </>
                             )}
-                            {row.trangThai !== 'Chờ duyệt' && (
+                            {row.trangThai === 'Đã duyệt' && (
+                              <button className="dn-dropdown__danger" onClick={() => handleHuyDaDuyet(row.id, row.hoTenNhanVien)}>🔙 Hủy đơn</button>
+                            )}
+                            {row.trangThai !== 'Chờ duyệt' && row.trangThai !== 'Đã duyệt' && (
                               <button disabled className="dn-dropdown__disabled">Không có hành động</button>
                             )}
                           </div>
@@ -574,7 +614,7 @@ export const DonNghiManagement: React.FC = () => {
               <div className="dn-form-row">
                 <label className="dn-label">Năm</label>
                 <select className="dn-select" value={ngayPhepForm.nam} onChange={e => setNgayPhepForm(f => ({ ...f, nam: +e.target.value }))} disabled={!!ngayPhepEdit}>
-                  {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
+                  {validYears.length > 0 ? validYears.map(y => <option key={y} value={y}>{y}</option>) : <option value={now.getFullYear()}>{now.getFullYear()}</option>}
                 </select>
               </div>
               <div className="dn-form-row">

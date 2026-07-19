@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { usePhieuDanhGia } from '../hooks/usePhieuDanhGia';
 import { useKyDanhGia } from '../hooks/useKyDanhGia';
 import { useNavigate } from 'react-router-dom';

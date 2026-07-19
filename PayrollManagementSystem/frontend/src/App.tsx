@@ -25,6 +25,7 @@ import { DuyetDanhGiaForm } from "@/features/competencyP2/components/DuyetDanhGi
 import { WorkScheduleManagement } from "@/features/workSchedule/components/WorkScheduleManagement";
 import { ChamCongManagement } from '@/features/chamCong/components/ChamCongManagement';
 import { DonNghiManagement } from '@/features/donNghi/components/DonNghiManagement';
+import { MyDonNghiPortal } from '@/features/donNghi/components/MyDonNghiPortal';
 
 const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string[], requireManager?: boolean }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -79,14 +80,29 @@ function App() {
           {/* 4. Time & Attendance Group */}
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
             <Route path="/time/lich-lam-viec" element={<WorkScheduleManagement />} />
+            <Route path="/hr/nhan-vien" element={<EmployeeManagement />} />
+            <Route path="/hr/phong-ban" element={<DepartmentManagement />} />
+            <Route path="/hr/ngach-luong" element={<NgachLuongManagement />} />
+            <Route path="/hr/chuc-vu" element={<PositionManagement />} />
+          </Route>
+
+          {/* 4. Time & Attendance Group */}
+          <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
+            <Route path="/time/lich-lam-viec" element={<WorkScheduleManagement />} />
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR"]} />}>
             <Route path="/time/cham-cong" element={<ChamCongManagement />} />
             <Route path="/time/don-nghi" element={<DonNghiManagement />} />
+            <Route path="/time/cham-cong" element={<ChamCongManagement />} />
+            <Route path="/time/don-nghi" element={<DonNghiManagement />} />
           </Route>
 
-          {/* 5. Performance Evaluation Group (P2) */}
+          <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
+            <Route path="/me/don-nghi" element={<MyDonNghiPortal />} />
+          </Route>
+
+          {/* Đánh giá năng lực P2 */}
           <Route element={<ProtectedRoute allowedRoles={["HR"]} />}>
             <Route path="/performance/khung-nang-luc" element={<KhungNangLucManagement />} />
             <Route path="/performance/cau-hinh" element={<MucQuyDoiManagement />} />
