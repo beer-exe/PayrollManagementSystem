@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  payroll_postgres:
+    image: postgres:15-alpine
+    container_name: payroll_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-123456}
+      POSTGRES_DB: ${POSTGRES_DB:-payroll_management_system_db}
+    ports:
+      - "8388:5432"
+    volumes:
+      - payroll_postgres_data:/var/lib/postgresql/data
+
+  payroll_redis:
+    image: redis:7-alpine
+    container_name: payroll_redis
+    restart: unless-stopped
+    ports:
+      - "8389:6379"
+    volumes:
+      - payroll_redis_data:/data
+
+  payroll_backend:
+    build:
+      context: ./PayrollManagementSystem/backend
+      dockerfile: Dockerfile
+    container_name: payroll_backend
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=payroll_postgres;Port=5432;Database=${POSTGRES_DB:-payroll_management_system_db};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-123456}
+      - CacheSettings__RedisConnectionString=payroll_redis:6379
+    ports:
+      - "8386:8080"
+    depends_on:
+      - payroll_postgres
+      - payroll_redis
+
+  payroll_frontend:
+    build:
+      context: ./PayrollManagementSystem/frontend
+      dockerfile: Dockerfile
+    container_name: payroll_frontend
+    restart: unless-stopped
+    ports:
+      - "8387:80"
+    depends_on:
+      - payroll_backend
+
+volumes:
+  payroll_postgres_data:
+  payroll_redis_data:

@@ -27,7 +27,7 @@ const LOAI_NGHI_COLOR: Record<string, string> = {
 };
 
 const now = new Date();
-const PAGE_SIZE = 10;
+
 
 export const DonNghiManagement: React.FC = () => {
   const { user } = useAuthStore();
@@ -38,7 +38,7 @@ export const DonNghiManagement: React.FC = () => {
   const [thang, setThang] = useState(now.getMonth() + 1);
   const [nam, setNam] = useState(now.getFullYear());
   const [filterTrangThai, setFilterTrangThai] = useState('');
-  const [searchText, setSearchText] = useState('');
+
 
   // Phòng ban filter
   const [departments, setDepartments] = useState<DepartmentDto[]>([]);
