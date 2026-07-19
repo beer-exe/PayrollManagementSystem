@@ -85,10 +85,6 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
     }
   };
 
-  const handleUpdateLoaiNgay = async (id: string, newLoaiNgay: string) => {
-    // Kept for backward compatibility if needed, but not used directly in table anymore.
-  };
-
   return (
     <div className="ws-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose(hasChanges)}>
       <div className="ws-modal">
