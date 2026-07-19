@@ -22,6 +22,12 @@ namespace PayrollManagementSystem.Application.Features.Departments.Commands.Tran
             if (nhanVien == null)
                 throw new ApiException($"Không tìm thấy nhân viên với CCCD '{request.Cccd}'.");
 
+            var quyetDinhHienTai = await _context.QuyetDinhNhanSus
+                .Where(qd => qd.Cccd == request.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC)
+                .OrderByDescending(qd => qd.NgayHieuLuc)
+                .ThenByDescending(qd => qd.CreatedAt)
+                .FirstOrDefaultAsync(cancellationToken);
+
             var phongBanExists = await _context.PhongBans.AnyAsync(pb => pb.IdPb == request.IdPbMoi, cancellationToken);
             if (!phongBanExists)
                 throw new ApiException($"Phòng ban mới với mã '{request.IdPbMoi}' không tồn tại.");
@@ -41,6 +47,8 @@ namespace PayrollManagementSystem.Application.Features.Departments.Commands.Tran
                 SoQuyetDinh = request.SoQuyetDinh,
                 Cccd = request.Cccd,
                 LoaiQuyetDinh = "Điều chuyển công tác",
+                IdChucVuCu = quyetDinhHienTai?.IdChucVuMoi,
+                IdBacLuongCu = quyetDinhHienTai?.IdBacLuongMoi,
                 IdChucVuMoi = request.IdChucVuMoi,
                 IdBacLuongMoi = bacLuongMoi.IdBacLuong,
                 NgayHieuLuc = request.NgayHieuLuc,
@@ -49,6 +57,13 @@ namespace PayrollManagementSystem.Application.Features.Departments.Commands.Tran
             };
 
             _context.QuyetDinhNhanSus.Add(quyetDinh);
+
+            if (quyetDinhHienTai != null && request.NgayHieuLuc <= DateOnly.FromDateTime(DateTime.Today))
+            {
+                quyetDinhHienTai.TrangThai = TrangThaiQuyetDinh.HET_HAN;
+                quyetDinhHienTai.NgayHetHan = request.NgayHieuLuc;
+                _context.QuyetDinhNhanSus.Update(quyetDinhHienTai);
+            }
 
             await _context.SaveChangesAsync(cancellationToken);
 

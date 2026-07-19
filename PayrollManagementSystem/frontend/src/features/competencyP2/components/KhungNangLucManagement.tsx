@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useKhungNangLuc } from '../hooks/useKhungNangLuc';
 import { positionApi } from '@/features/positions/api/positionApi';
 import { PositionDto } from '@/features/positions/types/position.types';
+import { useDataTable } from '../../../hooks/useDataTable';
+import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import './CompetencyManagement.css';
 
 // Array of vibrant colors for the donut chart slices
 const CHART_COLORS = [
-  '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
+  '#3b82f6', '#10b981', '#f59e0b', 'var(--danger-text)', '#8b5cf6',
   '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1'
 ];
 
@@ -31,12 +35,45 @@ export const KhungNangLucManagement: React.FC = () => {
   const [criteriaList, setCriteriaList] = useState<CriteriaFormItem[]>([]);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
-  const totalItems = data.length;
-  const totalPages = Math.ceil(totalItems / pageSize);
-  const currentData = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  // Custom Dropdown State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const {
+    currentData,
+    allFilteredAndSortedData,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    sortKey,
+    sortDirection,
+    handleSort,
+    searchTerm: dtSearchTerm,
+    setSearchTerm: setDtSearchTerm
+  } = useDataTable<any>({
+    data: data,
+    initialPageSize: 10,
+    searchableFields: ['tenNangLuc', 'moTa']
+  });
+
+  const handleExportExcel = () => {
+    const columns: ExportColumn<any>[] = [
+      { header: 'Tên năng lực', key: 'tenNangLuc' },
+      { header: 'Mô tả', key: 'moTa' },
+      { header: 'Tỷ trọng', key: 'tyTrong' },
+    ];
+    exportToExcel(allFilteredAndSortedData, columns, 'KhungNangLuc');
+  };
+
+  const handleExportPdf = () => {
+    const columns: ExportColumn<any>[] = [
+      { header: 'Tên năng lực', key: 'tenNangLuc' },
+      { header: 'Mô tả', key: 'moTa' },
+      { header: 'Tỷ trọng', key: 'tyTrong' },
+    ];
+    exportToPdf(allFilteredAndSortedData, columns, 'KhungNangLuc', 'Danh sách Tiêu chí năng lực');
+  };
 
   const totalWeightPercent = criteriaList.reduce((sum: number, item) => sum + (Number(item.tyTrong) || 0), 0);
   const isOverweight = totalWeightPercent > 100;
@@ -59,6 +96,9 @@ export const KhungNangLucManagement: React.FC = () => {
       if (activeDropdown && !(e.target as Element).closest('.cp2-actions')) {
         setActiveDropdown(null);
       }
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -70,6 +110,16 @@ export const KhungNangLucManagement: React.FC = () => {
       setCurrentPage(1);
     }
   }, [selectedChucVu, fetchByChucVu]);
+
+  const filteredPositions = positions.filter(p => 
+    p.tenChucVu.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleSelectPosition = (p: PositionDto) => {
+    setSelectedChucVu(p.idChucVu);
+    setSearchTerm(p.tenChucVu);
+    setIsDropdownOpen(false);
+  };
 
   const handleOpenConfig = () => {
     // Map existing data to form state, converting tyTrong from 0-1 to 0-100
@@ -136,9 +186,9 @@ export const KhungNangLucManagement: React.FC = () => {
       const updatePromises = criteriaList
         .filter(c => c.idTieuChi)
         .map(c => updateCriteria(c.idTieuChi!, {
-          idTieuChi: c.idTieuChi,
+          idTieuChi: c.idTieuChi!,
           tenNangLuc: c.tenNangLuc,
-          moTa: c.moTa || null,
+          moTa: c.moTa || undefined,
           tyTrong: Number(c.tyTrong) / 100
         }));
 
@@ -148,7 +198,7 @@ export const KhungNangLucManagement: React.FC = () => {
         .map(c => createCriteria({
           idChucVu: selectedChucVu,
           tenNangLuc: c.tenNangLuc,
-          moTa: c.moTa || null,
+          moTa: c.moTa || undefined,
           tyTrong: Number(c.tyTrong) / 100
         }));
 
@@ -184,12 +234,12 @@ export const KhungNangLucManagement: React.FC = () => {
 
   const gradientStops = gradientResult.stops;
   if (gradientResult.cumulative < 100) {
-    gradientStops.push(`#e5e7eb ${gradientResult.cumulative}%, #e5e7eb 100%`);
+    gradientStops.push(`var(--border-color) ${gradientResult.cumulative}%, var(--border-color) 100%`);
   }
 
   const conicGradient = gradientStops.length > 0
     ? `conic-gradient(${gradientStops.join(', ')})`
-    : 'conic-gradient(#e5e7eb 0 100%)';
+    : 'conic-gradient(var(--border-color) 0 100%)';
 
   return (
     <div className="cp2-container">
@@ -213,17 +263,56 @@ export const KhungNangLucManagement: React.FC = () => {
       <div className="cp2-controls-wrapper">
         <div className="cp2-filters" style={{ borderBottom: 'none' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', width: '100%', maxWidth: '400px' }}>
-            <span style={{ fontWeight: 600, color: '#374151', whiteSpace: 'nowrap' }}>Chọn Chức vụ:</span>
-            <select
-              value={selectedChucVu}
-              onChange={(e) => setSelectedChucVu(e.target.value)}
-              className="cp2-select"
-            >
-              <option value="">-- Chọn chức vụ cần cấu hình --</option>
-              {positions.map(p => (
-                <option key={p.idChucVu} value={p.idChucVu}>{p.tenChucVu}</option>
-              ))}
-            </select>
+            <span style={{ fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>Chọn Chức vụ:</span>
+            <div className="cp2-dropdown-select-wrap" ref={dropdownRef} style={{ flex: 1 }}>
+              <input
+                className="cp2-select"
+                placeholder="-- Chọn chức vụ cần cấu hình --"
+                value={searchTerm}
+                onChange={e => {
+                  setSearchTerm(e.target.value);
+                  setSelectedChucVu('');
+                  setIsDropdownOpen(true);
+                }}
+                onFocus={() => {
+                  setSearchTerm('');
+                  setSelectedChucVu('');
+                  setIsDropdownOpen(true);
+                }}
+                autoComplete="off"
+              />
+              {isDropdownOpen && (
+                <ul className="cp2-dropdown-select-list custom-scrollbar">
+                  {filteredPositions.length > 0 ? (
+                    filteredPositions.map(p => (
+                      <li
+                        key={p.idChucVu}
+                        className={selectedChucVu === p.idChucVu ? 'selected' : ''}
+                        onClick={() => handleSelectPosition(p)}
+                      >
+                        {p.tenChucVu}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="cp2-empty-option">Không tìm thấy chức vụ</li>
+                  )}
+                </ul>
+              )}
+            </div>
+          </div>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: '1rem', alignItems: 'center' }}>
+            <div className="cp2-input-wrapper" style={{ position: 'relative', width: '250px' }}>
+              <input
+                type="text"
+                placeholder="Tìm tiêu chí..."
+                value={dtSearchTerm}
+                onChange={(e) => setDtSearchTerm(e.target.value)}
+                className="cp2-select"
+                style={{ width: '100%', paddingLeft: '0.75rem' }}
+                disabled={!selectedChucVu}
+              />
+            </div>
+            <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
           </div>
         </div>
 
@@ -233,7 +322,7 @@ export const KhungNangLucManagement: React.FC = () => {
           </div>
         ) : (
           <>
-            <div className="cp2-table-container custom-scrollbar" style={{ borderTop: '1px solid #f3f4f6' }}>
+            <div className="cp2-table-container custom-scrollbar" style={{ borderTop: '1px solid var(--border-color)' }}>
               {loading ? (
                 <div className="cp2-loader">
                   <div className="cp2-spinner"></div>
@@ -242,16 +331,16 @@ export const KhungNangLucManagement: React.FC = () => {
                 <table className="cp2-table">
                   <thead>
                     <tr>
-                      <th style={{ width: '35%' }}>Tên năng lực</th>
+                      <SortableHeader label="Tên năng lực" sortKey="tenNangLuc" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ width: '35%' }} />
                       <th style={{ width: '40%' }}>Mô tả</th>
-                      <th style={{ textAlign: 'center', width: '15%' }}>Tỷ trọng</th>
+                      <SortableHeader label="Tỷ trọng" sortKey="tyTrong" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center', width: '15%' }} />
                       <th style={{ textAlign: 'right', width: '10%' }}>Hành động</th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentData.map(record => (
                       <tr key={record.idTieuChi}>
-                        <td style={{ fontWeight: 600, color: '#111827' }}>{record.tenNangLuc}</td>
+                        <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{record.tenNangLuc}</td>
                         <td>{record.moTa || '-'}</td>
                         <td style={{ textAlign: 'center' }}>
                           <span className="cp2-badge cp2-badge-blue">
@@ -386,7 +475,7 @@ export const KhungNangLucManagement: React.FC = () => {
                                 style={{ paddingRight: '1.5rem' }}
                                 required
                               />
-                              <span style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}>%</span>
+                              <span style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>%</span>
                             </div>
                           </div>
                         </div>
@@ -426,11 +515,11 @@ export const KhungNangLucManagement: React.FC = () => {
 
               {/* Right side: Donut Chart & Stats */}
               <div className="cp2-chart-container" style={{ width: '280px', flexShrink: 0 }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#374151', marginBottom: '1.5rem' }}>Phân Bổ Tỷ Trọng</h3>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '1.5rem' }}>Phân Bổ Tỷ Trọng</h3>
 
                 <div className="cp2-donut-chart" style={{ background: conicGradient }}>
                   <div className="cp2-donut-hole">
-                    <span className="cp2-donut-value" style={{ color: isOverweight ? '#ef4444' : '#111827' }}>
+                    <span className="cp2-donut-value" style={{ color: isOverweight ? 'var(--danger-text)' : 'var(--text-primary)' }}>
                       {totalWeightPercent.toFixed(1)}%
                     </span>
                     <span className="cp2-donut-label">Tổng cộng</span>
@@ -439,17 +528,17 @@ export const KhungNangLucManagement: React.FC = () => {
 
                 <div style={{ marginTop: '2rem', width: '100%' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
-                    <span style={{ color: '#6b7280' }}>Đã phân bổ:</span>
-                    <span style={{ fontWeight: 600, color: isOverweight ? '#ef4444' : '#111827' }}>{totalWeightPercent.toFixed(1)}%</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Đã phân bổ:</span>
+                    <span style={{ fontWeight: 600, color: isOverweight ? 'var(--danger-text)' : 'var(--text-primary)' }}>{totalWeightPercent.toFixed(1)}%</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                    <span style={{ color: '#6b7280' }}>Còn lại:</span>
-                    <span style={{ fontWeight: 600, color: '#111827' }}>{Math.max(0, 100 - totalWeightPercent).toFixed(1)}%</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Còn lại:</span>
+                    <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{Math.max(0, 100 - totalWeightPercent).toFixed(1)}%</span>
                   </div>
                 </div>
 
                 {isOverweight && (
-                  <div style={{ marginTop: '1rem', padding: '0.75rem', background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', fontSize: '0.875rem', borderRadius: '8px', textAlign: 'center' }}>
+                  <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'var(--danger-bg)', border: '1px solid var(--danger-bg)', color: 'var(--danger-text)', fontSize: '0.875rem', borderRadius: '8px', textAlign: 'center' }}>
                     Tổng tỷ trọng đang vượt quá 100%. Vui lòng điều chỉnh lại.
                   </div>
                 )}

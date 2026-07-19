@@ -54,5 +54,6 @@ namespace PayrollManagementSystem.Application.Features.Profile.DTOs
         public string? TenChucVuMoi { get; set; }
         public decimal? LuongP1Moi { get; set; }
         public string TrangThai { get; set; } = null!;
+        public string? TenTrangThai => Enum.TryParse<TrangThaiQuyetDinh>(TrangThai, out var e) ? e.GetDescription() : TrangThai;
     }
 }

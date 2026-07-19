@@ -47,12 +47,12 @@ export const UpdateRoleModal: React.FC<Props> = ({ user, isOpen, onClose, onSubm
         </div>
 
         <div className="usr-modal-body">
-          <div style={{ padding: '1rem', marginBottom: '1.5rem', borderRadius: '8px', backgroundColor: '#f9fafb', border: '1px solid #f3f4f6' }}>
-            <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: '0 0 0.25rem 0' }}>
+          <div style={{ padding: '1rem', marginBottom: '1.5rem', borderRadius: '8px', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)' }}>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: '0 0 0.25rem 0' }}>
               Tài khoản đang thao tác:
             </p>
-            <p style={{ fontSize: '1rem', fontWeight: 700, color: '#111827', margin: 0 }}>
-              {user?.tenTaiKhoan} <span style={{ fontWeight: 400, fontSize: '0.875rem', color: '#6b7280' }}>({user?.hoTen})</span>
+            <p style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+              {user?.tenTaiKhoan} <span style={{ fontWeight: 400, fontSize: '0.875rem', color: 'var(--text-secondary)' }}>({user?.hoTen})</span>
             </p>
           </div>
           

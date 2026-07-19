@@ -1,31 +1,66 @@
 import React from 'react';
 import { UserProfileDetail } from '@/types/profile.types';
+import { useDataTable } from '../../../hooks/useDataTable';
+import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 
 interface EmpTableProps {
   data: UserProfileDetail[];
   visibleColumns: string[];
   isLoading: boolean;
-  isExporting?: boolean;
-  searchTerm: string;
-  onSearchChange: (value: string) => void;
-  pageNumber: number;
-  totalRecords: number;
-  pageSize: number;
-  onPageChange: (newPage: number) => void;
   onOpenSettings: () => void;
   onRowClick: (record: UserProfileDetail) => void;
   onStatusClick: (record: UserProfileDetail) => void;
   onEditClick: (record: UserProfileDetail) => void;
-  onExportExcel: () => void;
 }
 
 export const EmpTable: React.FC<EmpTableProps> = ({ 
-  data, visibleColumns, isLoading, isExporting, searchTerm, onSearchChange, 
-  pageNumber, totalRecords, pageSize, 
-  onPageChange, onOpenSettings, onRowClick, onStatusClick, onEditClick, onExportExcel 
+  data, visibleColumns, isLoading,
+  onOpenSettings, onRowClick, onStatusClick, onEditClick 
 }) => {
   const isVisible = (key: string) => visibleColumns.includes(key);
-  const totalPages = Math.ceil(totalRecords / pageSize) || 1;
+
+  const {
+    currentData,
+    allFilteredAndSortedData,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    sortKey,
+    sortDirection,
+    handleSort,
+    searchTerm,
+    setSearchTerm
+  } = useDataTable<UserProfileDetail>({
+    data: data,
+    initialPageSize: 10,
+    searchableFields: ['cccd', 'hoTen', 'email']
+  });
+
+  const handleExportExcel = () => {
+    const columns: ExportColumn<UserProfileDetail>[] = [
+      { header: 'Mã NV', key: 'cccd' },
+      { header: 'Họ Tên', key: 'hoTen' },
+      { header: 'Chức vụ', key: 'tenChucVu' },
+      { header: 'Phòng ban', key: 'tenPhongBan' },
+      { header: 'Ngày vào làm', key: 'ngayVaoLam' },
+      { header: 'Trạng thái', key: 'tenTrangThai' },
+    ];
+    exportToExcel(allFilteredAndSortedData, columns, 'DanhSachNhanVien');
+  };
+
+  const handleExportPdf = () => {
+    const columns: ExportColumn<UserProfileDetail>[] = [
+      { header: 'Mã NV', key: 'cccd' },
+      { header: 'Họ Tên', key: 'hoTen' },
+      { header: 'Chức vụ', key: 'tenChucVu' },
+      { header: 'Phòng ban', key: 'tenPhongBan' },
+      { header: 'Ngày vào làm', key: 'ngayVaoLam' },
+      { header: 'Trạng thái', key: 'tenTrangThai' },
+    ];
+    exportToPdf(allFilteredAndSortedData, columns, 'DanhSachNhanVien', 'Danh sách Nhân viên');
+  };
 
   const getInitials = (name: string) => {
     if (!name) return 'U';
@@ -46,27 +81,12 @@ export const EmpTable: React.FC<EmpTableProps> = ({
             placeholder="Tìm kiếm theo CCCD, họ tên..." 
             className="emp-search-input" 
             value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         
         <div className="emp-toolbar-actions">
-          <button 
-            onClick={onExportExcel} 
-            disabled={isExporting}
-            className="emp-btn-outline"
-          >
-            {isExporting ? (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.2rem', height: '1.2rem', color: '#10b981', animation: 'spin 1s linear infinite' }}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.2rem', height: '1.2rem', color: '#10b981' }}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-              </svg>
-            )}
-            {isExporting ? 'Đang xuất...' : 'Xuất Excel'}
-          </button>
+          <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
           <button onClick={onOpenSettings} className="emp-btn-icon" title="Tùy chỉnh hiển thị cột">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 4.5v15m6-15v15m-10.5-6h15m-15-6h15m-3-4.5h3.75c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125H3.75c-.621 0-1.125-.504-1.125-1.125V5.625c0-.621.504-1.125 1.125-1.125H6.75Z" />
@@ -85,17 +105,17 @@ export const EmpTable: React.FC<EmpTableProps> = ({
         <table className="emp-table" aria-label="Danh sách nhân viên">
           <thead>
             <tr>
-              {isVisible('cccd') && <th>Mã NV (CCCD)</th>}
-              {isVisible('hoTen') && <th>Họ tên</th>}
-              {isVisible('tenChucVu') && <th>Chức vụ</th>}
-              {isVisible('tenPhongBan') && <th>Phòng ban</th>}
-              {isVisible('ngayVaoLam') && <th>Ngày vào làm</th>}
-              {isVisible('trangThai') && <th>Trạng thái</th>}
+              {isVisible('cccd') && <SortableHeader label="Mã NV (CCCD)" sortKey="cccd" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />}
+              {isVisible('hoTen') && <SortableHeader label="Họ tên" sortKey="hoTen" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />}
+              {isVisible('tenChucVu') && <SortableHeader label="Chức vụ" sortKey="tenChucVu" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />}
+              {isVisible('tenPhongBan') && <SortableHeader label="Phòng ban" sortKey="tenPhongBan" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />}
+              {isVisible('ngayVaoLam') && <SortableHeader label="Ngày vào làm" sortKey="ngayVaoLam" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />}
+              {isVisible('trangThai') && <SortableHeader label="Trạng thái" sortKey="tenTrangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />}
               <th style={{ textAlign: 'right' }}>Hành động</th>
             </tr>
           </thead>
           <tbody>
-            {data.length === 0 && !isLoading ? (
+            {currentData.length === 0 && !isLoading ? (
               <tr>
                 <td colSpan={7} style={{ padding: 0 }}>
                   <div className="emp-empty">
@@ -107,7 +127,7 @@ export const EmpTable: React.FC<EmpTableProps> = ({
                 </td>
               </tr>
             ) : (
-              data.map((row) => (
+              currentData.map((row) => (
                 <tr key={row.cccd} onClick={() => onRowClick(row)} className="emp-tr">
                   {isVisible('cccd') && <td className="emp-td-mono">{row.cccd}</td>}
                   {isVisible('hoTen') && (
@@ -150,30 +170,32 @@ export const EmpTable: React.FC<EmpTableProps> = ({
         </table>
       </div>
 
-      <div className="emp-pagination-bar">
-        <div className="emp-pagination-total">
-          Tổng số <strong>{totalRecords}</strong> nhân viên
+      {totalPages > 0 && (
+        <div className="emp-pagination-bar">
+          <div className="emp-pagination-total">
+            Tổng số <strong>{allFilteredAndSortedData.length}</strong> nhân viên
+          </div>
+          <div className="emp-pagination-controls">
+            <button 
+              disabled={currentPage === 1 || isLoading} 
+              onClick={() => setCurrentPage(currentPage - 1)} 
+              className="emp-btn-page"
+            >
+              Trước
+            </button>
+            <span className="emp-page-info">
+              Trang <strong>{currentPage}</strong> / {totalPages}
+            </span>
+            <button 
+              disabled={currentPage >= totalPages || isLoading} 
+              onClick={() => setCurrentPage(currentPage + 1)} 
+              className="emp-btn-page"
+            >
+              Sau
+            </button>
+          </div>
         </div>
-        <div className="emp-pagination-controls">
-          <button 
-            disabled={pageNumber === 1 || isLoading} 
-            onClick={() => onPageChange(pageNumber - 1)} 
-            className="emp-btn-page"
-          >
-            Trước
-          </button>
-          <span className="emp-page-info">
-            Trang <strong>{pageNumber}</strong> / {totalPages}
-          </span>
-          <button 
-            disabled={pageNumber >= totalPages || isLoading} 
-            onClick={() => onPageChange(pageNumber + 1)} 
-            className="emp-btn-page"
-          >
-            Sau
-          </button>
-        </div>
-      </div>
+      )}
 
     </div>
   );

@@ -10,6 +10,8 @@ namespace PayrollManagementSystem.Domain.Models
         public string LoaiQuyetDinh { get; set; } = null!;
         public string? IdBacLuongMoi { get; set; }
         public string? IdChucVuMoi { get; set; }
+        public string? IdBacLuongCu { get; set; }
+        public string? IdChucVuCu { get; set; }
         public DateOnly NgayHieuLuc { get; set; }
         public DateOnly? NgayHetHan { get; set; }
         public string? NguoiKy { get; set; }
@@ -18,5 +20,6 @@ namespace PayrollManagementSystem.Domain.Models
         // Navigation properties
         public NhanVien? NhanVien { get; set; }
         public BacLuong? BacLuong { get; set; }
+        public ChucVu? ChucVuMoi { get; set; }
     }
 }

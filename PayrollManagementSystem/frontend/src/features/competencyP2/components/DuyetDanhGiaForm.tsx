@@ -89,7 +89,7 @@ export const DuyetDanhGiaForm: React.FC = () => {
       });
 
       if (success) {
-        navigate('/dashboard/danh-gia/duyet-danh-gia');
+        navigate('/performance/duyet-danh-gia');
       }
     } catch (e) {
       console.error(e);
@@ -108,7 +108,7 @@ export const DuyetDanhGiaForm: React.FC = () => {
   }
 
   const isEditable = detail.canEvaluate && detail.trangThai === 'CHO_QL_DANH_GIA';
-  const isCompleted = detail.trangThai === 'DA_HOAN_THANH';
+
 
   // Tính điểm Nhân viên
   const empScore = detail.chiTietDanhGias.reduce((sum, item) => sum + (item.diemTuDanhGia || 0) * item.tyTrong, 0);
@@ -137,12 +137,12 @@ export const DuyetDanhGiaForm: React.FC = () => {
     <div className="cp2-container">
       <div className="cp2-controls-wrapper" style={{ flex: 'none', height: '100%', display: 'flex', flexDirection: 'column' }}>
         
-        <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid #f3f4f6' }}>
+        <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid var(--border-color)' }}>
           <div className="cp2-header-title">
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <button 
                 className="cp2-btn-actions" 
-                onClick={() => navigate('/dashboard/danh-gia/duyet-danh-gia')}
+                onClick={() => navigate('/performance/duyet-danh-gia')}
                 style={{ padding: '0.25rem' }}
                 title="Quay lại"
               >
@@ -161,28 +161,28 @@ export const DuyetDanhGiaForm: React.FC = () => {
           <div style={{ 
             marginBottom: '1.5rem', 
             padding: '1rem 1.5rem', 
-            backgroundColor: '#fff', 
-            border: '1px solid #e5e7eb', 
+            backgroundColor: 'var(--bg-surface)', 
+            border: '1px solid var(--border-color)', 
             borderRadius: '8px',
             display: 'flex',
             gap: '2rem',
             flexWrap: 'wrap'
           }}>
             <div>
-              <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>Kỳ đánh giá:</span>
-              <div style={{ fontWeight: 600, color: '#111827' }}>{detail.tenKyDanhGia}</div>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Kỳ đánh giá:</span>
+              <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{detail.tenKyDanhGia}</div>
             </div>
             <div>
-              <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>CCCD Nhân viên:</span>
-              <div style={{ fontWeight: 600, color: '#111827' }}>{detail.cccdNhanVien}</div>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>CCCD Nhân viên:</span>
+              <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{detail.cccdNhanVien}</div>
             </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
             
             {/* Nhân viên Tự đánh giá */}
-            <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1.25rem' }}>
-              <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', color: '#334155', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '1.25rem' }}>
+              <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                 </svg>
@@ -190,23 +190,23 @@ export const DuyetDanhGiaForm: React.FC = () => {
               </h3>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
-                  <span style={{ color: '#64748b', fontSize: '0.875rem', display: 'block' }}>Tổng điểm</span>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', display: 'block' }}>Tổng điểm</span>
                   <strong style={{ fontSize: '1.25rem' }}>{empScore.toFixed(2)}</strong>
                 </div>
                 <div>
-                  <span style={{ color: '#64748b', fontSize: '0.875rem', display: 'block' }}>Hệ số P2</span>
-                  <strong style={{ fontSize: '1.25rem', color: '#059669' }}>{empResult.heSo}</strong>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', display: 'block' }}>Hệ số P2</span>
+                  <strong style={{ fontSize: '1.25rem', color: 'var(--success-text)' }}>{empResult.heSo}</strong>
                 </div>
                 <div>
-                  <span style={{ color: '#64748b', fontSize: '0.875rem', display: 'block' }}>Xếp loại</span>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', display: 'block' }}>Xếp loại</span>
                   <span className="cp2-badge cp2-badge-blue">{empResult.xepLoai}</span>
                 </div>
               </div>
             </div>
 
             {/* Quản lý Đánh giá */}
-            <div style={{ backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', padding: '1.25rem' }}>
-              <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', color: '#1e3a8a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ backgroundColor: 'var(--primary-light)', border: '1px solid var(--primary-light)', borderRadius: '8px', padding: '1.25rem' }}>
+              <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -214,15 +214,15 @@ export const DuyetDanhGiaForm: React.FC = () => {
               </h3>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
-                  <span style={{ color: '#64748b', fontSize: '0.875rem', display: 'block' }}>Tổng điểm</span>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', display: 'block' }}>Tổng điểm</span>
                   <strong style={{ fontSize: '1.25rem' }}>{mgrScore.toFixed(2)}</strong>
                 </div>
                 <div>
-                  <span style={{ color: '#64748b', fontSize: '0.875rem', display: 'block' }}>Hệ số P2</span>
-                  <strong style={{ fontSize: '1.25rem', color: '#2563eb' }}>{mgrResult.heSo}</strong>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', display: 'block' }}>Hệ số P2</span>
+                  <strong style={{ fontSize: '1.25rem', color: 'var(--primary)' }}>{mgrResult.heSo}</strong>
                 </div>
                 <div>
-                  <span style={{ color: '#64748b', fontSize: '0.875rem', display: 'block' }}>Xếp loại</span>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', display: 'block' }}>Xếp loại</span>
                   <span className="cp2-badge cp2-badge-blue">{mgrResult.xepLoai}</span>
                 </div>
               </div>
@@ -230,7 +230,7 @@ export const DuyetDanhGiaForm: React.FC = () => {
 
           </div>
 
-          <table className="cp2-table" style={{ border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '1.5rem' }}>
+          <table className="cp2-table" style={{ border: '1px solid var(--border-color)', borderRadius: '8px', marginBottom: '1.5rem' }}>
             <thead>
               <tr>
                 <th style={{ width: '25%' }}>Tiêu chí Năng lực</th>
@@ -243,24 +243,24 @@ export const DuyetDanhGiaForm: React.FC = () => {
               {detail.chiTietDanhGias.map((c) => (
                 <tr key={c.idChiTiet}>
                   <td>
-                    <div style={{ fontWeight: 600, color: '#111827' }}>{c.tenNangLuc}</div>
-                    <div style={{ color: '#6b7280', fontSize: '0.75rem', marginTop: '0.25rem' }}>Trọng số: {c.tyTrong}</div>
+                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{c.tenNangLuc}</div>
+                    <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: '0.25rem' }}>Trọng số: {c.tyTrong}</div>
                   </td>
                   <td style={{ fontSize: '0.85rem' }}>{c.yeuCauToiThieu || '-'}</td>
                   
                   <td>
-                    <div style={{ backgroundColor: '#f9fafb', padding: '0.75rem', borderRadius: '6px', border: '1px solid #f3f4f6' }}>
-                      <div style={{ fontWeight: 600, color: '#2563eb', marginBottom: '0.25rem' }}>Điểm: {c.diemTuDanhGia ?? '-'}</div>
+                    <div style={{ backgroundColor: 'var(--bg-hover)', padding: '0.75rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+                      <div style={{ fontWeight: 600, color: 'var(--primary)', marginBottom: '0.25rem' }}>Điểm: {c.diemTuDanhGia ?? '-'}</div>
                       <div style={{ fontSize: '0.85rem' }}>
-                        {c.nhanXetNhanVien || <span style={{ fontStyle: 'italic', color: '#9ca3af' }}>Không có nhận xét</span>}
+                        {c.nhanXetNhanVien || <span style={{ fontStyle: 'italic', color: 'var(--text-muted)' }}>Không có nhận xét</span>}
                       </div>
                     </div>
                   </td>
 
                   <td>
-                    <div style={{ backgroundColor: '#eff6ff', padding: '0.75rem', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
+                    <div style={{ backgroundColor: 'var(--primary-light)', padding: '0.75rem', borderRadius: '6px', border: '1px solid var(--primary-light)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                        <span style={{ fontWeight: 600, fontSize: '0.85rem', color: '#1e3a8a' }}>Điểm:</span>
+                        <span style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--primary)' }}>Điểm:</span>
                         <input
                           type="number"
                           min="0"
@@ -288,8 +288,8 @@ export const DuyetDanhGiaForm: React.FC = () => {
             </tbody>
           </table>
 
-          <div style={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1.25rem' }}>
-            <label style={{ display: 'block', fontWeight: 600, fontSize: '1.1rem', marginBottom: '0.75rem', color: '#111827' }}>
+          <div style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '1.25rem' }}>
+            <label style={{ display: 'block', fontWeight: 600, fontSize: '1.1rem', marginBottom: '0.75rem', color: 'var(--text-primary)' }}>
               Nhận xét chung của Quản lý
             </label>
             <textarea
@@ -306,16 +306,16 @@ export const DuyetDanhGiaForm: React.FC = () => {
 
         <div style={{ 
           padding: '1.5rem', 
-          borderTop: '1px solid #f3f4f6', 
+          borderTop: '1px solid var(--border-color)', 
           display: 'flex', 
           justifyContent: 'flex-end', 
           gap: '1rem',
-          backgroundColor: '#fff',
+          backgroundColor: 'var(--bg-surface)',
           marginTop: 'auto'
         }}>
           <button 
             className="cp2-btn cp2-btn-secondary" 
-            onClick={() => navigate('/dashboard/danh-gia/duyet-danh-gia')} 
+            onClick={() => navigate('/performance/duyet-danh-gia')} 
             disabled={submitting}
           >
             Quay lại

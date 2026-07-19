@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useMucQuyDoi } from '../hooks/useMucQuyDoi';
 import { MucQuyDoiDto } from '../types/mucQuyDoi.types';
+import { useDataTable } from '../../../hooks/useDataTable';
+import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import './CompetencyManagement.css';
 
 export const MucQuyDoiManagement: React.FC = () => {
@@ -19,6 +23,43 @@ export const MucQuyDoiManagement: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+  const {
+    currentData,
+    allFilteredAndSortedData,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    sortKey,
+    sortDirection,
+    handleSort,
+    searchTerm,
+    setSearchTerm
+  } = useDataTable<any>({
+    data: data,
+    initialPageSize: 10,
+    searchableFields: ['xepLoai']
+  });
+
+  const handleExportExcel = () => {
+    const columns: ExportColumn<any>[] = [
+      { header: 'Xếp loại', key: 'xepLoai' },
+      { header: 'Điểm tối thiểu', key: 'diemToiThieu' },
+      { header: 'Điểm tối đa', key: 'diemToiDa' },
+      { header: 'Hệ số P2', key: 'heSoP2' },
+    ];
+    exportToExcel(allFilteredAndSortedData, columns, 'MucQuyDoi');
+  };
+
+  const handleExportPdf = () => {
+    const columns: ExportColumn<any>[] = [
+      { header: 'Xếp loại', key: 'xepLoai' },
+      { header: 'Điểm tối thiểu', key: 'diemToiThieu' },
+      { header: 'Điểm tối đa', key: 'diemToiDa' },
+      { header: 'Hệ số P2', key: 'heSoP2' },
+    ];
+    exportToPdf(allFilteredAndSortedData, columns, 'MucQuyDoi', 'Mức quy đổi P2');
+  };
 
   useEffect(() => {
     fetchQuyDoi();
@@ -134,6 +175,19 @@ export const MucQuyDoiManagement: React.FC = () => {
       </div>
 
       <div className="cp2-controls-wrapper">
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', borderBottom: '1px solid var(--border-color)', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="cp2-input-wrapper" style={{ flex: 1, minWidth: '250px', position: 'relative' }}>
+            <input
+              type="text"
+              placeholder="Tìm kiếm mức quy đổi..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="cp2-select"
+              style={{ width: '100%', paddingLeft: '0.75rem' }}
+            />
+          </div>
+          <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
+        </div>
         <div className="cp2-table-container custom-scrollbar">
           {loading ? (
             <div className="cp2-loader">
@@ -143,15 +197,15 @@ export const MucQuyDoiManagement: React.FC = () => {
             <table className="cp2-table">
               <thead>
                 <tr>
-                  <th>Xếp loại</th>
-                  <th style={{ textAlign: 'right' }}>Điểm tối thiểu</th>
-                  <th style={{ textAlign: 'right' }}>Điểm tối đa</th>
-                  <th style={{ textAlign: 'center' }}>Hệ số P2</th>
+                  <SortableHeader label="Xếp loại" sortKey="xepLoai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                  <SortableHeader label="Điểm tối thiểu" sortKey="diemToiThieu" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'right' }} />
+                  <SortableHeader label="Điểm tối đa" sortKey="diemToiDa" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'right' }} />
+                  <SortableHeader label="Hệ số P2" sortKey="heSoP2" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
                   <th style={{ textAlign: 'right' }}>Hành Động</th>
                 </tr>
               </thead>
               <tbody>
-                {data.map(record => {
+                {currentData.map(record => {
                   let badgeClass = "cp2-badge-gray";
                   if (record.xepLoai.includes('A')) badgeClass = "cp2-badge-success";
                   else if (record.xepLoai.includes('B')) badgeClass = "cp2-badge-blue";
@@ -168,10 +222,10 @@ export const MucQuyDoiManagement: React.FC = () => {
                       <td style={{ textAlign: 'right', fontWeight: 600 }}>
                         {record.diemToiThieu.toLocaleString('vi-VN')}
                       </td>
-                      <td style={{ textAlign: 'right', fontWeight: 600, color: '#7c3aed' }}>
+                      <td style={{ textAlign: 'right', fontWeight: 600, color: 'var(--primary)' }}>
                         {record.diemToiDa.toLocaleString('vi-VN')}
                       </td>
-                      <td style={{ textAlign: 'center', fontWeight: 700, color: '#059669' }}>
+                      <td style={{ textAlign: 'center', fontWeight: 700, color: 'var(--success-text)' }}>
                         {record.heSoP2.toLocaleString('vi-VN')}
                       </td>
                       <td>
@@ -229,6 +283,30 @@ export const MucQuyDoiManagement: React.FC = () => {
             </div>
           )}
         </div>
+        
+        {totalPages > 0 && (
+          <div className="cp2-pagination">
+            <button 
+              className="cp2-btn cp2-btn-secondary" 
+              onClick={() => setCurrentPage(p => p - 1)} 
+              disabled={currentPage === 1 || loading}
+              style={{ padding: '0.35rem 0.75rem' }}
+            >
+              Trước
+            </button>
+            <div className="cp2-pagination-info">
+              Trang <span>{currentPage}</span> / <span>{totalPages}</span>
+            </div>
+            <button 
+              className="cp2-btn cp2-btn-secondary" 
+              onClick={() => setCurrentPage(p => p + 1)} 
+              disabled={currentPage === totalPages || loading}
+              style={{ padding: '0.35rem 0.75rem' }}
+            >
+              Sau
+            </button>
+          </div>
+        )}
       </div>
 
       {isModalVisible && (

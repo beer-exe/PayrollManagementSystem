@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { usePhieuDanhGia } from '../hooks/usePhieuDanhGia';
 import { useKyDanhGia } from '../hooks/useKyDanhGia';
 import { useNavigate } from 'react-router-dom';
+import { useDataTable } from '../../../hooks/useDataTable';
+import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import './CompetencyManagement.css';
 
 export const TuDanhGia: React.FC = () => {
@@ -9,12 +13,44 @@ export const TuDanhGia: React.FC = () => {
   const { data: kyDanhGias, loading: kyLoading, fetchKyDanhGia } = useKyDanhGia();
   const navigate = useNavigate();
 
-  // Pagination for my forms
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
-  const totalItems = myForms.length;
-  const totalPages = Math.ceil(totalItems / pageSize);
-  const currentForms = myForms.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const {
+    currentData,
+    allFilteredAndSortedData,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    sortKey,
+    sortDirection,
+    handleSort,
+    searchTerm,
+    setSearchTerm
+  } = useDataTable<any>({
+    data: myForms,
+    initialPageSize: 10,
+    searchableFields: ['tenKyDanhGia', 'tenTrangThai']
+  });
+
+  const handleExportExcel = () => {
+    const columns: ExportColumn<any>[] = [
+      { header: 'Kỳ đánh giá', key: 'tenKyDanhGia' },
+      { header: 'Điểm tổng hợp', key: 'diemTongHop' },
+      { header: 'Hệ số P2', key: 'heSoP2' },
+      { header: 'Xếp loại', key: 'xepLoai' },
+      { header: 'Trạng thái', key: 'tenTrangThai' },
+    ];
+    exportToExcel(allFilteredAndSortedData, columns, 'DanhSachPhieuDanhGia');
+  };
+
+  const handleExportPdf = () => {
+    const columns: ExportColumn<any>[] = [
+      { header: 'Kỳ đánh giá', key: 'tenKyDanhGia' },
+      { header: 'Điểm tổng hợp', key: 'diemTongHop' },
+      { header: 'Hệ số P2', key: 'heSoP2' },
+      { header: 'Xếp loại', key: 'xepLoai' },
+      { header: 'Trạng thái', key: 'tenTrangThai' },
+    ];
+    exportToPdf(allFilteredAndSortedData, columns, 'DanhSachPhieuDanhGia', 'Danh sách phiếu tự đánh giá');
+  };
 
   useEffect(() => {
     fetchMyEvaluations();
@@ -36,7 +72,7 @@ export const TuDanhGia: React.FC = () => {
       
       {/* Active Periods Section */}
       <div className="cp2-controls-wrapper" style={{ flex: 'none' }}>
-        <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid #f3f4f6' }}>
+        <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid var(--border-color)' }}>
           <div className="cp2-header-title">
             <h2>Kỳ đánh giá đang mở</h2>
             <p>Danh sách các kỳ đánh giá bạn có thể tham gia</p>
@@ -60,17 +96,17 @@ export const TuDanhGia: React.FC = () => {
                     justifyContent: 'space-between', 
                     alignItems: 'center', 
                     padding: '1.25rem', 
-                    border: '1px solid #e5e7eb', 
+                    border: '1px solid var(--border-color)', 
                     borderRadius: '12px', 
-                    backgroundColor: '#fff',
+                    backgroundColor: 'var(--bg-surface)',
                     flexWrap: 'wrap',
                     gap: '1rem'
                   }}>
                     <div>
-                      <h4 style={{ margin: '0 0 0.25rem 0', fontWeight: 600, color: '#111827', fontSize: '1rem' }}>
+                      <h4 style={{ margin: '0 0 0.25rem 0', fontWeight: 600, color: 'var(--text-primary)', fontSize: '1rem' }}>
                         {ky.tenKyDanhGia}
                       </h4>
-                      <p style={{ margin: 0, color: '#6b7280', fontSize: '0.85rem' }}>
+                      <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
                         {ky.ngayBatDau} - {ky.ngayKetThuc}
                       </p>
                     </div>
@@ -96,10 +132,23 @@ export const TuDanhGia: React.FC = () => {
 
       {/* My Evaluations Section */}
       <div className="cp2-controls-wrapper">
-        <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid #f3f4f6' }}>
+        <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid var(--border-color)', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '1rem' }}>
           <div className="cp2-header-title">
             <h2>Danh sách phiếu đánh giá của tôi</h2>
             <p>Lịch sử tự đánh giá năng lực của bạn</p>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div className="cp2-input-wrapper" style={{ position: 'relative' }}>
+              <input
+                type="text"
+                placeholder="Tìm kiếm phiếu..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="cp2-select"
+                style={{ paddingLeft: '0.75rem', width: '250px' }}
+              />
+            </div>
+            <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
           </div>
         </div>
 
@@ -110,16 +159,16 @@ export const TuDanhGia: React.FC = () => {
             <table className="cp2-table">
               <thead>
                 <tr>
-                  <th>Kỳ đánh giá</th>
-                  <th style={{ textAlign: 'center' }}>Điểm tổng hợp</th>
-                  <th style={{ textAlign: 'center' }}>Hệ số P2</th>
-                  <th style={{ textAlign: 'center' }}>Xếp loại</th>
-                  <th style={{ textAlign: 'center' }}>Trạng thái</th>
+                  <SortableHeader label="Kỳ đánh giá" sortKey="tenKyDanhGia" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                  <SortableHeader label="Điểm tổng hợp" sortKey="diemTongHop" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
+                  <SortableHeader label="Hệ số P2" sortKey="heSoP2" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
+                  <SortableHeader label="Xếp loại" sortKey="xepLoai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
+                  <SortableHeader label="Trạng thái" sortKey="trangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
                   <th style={{ textAlign: 'right' }}>Hành động</th>
                 </tr>
               </thead>
               <tbody>
-                {currentForms.map(record => {
+                {currentData.map(record => {
                   let badgeClass = "cp2-badge-gray";
                   if (record.trangThai === 'CHO_NV_DANH_GIA') badgeClass = "cp2-badge-blue";
                   if (record.trangThai === 'CHO_QL_DANH_GIA') badgeClass = "cp2-badge-warning";
@@ -127,9 +176,9 @@ export const TuDanhGia: React.FC = () => {
 
                   return (
                     <tr key={record.idPhieu}>
-                      <td style={{ fontWeight: 600, color: '#111827' }}>{record.tenKyDanhGia}</td>
+                      <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{record.tenKyDanhGia}</td>
                       <td style={{ textAlign: 'center', fontWeight: 600 }}>{record.diemTongHop ?? '-'}</td>
-                      <td style={{ textAlign: 'center', fontWeight: 600, color: '#7c3aed' }}>{record.heSoP2 ?? '-'}</td>
+                      <td style={{ textAlign: 'center', fontWeight: 600, color: 'var(--primary)' }}>{record.heSoP2 ?? '-'}</td>
                       <td style={{ textAlign: 'center' }}>
                         {record.xepLoai ? (
                           <span className="cp2-badge cp2-badge-gray" style={{ fontWeight: 700 }}>
@@ -146,7 +195,7 @@ export const TuDanhGia: React.FC = () => {
                         <button 
                           className={`cp2-btn ${record.trangThai === 'CHO_NV_DANH_GIA' ? 'cp2-btn-primary' : 'cp2-btn-secondary'}`}
                           style={{ padding: '0.4rem 1rem' }}
-                          onClick={() => navigate(`/dashboard/danh-gia/tu-danh-gia/${record.idPhieu}`)}
+                          onClick={() => navigate(`/performance/tu-danh-gia/${record.idPhieu}`)}
                         >
                           {record.trangThai === 'CHO_NV_DANH_GIA' ? 'Làm phiếu' : 'Xem chi tiết'}
                         </button>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { PositionDto, CreatePositionDto, UpdatePositionDto } from '../types/position.types';
+import { PositionDto } from '../types/position.types';
 import { DepartmentDto } from '../../departments/types/department.types';
 
 interface JobGradeDto {

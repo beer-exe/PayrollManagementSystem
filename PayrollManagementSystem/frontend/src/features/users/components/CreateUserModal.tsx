@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { CreateUserCommand, RoleDto } from '../types/user.types';
+import React, { useState, useEffect, useRef } from 'react';
+import { CreateUserCommand, RoleDto, EmployeeNoAccount } from '../types/user.types';
 import { useEmployeesNoAccount } from '../hooks/useUsers';
 import './UserManagement.css';
 
@@ -10,24 +10,51 @@ interface Props {
   roles: RoleDto[];
 }
 
-export const CreateUserModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, roles }) => {
-  const initialFormState: CreateUserCommand = {
-    tenTaiKhoan: '',
-    matKhau: '',
-    idVaiTro: '',
-    cccd: ''
-  };
+const initialFormState: CreateUserCommand = {
+  tenTaiKhoan: '',
+  matKhau: '',
+  idVaiTro: '',
+  cccd: ''
+};
 
+export const CreateUserModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, roles }) => {
   const [formData, setFormData] = useState<CreateUserCommand>(initialFormState);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Custom Dropdown State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { employees, isLoading } = useEmployeesNoAccount(isOpen);
 
   useEffect(() => {
     if (!isOpen) {
       setFormData(initialFormState);
+      setSearchTerm('');
+      setIsDropdownOpen(false);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filteredEmployees = employees?.filter(emp => 
+    `${emp.hoTen} - ${emp.cccd}`.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
+
+  const handleSelectEmployee = (emp: EmployeeNoAccount) => {
+    setFormData({ ...formData, cccd: emp.cccd });
+    setSearchTerm(`${emp.hoTen} - ${emp.cccd}`);
+    setIsDropdownOpen(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,23 +86,43 @@ export const CreateUserModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, ro
           <form id="create-user-form" onSubmit={handleSubmit}>
             <div className="usr-form-group">
               <label className="usr-form-label">Nhân viên <span className="required">*</span></label>
-              <select
-                className="usr-form-select"
-                value={formData.cccd}
-                onChange={(e) => setFormData({ ...formData, cccd: e.target.value })}
-                required
-              >
-                <option value="">-- Chọn nhân viên --</option>
-                {isLoading ? (
-                  <option value="" disabled>Đang tải...</option>
-                ) : (
-                  employees?.map(emp => (
-                    <option key={emp.cccd} value={emp.cccd}>
-                      {emp.hoTen} - {emp.cccd}
-                    </option>
-                  ))
+              <div className="usr-dropdown-select-wrap" ref={dropdownRef}>
+                <input
+                  className="usr-form-select"
+                  placeholder="-- Chọn nhân viên --"
+                  value={searchTerm}
+                  onChange={e => {
+                    setSearchTerm(e.target.value);
+                    setFormData({ ...formData, cccd: '' });
+                    setIsDropdownOpen(true);
+                  }}
+                  onFocus={() => {
+                    setSearchTerm('');
+                    setFormData({ ...formData, cccd: '' });
+                    setIsDropdownOpen(true);
+                  }}
+                  autoComplete="off"
+                />
+                {isDropdownOpen && (
+                  <ul className="usr-dropdown-select-list custom-scrollbar">
+                    {isLoading ? (
+                      <li className="usr-empty-option">Đang tải...</li>
+                    ) : filteredEmployees.length > 0 ? (
+                      filteredEmployees.map(emp => (
+                        <li 
+                          key={emp.cccd}
+                          className={formData.cccd === emp.cccd ? 'selected' : ''}
+                          onClick={() => handleSelectEmployee(emp)}
+                        >
+                          {emp.hoTen} - {emp.cccd}
+                        </li>
+                      ))
+                    ) : (
+                      <li className="usr-empty-option">Không tìm thấy nhân viên</li>
+                    )}
+                  </ul>
                 )}
-              </select>
+              </div>
             </div>
 
             <div className="usr-form-group">

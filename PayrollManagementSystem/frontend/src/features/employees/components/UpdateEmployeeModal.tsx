@@ -97,7 +97,7 @@ export const UpdateEmployeeModal: React.FC<Props> = ({ isOpen, onClose, employee
                   {...register('cccd')} 
                   disabled 
                   className="emp-form-input" 
-                  style={{ background: '#f3f4f6', color: '#9ca3af', cursor: 'not-allowed', fontFamily: 'monospace' }}
+                  style={{ background: 'var(--bg-main)', color: 'var(--text-muted)', cursor: 'not-allowed', fontFamily: 'monospace' }}
                 />
               </div>
               
@@ -184,15 +184,15 @@ export const UpdateEmployeeModal: React.FC<Props> = ({ isOpen, onClose, employee
             </div>
 
             {/* Section Thân Nhân */}
-            <div style={{ marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
+            <div style={{ marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <h4 style={{ fontSize: '0.85rem', fontWeight: 600, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
                   Danh sách người phụ thuộc (Thân nhân)
                 </h4>
                 <button 
                   type="button" 
                   onClick={() => append({ maDinhDanh: null, tenTn: '', ngaySinh: null, idMqh: null })}
-                  style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #dbeafe', borderRadius: '8px', padding: '0.35rem 0.75rem', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
+                  style={{ background: 'var(--primary-light)', color: 'var(--primary)', border: '1px solid var(--primary-light)', borderRadius: '8px', padding: '0.35rem 0.75rem', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
                 >
                   + Thêm người thân
                 </button>
@@ -200,16 +200,16 @@ export const UpdateEmployeeModal: React.FC<Props> = ({ isOpen, onClose, employee
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {fields.length === 0 ? (
-                  <p style={{ fontSize: '0.85rem', color: '#6b7280', fontStyle: 'italic', textAlign: 'center', padding: '1rem', background: '#f9fafb', borderRadius: '8px', border: '1px dashed #d1d5db', margin: 0 }}>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontStyle: 'italic', textAlign: 'center', padding: '1rem', background: 'var(--bg-hover)', borderRadius: '8px', border: '1px dashed var(--border-hover)', margin: 0 }}>
                     Chưa có thông tin người phụ thuộc.
                   </p>
                 ) : (
                   fields.map((field, index) => (
-                    <div key={field.id} style={{ position: 'relative', padding: '1.25rem', background: '#f9fafb', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+                    <div key={field.id} style={{ position: 'relative', padding: '1.25rem', background: 'var(--bg-hover)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
                       <button 
                         type="button" 
                         onClick={() => remove(index)}
-                        style={{ position: 'absolute', top: '0.75rem', right: '0.75rem', background: '#fff', color: '#9ca3af', border: 'none', borderRadius: '50%', padding: '0.25rem', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
+                        style={{ position: 'absolute', top: '0.75rem', right: '0.75rem', background: 'var(--bg-surface)', color: 'var(--text-muted)', border: 'none', borderRadius: '50%', padding: '0.25rem', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}
                         title="Xóa"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ width: '1rem', height: '1rem' }}>

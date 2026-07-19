@@ -21,7 +21,7 @@ export const EmployeeDetailPanel: React.FC<Props> = ({ employee, isOpen, onClose
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '—';
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('vi-VN').format(date);
+    return new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
   };
 
   if (!isOpen) return null;

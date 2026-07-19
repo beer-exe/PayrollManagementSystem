@@ -1,18 +1,54 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePhieuDanhGia } from '../hooks/usePhieuDanhGia';
+import { useDataTable } from '../../../hooks/useDataTable';
+import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import './CompetencyManagement.css';
 
 export const DuyetDanhGia: React.FC = () => {
   const { data, loading, fetchManagerEvaluations } = usePhieuDanhGia();
   const navigate = useNavigate();
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
-  const totalItems = data.length;
-  const totalPages = Math.ceil(totalItems / pageSize);
-  const currentData = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const {
+    currentData,
+    allFilteredAndSortedData,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    sortKey,
+    sortDirection,
+    handleSort,
+    searchTerm,
+    setSearchTerm
+  } = useDataTable<any>({
+    data: data,
+    initialPageSize: 10,
+    searchableFields: ['tenKyDanhGia', 'cccdNhanVien']
+  });
+
+  const handleExportExcel = () => {
+    const columns: ExportColumn<any>[] = [
+      { header: 'Kỳ đánh giá', key: 'tenKyDanhGia' },
+      { header: 'CCCD Nhân viên', key: 'cccdNhanVien' },
+      { header: 'Trạng thái', key: 'tenTrangThai' },
+      { header: 'Điểm tổng hợp', key: 'diemTongHop' },
+      { header: 'Xếp loại', key: 'xepLoai' },
+    ];
+    exportToExcel(allFilteredAndSortedData, columns, 'DuyetDanhGia');
+  };
+
+  const handleExportPdf = () => {
+    const columns: ExportColumn<any>[] = [
+      { header: 'Kỳ đánh giá', key: 'tenKyDanhGia' },
+      { header: 'CCCD Nhân viên', key: 'cccdNhanVien' },
+      { header: 'Trạng thái', key: 'tenTrangThai' },
+      { header: 'Điểm tổng hợp', key: 'diemTongHop' },
+      { header: 'Xếp loại', key: 'xepLoai' },
+    ];
+    exportToPdf(allFilteredAndSortedData, columns, 'DuyetDanhGia', 'Danh sách duyệt đánh giá');
+  };
 
   useEffect(() => {
     fetchManagerEvaluations();
@@ -28,6 +64,19 @@ export const DuyetDanhGia: React.FC = () => {
       </div>
 
       <div className="cp2-controls-wrapper">
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', borderBottom: '1px solid var(--border-color)', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="cp2-input-wrapper" style={{ flex: 1, minWidth: '250px', position: 'relative' }}>
+            <input
+              type="text"
+              placeholder="Tìm kiếm phiếu duyệt..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="cp2-select"
+              style={{ width: '100%', paddingLeft: '0.75rem' }}
+            />
+          </div>
+          <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
+        </div>
         <div className="cp2-table-container custom-scrollbar">
           {loading ? (
             <div className="cp2-loader">
@@ -37,11 +86,11 @@ export const DuyetDanhGia: React.FC = () => {
             <table className="cp2-table">
               <thead>
                 <tr>
-                  <th>Kỳ đánh giá</th>
-                  <th>CCCD Nhân viên</th>
-                  <th style={{ textAlign: 'center' }}>Trạng thái</th>
-                  <th style={{ textAlign: 'center' }}>Điểm tổng hợp</th>
-                  <th style={{ textAlign: 'center' }}>Xếp loại</th>
+                  <SortableHeader label="Kỳ đánh giá" sortKey="tenKyDanhGia" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                  <SortableHeader label="CCCD Nhân viên" sortKey="cccdNhanVien" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                  <SortableHeader label="Trạng thái" sortKey="trangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
+                  <SortableHeader label="Điểm tổng hợp" sortKey="diemTongHop" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
+                  <SortableHeader label="Xếp loại" sortKey="xepLoai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
                   <th style={{ textAlign: 'right' }}>Hành động</th>
                 </tr>
               </thead>
@@ -53,7 +102,7 @@ export const DuyetDanhGia: React.FC = () => {
 
                   return (
                     <tr key={record.idPhieu}>
-                      <td style={{ fontWeight: 600, color: '#111827' }}>{record.tenKyDanhGia}</td>
+                      <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{record.tenKyDanhGia}</td>
                       <td>{record.cccdNhanVien}</td>
                       <td style={{ textAlign: 'center' }}>
                         <span className={`cp2-badge ${badgeClass}`}>
@@ -74,7 +123,7 @@ export const DuyetDanhGia: React.FC = () => {
                         <button 
                           className={`cp2-btn ${record.canEvaluate && record.trangThai === 'CHO_QL_DANH_GIA' ? 'cp2-btn-primary' : 'cp2-btn-secondary'}`}
                           style={{ padding: '0.4rem 1rem' }}
-                          onClick={() => navigate(`/dashboard/danh-gia/duyet-danh-gia/${record.idPhieu}`)}
+                          onClick={() => navigate(`/performance/duyet-danh-gia/${record.idPhieu}`)}
                         >
                           {record.canEvaluate && record.trangThai === 'CHO_QL_DANH_GIA' ? 'Chấm điểm' : 'Xem chi tiết'}
                         </button>
