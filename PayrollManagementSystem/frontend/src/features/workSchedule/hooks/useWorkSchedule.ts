@@ -84,5 +84,5 @@ export const useChiTietLich = () => {
     }
   }, []);
 
-  return { chiTiets, isLoading, totalRecords, totalPages, fetch };
+  return { chiTiets, setChiTiets, isLoading, totalRecords, totalPages, fetch };
 };

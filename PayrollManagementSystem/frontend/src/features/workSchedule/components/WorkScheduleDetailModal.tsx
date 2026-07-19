@@ -5,7 +5,7 @@ import './WorkScheduleManagement.css';
 
 interface Props {
   lich: LichLamViecDto;
-  onClose: () => void;
+  onClose: (hasChanges?: boolean) => void;
 }
 
 const MONTH_NAMES = [
@@ -34,7 +34,12 @@ const formatDate = (dateStr: string) => {
 export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
   const [selectedThang, setSelectedThang] = useState(1);
   const [page, setPage] = useState(1);
-  const { chiTiets, isLoading, totalRecords, totalPages, fetch } = useChiTietLich();
+  const { chiTiets, setChiTiets, isLoading, totalRecords, totalPages, fetch } = useChiTietLich();
+
+  const [editingRow, setEditingRow] = useState<any>(null);
+  const [editLoaiNgay, setEditLoaiNgay] = useState<string>('');
+  const [hasChanges, setHasChanges] = useState(false);
+  const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
     fetch(lich.idLich, selectedThang, page);
@@ -52,9 +57,35 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
   const totalWeekend = countByType('Nghỉ cuối tuần');
   const totalHoliday = countByType('Nghỉ lễ');
 
+  const showToast = (type: 'success' | 'error', text: string) => {
+    setToastMsg({ type, text });
+    setTimeout(() => setToastMsg(null), 3000);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingRow || !editLoaiNgay) return;
+    try {
+      import('../api/workScheduleApi').then(async ({ workScheduleApi }) => {
+        await workScheduleApi.updateChiTiet(editingRow.id, editLoaiNgay);
+        setChiTiets(chiTiets.map(c => c.id === editingRow.id ? { ...c, loaiNgay: editLoaiNgay } : c));
+        setHasChanges(true);
+        setEditingRow(null);
+        showToast('success', 'Cập nhật loại ngày thành công.');
+      });
+    } catch (err: any) {
+      showToast('error', err.response?.data?.message || 'Lỗi khi cập nhật loại ngày.');
+      setEditingRow(null);
+    }
+  };
+
+  const handleUpdateLoaiNgay = async (id: string, newLoaiNgay: string) => {
+    // Kept for backward compatibility if needed, but not used directly in table anymore.
+  };
+
   return (
-    <div className="ws-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="ws-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose(hasChanges)}>
       <div className="ws-modal">
+        {toastMsg && <div className={`ws-toast ws-toast--${toastMsg.type}`}>{toastMsg.text}</div>}
         {/* Header */}
         <div className="ws-modal-header">
           <div>
@@ -63,7 +94,7 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
               Tổng: {lich.tongNgayLam} ngày làm &bull; {lich.tongNgayNghiCuoiTuan} ngày T7/CN &bull; {lich.tongNgayLe} ngày lễ
             </p>
           </div>
-          <button className="ws-modal-close" onClick={onClose} aria-label="Đóng">
+          <button className="ws-modal-close" onClick={() => onClose(hasChanges)} aria-label="Đóng">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.2rem', height: '1.2rem' }}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
             </svg>
@@ -118,12 +149,13 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
                   <th>Loại ngày</th>
                   <th>Tên ngày nghỉ</th>
                   <th style={{ textAlign: 'center' }}>Số giờ làm</th>
+                  <th style={{ textAlign: 'center', width: '5rem' }}>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
                 {chiTiets.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                    <td colSpan={7} style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
                       Không có dữ liệu
                     </td>
                   </tr>
@@ -143,6 +175,21 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
                       </td>
                       <td style={{ textAlign: 'center', fontWeight: 600, color: c.soGioLam > 0 ? 'var(--success-text)' : 'var(--text-muted)' }}>
                         {c.soGioLam > 0 ? `${c.soGioLam}h` : '0h'}
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <button 
+                          className="ws-btn-actions" 
+                          style={{ padding: '0.35rem', background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '6px', cursor: 'pointer', transition: 'all 0.2s' }}
+                          onClick={() => {
+                            setEditingRow(c);
+                            setEditLoaiNgay(c.loaiNgay);
+                          }}
+                          title="Sửa loại ngày"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1rem', height: '1rem', color: 'var(--text-secondary)' }}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                          </svg>
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -187,6 +234,55 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
           </div>
         )}
       </div>
+
+      {/* Edit Sub-Modal */}
+      {editingRow && (
+        <div className="ws-modal-overlay" style={{ zIndex: 1100, background: 'rgba(0,0,0,0.5)', animation: 'fadeIn 0.2s ease-out' }} onClick={() => setEditingRow(null)}>
+          <div className="ws-modal" style={{ width: '400px', maxWidth: '90%', animation: 'slideUp 0.3s ease-out', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+            <div className="ws-modal-header" style={{ padding: '1.25rem 1.5rem', background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+              <h3 style={{ margin: 0, color: '#fff', fontSize: '1.1rem', fontWeight: 600 }}>Chỉnh sửa ngày {formatDate(editingRow.ngay)}</h3>
+              <button 
+                onClick={() => setEditingRow(null)} 
+                style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', opacity: 0.8 }}
+                title="Đóng"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.2rem', height: '1.2rem' }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="ws-modal-body" style={{ padding: '1.5rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                Loại ngày
+              </label>
+              <select 
+                className="ws-input" 
+                style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none' }}
+                value={editLoaiNgay}
+                onChange={(e) => setEditLoaiNgay(e.target.value)}
+              >
+                <option value="Ngày làm việc">Ngày làm việc</option>
+                <option value="Nghỉ cuối tuần">Nghỉ cuối tuần</option>
+                <option value="Nghỉ lễ">Nghỉ lễ</option>
+              </select>
+            </div>
+            <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button 
+                onClick={() => setEditingRow(null)}
+                style={{ padding: '0.5rem 1rem', border: '1px solid var(--border-color)', borderRadius: '6px', background: 'var(--bg-surface)', cursor: 'pointer', fontWeight: 600, color: 'var(--text-secondary)' }}
+              >
+                Hủy
+              </button>
+              <button 
+                onClick={handleSaveEdit}
+                style={{ padding: '0.5rem 1rem', border: 'none', borderRadius: '6px', background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', cursor: 'pointer', fontWeight: 600, color: '#fff', boxShadow: '0 2px 4px rgba(124, 58, 237, 0.25)' }}
+              >
+                Lưu thay đổi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
