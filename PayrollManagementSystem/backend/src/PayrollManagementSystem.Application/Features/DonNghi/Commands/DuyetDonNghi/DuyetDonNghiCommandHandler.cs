@@ -52,6 +52,56 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DuyetDon
 
             donNghi.NgayDuyet = DateTime.Now;
 
+            // Đồng bộ dữ liệu sang Chấm công
+            var chiTietLich = await _context.ChiTietLichLamViecs
+                .Where(c => c.Ngay >= donNghi.NgayBatDau && c.Ngay <= donNghi.NgayKetThuc && c.LoaiNgay == LoaiNgay.NGAY_LAM_VIEC)
+                .OrderBy(c => c.Ngay)
+                .ToListAsync(cancellationToken);
+
+            var existingChamCongs = await _context.ChamCongs
+                .Where(c => c.CccdNhanVien == donNghi.CccdNhanVien && c.NgayChamCong >= donNghi.NgayBatDau && c.NgayChamCong <= donNghi.NgayKetThuc)
+                .ToListAsync(cancellationToken);
+
+            decimal remainingNgayNghi = donNghi.SoNgayNghi;
+            if (donNghi.LoaiNghi == LoaiNghi.NGHI_THAI_SAN)
+            {
+                remainingNgayNghi = chiTietLich.Count; // For maternity, assign all working days within the calendar range
+            }
+
+            foreach (var lich in chiTietLich)
+            {
+                if (remainingNgayNghi <= 0) break;
+
+                decimal ngayTru = Math.Min(1m, remainingNgayNghi);
+                remainingNgayNghi -= ngayTru;
+
+                var chamCong = existingChamCongs.FirstOrDefault(c => c.NgayChamCong == lich.Ngay);
+                var loaiCong = ngayTru == 1m ? LoaiNgayCong.VANG_CO_PHEP : LoaiNgayCong.NUA_CA;
+                var soGio = (1m - ngayTru) * 8m; // Default 8 hours per day
+
+                if (chamCong == null)
+                {
+                    chamCong = new Domain.Models.ChamCong
+                    {
+                        CccdNhanVien = donNghi.CccdNhanVien,
+                        NgayChamCong = lich.Ngay,
+                        LoaiNgayCong = loaiCong,
+                        SoGioLamThucTe = soGio,
+                        SoNgayCong = 1m - ngayTru,
+                        GhiChu = $"Nghỉ phép: {donNghi.LyDo}",
+                        TrangThai = TrangThaiChamCong.DA_XAC_NHAN
+                    };
+                    await _context.ChamCongs.AddAsync(chamCong, cancellationToken);
+                }
+                else
+                {
+                    chamCong.LoaiNgayCong = loaiCong;
+                    chamCong.SoGioLamThucTe = soGio;
+                    chamCong.SoNgayCong = 1m - ngayTru;
+                    chamCong.GhiChu = $"Nghỉ phép: {donNghi.LyDo}";
+                }
+            }
+
             await _context.SaveChangesAsync(cancellationToken);
             return new Response<bool>(true, "Duyệt đơn nghỉ thành công.");
         }

@@ -3,6 +3,7 @@ import { profileApi } from '@/features/profile/api/profileApi';
 import { useMyDonNghi } from '../hooks/useMyDonNghi';
 import { LOAI_NGHI_OPTIONS } from '../types/donNghi.types';
 import type { DonNghiDto } from '../types/donNghi.types';
+import { donNghiApi } from '../api/donNghiApi';
 import './MyDonNghiPortal.css';
 
 const now = new Date();
@@ -45,12 +46,21 @@ export const MyDonNghiPortal: React.FC = () => {
   const [page, setPage]                 = useState(1);
   const [showModal, setShowModal]       = useState(false);
   const [form, setForm]                 = useState<FormState>(initialForm);
-  const [formErrors, setFormErrors]     = useState<Partial<FormState>>({});
+  const [formErrors, setFormErrors]     = useState<Record<string, string>>({});
   const [toastMsg, setToastMsg]         = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [myCccd, setMyCccd]             = useState('');
   const [myName, setMyName]             = useState('');
+  const [validYears, setValidYears] = useState<number[]>([]);
 
   const { list, ngayPhep, loading, error, fetchList, fetchNgayPhep, createDonNghi, deleteDonNghi } = useMyDonNghi();
+
+  useEffect(() => {
+    import('../../workSchedule/api/workScheduleApi').then(({ workScheduleApi }) => {
+      workScheduleApi.getAll().then(res => {
+        if (res.data) setValidYears(Array.from(new Set(res.data.map((w: any) => w.nam))));
+      }).catch(console.error);
+    });
+  }, []);
 
   // Fetch my profile for CCCD / name display
   useEffect(() => {
@@ -76,26 +86,59 @@ export const MyDonNghiPortal: React.FC = () => {
   };
 
   // Auto compute soNgayNghi when dates change
-  const handleDateChange = (field: 'ngayBatDau' | 'ngayKetThuc', value: string) => {
+  const handleFormChange = async (field: 'ngayBatDau' | 'ngayKetThuc' | 'loaiNghi', value: string) => {
     const next = { ...form, [field]: value };
     if (next.ngayBatDau && next.ngayKetThuc) {
       const start = new Date(next.ngayBatDau);
       const end   = new Date(next.ngayKetThuc);
       const diffMs = end.getTime() - start.getTime();
       if (diffMs >= 0) {
-        const days = Math.round(diffMs / (1000 * 60 * 60 * 24)) + 1;
-        next.soNgayNghi = days;
+        try {
+          const res = await donNghiApi.calculateDays(next.ngayBatDau, next.ngayKetThuc, next.loaiNghi);
+          if (res.succeeded) {
+            next.soNgayNghi = res.data;
+          } else {
+             next.soNgayNghi = Math.round(diffMs / (1000 * 60 * 60 * 24)) + 1;
+          }
+        } catch {
+          next.soNgayNghi = Math.round(diffMs / (1000 * 60 * 60 * 24)) + 1;
+        }
       }
     }
     setForm(next);
   };
 
   const validateForm = (): boolean => {
-    const errs: Partial<FormState> = {};
+    const errs: Record<string, string> = {};
     if (!form.ngayBatDau) errs.ngayBatDau = 'Vui lòng chọn ngày bắt đầu.';
     if (!form.ngayKetThuc) errs.ngayKetThuc = 'Vui lòng chọn ngày kết thúc.';
     if (form.ngayBatDau && form.ngayKetThuc && form.ngayKetThuc < form.ngayBatDau)
       errs.ngayKetThuc = 'Ngày kết thúc phải >= ngày bắt đầu.';
+
+    if (form.ngayBatDau && form.ngayKetThuc) {
+      const startYear = new Date(form.ngayBatDau).getFullYear();
+      const endYear = new Date(form.ngayKetThuc).getFullYear();
+      if (startYear !== endYear) {
+        errs.ngayKetThuc = 'Ngày bắt đầu và ngày kết thúc phải cùng một năm.';
+      } else if (!validYears.includes(startYear)) {
+        errs.ngayKetThuc = `Chưa có lịch làm việc cho năm ${startYear}.`;
+      }
+    }
+
+    if (form.soNgayNghi <= 0) {
+      errs.soNgayNghi = 'Số ngày nghỉ phải lớn hơn 0.';
+    } else if (form.ngayBatDau && form.ngayKetThuc) {
+      const start = new Date(form.ngayBatDau);
+      const end = new Date(form.ngayKetThuc);
+      const diffMs = end.getTime() - start.getTime();
+      if (diffMs >= 0) {
+        const maxDays = Math.round(diffMs / (1000 * 60 * 60 * 24)) + 1;
+        if (form.soNgayNghi > maxDays) {
+          errs.soNgayNghi = `Số ngày nghỉ không được vượt quá ${maxDays} ngày.`;
+        }
+      }
+    }
+
     if (!form.lyDo.trim()) errs.lyDo = 'Vui lòng nhập lý do.';
     setFormErrors(errs);
     return Object.keys(errs).length === 0;
@@ -139,7 +182,7 @@ export const MyDonNghiPortal: React.FC = () => {
       {/* HEADER */}
       <div className="mdp-header">
         <div>
-          <h1 className="mdp-title">Đơn Xin Nghỉ Của Tôi</h1>
+          <h1 className="mdp-title">Đề xuất nghỉ phép</h1>
           <p className="mdp-subtitle">
             {myName ? `${myName} — CCCD: ${myCccd}` : 'Quản lý đơn xin nghỉ của bản thân'}
           </p>
@@ -194,8 +237,10 @@ export const MyDonNghiPortal: React.FC = () => {
         </div>
         <div className="mdp-filter-group">
           <label className="mdp-filter-label">Năm</label>
-          <select id="mdp-filter-nam" className="mdp-select" value={nam} onChange={e => setNam(+e.target.value)}>
-            {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
+          <select id="mdp-filter-nam" className="mdp-select" value={nam} onChange={e => setNam(+e.target.value)} disabled={validYears.length === 0}>
+            {validYears.length > 0 
+              ? validYears.map(y => <option key={y} value={y}>{y}</option>) 
+              : <option value={new Date().getFullYear()}>Chưa có lịch làm việc nào được tạo.</option>}
           </select>
         </div>
         <div className="mdp-filter-group">
@@ -238,7 +283,7 @@ export const MyDonNghiPortal: React.FC = () => {
                   <td className="mdp-date">{new Date(row.ngayBatDau + 'T00:00:00').toLocaleDateString('vi-VN')}</td>
                   <td className="mdp-date">{new Date(row.ngayKetThuc + 'T00:00:00').toLocaleDateString('vi-VN')}</td>
                   <td className="mdp-num">{row.soNgayNghi}</td>
-                  <td style={{ maxWidth: 200 }} title={row.lyDo}>{row.lyDo}</td>
+                  <td><div style={{ maxWidth: 200, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.lyDo}>{row.lyDo}</div></td>
                   <td>
                     <span className={TRANG_THAI_COLOR[row.trangThai] ?? 'mdp-status'}>{row.trangThai}</span>
                     {row.lyDoTuChoi && <div className="mdp-reject-note" title={row.lyDoTuChoi}>↳ {row.lyDoTuChoi}</div>}
@@ -284,7 +329,7 @@ export const MyDonNghiPortal: React.FC = () => {
                   id="mdp-form-loainghi"
                   className="mdp-select"
                   value={form.loaiNghi}
-                  onChange={e => setForm(f => ({ ...f, loaiNghi: e.target.value }))}
+                  onChange={e => handleFormChange('loaiNghi', e.target.value)}
                 >
                   {LOAI_NGHI_OPTIONS.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -300,7 +345,7 @@ export const MyDonNghiPortal: React.FC = () => {
                     type="date"
                     className="mdp-input"
                     value={form.ngayBatDau}
-                    onChange={e => handleDateChange('ngayBatDau', e.target.value)}
+                    onChange={e => handleFormChange('ngayBatDau', e.target.value)}
                   />
                   {formErrors.ngayBatDau && <span className="mdp-error-msg">{formErrors.ngayBatDau}</span>}
                 </div>
@@ -312,7 +357,7 @@ export const MyDonNghiPortal: React.FC = () => {
                     className="mdp-input"
                     value={form.ngayKetThuc}
                     min={form.ngayBatDau}
-                    onChange={e => handleDateChange('ngayKetThuc', e.target.value)}
+                    onChange={e => handleFormChange('ngayKetThuc', e.target.value)}
                   />
                   {formErrors.ngayKetThuc && <span className="mdp-error-msg">{formErrors.ngayKetThuc}</span>}
                 </div>
@@ -323,13 +368,14 @@ export const MyDonNghiPortal: React.FC = () => {
                 <input
                   id="mdp-form-songay"
                   type="number"
-                  className="mdp-input"
+                  className={`mdp-input${formErrors.soNgayNghi ? ' mdp-input--error' : ''}`}
                   min={0.5}
                   step={0.5}
                   value={form.soNgayNghi}
                   onChange={e => setForm(f => ({ ...f, soNgayNghi: +e.target.value }))}
                 />
                 <small className="mdp-hint">Tự động tính từ khoảng ngày. Có thể điều chỉnh nếu nghỉ nửa ngày.</small>
+                {formErrors.soNgayNghi && <span className="mdp-error-msg">{formErrors.soNgayNghi}</span>}
               </div>
 
               <div className="mdp-form-row">
