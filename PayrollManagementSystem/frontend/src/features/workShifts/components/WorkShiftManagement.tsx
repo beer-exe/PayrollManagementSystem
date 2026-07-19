@@ -4,6 +4,10 @@ import { CaLamViec } from "../types";
 import { Toast } from "@/components/Toast/Toast";
 import { ConfirmModal } from "@/components/ConfirmModal/ConfirmModal";
 import { ShiftModal } from "./ShiftModal";
+import { useDataTable } from '../../../hooks/useDataTable';
+import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import "./WorkShiftManagement.css";
 
 export const WorkShiftManagement: React.FC = () => {
@@ -15,6 +19,49 @@ export const WorkShiftManagement: React.FC = () => {
     const [editingShift, setEditingShift] = useState<CaLamViec | null>(null);
 
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+    const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+
+    const {
+        currentData,
+        sortKey,
+        sortDirection,
+        handleSort,
+        searchTerm,
+        setSearchTerm,
+        currentPage,
+        totalPages,
+        setCurrentPage
+    } = useDataTable<CaLamViec>({
+        data: shifts,
+        initialPageSize: 10,
+        searchableFields: ['tenCa']
+    });
+
+    const handleExportExcel = () => {
+        const columns: ExportColumn<CaLamViec>[] = [
+            { header: 'Tên ca', key: 'tenCa' },
+            { header: 'Hệ số lương', key: 'heSoLuong' },
+            { header: 'Xuyên ngày', key: 'xuyenNgay', format: (val) => val ? 'Có' : 'Không' },
+            { header: 'Trạng thái', key: 'trangThai', format: (val) => val ? 'Hoạt động' : 'Ngừng hoạt động' },
+        ];
+        exportToExcel(shifts, columns, 'DanhSachCaLamViec');
+    };
+
+    const handleExportPdf = () => {
+        const columns: ExportColumn<CaLamViec>[] = [
+            { header: 'Tên ca', key: 'tenCa' },
+            { header: 'Hệ số lương', key: 'heSoLuong' },
+            { header: 'Xuyên ngày', key: 'xuyenNgay', format: (val) => val ? 'Có' : 'Không' },
+            { header: 'Trạng thái', key: 'trangThai', format: (val) => val ? 'Hoạt động' : 'Ngừng hoạt động' },
+        ];
+        exportToPdf(shifts, columns, 'DanhSachCaLamViec', 'Danh Sách Ca Làm Việc');
+    };
+
+    useEffect(() => {
+        const handleClickOutside = () => setOpenDropdownId(null);
+        document.addEventListener("click", handleClickOutside);
+        return () => document.removeEventListener("click", handleClickOutside);
+    }, []);
 
     const loadShifts = async () => {
         setIsLoading(true);
@@ -68,12 +115,14 @@ export const WorkShiftManagement: React.FC = () => {
     };
 
     return (
-        <div className="ws-container">
-            <div className="ws-header">
-                <h2>Cấu hình Ca làm việc</h2>
-                <p>Quản lý các ca làm việc và khung giờ nghỉ của nhân viên trong công ty</p>
-                <div className="ws-header-actions">
-                    <button className="ws-btn-primary" onClick={() => handleOpenModal()}>
+        <div className="wsh-container">
+            <div className="wsh-header">
+                <div className="wsh-header-left">
+                    <h2>Cấu hình Ca làm việc</h2>
+                    <p>Quản lý các ca làm việc và khung giờ nghỉ của nhân viên trong công ty</p>
+                </div>
+                <div className="wsh-header-actions">
+                    <button className="wsh-btn-create" onClick={() => handleOpenModal()}>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                             <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
                         </svg>
@@ -82,78 +131,116 @@ export const WorkShiftManagement: React.FC = () => {
                 </div>
             </div>
 
-            <div className="ws-content">
+            <div className="wsh-filters">
+                <div className="wsh-input-wrapper">
+                    <svg className="wsh-input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>
+                    <input 
+                        type="text" 
+                        placeholder="Tìm kiếm theo tên ca..." 
+                        value={searchTerm} 
+                        onChange={(e) => setSearchTerm(e.target.value)} 
+                        className="wsh-input-search" 
+                    />
+                </div>
+                
+                <div className="wsh-filters-right">
+                    <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
+                </div>
+            </div>
+
+            <div className="wsh-content">
                 {isLoading ? (
-                    <div className="ws-loading">Đang tải dữ liệu...</div>
+                    <div className="wsh-loading">Đang tải dữ liệu...</div>
                 ) : (
-                    <div className="ws-table-wrapper">
-                        <table className="ws-table">
+                    <div className="wsh-table-wrapper">
+                        <table className="wsh-table">
                             <thead>
                                 <tr>
-                                    <th>Tên ca</th>
+                                    <SortableHeader label="Tên ca" sortKey="tenCa" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
                                     <th>Giờ làm việc</th>
-                                    <th>Xuyên ngày</th>
-                                    <th>Hệ số lương</th>
+                                    <SortableHeader label="Xuyên ngày" sortKey="xuyenNgay" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                                    <SortableHeader label="Hệ số lương" sortKey="heSoLuong" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
                                     <th>Giờ nghỉ</th>
-                                    <th>Trạng thái</th>
-                                    <th className="ws-text-center">Thao tác</th>
+                                    <SortableHeader label="Trạng thái" sortKey="trangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                                    <th className="wsh-text-center">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {shifts.length === 0 ? (
+                                {currentData.length === 0 ? (
                                     <tr>
-                                        <td colSpan={7} className="ws-empty">Không có dữ liệu</td>
+                                        <td colSpan={7} className="wsh-empty">Không có dữ liệu</td>
                                     </tr>
                                 ) : (
-                                    shifts.map(shift => (
+                                    currentData.map(shift => (
                                         <tr key={shift.id}>
-                                            <td className="ws-font-medium">{shift.tenCa}</td>
+                                            <td className="wsh-font-medium">{shift.tenCa}</td>
                                             <td>
-                                                <span className="ws-time-badge">{shift.gioBatDau.substring(0,5)}</span>
+                                                <span className="wsh-time-badge">{shift.gioBatDau.substring(0,5)}</span>
                                                 {" - "}
-                                                <span className="ws-time-badge">{shift.gioKetThuc.substring(0,5)}</span>
+                                                <span className="wsh-time-badge">{shift.gioKetThuc.substring(0,5)}</span>
                                             </td>
                                             <td>
                                                 {shift.xuyenNgay ? (
-                                                    <span className="ws-badge-success">Có</span>
+                                                    <span className="wsh-badge-success">Có</span>
                                                 ) : (
-                                                    <span className="ws-badge-secondary">Không</span>
+                                                    <span className="wsh-badge-secondary">Không</span>
                                                 )}
                                             </td>
                                             <td>{shift.heSoLuong}</td>
                                             <td>
                                                 {shift.khungGioNghis && shift.khungGioNghis.length > 0 ? (
-                                                    <ul className="ws-break-list">
+                                                    <ul className="wsh-break-list">
                                                         {shift.khungGioNghis.map((b, i) => (
                                                             <li key={i}>
                                                                 {b.tenKhoangNghi}: {b.gioBatDau.substring(0,5)} - {b.gioKetThuc.substring(0,5)}
-                                                                {b.tinhVaoGioLam && <span className="ws-small-badge">Tính giờ làm</span>}
+                                                                {b.tinhVaoGioLam && <span className="wsh-small-badge">Tính giờ làm</span>}
                                                             </li>
                                                         ))}
                                                     </ul>
                                                 ) : (
-                                                    <span className="ws-text-muted">Không có</span>
+                                                    <span className="wsh-text-muted">Không có</span>
                                                 )}
                                             </td>
                                             <td>
                                                 {shift.trangThai ? (
-                                                    <span className="ws-status-active">Hoạt động</span>
+                                                    <span className="wsh-status-active">Hoạt động</span>
                                                 ) : (
-                                                    <span className="ws-status-inactive">Ngừng HĐ</span>
+                                                    <span className="wsh-status-inactive">Ngừng HĐ</span>
                                                 )}
                                             </td>
-                                            <td>
-                                                <div className="ws-action-group">
-                                                    <button className="ws-btn-icon" title="Sửa" onClick={() => handleOpenModal(shift)}>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
+                                            <td className="wsh-td-actions" style={{ position: 'relative' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                                    <button
+                                                        className="wsh-btn-actions"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setOpenDropdownId(openDropdownId === shift.id ? null : shift.id);
+                                                        }}
+                                                        title="Thao tác"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
                                                         </svg>
                                                     </button>
-                                                    <button className="ws-btn-icon ws-text-danger" title="Xóa" onClick={() => setConfirmDeleteId(shift.id)}>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clipRule="evenodd" />
-                                                        </svg>
-                                                    </button>
+                                                    
+                                                    {openDropdownId === shift.id && (
+                                                        <div className="wsh-actions-dropdown">
+                                                            <button className="wsh-dropdown-item" onClick={() => handleOpenModal(shift)}>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style={{ width: '16px', height: '16px' }}>
+                                                                    <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
+                                                                </svg>
+                                                                Chỉnh sửa
+                                                            </button>
+                                                            <button className="wsh-dropdown-item delete" onClick={() => setConfirmDeleteId(shift.id)}>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style={{ width: '16px', height: '16px' }}>
+                                                                    <path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clipRule="evenodd" />
+                                                                </svg>
+                                                                Xóa
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
@@ -161,6 +248,30 @@ export const WorkShiftManagement: React.FC = () => {
                                 )}
                             </tbody>
                         </table>
+                    </div>
+                )}
+
+                {totalPages > 0 && !isLoading && (
+                    <div className="wsh-pagination" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem', padding: '0 1rem 1rem 1rem' }}>
+                        <button 
+                            className="wsh-btn-secondary" 
+                            onClick={() => setCurrentPage(p => p - 1)} 
+                            disabled={currentPage === 1 || isLoading}
+                            style={{ padding: '0.35rem 0.75rem', borderRadius: '4px' }}
+                        >
+                            &lt;
+                        </button>
+                        <div className="wsh-pagination-info" style={{ display: 'flex', alignItems: 'center', color: 'var(--text-secondary)' }}>
+                            Trang <span style={{fontWeight: 600, color: 'var(--text-primary)', margin: '0 4px'}}>{currentPage}</span> / <span style={{margin: '0 4px'}}>{totalPages}</span>
+                        </div>
+                        <button 
+                            className="wsh-btn-secondary" 
+                            onClick={() => setCurrentPage(p => p + 1)} 
+                            disabled={currentPage === totalPages || isLoading}
+                            style={{ padding: '0.35rem 0.75rem', borderRadius: '4px' }}
+                        >
+                            &gt;
+                        </button>
                     </div>
                 )}
             </div>

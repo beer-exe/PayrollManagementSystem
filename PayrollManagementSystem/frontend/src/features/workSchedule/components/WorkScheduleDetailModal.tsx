@@ -182,7 +182,7 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
                       <td style={{ textAlign: 'center' }}>
                         <button 
                           className="ws-btn-actions" 
-                          style={{ padding: '0.35rem', background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '6px', cursor: 'pointer', transition: 'all 0.2s' }}
+                          style={{ padding: '0.35rem', border: '1px solid var(--border-color)', borderRadius: '6px', cursor: 'pointer', transition: 'all 0.2s' }}
                           onClick={() => {
                             setEditingRow(c);
                             setEditLoaiNgay(c.loaiNgay);

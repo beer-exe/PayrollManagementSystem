@@ -475,6 +475,11 @@
 .cc-clock-num.active { color: #fff; }
 
 
+@keyframes cc-fadeInMobile {
+  from { opacity: 0; transform: translate(-50%, -45%); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
+}
+
 @media (max-width: 640px) {
   .cc-clock-popover {
     position: fixed;
@@ -482,6 +487,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10000;
+    animation: cc-fadeInMobile 0.2s ease forwards;
   }
 }
 

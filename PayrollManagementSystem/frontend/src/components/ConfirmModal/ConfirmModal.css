@@ -13,7 +13,7 @@
 }
 
 .confirm-box {
-    background: white;
+    background: var(--bg-surface);
     border-radius: 12px;
     width: 90%;
     max-width: 400px;
@@ -33,7 +33,7 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background-color: #fef2f2;
+    background-color: var(--danger-bg);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -42,18 +42,18 @@
 .confirm-icon {
     width: 24px;
     height: 24px;
-    color: #ef4444;
+    color: var(--danger-text);
 }
 
 .confirm-box h3 {
     margin: 0 0 8px 0;
     font-size: 18px;
-    color: #1e293b;
+    color: var(--text-primary);
 }
 
 .confirm-box p {
     margin: 0 0 24px 0;
-    color: #64748b;
+    color: var(--text-secondary);
     font-size: 14px;
     line-height: 1.5;
 }
@@ -75,22 +75,22 @@
 }
 
 .btn-cancel {
-    background: white;
-    border: 1px solid #cbd5e1;
-    color: #475569;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
 }
 
 .btn-cancel:hover {
-    background: #f1f5f9;
+    background: var(--bg-hover);
+    color: var(--text-primary);
 }
 
 .btn-confirm {
-    background: #ef4444;
-    border: 1px solid #ef4444;
+    background: var(--danger-text);
+    border: 1px solid var(--danger-text);
     color: white;
 }
 
 .btn-confirm:hover {
-    background: #dc2626;
-    border-color: #dc2626;
+    filter: brightness(0.9);
 }
