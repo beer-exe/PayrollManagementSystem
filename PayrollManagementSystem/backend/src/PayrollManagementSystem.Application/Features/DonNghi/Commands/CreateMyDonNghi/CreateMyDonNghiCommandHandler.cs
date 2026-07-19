@@ -18,7 +18,6 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.CreateMy
             if (!Enum.TryParse<LoaiNghi>(request.LoaiNghi, out var loaiNghi))
                 throw new ApiException($"Loại nghỉ không hợp lệ: {request.LoaiNghi}");
 
-            // Lookup CCCD from UserId (JWT claim)
             var taiKhoan = await _context.TaiKhoans
                 .Include(t => t.NhanVien)
                 .FirstOrDefaultAsync(t => t.IdTaiKhoan == request.UserId, cancellationToken);

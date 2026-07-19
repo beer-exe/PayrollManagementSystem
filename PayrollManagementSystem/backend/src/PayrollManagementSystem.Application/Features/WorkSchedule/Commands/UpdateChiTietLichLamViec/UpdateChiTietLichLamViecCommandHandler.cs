@@ -26,7 +26,7 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Upd
                 throw new ApiException("Không tìm thấy chi tiết lịch làm việc.");
             }
 
-            if (!Enum.TryParse<LoaiNgay>(request.LoaiNgay, out var loaiNgay))
+            if (!PayrollManagementSystem.Domain.Extensions.EnumExtensions.TryGetValueFromDescription<LoaiNgay>(request.LoaiNgay, out var loaiNgay))
             {
                 throw new ApiException("Loại ngày không hợp lệ.");
             }

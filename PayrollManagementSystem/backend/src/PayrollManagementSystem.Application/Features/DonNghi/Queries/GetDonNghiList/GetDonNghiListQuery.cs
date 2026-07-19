@@ -1,10 +1,7 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.DonNghi.DTOs;
 using PayrollManagementSystem.Application.Wrappers;
-using PayrollManagementSystem.Domain.Enums;
-using PayrollManagementSystem.Domain.Extensions;
 
 namespace PayrollManagementSystem.Application.Features.DonNghi.Queries.GetDonNghiList
 {

@@ -7,7 +7,7 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DeleteMy
     public class DeleteMyDonNghiCommand : IRequest<Response<bool>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
         public Guid Id { get; set; }
-        public Guid UserId { get; set; }  // Set by controller from JWT for ownership check
+        public Guid UserId { get; set; }
 
         public string CacheKeyPrefix => "DonNghi";
     }

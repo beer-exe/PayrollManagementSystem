@@ -1,9 +1,6 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
-using PayrollManagementSystem.Domain.Enums;
 
 namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DuyetDonNghi
 {

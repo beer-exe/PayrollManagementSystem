@@ -65,16 +65,16 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
   const handleSaveEdit = async () => {
     if (!editingRow || !editLoaiNgay) return;
     try {
-      import('../api/workScheduleApi').then(async ({ workScheduleApi }) => {
-        await workScheduleApi.updateChiTiet(editingRow.id, editLoaiNgay);
-        setChiTiets(chiTiets.map(c => c.id === editingRow.id ? { ...c, loaiNgay: editLoaiNgay } : c));
-        setHasChanges(true);
-        setEditingRow(null);
-        showToast('success', 'Cập nhật loại ngày thành công.');
-      });
-    } catch (err: any) {
-      showToast('error', err.response?.data?.message || 'Lỗi khi cập nhật loại ngày.');
+      const { workScheduleApi } = await import('../api/workScheduleApi');
+      await workScheduleApi.updateChiTiet(editingRow.id, editLoaiNgay);
+      setChiTiets(chiTiets.map(c => c.id === editingRow.id ? { ...c, loaiNgay: editLoaiNgay } : c));
+      setHasChanges(true);
       setEditingRow(null);
+      showToast('success', 'Cập nhật loại ngày thành công.');
+    } catch (err: any) {
+      const errorData = err.response?.data;
+      const errMsg = errorData?.Errors?.join(', ') || errorData?.errors?.join(', ') || errorData?.Message || errorData?.message || 'Lỗi khi cập nhật loại ngày.';
+      showToast('error', errMsg);
     }
   };
 

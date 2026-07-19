@@ -6,7 +6,7 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.CreateMy
 {
     public class CreateMyDonNghiCommand : IRequest<Response<Guid>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
-        public Guid UserId { get; set; }  // Set by controller from JWT
+        public Guid UserId { get; set; }
         public string LoaiNghi { get; set; } = null!;
         public DateOnly NgayBatDau { get; set; }
         public DateOnly NgayKetThuc { get; set; }
