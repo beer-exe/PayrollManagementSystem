@@ -13,9 +13,9 @@
 [Bb]uild[Ll]og.*
 *.coverage
 
-appsettings.json
-appsettings.*.json
-!appsettings.example.json
+appsettings.local.json
+appsettings.*.local.json
+appsettings.Development.json
 
 CopilotIndices/
 .dtbcache.v2
@@ -60,6 +60,3 @@ repomix-output.md
 *.sqlite3
 .gemini/
 .agents/
-
-# Custom Scripts
-run.bat

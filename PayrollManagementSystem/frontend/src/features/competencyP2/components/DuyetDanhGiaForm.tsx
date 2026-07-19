@@ -108,7 +108,7 @@ export const DuyetDanhGiaForm: React.FC = () => {
   }
 
   const isEditable = detail.canEvaluate && detail.trangThai === 'CHO_QL_DANH_GIA';
-
+  const isSubmittingEvaluation = submitting || detail?.trangThai !== 'CHO_QL_DANH_GIA';
 
   // Tính điểm Nhân viên
   const empScore = detail.chiTietDanhGias.reduce((sum, item) => sum + (item.diemTuDanhGia || 0) * item.tyTrong, 0);

@@ -26,7 +26,6 @@ export const DonNghiFormModal: React.FC<Props> = ({ onClose, onCreate }) => {
   });
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [validYears, setValidYears] = useState<number[]>([]);
 
   // Load employees
   useEffect(() => {
@@ -40,13 +39,6 @@ export const DonNghiFormModal: React.FC<Props> = ({ onClose, onCreate }) => {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-
-    import('../../workSchedule/api/workScheduleApi').then(({ workScheduleApi }) => {
-      workScheduleApi.getAll().then(res => {
-        if (res.data) setValidYears(Array.from(new Set(res.data.map(w => w.nam))));
-      }).catch(console.error);
-    });
-
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
@@ -64,29 +56,15 @@ export const DonNghiFormModal: React.FC<Props> = ({ onClose, onCreate }) => {
 
   // Auto-calc SoNgayNghi when dates change
   useEffect(() => {
-    let active = true;
     if (form.ngayBatDau && form.ngayKetThuc) {
       const start = new Date(form.ngayBatDau);
       const end = new Date(form.ngayKetThuc);
       if (end >= start) {
-        import('../api/donNghiApi').then(({ donNghiApi }) => {
-          donNghiApi.calculateDays(form.ngayBatDau, form.ngayKetThuc, form.loaiNghi)
-            .then(res => {
-              if (active && res.succeeded) {
-                setForm(f => ({ ...f, soNgayNghi: res.data }));
-              }
-            })
-            .catch(() => {
-              if (active) {
-                const diff = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-                setForm(f => ({ ...f, soNgayNghi: diff }));
-              }
-            });
-        });
+        const diff = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+        setForm(f => ({ ...f, soNgayNghi: diff }));
       }
     }
-    return () => { active = false; };
-  }, [form.ngayBatDau, form.ngayKetThuc, form.loaiNghi]);
+  }, [form.ngayBatDau, form.ngayKetThuc]);
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
@@ -96,30 +74,7 @@ export const DonNghiFormModal: React.FC<Props> = ({ onClose, onCreate }) => {
     if (form.ngayBatDau && form.ngayKetThuc && form.ngayKetThuc < form.ngayBatDau)
       errs.ngayKetThuc = 'Ngày kết thúc phải sau ngày bắt đầu.';
     if (!form.lyDo.trim()) errs.lyDo = 'Lý do không được để trống.';
-    
-    if (form.ngayBatDau && form.ngayKetThuc) {
-      const startYear = new Date(form.ngayBatDau).getFullYear();
-      const endYear = new Date(form.ngayKetThuc).getFullYear();
-      if (startYear !== endYear) {
-        errs.ngayKetThuc = 'Ngày bắt đầu và ngày kết thúc phải cùng một năm.';
-      } else if (!validYears.includes(startYear)) {
-        errs.ngayKetThuc = `Chưa có lịch làm việc cho năm ${startYear}.`;
-      }
-    }
-
-    if (form.soNgayNghi <= 0) {
-      errs.soNgayNghi = 'Số ngày nghỉ phải lớn hơn 0.';
-    } else if (form.ngayBatDau && form.ngayKetThuc) {
-      const start = new Date(form.ngayBatDau);
-      const end = new Date(form.ngayKetThuc);
-      const diffMs = end.getTime() - start.getTime();
-      if (diffMs >= 0) {
-        const maxDays = Math.round(diffMs / (1000 * 60 * 60 * 24)) + 1;
-        if (form.soNgayNghi > maxDays) {
-          errs.soNgayNghi = `Số ngày nghỉ không được vượt quá ${maxDays} ngày.`;
-        }
-      }
-    }
+    if (form.soNgayNghi <= 0) errs.soNgayNghi = 'Số ngày nghỉ phải lớn hơn 0.';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };

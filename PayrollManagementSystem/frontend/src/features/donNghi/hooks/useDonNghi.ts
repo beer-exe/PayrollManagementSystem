@@ -84,19 +84,9 @@ export const useDonNghi = () => {
     }
   }, []);
 
-  const huyDonNghiDaDuyet = useCallback(async (id: string): Promise<string | null> => {
-    try {
-      await donNghiApi.huyDaDuyet(id);
-      return null;
-    } catch (e: unknown) {
-      const err = e as { response?: { data?: { message?: string; Message?: string } } };
-      return err?.response?.data?.Message ?? err?.response?.data?.message ?? 'Hủy đơn thất bại.';
-    }
-  }, []);
-
   return {
     list, ngayPhepList, loading, error,
     fetchList, fetchNgayPhep,
-    createDonNghi, duyetDonNghi, tuChoiDonNghi, deleteDonNghi, updateNgayPhep, huyDonNghiDaDuyet
+    createDonNghi, duyetDonNghi, tuChoiDonNghi, deleteDonNghi, updateNgayPhep,
   };
 };
