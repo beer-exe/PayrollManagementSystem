@@ -38,6 +38,7 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
 
   const [editingRow, setEditingRow] = useState<any>(null);
   const [editLoaiNgay, setEditLoaiNgay] = useState<string>('');
+  const [editTenNgayNghi, setEditTenNgayNghi] = useState<string>('');
   const [hasChanges, setHasChanges] = useState(false);
   const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -66,11 +67,17 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
     if (!editingRow || !editLoaiNgay) return;
     try {
       const { workScheduleApi } = await import('../api/workScheduleApi');
-      await workScheduleApi.updateChiTiet(editingRow.id, editLoaiNgay);
-      setChiTiets(chiTiets.map(c => c.id === editingRow.id ? { ...c, loaiNgay: editLoaiNgay } : c));
+      await workScheduleApi.updateChiTiet(editingRow.id, editLoaiNgay, editTenNgayNghi);
+      
+      let finalTenNgayNghi = editTenNgayNghi || null;
+      if (editLoaiNgay === 'Nghỉ cuối tuần' && !finalTenNgayNghi) {
+        finalTenNgayNghi = `Nghỉ ${editingRow.thu}`;
+      }
+
+      setChiTiets(chiTiets.map(c => c.id === editingRow.id ? { ...c, loaiNgay: editLoaiNgay, tenNgayNghi: finalTenNgayNghi, soGioLam: editLoaiNgay === 'Ngày làm việc' ? 8 : 0 } : c));
       setHasChanges(true);
       setEditingRow(null);
-      showToast('success', 'Cập nhật loại ngày thành công.');
+      showToast('success', 'Cập nhật ngày thành công.');
     } catch (err: any) {
       const errorData = err.response?.data;
       const errMsg = errorData?.Errors?.join(', ') || errorData?.errors?.join(', ') || errorData?.Message || errorData?.message || 'Lỗi khi cập nhật loại ngày.';
@@ -183,8 +190,9 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
                           onClick={() => {
                             setEditingRow(c);
                             setEditLoaiNgay(c.loaiNgay);
+                            setEditTenNgayNghi(c.tenNgayNghi ?? '');
                           }}
-                          title="Sửa loại ngày"
+                          title="Sửa ngày"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1rem', height: '1rem', color: 'var(--text-secondary)' }}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
@@ -259,13 +267,31 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
                 className="ws-input" 
                 style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none' }}
                 value={editLoaiNgay}
-                onChange={(e) => setEditLoaiNgay(e.target.value)}
+                onChange={(e) => {
+                  setEditLoaiNgay(e.target.value);
+                  if (e.target.value !== 'Nghỉ lễ') setEditTenNgayNghi('');
+                }}
               >
                 <option value="Ngày làm việc">Ngày làm việc</option>
                 <option value="Nghỉ cuối tuần">Nghỉ cuối tuần</option>
                 <option value="Nghỉ lễ">Nghỉ lễ</option>
               </select>
             </div>
+            {editLoaiNgay === 'Nghỉ lễ' && (
+              <div className="ws-modal-body" style={{ padding: '0 1.5rem 1.5rem 1.5rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                  Tên ngày lễ / Ghi chú <span style={{ color: 'var(--danger-text)' }}>*</span>
+                </label>
+                <input 
+                  type="text"
+                  className="ws-input" 
+                  placeholder="Nhập tên ngày lễ (VD: Quốc khánh, Tết...)"
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none' }}
+                  value={editTenNgayNghi}
+                  onChange={(e) => setEditTenNgayNghi(e.target.value)}
+                />
+              </div>
+            )}
             <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
               <button 
                 onClick={() => setEditingRow(null)}

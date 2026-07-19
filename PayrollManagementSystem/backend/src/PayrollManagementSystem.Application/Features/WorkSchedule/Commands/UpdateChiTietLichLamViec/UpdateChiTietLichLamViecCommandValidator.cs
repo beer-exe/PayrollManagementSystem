@@ -13,6 +13,11 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Upd
                 .NotEmpty().WithMessage("Loại ngày không được để trống.")
                 .Must(loaiNgay => PayrollManagementSystem.Domain.Extensions.EnumExtensions.TryGetValueFromDescription<Domain.Enums.LoaiNgay>(loaiNgay, out _))
                 .WithMessage("Loại ngày không hợp lệ.");
+
+            RuleFor(x => x.TenNgayNghi)
+                .NotEmpty()
+                .When(x => x.LoaiNgay == "Nghỉ lễ")
+                .WithMessage("Tên ngày nghỉ / Ghi chú không được để trống khi chọn Nghỉ lễ.");
         }
     }
 }

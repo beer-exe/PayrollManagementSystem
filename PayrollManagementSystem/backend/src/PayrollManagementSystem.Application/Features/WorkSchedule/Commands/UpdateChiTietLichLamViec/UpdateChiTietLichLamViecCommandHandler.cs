@@ -33,6 +33,25 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Upd
 
             chiTiet.LoaiNgay = loaiNgay;
             
+            if (loaiNgay == LoaiNgay.NGHI_CUOI_TUAN && string.IsNullOrWhiteSpace(request.TenNgayNghi))
+            {
+                chiTiet.TenNgayNghi = $"Nghỉ {chiTiet.Thu}";
+            }
+            else
+            {
+                chiTiet.TenNgayNghi = string.IsNullOrWhiteSpace(request.TenNgayNghi) ? null : request.TenNgayNghi.Trim();
+            }
+            
+            // Adjust working hours based on day type
+            if (loaiNgay == LoaiNgay.NGAY_LAM_VIEC)
+            {
+                chiTiet.SoGioLam = 8;
+            }
+            else
+            {
+                chiTiet.SoGioLam = 0;
+            }
+            
             await _context.SaveChangesAsync(cancellationToken);
 
             return new Response<bool>(true, "Cập nhật ngày thành công.");

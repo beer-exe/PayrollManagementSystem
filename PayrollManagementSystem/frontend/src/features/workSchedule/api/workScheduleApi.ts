@@ -31,6 +31,6 @@ export const workScheduleApi = {
       params: { thang, pageNumber, pageSize },
     }),
 
-  updateChiTiet: (idChiTiet: string, loaiNgay: string): Promise<{ data: boolean; succeeded: boolean; message: string }> =>
-    axiosClient.put(`${BASE_URL}/chi-tiet`, { idChiTiet, loaiNgay }),
+  updateChiTiet: (idChiTiet: string, loaiNgay: string, tenNgayNghi?: string): Promise<{ data: boolean; succeeded: boolean; message: string }> =>
+    axiosClient.put(`${BASE_URL}/chi-tiet`, { idChiTiet, loaiNgay, tenNgayNghi }),
 };
