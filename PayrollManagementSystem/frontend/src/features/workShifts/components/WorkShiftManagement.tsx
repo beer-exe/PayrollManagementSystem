@@ -67,13 +67,13 @@ export const WorkShiftManagement: React.FC = () => {
         setIsLoading(true);
         try {
             const res = await workShiftApi.getAll();
-            if (res.data.succeeded) {
-                setShifts(res.data.data);
+            if (res.succeeded) {
+                setShifts(res.data);
             } else {
-                setToast({ message: res.data.message || "Lỗi khi tải danh sách ca làm việc", type: "error" });
+                setToast({ message: res.message || "Lỗi khi tải danh sách ca làm việc", type: "error" });
             }
         } catch (error: any) {
-            setToast({ message: error.response?.data?.message || "Lỗi kết nối", type: "error" });
+            setToast({ message: error.response?.data?.Message || "Lỗi kết nối", type: "error" });
         } finally {
             setIsLoading(false);
         }
@@ -87,14 +87,14 @@ export const WorkShiftManagement: React.FC = () => {
         if (!confirmDeleteId) return;
         try {
             const res = await workShiftApi.delete(confirmDeleteId);
-            if (res.data.succeeded) {
+            if (res.succeeded) {
                 setToast({ message: "Xóa ca làm việc thành công", type: "success" });
                 loadShifts();
             } else {
-                setToast({ message: res.data.message || "Xóa thất bại", type: "error" });
+                setToast({ message: res.message || "Xóa thất bại", type: "error" });
             }
         } catch (error: any) {
-            setToast({ message: error.response?.data?.message || "Lỗi khi xóa", type: "error" });
+            setToast({ message: error.response?.data?.Message || "Lỗi khi xóa", type: "error" });
         } finally {
             setConfirmDeleteId(null);
         }

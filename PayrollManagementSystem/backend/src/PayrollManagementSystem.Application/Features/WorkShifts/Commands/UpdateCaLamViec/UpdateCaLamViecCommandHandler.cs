@@ -34,16 +34,14 @@ namespace PayrollManagementSystem.Application.Features.WorkShifts.Commands.Updat
             caLamViec.HeSoLuong = request.HeSoLuong;
             caLamViec.TrangThai = request.TrangThai;
 
-            // Remove existing breaks that are not in the new list
             var newBreakIds = request.KhungGioNghis.Where(k => k.Id.HasValue).Select(k => k.Id.Value).ToList();
             var breaksToRemove = caLamViec.KhungGioNghis.Where(k => !newBreakIds.Contains(k.Id)).ToList();
             
             foreach (var b in breaksToRemove)
             {
-                _context.KhungGioNghis.Remove(b);
+                b.IsDeleted = true;
             }
 
-            // Update or add breaks
             foreach (var kgn in request.KhungGioNghis)
             {
                 if (kgn.Id.HasValue)
@@ -59,8 +57,9 @@ namespace PayrollManagementSystem.Application.Features.WorkShifts.Commands.Updat
                 }
                 else
                 {
-                    caLamViec.KhungGioNghis.Add(new KhungGioNghi
+                    _context.KhungGioNghis.Add(new KhungGioNghi
                     {
+                        IdCaLamViec = caLamViec.Id,
                         TenKhoangNghi = kgn.TenKhoangNghi,
                         GioBatDau = TimeSpan.Parse(kgn.GioBatDau),
                         GioKetThuc = TimeSpan.Parse(kgn.GioKetThuc),

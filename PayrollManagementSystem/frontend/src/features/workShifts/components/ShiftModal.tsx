@@ -113,16 +113,16 @@ export const ShiftModal: React.FC<ShiftModalProps> = ({ shift, onClose, onSaved 
                 res = await workShiftApi.create(payload);
             }
 
-            if (res.data.succeeded) {
+            if (res.succeeded) {
                 setToast({ message: isEdit ? "Cập nhật thành công" : "Thêm mới thành công", type: "success" });
                 setTimeout(() => {
                     onSaved();
                 }, 1000);
             } else {
-                setToast({ message: res.data.message || "Lỗi khi lưu", type: "error" });
+                setToast({ message: res.message || "Lỗi khi lưu", type: "error" });
             }
         } catch (error: any) {
-            let msg = error.response?.data?.message || "Lỗi kết nối";
+            let msg = error.response?.data?.Message || "Lỗi kết nối";
             if (error.response?.data?.errors) {
                 msg = error.response.data.errors.join(", ");
             }
