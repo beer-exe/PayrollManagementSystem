@@ -32,6 +32,14 @@ export const donNghiApi = {
   delete: (id: string) =>
     axiosClient.delete<unknown, { data: boolean; succeeded: boolean }>(`${BASE_URL}/${id}`),
 
+  huyDaDuyet: (id: string) =>
+    axiosClient.patch<unknown, { data: boolean; succeeded: boolean }>(`${BASE_URL}/${id}/huy-da-duyet`),
+
+  calculateDays: (start: string, end: string, loaiNghi: string) =>
+    axiosClient.get<unknown, { data: number; succeeded: boolean }>(`${BASE_URL}/calculate-days`, {
+      params: { start, end, loaiNghi }
+    }),
+
   // Ngày phép
   getNgayPhep: (nam: number, idPhongBan?: string) =>
     axiosClient.get<unknown, { data: NgayPhepDto[]; succeeded: boolean }>(PHEP_URL, {

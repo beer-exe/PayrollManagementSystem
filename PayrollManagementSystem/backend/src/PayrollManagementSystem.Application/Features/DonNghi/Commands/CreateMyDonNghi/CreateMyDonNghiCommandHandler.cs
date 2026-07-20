@@ -27,6 +27,33 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.CreateMy
 
             var cccd = taiKhoan.NhanVien.Cccd;
 
+            if (request.SoNgayNghi <= 0)
+                throw new ApiException("Số ngày nghỉ phải lớn hơn 0.");
+
+            var chiTietLich = await _context.ChiTietLichLamViecs
+                .Where(c => c.Ngay >= request.NgayBatDau && c.Ngay <= request.NgayKetThuc)
+                .ToListAsync(cancellationToken);
+
+            decimal maxSoNgay = 0;
+            if (loaiNghi == LoaiNghi.NGHI_THAI_SAN)
+            {
+                maxSoNgay = request.NgayKetThuc.DayNumber - request.NgayBatDau.DayNumber + 1;
+            }
+            else
+            {
+                maxSoNgay = chiTietLich.Count(c => c.LoaiNgay == LoaiNgay.NGAY_LAM_VIEC);
+                
+                if (chiTietLich.Count == 0)
+                {
+                    maxSoNgay = request.NgayKetThuc.DayNumber - request.NgayBatDau.DayNumber + 1;
+                    // throw new ApiException("Lịch làm việc chưa được thiết lập cho khoảng thời gian này.");
+                }
+            }
+
+            if (request.SoNgayNghi > maxSoNgay && maxSoNgay > 0)
+                throw new ApiException($"Số ngày nghỉ yêu cầu ({request.SoNgayNghi}) vượt quá số ngày được phép nghỉ trong khoảng thời gian này ({maxSoNgay} ngày).");
+
+
             var donNghi = new Domain.Models.DonNghi
             {
                 CccdNhanVien = cccd,
