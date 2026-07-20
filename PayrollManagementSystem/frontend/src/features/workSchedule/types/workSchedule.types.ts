@@ -18,11 +18,15 @@ export interface ChiTietLichLamViecDto {
   loaiNgay: string; // Description from backend
   tenNgayNghi?: string | null;
   soGioLam: number;
+  idCaLamViecMacDinh?: string | null;
+  tenCaLamViecMacDinh?: string | null;
 }
 
 export interface CreateLichLamViecRequest {
   nam: number;
   ghiChu?: string;
+  useDefaultShift?: boolean;
+  defaultShiftId?: string | null;
 }
 
 export interface ChiTietQueryParams {

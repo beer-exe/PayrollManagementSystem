@@ -12,8 +12,8 @@ using PayrollManagementSystem.Infrastructure.Persistence;
 namespace PayrollManagementSystem.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260719162650_AddWorkShiftTables")]
-    partial class AddWorkShiftTables
+    [Migration("20260720053636_LinkCaLamViecToLichLamViec")]
+    partial class LinkCaLamViecToLichLamViec
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -301,6 +301,10 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("IdCaLamViecMacDinh")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id_ca_lam_viec_mac_dinh");
+
                     b.Property<Guid>("IdLich")
                         .HasColumnType("uuid")
                         .HasColumnName("id_lich");
@@ -341,6 +345,8 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id")
                         .HasName("chi_tiet_lich_lam_viecs_pkey");
+
+                    b.HasIndex("IdCaLamViecMacDinh");
 
                     b.HasIndex("IdLich", "Ngay")
                         .HasDatabaseName("idx_chi_tiet_lich_ngay");
@@ -1143,6 +1149,59 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Migrations
                     b.ToTable("nhat_ky_trang_thais", (string)null);
                 });
 
+            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.PhanCongCa", b =>
+                {
+                    b.Property<Guid>("IdPhanCong")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id_phan_cong");
+
+                    b.Property<string>("CccdNhanVien")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("cccd_nhan_vien");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("GhiChu")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("ghi_chu");
+
+                    b.Property<Guid>("IdCaLamViec")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id_ca_lam_viec");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateOnly>("NgayLamViec")
+                        .HasColumnType("date")
+                        .HasColumnName("ngay_lam_viec");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("IdPhanCong")
+                        .HasName("phan_cong_cas_pkey");
+
+                    b.HasIndex("IdCaLamViec");
+
+                    b.HasIndex("CccdNhanVien", "NgayLamViec")
+                        .IsUnique()
+                        .HasDatabaseName("idx_phan_cong_ca_nv_ngay_unique");
+
+                    b.ToTable("phan_cong_cas", (string)null);
+                });
+
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.PhieuDanhGiaNangLuc", b =>
                 {
                     b.Property<Guid>("IdPhieu")
@@ -1566,12 +1625,20 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.ChiTietLichLamViec", b =>
                 {
+                    b.HasOne("PayrollManagementSystem.Domain.Models.CaLamViec", "CaLamViecMacDinh")
+                        .WithMany("ChiTietLichLamViecs")
+                        .HasForeignKey("IdCaLamViecMacDinh")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_chi_tiet_lich_ca_lam_viec_mac_dinh");
+
                     b.HasOne("PayrollManagementSystem.Domain.Models.LichLamViec", "LichLamViec")
                         .WithMany("ChiTietLichLamViecs")
                         .HasForeignKey("IdLich")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_chi_tiet_lich_lam_viec");
+
+                    b.Navigation("CaLamViecMacDinh");
 
                     b.Navigation("LichLamViec");
                 });
@@ -1702,6 +1769,27 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Migrations
                     b.Navigation("NhanVien");
                 });
 
+            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.PhanCongCa", b =>
+                {
+                    b.HasOne("PayrollManagementSystem.Domain.Models.NhanVien", "NhanVien")
+                        .WithMany()
+                        .HasForeignKey("CccdNhanVien")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_phan_cong_ca_nhan_vien");
+
+                    b.HasOne("PayrollManagementSystem.Domain.Models.CaLamViec", "CaLamViec")
+                        .WithMany("PhanCongCas")
+                        .HasForeignKey("IdCaLamViec")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_phan_cong_ca_ca_lam_viec");
+
+                    b.Navigation("CaLamViec");
+
+                    b.Navigation("NhanVien");
+                });
+
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.PhieuDanhGiaNangLuc", b =>
                 {
                     b.HasOne("PayrollManagementSystem.Domain.Models.NhanVien", "NhanVien")
@@ -1805,7 +1893,11 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.CaLamViec", b =>
                 {
+                    b.Navigation("ChiTietLichLamViecs");
+
                     b.Navigation("KhungGioNghis");
+
+                    b.Navigation("PhanCongCas");
                 });
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.ChucVu", b =>

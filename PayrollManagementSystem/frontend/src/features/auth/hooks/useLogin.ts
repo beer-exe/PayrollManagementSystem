@@ -4,7 +4,6 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { LoginRequestDto } from '@/types/auth.types';
 import { AxiosError } from 'axios';
 
-// Hàm hỗ trợ giải mã JWT Token
 const parseJwt = (token: string) => {
   try {
     return JSON.parse(atob(token.split('.')[1]));
@@ -29,7 +28,6 @@ export const useLogin = () => {
         localStorage.setItem('accessToken', response.data.accessToken);
         localStorage.setItem('refreshToken', response.data.refreshToken);
         
-        // Giải mã token để lấy role
         const decodedToken = parseJwt(response.data.accessToken);
         const role = decodedToken?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || '';
 

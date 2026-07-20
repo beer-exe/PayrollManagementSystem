@@ -34,6 +34,7 @@ namespace PayrollManagementSystem.Application.Common.Interfaces
 
         DbSet<CaLamViec> CaLamViecs { get; set; }
         DbSet<KhungGioNghi> KhungGioNghis { get; set; }
+        DbSet<PhanCongCa> PhanCongCas { get; set; }
 
         DbSet<ChamCong> ChamCongs { get; set; }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { CaLamViec, KhungGioNghi } from "../types/workShift.types";
+import { CaLamViec, KhungGioNghi } from "../types";
 import { workShiftApi } from "../api/workShiftApi";
 import { ClockTimePicker } from "../../chamCong/components/ClockTimePicker";
 import { Toast } from "@/components/Toast/Toast";
@@ -34,7 +34,7 @@ export const ShiftModal: React.FC<ShiftModalProps> = ({ shift, onClose, onSaved 
             setTrangThai(shift.trangThai);
             
             if (shift.khungGioNghis) {
-                setKhungGioNghis(shift.khungGioNghis.map(k => ({
+                setKhungGioNghis(shift.khungGioNghis.map((k: KhungGioNghi) => ({
                     ...k,
                     gioBatDau: k.gioBatDau.substring(0, 5),
                     gioKetThuc: k.gioKetThuc.substring(0, 5)

@@ -12,8 +12,10 @@ namespace PayrollManagementSystem.Domain.Models
         public LoaiNgay LoaiNgay { get; set; }
         public string? TenNgayNghi { get; set; }
         public decimal SoGioLam { get; set; } = 8;
+        public Guid? IdCaLamViecMacDinh { get; set; }
 
         // Navigation property
         public LichLamViec LichLamViec { get; set; } = null!;
+        public CaLamViec? CaLamViecMacDinh { get; set; }
     }
 }

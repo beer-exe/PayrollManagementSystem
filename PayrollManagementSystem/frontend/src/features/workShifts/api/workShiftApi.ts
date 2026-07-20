@@ -9,17 +9,17 @@ export interface ApiResponse<T> {
 }
 
 export const workShiftApi = {
-    getAll: (trangThai?: boolean) => {
+    getAll: (trangThai?: boolean): Promise<ApiResponse<CaLamViec[]>> => {
         const params = trangThai !== undefined ? { trangThai } : {};
-        return axiosClient.get<ApiResponse<CaLamViec[]>>("/CaLamViec", { params });
+        return axiosClient.get("/CaLamViec", { params }) as unknown as Promise<ApiResponse<CaLamViec[]>>;
     },
-    create: (data: CreateCaLamViecRequest) => {
-        return axiosClient.post<ApiResponse<string>>("/CaLamViec", data);
+    create: (data: CreateCaLamViecRequest): Promise<ApiResponse<string>> => {
+        return axiosClient.post("/CaLamViec", data) as unknown as Promise<ApiResponse<string>>;
     },
-    update: (id: string, data: UpdateCaLamViecRequest) => {
-        return axiosClient.put<ApiResponse<boolean>>(`/CaLamViec/${id}`, data);
+    update: (id: string, data: UpdateCaLamViecRequest): Promise<ApiResponse<boolean>> => {
+        return axiosClient.put(`/CaLamViec/${id}`, data) as unknown as Promise<ApiResponse<boolean>>;
     },
-    delete: (id: string) => {
-        return axiosClient.delete<ApiResponse<boolean>>(`/CaLamViec/${id}`);
+    delete: (id: string): Promise<ApiResponse<boolean>> => {
+        return axiosClient.delete(`/CaLamViec/${id}`) as unknown as Promise<ApiResponse<boolean>>;
     }
 };

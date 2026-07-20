@@ -112,6 +112,18 @@
     box-shadow: 0 4px 12px rgba(109, 40, 217, 0.3);
 }
 
+.wsh-btn-instruction {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.wsh-btn-instruction svg {
+    width: 20px;
+    height: 20px;
+    color: var(--primary);
+}
+
 .wsh-btn-create:disabled {
     opacity: 0.65;
     cursor: not-allowed;

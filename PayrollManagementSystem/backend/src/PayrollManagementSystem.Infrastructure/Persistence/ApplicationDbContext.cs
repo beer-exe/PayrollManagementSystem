@@ -45,6 +45,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
 
         public virtual DbSet<CaLamViec> CaLamViecs { get; set; }
         public virtual DbSet<KhungGioNghi> KhungGioNghis { get; set; }
+        public virtual DbSet<PhanCongCa> PhanCongCas { get; set; }
 
         public virtual DbSet<ChamCong> ChamCongs { get; set; }
 
@@ -618,11 +619,20 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                 entity.Property(e => e.SoGioLam)
                     .HasColumnType("decimal(4,1)")
                     .HasColumnName("so_gio_lam");
+                    
+                entity.Property(e => e.IdCaLamViecMacDinh)
+                    .HasColumnName("id_ca_lam_viec_mac_dinh");
 
                 entity.HasOne(e => e.LichLamViec)
                     .WithMany(l => l.ChiTietLichLamViecs)
                     .HasForeignKey(e => e.IdLich)
                     .HasConstraintName("fk_chi_tiet_lich_lam_viec");
+
+                entity.HasOne(e => e.CaLamViecMacDinh)
+                    .WithMany(c => c.ChiTietLichLamViecs)
+                    .HasForeignKey(e => e.IdCaLamViecMacDinh)
+                    .HasConstraintName("fk_chi_tiet_lich_ca_lam_viec_mac_dinh")
+                    .OnDelete(DeleteBehavior.SetNull);
 
                 entity.HasIndex(e => new { e.IdLich, e.Ngay })
                     .HasDatabaseName("idx_chi_tiet_lich_ngay");
@@ -691,6 +701,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
 
             ConfigureDonNghi(modelBuilder);
             ConfigureCaLamViec(modelBuilder);
+            ConfigurePhanCongCa(modelBuilder);
         }
 
         private void ConfigureDonNghi(ModelBuilder modelBuilder)
@@ -857,6 +868,35 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                       .HasForeignKey(d => d.IdCaLamViec)
                       .OnDelete(DeleteBehavior.Cascade)
                       .HasConstraintName("khung_gio_nghis_id_ca_lam_viec_fkey");
+            });
+        }
+
+        private void ConfigurePhanCongCa(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PhanCongCa>(entity =>
+            {
+                entity.HasKey(e => e.IdPhanCong).HasName("phan_cong_cas_pkey");
+                entity.ToTable("phan_cong_cas");
+
+                entity.Property(e => e.IdPhanCong).HasColumnName("id_phan_cong");
+                entity.Property(e => e.CccdNhanVien).IsRequired().HasMaxLength(20).HasColumnName("cccd_nhan_vien");
+                entity.Property(e => e.NgayLamViec).HasColumnName("ngay_lam_viec");
+                entity.Property(e => e.IdCaLamViec).HasColumnName("id_ca_lam_viec");
+                entity.Property(e => e.GhiChu).HasMaxLength(255).HasColumnName("ghi_chu");
+
+                entity.HasOne(e => e.NhanVien)
+                    .WithMany()
+                    .HasForeignKey(e => e.CccdNhanVien)
+                    .HasConstraintName("fk_phan_cong_ca_nhan_vien");
+
+                entity.HasOne(e => e.CaLamViec)
+                    .WithMany(c => c.PhanCongCas)
+                    .HasForeignKey(e => e.IdCaLamViec)
+                    .HasConstraintName("fk_phan_cong_ca_ca_lam_viec");
+
+                entity.HasIndex(e => new { e.CccdNhanVien, e.NgayLamViec })
+                    .IsUnique()
+                    .HasDatabaseName("idx_phan_cong_ca_nv_ngay_unique");
             });
         }
     }

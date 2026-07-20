@@ -7,6 +7,8 @@ import { useDataTable } from '../../../hooks/useDataTable';
 import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
 import { SortableHeader } from '../../../components/DataTable/SortableHeader';
 import { ExportButtons } from '../../../components/DataTable/ExportButtons';
+import { workShiftApi } from '../../workShifts/api/workShiftApi';
+import type { CaLamViec } from '../../workShifts/types';
 import './WorkScheduleManagement.css';
 
 const currentYear = new Date().getFullYear();
@@ -21,10 +23,28 @@ export const WorkScheduleManagement: React.FC = () => {
 
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [createNotes, setCreateNotes] = useState('');
+  const [useDefaultShift, setUseDefaultShift] = useState(false);
+  const [defaultShiftId, setDefaultShiftId] = useState<string>('');
+  const [shifts, setShifts] = useState<CaLamViec[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [viewLich, setViewLich] = useState<LichLamViecDto | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<LichLamViecDto | null>(null);
+
+  const fetchShifts = async () => {
+    try {
+      const res = await workShiftApi.getAll();
+      if (res.succeeded) {
+        setShifts(res.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchShifts();
+  }, []);
 
   useEffect(() => {
     fetchAll();
@@ -95,10 +115,17 @@ export const WorkScheduleManagement: React.FC = () => {
     if (yearExists) {
       return; 
     }
-    const success = await create({ nam: selectedYear, ghiChu: createNotes });
+    const success = await create({ 
+      nam: selectedYear, 
+      ghiChu: createNotes,
+      useDefaultShift,
+      defaultShiftId: useDefaultShift ? defaultShiftId : undefined
+    });
     if (success) {
       setShowCreateModal(false);
       setCreateNotes('');
+      setUseDefaultShift(false);
+      setDefaultShiftId('');
     }
   };
 
@@ -127,6 +154,8 @@ export const WorkScheduleManagement: React.FC = () => {
               onClick={() => {
                 setSelectedYear(currentYear);
                 setCreateNotes('');
+                setUseDefaultShift(false);
+                setDefaultShiftId('');
                 setShowCreateModal(true);
               }}
               title="Tạo lịch làm việc mới"
@@ -403,6 +432,41 @@ export const WorkScheduleManagement: React.FC = () => {
                   style={{ width: '100%', padding: '0.75rem', border: '1px solid var(--border-color)', borderRadius: '8px', minHeight: '100px', fontFamily: 'inherit', resize: 'vertical' }}
                 />
               </div>
+
+              <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={useDefaultShift}
+                    onChange={(e) => setUseDefaultShift(e.target.checked)}
+                    style={{ width: '1.1rem', height: '1.1rem', cursor: 'pointer' }}
+                  />
+                  Gán ca làm việc mặc định cho ngày làm việc
+                </label>
+
+                {useDefaultShift && (
+                  <div>
+                    <select
+                      className="ws-year-select"
+                      style={{ width: '100%' }}
+                      value={defaultShiftId}
+                      onChange={(e) => setDefaultShiftId(e.target.value)}
+                    >
+                      <option value="" disabled>-- Chọn ca làm việc --</option>
+                      {shifts.map(shift => (
+                        <option key={shift.id} value={shift.id}>
+                          {shift.tenCa} ({shift.gioBatDau} - {shift.gioKetThuc})
+                        </option>
+                      ))}
+                    </select>
+                    {!defaultShiftId && (
+                       <div style={{ marginTop: '0.5rem', color: 'var(--danger-text)', fontSize: '0.875rem' }}>
+                         Vui lòng chọn ca làm việc.
+                       </div>
+                    )}
+                  </div>
+                )}
+              </div>
               
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem' }}>
                 <button
@@ -415,7 +479,7 @@ export const WorkScheduleManagement: React.FC = () => {
                 <button
                   className="ws-btn-create"
                   onClick={handleCreate}
-                  disabled={isCreating || isYearExists}
+                  disabled={isCreating || isYearExists || (useDefaultShift && !defaultShiftId)}
                   style={{ padding: '0.625rem 1.5rem', borderRadius: '8px' }}
                 >
                   {isCreating ? (
