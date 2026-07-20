@@ -1,0 +1,290 @@
+/* =====================================================
+   Shift Assignment (Phân công ca) — Styles
+   ===================================================== */
+
+.sa-container {
+    padding: 1.5rem;
+    max-width: 1600px;
+    margin: 0 auto;
+    background-color: var(--bg-hover);
+    min-height: 100%;
+}
+
+/* ---- Header & Toolbar ---- */
+.sa-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+}
+
+.sa-header-left h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.2rem;
+}
+
+.sa-header-left p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.sa-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: var(--bg-surface);
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.sa-date-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.sa-btn-icon {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+
+.sa-btn-icon:hover {
+    background: var(--bg-hover);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.sa-current-date {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 200px;
+    text-align: center;
+}
+
+/* ---- Shifts Palette (Draggable Items) ---- */
+.sa-shifts-palette {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    border-left: 2px solid var(--border-color);
+    padding-left: 1.5rem;
+}
+
+.sa-palette-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.sa-shift-chip {
+    padding: 0.4rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: grab;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: transform 0.15s, box-shadow 0.15s;
+    background: var(--bg-hover);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.sa-shift-chip:active {
+    cursor: grabbing;
+}
+
+.sa-shift-chip.dragging {
+    opacity: 0.5;
+}
+
+/* We will assign dynamic colors via inline styles in React based on shift ID */
+
+/* ---- Matrix Grid ---- */
+.sa-matrix-container {
+    background: var(--bg-surface);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    overflow: auto;
+    border: 1px solid var(--border-color);
+    max-height: calc(100vh - 250px);
+}
+
+.sa-matrix-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 1200px;
+}
+
+/* Sticky Header */
+.sa-matrix-table th {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    color: white;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Sticky First Column */
+.sa-matrix-table th:first-child,
+.sa-matrix-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: var(--bg-surface);
+    text-align: left;
+    border-right: 2px solid var(--border-color);
+    width: 250px;
+    max-width: 250px;
+}
+
+.sa-matrix-table th:first-child {
+    z-index: 15; /* Top-left corner must be highest */
+}
+
+/* Cell borders */
+.sa-matrix-table td {
+    border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    padding: 0;
+    vertical-align: middle;
+    height: 70px; /* Fixed height for consistent grid */
+}
+
+.sa-matrix-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Employee Info Cell */
+.sa-emp-info {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem 1rem;
+}
+
+.sa-emp-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.sa-emp-dept {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 0.2rem;
+}
+
+/* Droppable Cell */
+.sa-drop-cell {
+    width: 100%;
+    height: 100%;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem;
+    transition: all 0.2s;
+}
+
+.sa-drop-cell.drag-over {
+    background-color: var(--primary-light);
+    box-shadow: inset 0 0 0 2px var(--primary);
+}
+
+/* Assigned Shift inside Cell */
+.sa-assigned-shift {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: grab;
+    transition: transform 0.2s;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.sa-assigned-shift:hover {
+    transform: scale(1.02);
+}
+
+.sa-btn-remove-shift {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    background: var(--danger-bg);
+    color: var(--danger-text);
+    border: 1px solid var(--danger-text);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s;
+    z-index: 2;
+}
+
+.sa-assigned-shift:hover .sa-btn-remove-shift {
+    opacity: 1;
+}
+
+.sa-btn-remove-shift:hover {
+    background: var(--danger-text);
+    color: white;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.sa-loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+[data-theme="dark"] .sa-loading-overlay {
+    background: rgba(30, 30, 30, 0.7);
+}

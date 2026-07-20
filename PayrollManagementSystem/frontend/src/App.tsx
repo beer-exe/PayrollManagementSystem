@@ -24,6 +24,7 @@ import { DuyetDanhGia } from "@/features/competencyP2/components/DuyetDanhGia";
 import { DuyetDanhGiaForm } from "@/features/competencyP2/components/DuyetDanhGiaForm";
 import { WorkScheduleManagement } from "@/features/workSchedule/components/WorkScheduleManagement";
 import { WorkShiftManagement } from "@/features/workShifts/components/WorkShiftManagement";
+import { ShiftAssignment } from "@/features/shiftAssignment/components/ShiftAssignment";
 import { ChamCongManagement } from '@/features/chamCong/components/ChamCongManagement';
 import { DonNghiManagement } from '@/features/donNghi/components/DonNghiManagement';
 import { MyDonNghiPortal } from '@/features/donNghi/components/MyDonNghiPortal';
@@ -85,6 +86,7 @@ function App() {
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR"]} />}>
+            <Route path="/time/phan-cong-ca" element={<ShiftAssignment />} />
             <Route path="/time/cham-cong" element={<ChamCongManagement />} />
             <Route path="/time/don-nghi" element={<DonNghiManagement />} />
           </Route>
