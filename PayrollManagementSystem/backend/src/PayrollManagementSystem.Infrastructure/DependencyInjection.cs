@@ -24,6 +24,7 @@ namespace PayrollManagementSystem.Infrastructure
             services.AddTransient<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddTransient<IPasswordHasher, PasswordHasher>();
             services.AddTransient<IExcelService, ExcelService>();
+            services.AddTransient<ITimekeepingCalculatorService, TimekeepingCalculatorService>();
 
             services.AddHostedService<PayrollManagementSystem.Infrastructure.BackgroundJobs.UpdateExpiredDecisionsJob>();
 

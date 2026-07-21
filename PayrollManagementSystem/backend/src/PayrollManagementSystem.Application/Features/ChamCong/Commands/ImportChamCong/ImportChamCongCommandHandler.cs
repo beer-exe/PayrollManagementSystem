@@ -11,14 +11,12 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.ImportC
     public class ImportChamCongCommandHandler : IRequestHandler<ImportChamCongCommand, Response<ImportChamCongResultDto>>
     {
         private readonly IApplicationDbContext _context;
+        private readonly ITimekeepingCalculatorService _calculatorService;
 
-        private const decimal GIO_TIEU_CHUAN = 8m;
-        private const decimal GRACE_PERIOD_PHUT = 15m;
-        private const decimal GIO_NGHI_TRUA = 1m;
-
-        public ImportChamCongCommandHandler(IApplicationDbContext context)
+        public ImportChamCongCommandHandler(IApplicationDbContext context, ITimekeepingCalculatorService calculatorService)
         {
             _context = context;
+            _calculatorService = calculatorService;
         }
 
         public async Task<Response<ImportChamCongResultDto>> Handle(ImportChamCongCommand request, CancellationToken cancellationToken)
@@ -126,58 +124,14 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.ImportC
                         gioRa = gr;
                     }
 
-                    if (gioVao.HasValue && gioRa.HasValue && gioRa <= gioVao)
-                        throw new Exception("GioRa phải sau GioVao.");
-
                     var ghiChu = cols.Length >= 5 ? cols[4].Trim() : null;
 
-                    lichLamViecMap.TryGetValue(ngay, out var chiTietLich);
-                    var loaiNgayTrongLich = chiTietLich?.LoaiNgay ?? LoaiNgay.NGAY_LAM_VIEC;
-                    var soGioChuanNgay = chiTietLich?.SoGioLam ?? GIO_TIEU_CHUAN;
-
-                    decimal soGioLam = 0;
-                    LoaiNgayCong loaiNgayCong;
-                    decimal soNgayCong = 0;
-
-                    if (loaiNgayTrongLich == LoaiNgay.NGHI_LE)
-                    {
-                        loaiNgayCong = LoaiNgayCong.NGHI_LE;
-                    }
-                    else if (loaiNgayTrongLich == LoaiNgay.NGHI_CUOI_TUAN)
-                    {
-                        loaiNgayCong = LoaiNgayCong.NGHI_CUOI_TUAN;
-                    }
-                    else if (gioVao == null || gioRa == null)
-                    {
-                        loaiNgayCong = LoaiNgayCong.VANG_KHONG_PHEP;
-                    }
-                    else
-                    {
-                        var tongGioRaw = (decimal)(gioRa.Value - gioVao.Value).TotalHours;
-                        if (tongGioRaw < 0) tongGioRaw = 0;
-                        soGioLam = tongGioRaw > 5 ? tongGioRaw - GIO_NGHI_TRUA : tongGioRaw;
-                        soGioLam = Math.Round(Math.Max(soGioLam, 0), 2);
-
-                        var gracePeriodGio = GRACE_PERIOD_PHUT / 60m;
-                        var heSo = Math.Min(soGioLam, soGioChuanNgay) / soGioChuanNgay;
-
-                        if (heSo >= 1m - (gracePeriodGio / soGioChuanNgay))
-                        {
-                            soNgayCong = 1m;
-                            loaiNgayCong = LoaiNgayCong.LAM_DU_CA;
-                        }
-                        else if (heSo >= 0.5m - (gracePeriodGio / soGioChuanNgay))
-                        {
-                            soNgayCong = Math.Round(heSo, 2);
-                            loaiNgayCong = Math.Abs(heSo - 0.5m) < 0.01m
-                                ? LoaiNgayCong.NUA_CA : LoaiNgayCong.DI_TRE_VE_SOM;
-                        }
-                        else
-                        {
-                            soNgayCong = Math.Round(heSo, 2);
-                            loaiNgayCong = LoaiNgayCong.DI_TRE_VE_SOM;
-                        }
-                    }
+                    var calcResult = await _calculatorService.CalculateTimekeepingAsync(
+                        cccd,
+                        ngay,
+                        gioVao,
+                        gioRa,
+                        cancellationToken);
 
                     toInsert.Add(new Domain.Models.ChamCong
                     {
@@ -186,11 +140,13 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.ImportC
                         NgayChamCong = ngay,
                         GioVao = gioVao,
                         GioRa = gioRa,
-                        SoGioLamThucTe = soGioLam,
-                        SoNgayCong = soNgayCong,
-                        LoaiNgayCong = loaiNgayCong,
+                        SoGioLamThucTe = calcResult.SoGioLamThucTe,
+                        SoNgayCong = calcResult.SoNgayCong,
+                        LoaiNgayCong = calcResult.LoaiNgayCong,
+                        SoPhutDiTre = calcResult.SoPhutDiTre,
+                        SoPhutVeSom = calcResult.SoPhutVeSom,
                         IsNhapTay = false,
-                        GhiChu = ghiChu,
+                        GhiChu = ghiChu ?? calcResult.GhiChu,
                         TrangThai = TrangThaiChamCong.CHUA_XAC_NHAN
                     });
 

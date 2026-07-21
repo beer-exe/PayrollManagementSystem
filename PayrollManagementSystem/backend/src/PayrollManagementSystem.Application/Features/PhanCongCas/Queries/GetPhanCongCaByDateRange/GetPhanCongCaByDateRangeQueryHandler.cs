@@ -40,7 +40,7 @@ namespace PayrollManagementSystem.Application.Features.PhanCongCas.Queries.GetPh
                     HoTenNhanVien = p.NhanVien.HoTen,
                     NgayLamViec = p.NgayLamViec,
                     IdCaLamViec = p.IdCaLamViec,
-                    TenCa = p.CaLamViec.TenCa,
+                    TenCa = p.CaLamViec != null ? p.CaLamViec.TenCa : null,
                     GhiChu = p.GhiChu
                 })
                 .ToListAsync(cancellationToken);

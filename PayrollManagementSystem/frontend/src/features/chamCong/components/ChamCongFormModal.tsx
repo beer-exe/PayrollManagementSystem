@@ -67,7 +67,6 @@ export const ChamCongFormModal: React.FC<Props> = ({ editItem, onClose, onCreate
     if (!ngay) errs.ngay = 'Ngày chấm công không được để trống.';
     if (gioVao === 'INVALID' || (gioVao && gioVao.length < 5)) errs.gioVao = 'Giờ vào không hợp lệ (VD: 08:30)';
     if (gioRa === 'INVALID' || (gioRa && gioRa.length < 5)) errs.gioRa = 'Giờ ra không hợp lệ (VD: 17:00)';
-    if (gioVao && gioVao !== 'INVALID' && gioRa && gioRa !== 'INVALID' && gioRa <= gioVao) errs.gioRa = 'Giờ ra phải sau giờ vào.';
     return errs;
   };
 
@@ -200,8 +199,8 @@ export const ChamCongFormModal: React.FC<Props> = ({ editItem, onClose, onCreate
             </div>
 
             <div style={{ background: 'var(--primary-light)', borderRadius: 8, padding: '10px 14px', fontSize: 12, color: 'var(--primary)' }}>
-              💡 Hệ thống sẽ tự động tính số ngày công dựa trên giờ vào/ra và lịch làm việc của công ty.
-              Grace period: <strong>15 phút</strong>. Nghỉ trưa: <strong>1 tiếng</strong> (nếu làm &gt; 5 tiếng).
+              💡 Hệ thống sẽ tự động tính số ngày công dựa trên giờ vào/ra, ca làm việc và phân công ca.
+              Grace period (Cho phép trễ/sớm): <strong>15 phút</strong>. 
             </div>
           </div>
 

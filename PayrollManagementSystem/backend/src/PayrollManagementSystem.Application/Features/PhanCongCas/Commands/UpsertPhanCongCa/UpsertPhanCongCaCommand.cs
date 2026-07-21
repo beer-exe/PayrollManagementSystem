@@ -9,6 +9,7 @@ namespace PayrollManagementSystem.Application.Features.PhanCongCas.Commands.Upse
         public string CccdNhanVien { get; set; } = null!;
         public DateOnly NgayLamViec { get; set; }
         public Guid? IdCaLamViec { get; set; }
+        public bool XoaPhanCong { get; set; } = false;
         public string? GhiChu { get; set; }
     }
 }

@@ -4,14 +4,14 @@ import { PhanCongCaDto, UpsertPhanCongCaCommand } from '../types';
 
 export const shiftAssignmentApi = {
     getByDateRange: async (startDate: string, endDate: string, idPhongBan?: string) => {
-        const response = await axiosClient.get<ApiResponse<PhanCongCaDto[]>>('/PhanCongCa', {
+        const response = await axiosClient.get('/PhanCongCa', {
             params: { startDate, endDate, idPhongBan }
         });
-        return response.data;
+        return response as unknown as ApiResponse<PhanCongCaDto[]>;
     },
 
     upsert: async (command: UpsertPhanCongCaCommand) => {
-        const response = await axiosClient.post<ApiResponse<boolean>>('/PhanCongCa/upsert', command);
-        return response.data;
+        const response = await axiosClient.post('/PhanCongCa/upsert', command);
+        return response as unknown as ApiResponse<boolean>;
     }
 };

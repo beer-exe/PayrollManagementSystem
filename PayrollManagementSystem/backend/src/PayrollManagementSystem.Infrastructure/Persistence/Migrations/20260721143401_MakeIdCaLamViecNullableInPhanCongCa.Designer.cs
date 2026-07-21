@@ -2,18 +2,21 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PayrollManagementSystem.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace PayrollManagementSystem.Infrastructure.Migrations
+namespace PayrollManagementSystem.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260721143401_MakeIdCaLamViecNullableInPhanCongCa")]
+    partial class MakeIdCaLamViecNullableInPhanCongCa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -203,12 +206,6 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasPrecision(5, 2)
                         .HasColumnType("numeric(5,2)")
                         .HasColumnName("so_ngay_cong");
-
-                    b.Property<int>("SoPhutDiTre")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SoPhutVeSom")
-                        .HasColumnType("integer");
 
                     b.Property<string>("TrangThai")
                         .IsRequired()

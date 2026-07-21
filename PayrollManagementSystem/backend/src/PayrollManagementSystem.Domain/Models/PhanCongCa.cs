@@ -9,12 +9,12 @@ namespace PayrollManagementSystem.Domain.Models
         public string CccdNhanVien { get; set; } = null!;
         public DateOnly NgayLamViec { get; set; }
         
-        public Guid IdCaLamViec { get; set; }
+        public Guid? IdCaLamViec { get; set; }
 
         public string? GhiChu { get; set; }
 
         // Navigation properties
         public NhanVien NhanVien { get; set; } = null!;
-        public CaLamViec CaLamViec { get; set; } = null!;
+        public CaLamViec? CaLamViec { get; set; }
     }
 }

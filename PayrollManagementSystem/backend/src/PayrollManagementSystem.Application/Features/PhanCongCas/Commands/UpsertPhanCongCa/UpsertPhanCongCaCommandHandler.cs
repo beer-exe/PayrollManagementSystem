@@ -21,14 +21,14 @@ namespace PayrollManagementSystem.Application.Features.PhanCongCas.Commands.Upse
         public async Task<Response<bool>> Handle(UpsertPhanCongCaCommand request, CancellationToken cancellationToken)
         {
             var existing = await _context.PhanCongCas
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(p => p.CccdNhanVien == request.CccdNhanVien 
-                                       && p.NgayLamViec == request.NgayLamViec 
-                                       && !p.IsDeleted, cancellationToken);
+                                       && p.NgayLamViec == request.NgayLamViec, cancellationToken);
 
-            if (request.IdCaLamViec == null)
+            if (request.XoaPhanCong)
             {
-                // Request to delete
-                if (existing != null)
+                // Request to delete (Revert to default schedule)
+                if (existing != null && !existing.IsDeleted)
                 {
                     existing.IsDeleted = true;
                     await _context.SaveChangesAsync(cancellationToken);
@@ -37,17 +37,21 @@ namespace PayrollManagementSystem.Application.Features.PhanCongCas.Commands.Upse
                 return new Response<bool>(true, "Không có phân công ca nào để xoá.");
             }
 
-            // Verify CaLamViec exists
-            var caLamViec = await _context.CaLamViecs.FirstOrDefaultAsync(c => c.Id == request.IdCaLamViec && !c.IsDeleted, cancellationToken);
-            if (caLamViec == null)
+            // Verify CaLamViec exists if it's explicitly assigned a shift (not Nghỉ)
+            if (request.IdCaLamViec != null)
             {
-                throw new ApiException("Ca làm việc không tồn tại hoặc đã bị xoá.");
+                var caLamViec = await _context.CaLamViecs.FirstOrDefaultAsync(c => c.Id == request.IdCaLamViec && !c.IsDeleted, cancellationToken);
+                if (caLamViec == null)
+                {
+                    throw new ApiException("Ca làm việc không tồn tại hoặc đã bị xoá.");
+                }
             }
 
             if (existing != null)
             {
-                // Update
-                existing.IdCaLamViec = request.IdCaLamViec.Value;
+                // Update or Reactivate
+                existing.IdCaLamViec = request.IdCaLamViec;
+                existing.IsDeleted = false; // Important: Reactivate if it was soft-deleted
                 if (request.GhiChu != null)
                 {
                     existing.GhiChu = request.GhiChu;
@@ -60,14 +64,15 @@ namespace PayrollManagementSystem.Application.Features.PhanCongCas.Commands.Upse
                 {
                     CccdNhanVien = request.CccdNhanVien,
                     NgayLamViec = request.NgayLamViec,
-                    IdCaLamViec = request.IdCaLamViec.Value,
+                    IdCaLamViec = request.IdCaLamViec,
                     GhiChu = request.GhiChu
                 });
             }
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return new Response<bool>(true, "Cập nhật phân công ca thành công.");
+            string msg = request.IdCaLamViec == null ? "Đã gán ngày nghỉ ghi đè ca mặc định thành công." : "Cập nhật phân công ca thành công.";
+            return new Response<bool>(true, msg);
         }
     }
 }
