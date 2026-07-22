@@ -180,25 +180,22 @@ namespace PayrollManagementSystem.Infrastructure.Services
             if (soGioChuan <= 0) soGioChuan = 8m; // Fallback an toàn
 
             var gracePeriodGio = GRACE_PERIOD_PHUT / 60m;
-            var heSo = soGioHieuQua / soGioChuan;
-            decimal soNgayCong = 0;
+            var shiftCompletionRatio = soGioHieuQua / soGioChuan; // Tỷ lệ hoàn thành ca để xác định trạng thái
+            var soNgayCong = Math.Round(soGioHieuQua / 8m, 3); // Quy đổi công chuẩn tuyệt đối hệ cơ số 8 giờ
             LoaiNgayCong loaiNgayCong;
 
-            if (heSo >= 1m - (gracePeriodGio / soGioChuan))
+            if (shiftCompletionRatio >= 1m - (gracePeriodGio / soGioChuan))
             {
-                soNgayCong = 1m;
                 loaiNgayCong = LoaiNgayCong.LAM_DU_CA;
             }
-            else if (heSo >= 0.5m - (gracePeriodGio / soGioChuan) && heSo < 1m)
+            else if (shiftCompletionRatio >= 0.5m - (gracePeriodGio / soGioChuan) && shiftCompletionRatio < 1m)
             {
-                soNgayCong = Math.Round(heSo, 2);
-                loaiNgayCong = Math.Abs(heSo - 0.5m) < 0.05m
+                loaiNgayCong = Math.Abs(shiftCompletionRatio - 0.5m) < 0.05m
                     ? LoaiNgayCong.NUA_CA
                     : LoaiNgayCong.DI_TRE_VE_SOM;
             }
             else
             {
-                soNgayCong = Math.Round(heSo, 2);
                 loaiNgayCong = soNgayCong == 0 ? LoaiNgayCong.VANG_KHONG_PHEP : LoaiNgayCong.DI_TRE_VE_SOM;
             }
 

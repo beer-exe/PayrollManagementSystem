@@ -18,10 +18,11 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
 
         public async Task<Response<List<ChamCongSummaryDto>>> Handle(GetChamCongSummaryQuery request, CancellationToken cancellationToken)
         {
-            var ngayCongChuan = await _context.ChiTietLichLamViecs
-                .CountAsync(ct => ct.Ngay.Month == request.Thang
-                               && ct.Ngay.Year == request.Nam
-                               && ct.LoaiNgay == LoaiNgay.NGAY_LAM_VIEC, cancellationToken);
+            var chiTietLichs = await _context.ChiTietLichLamViecs
+                .Include(ct => ct.CaLamViecMacDinh)
+                .Where(ct => ct.Ngay.Month == request.Thang
+                          && ct.Ngay.Year == request.Nam)
+                .ToDictionaryAsync(ct => ct.Ngay.Day, cancellationToken);
 
             var nvQuery = _context.NhanViens
                 .Include(nv => nv.PhongBan)
@@ -33,6 +34,7 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
             var nhanViens = await nvQuery.ToListAsync(cancellationToken);
 
             var allCccd = nhanViens.Select(nv => nv.Cccd).ToList();
+            
             var chamCongs = await _context.ChamCongs
                 .Where(cc => allCccd.Contains(cc.CccdNhanVien)
                           && cc.NgayChamCong.Month == request.Thang
@@ -43,10 +45,50 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
                 .GroupBy(cc => cc.CccdNhanVien)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
+            var phanCongCas = await _context.PhanCongCas
+                .Include(p => p.CaLamViec)
+                .Where(p => allCccd.Contains(p.CccdNhanVien) 
+                         && p.NgayLamViec.Month == request.Thang 
+                         && p.NgayLamViec.Year == request.Nam)
+                .ToListAsync(cancellationToken);
+
+            var phanCongGroup = phanCongCas
+                .GroupBy(p => p.CccdNhanVien)
+                .ToDictionary(g => g.Key, g => g.ToDictionary(p => p.NgayLamViec.Day));
+
+            var daysInMonth = DateTime.DaysInMonth(request.Nam, request.Thang);
+
             var result = nhanViens.Select(nv =>
             {
                 chamCongGroup.TryGetValue(nv.Cccd, out var ccList);
                 ccList ??= new List<Domain.Models.ChamCong>();
+
+                decimal empTongGioChuan = 0;
+                phanCongGroup.TryGetValue(nv.Cccd, out var empPhanCongs);
+                empPhanCongs ??= new Dictionary<int, Domain.Models.PhanCongCa>();
+
+                for (int d = 1; d <= daysInMonth; d++)
+                {
+                    if (empPhanCongs.TryGetValue(d, out var phanCong))
+                    {
+                        if (phanCong.IdCaLamViec != null && phanCong.CaLamViec != null)
+                        {
+                            empTongGioChuan += phanCong.CaLamViec.CalculateWorkingHours();
+                        }
+                    }
+                    else
+                    {
+                        if (chiTietLichs.TryGetValue(d, out var chiTiet))
+                        {
+                            if (chiTiet.LoaiNgay == LoaiNgay.NGAY_LAM_VIEC)
+                            {
+                                empTongGioChuan += chiTiet.CaLamViecMacDinh?.CalculateWorkingHours() ?? 8m;
+                            }
+                        }
+                    }
+                }
+                
+                var empNgayCongChuan = Math.Round(empTongGioChuan / 8m, 3);
 
                 return new ChamCongSummaryDto
                 {
@@ -55,7 +97,7 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
                     TenPhongBan = nv.PhongBan?.TenPb,
                     Thang = request.Thang,
                     Nam = request.Nam,
-                    NgayCongChuan = ngayCongChuan,
+                    NgayCongChuan = empNgayCongChuan,
                     TongNgayCongThucTe = ccList
                         .Where(cc => cc.LoaiNgayCong == LoaiNgayCong.LAM_DU_CA
                                   || cc.LoaiNgayCong == LoaiNgayCong.NUA_CA

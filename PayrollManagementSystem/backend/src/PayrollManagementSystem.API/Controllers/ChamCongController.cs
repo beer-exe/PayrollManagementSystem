@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PayrollManagementSystem.Application.Features.ChamCong.Commands.CreateChamCong;
 using PayrollManagementSystem.Application.Features.ChamCong.Commands.DeleteChamCong;
-using PayrollManagementSystem.Application.Features.ChamCong.Commands.GenerateMockChamCong;
 using PayrollManagementSystem.Application.Features.ChamCong.Commands.ImportChamCong;
 using PayrollManagementSystem.Application.Features.ChamCong.Commands.UpdateChamCong;
 using PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamCongByNhanVien;
@@ -75,14 +74,6 @@ namespace PayrollManagementSystem.API.Controllers
                 FileName = file.FileName
             });
             return Ok(response);
-        }
-
-        [HttpPost("generate-mock")]
-        [Authorize(Roles = "Admin,HR")]
-        public async Task<IActionResult> GenerateMock([FromBody] GenerateMockChamCongCommand command)
-        {
-            var response = await _mediator.Send(command);
-            return File(response.Data, response.ContentType, response.FileName);
         }
 
         [HttpPut("{id:guid}")]

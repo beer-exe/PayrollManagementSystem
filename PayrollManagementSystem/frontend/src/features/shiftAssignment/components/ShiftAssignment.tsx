@@ -103,6 +103,7 @@ export const ShiftAssignment: React.FC = () => {
 
     // Filters State
     const [selectedYear, setSelectedYear] = useState<number | ''>('');
+    const [selectedMonth, setSelectedMonth] = useState<number | ''>('');
     const [selectedWeek, setSelectedWeek] = useState<number>(0);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDeptId, setSelectedDeptId] = useState<string>('');
@@ -156,17 +157,37 @@ export const ShiftAssignment: React.FC = () => {
                 const currentWeekObj = calculatedWeeks.find(w => today >= w.startDate && today <= w.endDate);
                 if (currentWeekObj) {
                     setSelectedWeek(currentWeekObj.weekNumber);
+                    setSelectedMonth(today.getMonth() + 1);
                 } else {
                     setSelectedWeek(calculatedWeeks[0]?.weekNumber || 1);
+                    setSelectedMonth('');
                 }
             } else {
                 setSelectedWeek(calculatedWeeks[0]?.weekNumber || 1);
+                setSelectedMonth('');
             }
         } else {
             setWeeks([]);
             setSelectedWeek(0);
+            setSelectedMonth('');
         }
     }, [selectedYear]);
+
+    const filteredWeeks = React.useMemo(() => {
+        return weeks.filter(w => {
+            if (selectedMonth === '') return true;
+            return (w.startDate.getMonth() + 1 === selectedMonth) || (w.endDate.getMonth() + 1 === selectedMonth);
+        });
+    }, [weeks, selectedMonth]);
+
+    useEffect(() => {
+        if (filteredWeeks.length > 0 && selectedWeek !== 0) {
+            const hasCurrentWeek = filteredWeeks.some(w => w.weekNumber === selectedWeek);
+            if (!hasCurrentWeek) {
+                setSelectedWeek(filteredWeeks[0].weekNumber);
+            }
+        }
+    }, [selectedMonth, weeks]);
 
     useEffect(() => {
         const fetchInitialData = async () => {
@@ -402,14 +423,26 @@ export const ShiftAssignment: React.FC = () => {
                     </select>
 
                     <select
+                        value={selectedMonth}
+                        onChange={(e) => setSelectedMonth(e.target.value === '' ? '' : Number(e.target.value))}
+                        className="sa-select"
+                        disabled={weeks.length === 0}
+                    >
+                        <option value="">-- Tất cả các tháng --</option>
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
+                            <option key={m} value={m}>Tháng {m}</option>
+                        ))}
+                    </select>
+
+                    <select
                         value={selectedWeek}
                         onChange={(e) => setSelectedWeek(Number(e.target.value))}
                         className="sa-select"
                         style={{ minWidth: '350px' }}
-                        disabled={weeks.length === 0}
+                        disabled={filteredWeeks.length === 0}
                     >
-                        {weeks.length === 0 && <option value={0}>-- Chưa có lịch làm việc --</option>}
-                        {weeks.map(w => (
+                        {filteredWeeks.length === 0 && <option value={0}>-- Không có tuần nào --</option>}
+                        {filteredWeeks.map(w => (
                             <option key={w.weekNumber} value={w.weekNumber}>
                                 {w.label}
                             </option>
