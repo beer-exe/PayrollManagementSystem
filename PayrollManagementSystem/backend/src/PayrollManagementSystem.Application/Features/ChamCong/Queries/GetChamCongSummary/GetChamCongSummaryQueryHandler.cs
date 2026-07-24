@@ -20,6 +20,7 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
         {
             var chiTietLichs = await _context.ChiTietLichLamViecs
                 .Include(ct => ct.CaLamViecMacDinh)
+                    .ThenInclude(c => c.KhungGioNghis)
                 .Where(ct => ct.Ngay.Month == request.Thang
                           && ct.Ngay.Year == request.Nam)
                 .ToDictionaryAsync(ct => ct.Ngay.Day, cancellationToken);
@@ -47,6 +48,7 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
 
             var phanCongCas = await _context.PhanCongCas
                 .Include(p => p.CaLamViec)
+                    .ThenInclude(c => c.KhungGioNghis)
                 .Where(p => allCccd.Contains(p.CccdNhanVien) 
                          && p.NgayLamViec.Month == request.Thang 
                          && p.NgayLamViec.Year == request.Nam)

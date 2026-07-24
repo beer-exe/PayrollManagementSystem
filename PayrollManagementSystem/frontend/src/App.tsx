@@ -28,6 +28,7 @@ import { ShiftAssignment } from "@/features/shiftAssignment/components/ShiftAssi
 import { ChamCongManagement } from '@/features/chamCong/components/ChamCongManagement';
 import { DonNghiManagement } from '@/features/donNghi/components/DonNghiManagement';
 import { MyDonNghiPortal } from '@/features/donNghi/components/MyDonNghiPortal';
+import PayrollManagement from '@/features/payroll/components/PayrollManagement';
 
 const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string[], requireManager?: boolean }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -77,6 +78,7 @@ function App() {
             <Route path="/hr/phong-ban" element={<DepartmentManagement />} />
             <Route path="/hr/ngach-luong" element={<NgachLuongManagement />} />
             <Route path="/hr/chuc-vu" element={<PositionManagement />} />
+            <Route path="/hr/bang-luong" element={<PayrollManagement />} />
           </Route>
 
           {/* 4. Time & Attendance Group */}
