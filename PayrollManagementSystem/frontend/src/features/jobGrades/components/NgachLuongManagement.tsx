@@ -6,10 +6,11 @@ import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportU
 import { SortableHeader } from '../../../components/DataTable/SortableHeader';
 import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import { JobGradeSalaryStepDrawer } from './JobGradeSalaryStepDrawer';
+import { Toast } from '@/components/Toast/Toast';
 import './JobGradeManagement.css';
 
 export const NgachLuongManagement: React.FC = () => {
-  const { jobGrades, loading, fetchJobGrades, createJobGrade, updateJobGrade, deleteJobGrade } = useJobGrades();
+  const { jobGrades, loading, toast, setToast, fetchJobGrades, createJobGrade, updateJobGrade, deleteJobGrade } = useJobGrades();
 
   useEffect(() => {
     fetchJobGrades();
@@ -385,6 +386,14 @@ export const NgachLuongManagement: React.FC = () => {
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

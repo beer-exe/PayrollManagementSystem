@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import type { LichLamViecDto } from '../types/workSchedule.types';
 import { useChiTietLich } from '../hooks/useWorkSchedule';
+import { Toast } from '@/components/Toast/Toast';
 import './WorkScheduleManagement.css';
 
 interface Props {
@@ -40,7 +41,7 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
   const [editLoaiNgay, setEditLoaiNgay] = useState<string>('');
   const [editTenNgayNghi, setEditTenNgayNghi] = useState<string>('');
   const [hasChanges, setHasChanges] = useState(false);
-  const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
     fetch(lich.idLich, selectedThang, page);
@@ -59,8 +60,7 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
   const totalHoliday = countByType('Nghỉ lễ');
 
   const showToast = (type: 'success' | 'error', text: string) => {
-    setToastMsg({ type, text });
-    setTimeout(() => setToastMsg(null), 3000);
+    setToast({ type, message: text });
   };
 
   const handleSaveEdit = async () => {
@@ -88,7 +88,6 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
   return (
     <div className="ws-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose(hasChanges)}>
       <div className="ws-modal">
-        {toastMsg && <div className={`ws-toast ws-toast--${toastMsg.type}`}>{toastMsg.text}</div>}
         {/* Header */}
         <div className="ws-modal-header">
           <div>
@@ -304,6 +303,14 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </div>
   );

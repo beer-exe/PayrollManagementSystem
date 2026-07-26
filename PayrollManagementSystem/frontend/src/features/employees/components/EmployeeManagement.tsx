@@ -8,12 +8,13 @@ import { UpdateEmployeeModal } from './UpdateEmployeeModal';
 import { UserProfileDetail } from '@/types/profile.types';
 import { CreateEmployeeCommand } from '../types/employee.types';
 import { useEmployees } from '../hooks/useEmployees';
+import { Toast } from '@/components/Toast/Toast';
 import './EmployeeManagement.css';
 import './EmployeeModals.css';
 
 export const EmployeeManagement: React.FC = () => {
   const { 
-    employees, loading,
+    employees, loading, toast, setToast,
     fetchEmployees, changeStatus, createEmployee, updateEmployee 
   } = useEmployees();
   
@@ -148,6 +149,14 @@ export const EmployeeManagement: React.FC = () => {
             if (success) fetchEmployees('', 1, pageSize);
             return success;
           }}
+        />
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
         />
       )}
     </div>

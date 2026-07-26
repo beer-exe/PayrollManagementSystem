@@ -44,16 +44,22 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
             var chucVuHienTai = await _context.ChucVus.FirstOrDefaultAsync(c => c.IdChucVu == quyetDinh.IdChucVuMoi, cancellationToken);
             if (chucVuHienTai != null && !string.IsNullOrEmpty(chucVuHienTai.IdChucVuQuanLy))
             {
-                var managerQd = await _context.QuyetDinhNhanSus
-                    .Where(q => q.IdChucVuMoi == chucVuHienTai.IdChucVuQuanLy && q.TrangThai == Domain.Enums.TrangThaiQuyetDinh.HIEU_LUC && q.NgayHieuLuc <= today)
-                    .OrderByDescending(q => q.NgayHieuLuc)
-                    .ThenByDescending(q => q.CreatedAt)
-                    .FirstOrDefaultAsync(cancellationToken);
-                
-                if (managerQd != null)
-                {
-                    managerCccd = managerQd.Cccd;
-                }
+                var possibleManagers = await _context.NhanViens
+                    .Where(nv => nv.TrangThai == Domain.Enums.TrangThaiNhanVien.DANG_LAM_VIEC)
+                    .Select(nv => new 
+                    {
+                        nv.Cccd,
+                        LatestQd = nv.QuyetDinhNhanSus
+                            .Where(q => q.TrangThai == Domain.Enums.TrangThaiQuyetDinh.HIEU_LUC && q.NgayHieuLuc <= today)
+                            .OrderByDescending(q => q.NgayHieuLuc)
+                            .ThenByDescending(q => q.CreatedAt)
+                            .FirstOrDefault()
+                    })
+                    .Where(x => x.LatestQd != null && x.LatestQd.IdChucVuMoi == chucVuHienTai.IdChucVuQuanLy)
+                    .Select(x => x.Cccd)
+                    .ToListAsync(cancellationToken);
+
+                managerCccd = possibleManagers.FirstOrDefault();
             }
 
             var phieu = new Domain.Models.PhieuDanhGiaNangLuc

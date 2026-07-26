@@ -9,6 +9,11 @@ export const useSystemData = () => {
   const [positions, setPositions] = useState<PositionDto[]>([]);
   const [relations, setRelations] = useState<{idMqh: string; tenQuanHe: string}[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+
+  const showToast = (message: string, type: "success" | "error") => {
+    setToast({ message, type });
+  };
 
   const fetchSystemData = async () => {
     setIsLoading(true);
@@ -23,6 +28,7 @@ export const useSystemData = () => {
       if (relRes.succeeded) setRelations(relRes.data);
     } catch (error) {
       console.error("Lỗi khi tải dữ liệu hệ thống", error);
+      showToast('Lỗi khi tải dữ liệu hệ thống (Phòng ban/Chức vụ)', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -30,5 +36,5 @@ export const useSystemData = () => {
 
   useEffect(() => { fetchSystemData(); }, []);
 
-  return { departments, positions, relations, isLoading, refreshData: fetchSystemData };
+  return { departments, positions, relations, isLoading, refreshData: fetchSystemData, toast, setToast };
 };

@@ -5,6 +5,8 @@ import { useDataTable } from '../../../hooks/useDataTable';
 import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
 import { SortableHeader } from '../../../components/DataTable/SortableHeader';
 import { ExportButtons } from '../../../components/DataTable/ExportButtons';
+import { Toast } from '../../../components/Toast/Toast';
+import { ConfirmModal } from '../../../components/ConfirmModal/ConfirmModal';
 import './CompetencyManagement.css';
 
 export const MucQuyDoiManagement: React.FC = () => {
@@ -23,6 +25,9 @@ export const MucQuyDoiManagement: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+  const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' | 'info' } | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<MucQuyDoiDto | null>(null);
 
   const {
     currentData,
@@ -140,19 +145,37 @@ export const MucQuyDoiManagement: React.FC = () => {
       if (success) {
         setIsModalVisible(false);
         fetchQuyDoi();
+        setToast({ message: editingItem ? 'Cập nhật thành công!' : 'Thêm mới thành công!', type: 'success' });
+      } else {
+        setToast({ message: 'Lưu thất bại. Vui lòng kiểm tra lại.', type: 'error' });
       }
     } catch (info) {
       console.log('Error:', info);
+      setToast({ message: 'Có lỗi hệ thống xảy ra khi lưu!', type: 'error' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDelete = (record: MucQuyDoiDto) => {
-    if (window.confirm(`Bạn có chắc muốn xóa xếp loại "${record.xepLoai}" không?`)) {
-      deleteQuyDoi(record.idQuyDoi).then(success => {
-        if (success) fetchQuyDoi();
-      });
+  const handleDeleteClick = (record: MucQuyDoiDto) => {
+    setConfirmDelete(record);
+    setActiveDropdown(null);
+  };
+
+  const confirmDeleteAction = async () => {
+    if (!confirmDelete) return;
+    try {
+      const success = await deleteQuyDoi(confirmDelete.idQuyDoi);
+      if (success) {
+        fetchQuyDoi();
+        setToast({ message: 'Xóa thành công!', type: 'success' });
+      } else {
+        setToast({ message: 'Xóa thất bại.', type: 'error' });
+      }
+    } catch (error) {
+      setToast({ message: 'Lỗi khi xóa.', type: 'error' });
+    } finally {
+      setConfirmDelete(null);
     }
   };
 
@@ -259,8 +282,7 @@ export const MucQuyDoiManagement: React.FC = () => {
                               <button 
                                 className="cp2-dropdown-item danger" 
                                 onClick={() => {
-                                  handleDelete(record);
-                                  setActiveDropdown(null);
+                                  handleDeleteClick(record);
                                 }}
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1rem', height: '1rem' }}>
@@ -393,6 +415,16 @@ export const MucQuyDoiManagement: React.FC = () => {
           </div>
         </div>
       )}
+
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      
+      <ConfirmModal 
+        isOpen={!!confirmDelete} 
+        title="Xác nhận xóa" 
+        message={`Bạn có chắc chắn muốn xóa xếp loại "${confirmDelete?.xepLoai}" không? Hành động này không thể hoàn tác.`} 
+        onConfirm={confirmDeleteAction} 
+        onCancel={() => setConfirmDelete(null)} 
+      />
     </div>
   );
 };

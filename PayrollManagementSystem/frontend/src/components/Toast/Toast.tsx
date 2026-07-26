@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import './Toast.css';
 
 interface ToastProps {
@@ -9,6 +10,17 @@ interface ToastProps {
 }
 
 export const Toast: React.FC<ToastProps> = ({ message, type, duration = 3000, onClose }) => {
+    const [container] = useState(() => {
+        let el = document.getElementById('toast-root');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'toast-root';
+            el.className = 'toast-wrapper';
+            document.body.appendChild(el);
+        }
+        return el;
+    });
+
     useEffect(() => {
         const timer = setTimeout(() => {
             onClose();
@@ -16,7 +28,7 @@ export const Toast: React.FC<ToastProps> = ({ message, type, duration = 3000, on
         return () => clearTimeout(timer);
     }, [duration, onClose]);
 
-    return (
+    const content = (
         <div className={`toast-container toast-${type}`}>
             <div className="toast-content">
                 {type === 'success' && (
@@ -43,4 +55,6 @@ export const Toast: React.FC<ToastProps> = ({ message, type, duration = 3000, on
             </button>
         </div>
     );
+
+    return ReactDOM.createPortal(content, container);
 };

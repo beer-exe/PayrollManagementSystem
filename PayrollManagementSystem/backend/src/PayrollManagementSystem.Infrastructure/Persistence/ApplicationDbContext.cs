@@ -581,7 +581,10 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
 
                 entity.Property(e => e.IdLich).HasColumnName("id_lich");
                 entity.Property(e => e.Nam).HasColumnName("nam");
-                entity.HasIndex(e => e.Nam).IsUnique().HasDatabaseName("idx_lich_lam_viec_nam_unique");
+                entity.HasIndex(e => e.Nam)
+                      .IsUnique()
+                      .HasFilter("\"IsDeleted\" = false")
+                      .HasDatabaseName("idx_lich_lam_viec_nam_unique");
 
                 entity.Property(e => e.TrangThai)
                     .HasConversion<string>()

@@ -7,7 +7,11 @@ export const useWorkSchedule = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = useCallback((message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+  }, []);
 
   const fetchAll = useCallback(async () => {
     setIsLoading(true);
@@ -16,52 +20,67 @@ export const useWorkSchedule = () => {
       const res = await workScheduleApi.getAll();
       setLichList(res.data ?? []);
     } catch (err: any) {
-      setError(err?.response?.data?.message ?? 'Có lỗi xảy ra khi tải dữ liệu.');
+      const msg = err?.response?.data?.message ?? 'Có lỗi xảy ra khi tải dữ liệu.';
+      setError(msg);
+      showToast(msg, 'error');
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [showToast]);
 
   const create = useCallback(async (data: CreateLichLamViecRequest) => {
     setIsCreating(true);
     setError(null);
-    setSuccessMsg(null);
     try {
       const res = await workScheduleApi.create(data);
-      setSuccessMsg(res.message);
+      showToast(res.message, 'success');
       await fetchAll();
       return true;
     } catch (err: any) {
-      setError(err?.response?.data?.message ?? `Không thể tạo lịch làm việc năm ${data.nam}.`);
+      const msg = err?.response?.data?.message ?? `Không thể tạo lịch làm việc năm ${data.nam}.`;
+      setError(msg);
+      showToast(msg, 'error');
       return false;
     } finally {
       setIsCreating(false);
     }
-  }, [fetchAll]);
+  }, [fetchAll, showToast]);
 
   const remove = useCallback(async (id: string, nam: number) => {
     setIsLoading(true);
     setError(null);
-    setSuccessMsg(null);
     try {
       const res = await workScheduleApi.delete(id);
-      setSuccessMsg(res.message);
+      showToast(res.message, 'success');
       await fetchAll();
       return true;
     } catch (err: any) {
-      setError(err?.response?.data?.message ?? `Không thể xóa lịch làm việc năm ${nam}.`);
+      const msg = err?.response?.data?.message ?? `Không thể xóa lịch làm việc năm ${nam}.`;
+      setError(msg);
+      showToast(msg, 'error');
       return false;
     } finally {
       setIsLoading(false);
     }
-  }, [fetchAll]);
+  }, [fetchAll, showToast]);
 
   const clearMessages = () => {
     setError(null);
-    setSuccessMsg(null);
+    setToast(null);
   };
 
-  return { lichList, isLoading, isCreating, error, successMsg, fetchAll, create, remove, clearMessages };
+  return { 
+    lichList, 
+    isLoading, 
+    isCreating, 
+    error, 
+    fetchAll, 
+    create, 
+    remove,
+    clearMessages,
+    toast,
+    setToast,
+  };
 };
 
 export const useChiTietLich = () => {

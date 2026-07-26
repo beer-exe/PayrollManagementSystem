@@ -9,6 +9,7 @@ import { useJobGrades } from "../../jobGrades/hooks/useJobGrades";
 import { departmentApi } from "../../departments/api/departmentApi";
 import { DepartmentDto } from "../../departments/types/department.types";
 import { PositionModal } from "./PositionModal";
+import { Toast } from '@/components/Toast/Toast';
 import './PositionManagement.css';
 
 export const PositionManagement: React.FC = () => {
@@ -19,6 +20,8 @@ export const PositionManagement: React.FC = () => {
     createPosition,
     updatePosition,
     toggleStatus,
+    toast,
+    setToast
   } = usePositions();
 
   const { jobGrades, fetchJobGrades: fetchJobGradesData } = useJobGrades();
@@ -324,6 +327,14 @@ export const PositionManagement: React.FC = () => {
         selectedDepartmentId={selectedDepartmentId}
         onSubmit={handleModalSubmit}
       />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { UserProfileDetail } from '@/types/profile.types';
 import { profileApi } from '../api/profileApi';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Toast } from '@/components/Toast/Toast';
 import './UserProfile.css';
 
 type TabType = 'personal' | 'contract' | 'finance' | 'dependents' | 'history';
@@ -11,6 +12,7 @@ export const UserProfile: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('personal');
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -29,6 +31,7 @@ export const UserProfile: React.FC = () => {
         const err = error as import('axios').AxiosError<{Message?: string}>;
         const errorMessage = err?.response?.data?.Message || err?.message || 'Đã xảy ra lỗi khi kết nối với máy chủ.';
         setError(errorMessage);
+        setToast({ message: errorMessage, type: 'error' });
       } finally {
         setIsLoading(false);
       }
@@ -109,6 +112,14 @@ export const UserProfile: React.FC = () => {
             Thử lại
           </button>
         </div>
+        
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
       </div>
     );
   }
@@ -476,6 +487,14 @@ export const UserProfile: React.FC = () => {
           </AnimatePresence>
         </div>
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };
