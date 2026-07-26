@@ -14,5 +14,36 @@ namespace PayrollManagementSystem.Domain.Models
 
         // Navigation properties
         public ICollection<KhungGioNghi> KhungGioNghis { get; set; } = new List<KhungGioNghi>();
+        public ICollection<ChiTietLichLamViec> ChiTietLichLamViecs { get; set; } = new List<ChiTietLichLamViec>();
+        public ICollection<PhanCongCa> PhanCongCas { get; set; } = new List<PhanCongCa>();
+
+        public decimal CalculateWorkingHours()
+        {
+            var diff = GioKetThuc - GioBatDau;
+            if (XuyenNgay || diff.TotalHours < 0)
+            {
+                diff = diff.Add(TimeSpan.FromHours(24));
+            }
+            
+            decimal totalHours = (decimal)diff.TotalHours;
+
+            if (KhungGioNghis != null)
+            {
+                foreach (var breakTime in KhungGioNghis)
+                {
+                    if (!breakTime.TinhVaoGioLam && !breakTime.IsDeleted)
+                    {
+                        var breakDiff = breakTime.GioKetThuc - breakTime.GioBatDau;
+                        if (breakDiff.TotalHours < 0)
+                        {
+                            breakDiff = breakDiff.Add(TimeSpan.FromHours(24));
+                        }
+                        totalHours -= (decimal)breakDiff.TotalHours;
+                    }
+                }
+            }
+
+            return totalHours > 0 ? totalHours : 0;
+        }
     }
 }

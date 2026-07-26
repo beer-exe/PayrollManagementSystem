@@ -8,6 +8,8 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Cre
     {
         public int Nam { get; set; }
         public string? GhiChu { get; set; }
+        public bool UseDefaultShift { get; set; }
+        public Guid? DefaultShiftId { get; set; }
 
         public string CacheKeyPrefix => "LichLamViec_";
     }

@@ -8,6 +8,9 @@ namespace PayrollManagementSystem.Domain.Enums
         HIEU_LUC,
 
         [Description("Đã hủy")]
-        DA_HUY
+        DA_HUY,
+
+        [Description("Hết hiệu lực")]
+        HET_HIEU_LUC
     }
 }

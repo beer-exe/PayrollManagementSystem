@@ -86,7 +86,7 @@ namespace PayrollManagementSystem.API.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var response = await _mediator.Send(new DeleteChamCongCommand { Id = id });

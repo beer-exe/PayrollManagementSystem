@@ -9,6 +9,7 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Upd
         public Guid IdChiTiet { get; set; }
         public string LoaiNgay { get; set; } = null!;
         public string? TenNgayNghi { get; set; }
+        public Guid? IdCaLamViecMacDinh { get; set; }
 
         public string CacheKeyPrefix => "LichLamViec_";
     }

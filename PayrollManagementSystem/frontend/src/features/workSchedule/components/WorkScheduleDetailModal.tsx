@@ -35,13 +35,30 @@ const formatDate = (dateStr: string) => {
 export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
   const [selectedThang, setSelectedThang] = useState(1);
   const [page, setPage] = useState(1);
-  const { chiTiets, setChiTiets, isLoading, totalRecords, totalPages, fetch } = useChiTietLich();
+  const { chiTiets, isLoading, totalRecords, totalPages, fetch } = useChiTietLich();
 
   const [editingRow, setEditingRow] = useState<any>(null);
   const [editLoaiNgay, setEditLoaiNgay] = useState<string>('');
   const [editTenNgayNghi, setEditTenNgayNghi] = useState<string>('');
+  const [editIdCaLamViecMacDinh, setEditIdCaLamViecMacDinh] = useState<string>('');
+  const [shifts, setShifts] = useState<any[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  useEffect(() => {
+    const fetchShifts = async () => {
+      try {
+        const { workShiftApi } = await import('../../workShifts/api/workShiftApi');
+        const res = await workShiftApi.getAll();
+        if (res.succeeded) {
+          setShifts(res.data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchShifts();
+  }, []);
 
   useEffect(() => {
     fetch(lich.idLich, selectedThang, page);
@@ -67,17 +84,18 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
     if (!editingRow || !editLoaiNgay) return;
     try {
       const { workScheduleApi } = await import('../api/workScheduleApi');
-      await workScheduleApi.updateChiTiet(editingRow.id, editLoaiNgay, editTenNgayNghi);
-      
       let finalTenNgayNghi = editTenNgayNghi || null;
       if (editLoaiNgay === 'Nghỉ cuối tuần' && !finalTenNgayNghi) {
         finalTenNgayNghi = `Nghỉ ${editingRow.thu}`;
       }
 
-      setChiTiets(chiTiets.map(c => c.id === editingRow.id ? { ...c, loaiNgay: editLoaiNgay, tenNgayNghi: finalTenNgayNghi, soGioLam: editLoaiNgay === 'Ngày làm việc' ? 8 : 0 } : c));
+      await workScheduleApi.updateChiTiet(editingRow.id, editLoaiNgay, editTenNgayNghi, editIdCaLamViecMacDinh || undefined);
+
       setHasChanges(true);
       setEditingRow(null);
       showToast('success', 'Cập nhật ngày thành công.');
+      // Refetch to get the latest soGioLam calculated by the backend
+      fetch(lich.idLich, selectedThang, page);
     } catch (err: any) {
       const errorData = err.response?.data;
       const errMsg = errorData?.Errors?.join(', ') || errorData?.errors?.join(', ') || errorData?.Message || errorData?.message || 'Lỗi khi cập nhật loại ngày.';
@@ -149,6 +167,7 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
                   <th>Ngày</th>
                   <th>Thứ</th>
                   <th>Loại ngày</th>
+                  <th>Ca làm việc</th>
                   <th>Tên ngày nghỉ</th>
                   <th style={{ textAlign: 'center' }}>Số giờ làm</th>
                   <th style={{ textAlign: 'center', width: '5rem' }}>Thao tác</th>
@@ -172,6 +191,9 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
                       <td>
                         <span className={getBadgeClass(c.loaiNgay)}>{c.loaiNgay}</span>
                       </td>
+                      <td style={{ color: 'var(--text-primary)', fontSize: '0.85rem' }}>
+                        {c.loaiNgay === 'Ngày làm việc' ? (c.tenCaLamViecMacDinh ?? 'Mặc định') : '—'}
+                      </td>
                       <td style={{ color: 'var(--text-secondary)', fontSize: '0.82rem' }}>
                         {c.tenNgayNghi ?? '—'}
                       </td>
@@ -186,6 +208,7 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
                             setEditingRow(c);
                             setEditLoaiNgay(c.loaiNgay);
                             setEditTenNgayNghi(c.tenNgayNghi ?? '');
+                            setEditIdCaLamViecMacDinh(c.idCaLamViecMacDinh ?? '');
                           }}
                           title="Sửa ngày"
                         >
@@ -260,7 +283,6 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
               </label>
               <select 
                 className="ws-input" 
-                style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none' }}
                 value={editLoaiNgay}
                 onChange={(e) => {
                   setEditLoaiNgay(e.target.value);
@@ -272,6 +294,23 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
                 <option value="Nghỉ lễ">Nghỉ lễ</option>
               </select>
             </div>
+            {editLoaiNgay === 'Ngày làm việc' && (
+              <div className="ws-modal-body" style={{ padding: '0 1.5rem 1.5rem 1.5rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                  Ca làm việc
+                </label>
+                <select 
+                  className="ws-input" 
+                  value={editIdCaLamViecMacDinh}
+                  onChange={(e) => setEditIdCaLamViecMacDinh(e.target.value)}
+                >
+                  <option value="">-- Mặc định (Không gán) --</option>
+                  {shifts.map(shift => (
+                    <option key={shift.id} value={shift.id}>{shift.tenCa}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             {editLoaiNgay === 'Nghỉ lễ' && (
               <div className="ws-modal-body" style={{ padding: '0 1.5rem 1.5rem 1.5rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>
@@ -281,7 +320,6 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
                   type="text"
                   className="ws-input" 
                   placeholder="Nhập tên ngày lễ (VD: Quốc khánh, Tết...)"
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none' }}
                   value={editTenNgayNghi}
                   onChange={(e) => setEditTenNgayNghi(e.target.value)}
                 />

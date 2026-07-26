@@ -32,6 +32,7 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Queries.GetC
             var totalRecords = await query.CountAsync(cancellationToken);
 
             var data = await query
+                .Include(c => c.CaLamViecMacDinh)
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .Select(c => new ChiTietLichLamViecDto
@@ -41,7 +42,9 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Queries.GetC
                     Thu = c.Thu,
                     LoaiNgay = c.LoaiNgay.GetDescription(),
                     TenNgayNghi = c.TenNgayNghi,
-                    SoGioLam = c.SoGioLam
+                    SoGioLam = c.SoGioLam,
+                    IdCaLamViecMacDinh = c.IdCaLamViecMacDinh,
+                    TenCaLamViecMacDinh = c.CaLamViecMacDinh != null ? c.CaLamViecMacDinh.TenCa : null
                 })
                 .ToListAsync(cancellationToken);
 
