@@ -169,16 +169,21 @@
   border-collapse: collapse;
   font-size: 13.5px;
 }
-.cc-table thead tr {
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+.cc-table thead {
+  position: sticky;
+  top: 0;
+  background: var(--bg-hover);
+  z-index: 10;
 }
 .cc-table thead th {
-  padding: 13px 16px;
+  padding: 0.9rem 1.1rem;
   text-align: left;
-  color: #fff;
-  font-weight: 600;
-  font-size: 12.5px;
-  letter-spacing: 0.03em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+  border-bottom: 2px solid var(--border-color);
   white-space: nowrap;
 }
 .cc-table tbody tr {

@@ -4,6 +4,9 @@ import { useMyDonNghi } from '../hooks/useMyDonNghi';
 import { LOAI_NGHI_OPTIONS } from '../types/donNghi.types';
 import type { DonNghiDto } from '../types/donNghi.types';
 import { donNghiApi } from '../api/donNghiApi';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { SortDirection } from '../../../hooks/useDataTable';
+import { Toast } from '../../../components/Toast/Toast';
 import './MyDonNghiPortal.css';
 
 const now = new Date();
@@ -47,17 +50,18 @@ export const MyDonNghiPortal: React.FC = () => {
   const [showModal, setShowModal]       = useState(false);
   const [form, setForm]                 = useState<FormState>(initialForm);
   const [formErrors, setFormErrors]     = useState<Record<string, string>>({});
-  const [toastMsg, setToastMsg]         = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [myCccd, setMyCccd]             = useState('');
   const [myName, setMyName]             = useState('');
   const [validYears, setValidYears] = useState<number[]>([]);
+  const [sortKey, setSortKey] = useState<string>('ngayBatDau');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
-  const { list, ngayPhep, loading, error, fetchList, fetchNgayPhep, createDonNghi, deleteDonNghi } = useMyDonNghi();
+  const { list, ngayPhep, loading, fetchList, fetchNgayPhep, createDonNghi, deleteDonNghi, toast, setToast, showToast } = useMyDonNghi();
 
   useEffect(() => {
     import('../../workSchedule/api/workScheduleApi').then(({ workScheduleApi }) => {
       workScheduleApi.getAll().then(res => {
-        if (res.data) setValidYears(Array.from(new Set(res.data.map((w: any) => w.nam))));
+        if (res.data) setValidYears(Array.from(new Set(res.data.map((w: { nam: number }) => w.nam))));
       }).catch(console.error);
     });
   }, []);
@@ -80,10 +84,6 @@ export const MyDonNghiPortal: React.FC = () => {
   useEffect(() => { loadData(); }, [loadData]);
   useEffect(() => { setPage(1); }, [thang, nam, filterTrangThai]);
 
-  const showToast = (type: 'success' | 'error', text: string) => {
-    setToastMsg({ type, text });
-    setTimeout(() => setToastMsg(null), 3500);
-  };
 
   // Auto compute soNgayNghi when dates change
   const handleFormChange = async (field: 'ngayBatDau' | 'ngayKetThuc' | 'loaiNghi', value: string) => {
@@ -169,15 +169,36 @@ export const MyDonNghiPortal: React.FC = () => {
     else { showToast('success', 'Đã hủy đơn nghỉ.'); loadData(); }
   };
 
-  const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
-  const currentList = list.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const handleSort = (key: string) => {
+    if (sortKey === key) {
+      if (sortDirection === 'asc') setSortDirection('desc');
+      else if (sortDirection === 'desc') { setSortKey(''); setSortDirection('asc'); }
+    } else {
+      setSortKey(key);
+      setSortDirection('asc');
+    }
+  };
+
+  const sortedList = React.useMemo(() => {
+    if (!sortKey) return list;
+    return [...list].sort((a: DonNghiDto, b: DonNghiDto) => {
+      const aVal = (a as any)[sortKey] ?? '';
+      const bVal = (b as any)[sortKey] ?? '';
+      if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [list, sortKey, sortDirection]);
+
+  const totalPages = Math.max(1, Math.ceil(sortedList.length / PAGE_SIZE));
+  const currentList = sortedList.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   // Summary counts
   const pendingCount  = list.filter(d => d.trangThai === 'Chờ duyệt').length;
 
   return (
     <div className="mdp-page">
-      {toastMsg && <div className={`mdp-toast mdp-toast--${toastMsg.type}`}>{toastMsg.text}</div>}
+
 
       {/* HEADER */}
       <div className="mdp-header">
@@ -197,27 +218,35 @@ export const MyDonNghiPortal: React.FC = () => {
 
       {/* SUMMARY CARDS */}
       <div className="mdp-cards">
-        <div className="mdp-card">
-          <span className="mdp-card__label">Tổng phép năm</span>
-          <span className="mdp-card__value">{ngayPhep ? ngayPhep.tongNgayPhep : '—'}</span>
-          <span className="mdp-card__sub">ngày / năm {nam}</span>
-        </div>
-        <div className="mdp-card">
-          <span className="mdp-card__label">Đã sử dụng</span>
-          <span className="mdp-card__value mdp-card__value--gray">{ngayPhep ? ngayPhep.daSuDung : '—'}</span>
-          <span className="mdp-card__sub">ngày</span>
-        </div>
-        <div className="mdp-card">
-          <span className="mdp-card__label">Còn lại</span>
-          <span className={`mdp-card__value ${
-            ngayPhep
-              ? ngayPhep.conLai < 0 ? 'mdp-card__value--danger' : ngayPhep.conLai <= 2 ? 'mdp-card__value--warn' : ''
-              : ''
-          }`}>
-            {ngayPhep ? ngayPhep.conLai : '—'}
-          </span>
-          <span className="mdp-card__sub">ngày phép</span>
-        </div>
+        {ngayPhep ? (
+          <>
+            <div className="mdp-card">
+              <span className="mdp-card__label">Tổng phép năm</span>
+              <span className="mdp-card__value">{ngayPhep.tongNgayPhep}</span>
+              <span className="mdp-card__sub">ngày / năm {nam}</span>
+            </div>
+            <div className="mdp-card">
+              <span className="mdp-card__label">Đã sử dụng</span>
+              <span className="mdp-card__value mdp-card__value--gray">{ngayPhep.daSuDung}</span>
+              <span className="mdp-card__sub">ngày</span>
+            </div>
+            <div className="mdp-card">
+              <span className="mdp-card__label">Còn lại</span>
+              <span className={`mdp-card__value ${
+                ngayPhep.conLai < 0 ? 'mdp-card__value--danger' : ngayPhep.conLai <= 2 ? 'mdp-card__value--warn' : ''
+              }`}>
+                {ngayPhep.conLai}
+              </span>
+              <span className="mdp-card__sub">ngày phép</span>
+            </div>
+          </>
+        ) : (
+          <div className="mdp-card mdp-card--empty-phep">
+            <span className="mdp-card__value mdp-card__value--gray" style={{ fontSize: '15px', fontWeight: 500 }}>
+              Nhân viên chưa được cấu hình ngày phép cho năm {nam}
+            </span>
+          </div>
+        )}
         <div className="mdp-card">
           <span className="mdp-card__label">Chờ duyệt</span>
           <span className="mdp-card__value mdp-card__value--warn">{pendingCount}</span>
@@ -257,20 +286,18 @@ export const MyDonNghiPortal: React.FC = () => {
       {/* TABLE */}
       {loading ? (
         <div className="mdp-loading"><div className="mdp-spinner" /><span>Đang tải...</span></div>
-      ) : error ? (
-        <div className="mdp-error">{error}</div>
       ) : (
         <div className="mdp-table-wrap">
           <table className="mdp-table">
             <thead>
               <tr>
-                <th>Loại nghỉ</th>
-                <th>Từ ngày</th>
-                <th>Đến ngày</th>
-                <th>Số ngày</th>
+                <SortableHeader label="Loại nghỉ" sortKey="loaiNghi" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                <SortableHeader label="Từ ngày" sortKey="ngayBatDau" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                <SortableHeader label="Đến ngày" sortKey="ngayKetThuc" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                <SortableHeader label="Số ngày" sortKey="soNgayNghi" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
                 <th>Lý do</th>
-                <th>Trạng thái</th>
-                <th>Người duyệt</th>
+                <SortableHeader label="Trạng thái" sortKey="trangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                <SortableHeader label="Người duyệt" sortKey="hoTenNguoiDuyet" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
                 <th></th>
               </tr>
             </thead>
@@ -413,6 +440,14 @@ export const MyDonNghiPortal: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </div>
   );

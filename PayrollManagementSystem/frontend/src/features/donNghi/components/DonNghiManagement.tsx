@@ -11,6 +11,7 @@ import { useDataTable } from '../../../hooks/useDataTable';
 import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
 import { SortableHeader } from '../../../components/DataTable/SortableHeader';
 import { ExportButtons } from '../../../components/DataTable/ExportButtons';
+import { Toast } from '../../../components/Toast/Toast';
 import './DonNghiManagement.css';
 
 const TRANG_THAI_COLOR: Record<string, string> = {
@@ -61,16 +62,14 @@ export const DonNghiManagement: React.FC = () => {
   const [showNgayPhepModal, setShowNgayPhepModal] = useState(false);
 
   // --- Employee search for Modal ---
-  const [empList, setEmpList] = useState<any[]>([]);
+  const [empList, setEmpList] = useState<{ cccd: string; hoTen: string; tenPhongBan?: string | null }[]>([]);
   const [cccdSearchTerm, setCccdSearchTerm] = useState('');
   const [cccdDropdownOpen, setCccdDropdownOpen] = useState(false);
   const cccdDropdownRef = useRef<HTMLDivElement>(null);
 
   const [validYears, setValidYears] = useState<number[]>([]);
 
-  const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-
-  const { list, ngayPhepList, loading, error, fetchList, fetchNgayPhep, createDonNghi, duyetDonNghi, tuChoiDonNghi, deleteDonNghi, updateNgayPhep, huyDonNghiDaDuyet } = useDonNghi();
+  const { list, ngayPhepList, loading, fetchList, fetchNgayPhep, createDonNghi, duyetDonNghi, tuChoiDonNghi, deleteDonNghi, updateNgayPhep, huyDonNghiDaDuyet, toast, setToast, showToast } = useDonNghi();
 
   const {
     currentData: currentDonNghiList,
@@ -164,10 +163,7 @@ export const DonNghiManagement: React.FC = () => {
     e.cccd?.includes(cccdSearchTerm)
   );
 
-  const showToast = (type: 'success' | 'error', text: string) => {
-    setToastMsg({ type, text });
-    setTimeout(() => setToastMsg(null), 3500);
-  };
+
 
   // Removed custom filtering and pagination array slicing since useDataTable handles it
 
@@ -245,7 +241,7 @@ export const DonNghiManagement: React.FC = () => {
         setNgayPhepEdit(null);
       }
       setShowNgayPhepModal(true);
-    } catch (err) {
+    } catch (_: unknown) {
       showToast('error', 'Lỗi khi kiểm tra dữ liệu năm!');
     }
   };
@@ -303,7 +299,7 @@ export const DonNghiManagement: React.FC = () => {
   return (
     <div className="dn-page">
       {/* TOAST */}
-      {toastMsg && <div className={`dn-toast dn-toast--${toastMsg.type}`}>{toastMsg.text}</div>}
+
 
       {/* HEADER */}
       <div className="dn-header">
@@ -411,8 +407,6 @@ export const DonNghiManagement: React.FC = () => {
       {/* CONTENT */}
       {loading ? (
         <div className="dn-loading"><div className="dn-spinner" /><span>Đang tải...</span></div>
-      ) : error ? (
-        <div className="dn-error">{error}</div>
       ) : activeTab === 'don-nghi' ? (
         /* BẢNG ĐƠN NGHỈ */
         <div className="dn-table-wrap">
@@ -634,6 +628,14 @@ export const DonNghiManagement: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </div>
   );

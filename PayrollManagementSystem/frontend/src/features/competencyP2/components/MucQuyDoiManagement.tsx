@@ -10,7 +10,7 @@ import { ConfirmModal } from '../../../components/ConfirmModal/ConfirmModal';
 import './CompetencyManagement.css';
 
 export const MucQuyDoiManagement: React.FC = () => {
-  const { data, loading, fetchQuyDoi, createQuyDoi, updateQuyDoi, deleteQuyDoi } = useMucQuyDoi();
+  const { data, loading, fetchQuyDoi, createQuyDoi, updateQuyDoi, deleteQuyDoi, toast, setToast } = useMucQuyDoi();
   
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState<MucQuyDoiDto | null>(null);
@@ -26,7 +26,6 @@ export const MucQuyDoiManagement: React.FC = () => {
   
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
-  const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' | 'info' } | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<MucQuyDoiDto | null>(null);
 
   const {

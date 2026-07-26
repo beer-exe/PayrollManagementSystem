@@ -6,7 +6,11 @@ export const useMyDonNghi = () => {
   const [list, setList] = useState<DonNghiDto[]>([]);
   const [ngayPhep, setNgayPhep] = useState<NgayPhepDto | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = useCallback((type: 'success' | 'error', msg: string) => {
+    setToast({ message: msg, type });
+  }, []);
 
   const fetchList = useCallback(async (params: {
     thang?: number;
@@ -15,12 +19,11 @@ export const useMyDonNghi = () => {
     loaiNghi?: string;
   }) => {
     setLoading(true);
-    setError(null);
     try {
       const res = await myDonNghiApi.getMyList(params);
       setList(res.data ?? []);
     } catch {
-      setError('Không thể tải danh sách đơn nghỉ.');
+      showToast('error', 'Không thể tải danh sách đơn nghỉ.');
     } finally {
       setLoading(false);
     }
@@ -55,5 +58,5 @@ export const useMyDonNghi = () => {
     }
   }, []);
 
-  return { list, ngayPhep, loading, error, fetchList, fetchNgayPhep, createDonNghi, deleteDonNghi };
+  return { list, ngayPhep, loading, fetchList, fetchNgayPhep, createDonNghi, deleteDonNghi, toast, setToast, showToast };
 };

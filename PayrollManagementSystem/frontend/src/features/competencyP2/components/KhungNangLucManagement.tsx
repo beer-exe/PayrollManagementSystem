@@ -6,6 +6,7 @@ import { useDataTable } from '../../../hooks/useDataTable';
 import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
 import { SortableHeader } from '../../../components/DataTable/SortableHeader';
 import { ExportButtons } from '../../../components/DataTable/ExportButtons';
+import { Toast } from '../../../components/Toast/Toast';
 import './CompetencyManagement.css';
 
 // Array of vibrant colors for the donut chart slices
@@ -26,7 +27,7 @@ export const KhungNangLucManagement: React.FC = () => {
   const [positions, setPositions] = useState<PositionDto[]>([]);
   const [selectedChucVu, setSelectedChucVu] = useState<string>('');
 
-  const { data, loading, fetchByChucVu, createCriteria, updateCriteria, deleteCriteria } = useKhungNangLuc();
+  const { data, loading, fetchByChucVu, createCriteria, updateCriteria, deleteCriteria, toast, setToast } = useKhungNangLuc();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -156,19 +157,19 @@ export const KhungNangLucManagement: React.FC = () => {
 
     // Validation
     if (totalWeightPercent > 100) {
-      alert("Tổng tỷ trọng không được vượt quá 100%");
+      setToast({ message: "Tổng tỷ trọng không được vượt quá 100%", type: 'error' });
       return;
     }
 
     const hasEmptyName = criteriaList.some(c => !c.tenNangLuc.trim());
     if (hasEmptyName) {
-      alert("Vui lòng nhập đầy đủ tên tiêu chí năng lực.");
+      setToast({ message: "Vui lòng nhập đầy đủ tên tiêu chí năng lực.", type: 'error' });
       return;
     }
 
     const hasInvalidWeight = criteriaList.some(c => Number(c.tyTrong) <= 0);
     if (hasInvalidWeight) {
-      alert("Tỷ trọng phải lớn hơn 0%.");
+      setToast({ message: "Tỷ trọng phải lớn hơn 0%.", type: 'error' });
       return;
     }
 
@@ -207,7 +208,7 @@ export const KhungNangLucManagement: React.FC = () => {
       fetchByChucVu(selectedChucVu);
     } catch (error) {
       console.error("Lỗi khi lưu cấu hình:", error);
-      alert("Có lỗi xảy ra khi lưu cấu hình");
+      setToast({ message: "Có lỗi xảy ra khi lưu cấu hình", type: 'error' });
     } finally {
       setIsSubmitting(false);
     }
@@ -561,6 +562,14 @@ export const KhungNangLucManagement: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </div>
   );

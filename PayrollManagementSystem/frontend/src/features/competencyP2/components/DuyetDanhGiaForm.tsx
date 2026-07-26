@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePhieuDanhGia } from '../hooks/usePhieuDanhGia';
 import { useMucQuyDoi } from '../hooks/useMucQuyDoi';
+import { Toast } from '../../../components/Toast/Toast';
 import './CompetencyManagement.css';
 
 export const DuyetDanhGiaForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { detail, loading, fetchById, submitManagerEvaluation } = usePhieuDanhGia();
+  const { detail, loading, fetchById, submitManagerEvaluation, toast, setToast } = usePhieuDanhGia();
   const { data: rules, fetchQuyDoi } = useMucQuyDoi();
   
   const [submitting, setSubmitting] = useState(false);
@@ -68,7 +69,7 @@ export const DuyetDanhGiaForm: React.FC = () => {
         return val === '' || val == null;
       });
       if (missingScores) {
-        alert("Vui lòng chấm điểm cho tất cả các tiêu chí trước khi chốt đánh giá.");
+        setToast({ message: "Vui lòng chấm điểm cho tất cả các tiêu chí trước khi chốt đánh giá.", type: 'error' });
         return;
       }
     }
@@ -93,7 +94,7 @@ export const DuyetDanhGiaForm: React.FC = () => {
       }
     } catch (e) {
       console.error(e);
-      alert("Đã xảy ra lỗi khi lưu đánh giá.");
+      setToast({ message: "Đã xảy ra lỗi khi lưu đánh giá.", type: 'error' });
     } finally {
       setSubmitting(false);
     }
@@ -341,6 +342,14 @@ export const DuyetDanhGiaForm: React.FC = () => {
           )}
         </div>
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

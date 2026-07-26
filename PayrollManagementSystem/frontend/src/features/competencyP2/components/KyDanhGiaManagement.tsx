@@ -5,10 +5,11 @@ import { useDataTable } from '../../../hooks/useDataTable';
 import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
 import { SortableHeader } from '../../../components/DataTable/SortableHeader';
 import { ExportButtons } from '../../../components/DataTable/ExportButtons';
+import { Toast } from '../../../components/Toast/Toast';
 import './CompetencyManagement.css';
 
 export const KyDanhGiaManagement: React.FC = () => {
-  const { data, loading, fetchKyDanhGia, createKyDanhGia } = useKyDanhGia();
+  const { data, loading, fetchKyDanhGia, createKyDanhGia, toast, setToast } = useKyDanhGia();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -392,6 +393,14 @@ export const KyDanhGiaManagement: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </div>
   );

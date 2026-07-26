@@ -1,11 +1,13 @@
 import { useState, useCallback } from "react";
-import { message } from "antd";
+
 import { phieuDanhGiaApi } from "../api/phieuDanhGiaApi";
-import { PhieuDanhGiaDto, GenerateMyPhieuDanhGiaCommand, SubmitTuDanhGiaCommand, SubmitManagerEvaluationCommand } from "../types/phieuDanhGia.types";
+import { PhieuDanhGiaDto, GenerateMyPhieuDanhGiaCommand, SubmitTuDanhGiaCommand, SubmitManagerEvaluationCommand, ChiTietDanhGiaDto } from "../types/phieuDanhGia.types";
 
 export const usePhieuDanhGia = () => {
   const [data, setData] = useState<PhieuDanhGiaDto[]>([]);
-  const [detail, setDetail] = useState<PhieuDanhGiaDto | null>(null);
+  const [detail, setDetail] = useState<any>(null);
+  const [selectedPhieu] = useState<ChiTietDanhGiaDto | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchMyEvaluations = useCallback(async () => {
@@ -17,7 +19,7 @@ export const usePhieuDanhGia = () => {
       }
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       console.error(error);
-      message.error(error.response?.data?.Message || "Lỗi khi tải danh sách phiếu đánh giá");
+      setToast({ message: error.response?.data?.Message || "Lỗi khi tải danh sách phiếu đánh giá", type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -32,7 +34,7 @@ export const usePhieuDanhGia = () => {
       }
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       console.error(error);
-      message.error(error.response?.data?.Message || "Lỗi khi tải chi tiết phiếu");
+      setToast({ message: error.response?.data?.Message || "Lỗi khi tải chi tiết phiếu", type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -42,13 +44,13 @@ export const usePhieuDanhGia = () => {
     try {
       const res = await phieuDanhGiaApi.generate(payload);
       if (res.succeeded) {
-        message.success("Đã tạo phiếu đánh giá thành công.");
+        setToast({ message: "Đã tạo phiếu đánh giá thành công.", type: 'success' });
         return true;
       }
       return false;
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       console.error(error);
-      message.error(error.response?.data?.Message || "Lỗi khi sinh phiếu");
+      setToast({ message: error.response?.data?.Message || "Lỗi khi sinh phiếu", type: 'error' });
       return false;
     }
   };
@@ -57,13 +59,13 @@ export const usePhieuDanhGia = () => {
     try {
       const res = await phieuDanhGiaApi.submitTuDanhGia(payload);
       if (res.succeeded) {
-        message.success(payload.isSubmit ? "Gửi đánh giá thành công" : "Lưu nháp thành công");
+        setToast({ message: payload.isSubmit ? "Gửi đánh giá thành công" : "Lưu nháp thành công", type: 'success' });
         return true;
       }
       return false;
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       console.error(error);
-      message.error(error.response?.data?.Message || "Lỗi khi lưu đánh giá");
+      setToast({ message: error.response?.data?.Message || "Lỗi khi lưu đánh giá", type: 'error' });
       return false;
     }
   };
@@ -77,7 +79,7 @@ export const usePhieuDanhGia = () => {
       }
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       console.error(error);
-      message.error(error.response?.data?.Message || "Lỗi khi tải danh sách phiếu cần duyệt");
+      setToast({ message: error.response?.data?.Message || "Lỗi khi tải danh sách phiếu cần duyệt", type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -87,13 +89,13 @@ export const usePhieuDanhGia = () => {
     try {
       const res = await phieuDanhGiaApi.managerSubmit(payload);
       if (res.succeeded) {
-        message.success(payload.isSubmit ? "Chốt phiếu thành công" : "Lưu nháp thành công");
+        setToast({ message: payload.isSubmit ? "Chốt phiếu thành công" : "Lưu nháp thành công", type: 'success' });
         return true;
       }
       return false;
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       console.error(error);
-      message.error(error.response?.data?.Message || "Lỗi khi duyệt phiếu");
+      setToast({ message: error.response?.data?.Message || "Lỗi khi duyệt phiếu", type: 'error' });
       return false;
     }
   };
@@ -101,12 +103,15 @@ export const usePhieuDanhGia = () => {
   return {
     data,
     detail,
+    selectedPhieu,
     loading,
     fetchMyEvaluations,
     fetchById,
     generate,
     submitTuDanhGia,
     fetchManagerEvaluations,
-    submitManagerEvaluation
+    submitManagerEvaluation,
+    toast,
+    setToast
   };
 };

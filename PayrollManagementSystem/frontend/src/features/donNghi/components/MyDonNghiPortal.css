@@ -71,6 +71,19 @@
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(109,40,217,0.14);
 }
+.mdp-card--empty-phep {
+  grid-column: span 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+@media (max-width: 1024px) {
+  .mdp-card--empty-phep { grid-column: span 2; }
+}
+@media (max-width: 640px) {
+  .mdp-card--empty-phep { grid-column: span 1; }
+}
 .mdp-card__label {
   font-size: 12px;
   font-weight: 600;
@@ -146,17 +159,21 @@
   border-collapse: collapse;
   font-size: 14px;
 }
-.mdp-table thead th {
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
-  color: #fff;
-  padding: 13px 16px;
-  text-align: left;
-  font-weight: 700;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.mdp-table thead {
   position: sticky;
   top: 0;
+  background: var(--bg-hover);
+  z-index: 10;
+}
+.mdp-table thead th {
+  padding: 0.9rem 1.1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+  border-bottom: 2px solid var(--border-color);
   white-space: nowrap;
 }
 .mdp-table tbody tr {
