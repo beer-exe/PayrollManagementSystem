@@ -6,4 +6,7 @@ export const profileApi = {
   getMyProfile: () => {
     return axiosClient.get<unknown, ApiResponse<UserProfileDetail>>('/Profile/me');
   },
+  changePassword: (data: any) => {
+    return axiosClient.put<unknown, ApiResponse<boolean>>('/Profile/me/change-password', data);
+  },
 };

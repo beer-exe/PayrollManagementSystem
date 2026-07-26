@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useThemeStore } from '@/store/useThemeStore';
+import { ChangePasswordModal } from '@/features/auth/components/ChangePasswordModal';
 import './Header.css';
 
 interface HeaderProps {
@@ -14,6 +15,7 @@ export const Header: React.FC<HeaderProps> = ({ isCollapsed, toggleCollapse, tog
   const { user, logout } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
@@ -127,7 +129,10 @@ export const Header: React.FC<HeaderProps> = ({ isCollapsed, toggleCollapse, tog
                   </Link>
                 </li>
                 <li>
-                  <button className="header-dropdown-item">Đổi mật khẩu</button>
+                  <button className="header-dropdown-item" onClick={() => {
+                    setIsDropdownOpen(false);
+                    setIsChangePasswordOpen(true);
+                  }}>Đổi mật khẩu</button>
                 </li>
                 <li>
                   <button onClick={handleLogout} className="header-dropdown-item header-dropdown-item--danger">
@@ -139,6 +144,11 @@ export const Header: React.FC<HeaderProps> = ({ isCollapsed, toggleCollapse, tog
           )}
         </div>
       </div>
+
+      <ChangePasswordModal 
+        isOpen={isChangePasswordOpen} 
+        onClose={() => setIsChangePasswordOpen(false)} 
+      />
     </header>
   );
 };
