@@ -79,17 +79,16 @@ function App() {
             <Route path="/hr/ngach-luong" element={<NgachLuongManagement />} />
             <Route path="/hr/chuc-vu" element={<PositionManagement />} />
             <Route path="/hr/bang-luong" element={<PayrollManagement />} />
-          </Route>
-
-          {/* 4. Time & Attendance Group */}
-          <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
+            
             <Route path="/time/ca-lam-viec" element={<WorkShiftManagement />} />
+            <Route path="/time/phan-cong-ca" element={<ShiftAssignment />} />
+            <Route path="/time/cham-cong" element={<ChamCongManagement />} />
             <Route path="/time/lich-lam-viec" element={<WorkScheduleManagement />} />
           </Route>
 
+          {/* 4. Time & Attendance Group */}
+
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR"]} />}>
-            <Route path="/time/phan-cong-ca" element={<ShiftAssignment />} />
-            <Route path="/time/cham-cong" element={<ChamCongManagement />} />
             <Route path="/time/don-nghi" element={<DonNghiManagement />} />
           </Route>
 

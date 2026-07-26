@@ -7,10 +7,11 @@ import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import { CreateUserModal } from './CreateUserModal';
 import { UpdateRoleModal } from './UpdateRoleModal';
 import { UserDto } from '../types/user.types';
+import { Toast } from '../../../components/Toast/Toast';
 import './UserManagement.css';
 
 export const UserManagement: React.FC = () => {
-  const { users, roles, isLoading, handleCreateUser, handleUpdateRole, handleToggleStatus, handleResetPassword } = useUsers();
+  const { users, roles, isLoading, handleCreateUser, handleUpdateRole, handleToggleStatus, handleResetPassword, toast, setToast } = useUsers();
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [roleModalUser, setRoleModalUser] = useState<UserDto | null>(null);
@@ -273,6 +274,14 @@ export const UserManagement: React.FC = () => {
         onSubmit={handleUpdateRole}
         roles={roles}
       />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };
