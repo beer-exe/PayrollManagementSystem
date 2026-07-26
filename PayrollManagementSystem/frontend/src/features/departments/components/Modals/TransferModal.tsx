@@ -4,6 +4,7 @@ import { DepartmentDto, EmployeeInDepartmentDto } from '../../types/department.t
 import { PositionDto } from '@/features/positions/types/position.types';
 import { salaryStepApi } from '@/features/salarySteps/api/salaryStepApi';
 import { SalaryStepDto } from '@/features/salarySteps/types/salaryStep.types';
+import { hrDecisionsApi } from '@/features/hrDecisions/api/hrDecisions.api';
 import './DepartmentModals.css';
 
 interface TransferModalProps {
@@ -46,6 +47,10 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       setLyDo('');
       setErrorMsg('');
       setSalarySteps([]);
+
+      hrDecisionsApi.generateCode('DC').then(res => {
+        if (res.succeeded) setSoQuyetDinh(res.data);
+      }).catch(err => console.error('Failed to generate code:', err));
     }
   }, [isOpen]);
 

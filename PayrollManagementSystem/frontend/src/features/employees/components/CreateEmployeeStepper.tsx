@@ -20,6 +20,7 @@ import { createEmployeeSchema, CreateEmployeeFormValues } from '../schemas/emplo
 import { useSystemData } from '../../departments/hooks/useSystemData';
 import { salaryStepApi } from '../../salarySteps/api/salaryStepApi';
 import { SalaryStepDto } from '../../salarySteps/types/salaryStep.types';
+import { hrDecisionsApi } from '../../hrDecisions/api/hrDecisions.api';
 import './EmployeeModals.css';
 
 // Custom Error Icon
@@ -169,6 +170,23 @@ const StepPosition = () => {
   
   const selectedIdPb = watch('idPb');
   const selectedIdChucVu = watch('idChucVu');
+  const currentSoQuyetDinh = watch('soQuyetDinh');
+
+  useEffect(() => {
+    const fetchCode = async () => {
+      if (!currentSoQuyetDinh) {
+        try {
+          const res = await hrDecisionsApi.generateCode('TD');
+          if (res.succeeded) {
+            setValue('soQuyetDinh', res.data, { shouldValidate: true });
+          }
+        } catch (error) {
+          console.error('Failed to generate HR decision code:', error);
+        }
+      }
+    };
+    fetchCode();
+  }, []);
 
   const filteredPositions = positions.filter(p => p.idPhongBan === selectedIdPb);
 
