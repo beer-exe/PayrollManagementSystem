@@ -36,14 +36,14 @@ export const EmployeeDetailPanel: React.FC<Props> = ({ employee, isOpen, onClose
                 {getInitials(employee.hoTen)}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 0.25rem 0', color: '#111827' }}>
+                <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 0.25rem 0', color: 'var(--text-primary)' }}>
                   {employee.hoTen}
                 </h2>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', background: '#f3f4f6', padding: '0.1rem 0.4rem', borderRadius: '4px', border: '1px solid #e5e7eb' }}>
+                  <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', background: 'var(--bg-hover)', padding: '0.1rem 0.4rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
                     {employee.cccd}
                   </span>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#6d28d9', background: '#f5f3ff', padding: '0.1rem 0.4rem', borderRadius: '4px', border: '1px solid #ede9fe' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--primary)', background: 'var(--primary-light)', padding: '0.1rem 0.4rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
                     {employee.tenChucVu || 'Chưa cập nhật'}
                   </span>
                 </div>
@@ -162,20 +162,20 @@ export const EmployeeDetailPanel: React.FC<Props> = ({ employee, isOpen, onClose
                   {employee.thanNhans.map((tn, index) => (
                     <div key={index} className="emp-detail-card" style={{ padding: '1rem' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                        <h4 style={{ margin: 0, fontWeight: 700, fontSize: '1rem', color: '#111827' }}>{tn.tenTn}</h4>
-                        <span style={{ background: '#f5f3ff', color: '#6d28d9', fontSize: '0.75rem', fontWeight: 600, padding: '0.2rem 0.6rem', borderRadius: '99px', border: '1px solid #ede9fe' }}>
+                        <h4 style={{ margin: 0, fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)' }}>{tn.tenTn}</h4>
+                        <span style={{ background: 'var(--primary-light)', color: 'var(--primary)', fontSize: '0.75rem', fontWeight: 600, padding: '0.2rem 0.6rem', borderRadius: '99px', border: '1px solid var(--border-color)' }}>
                           {tn.moiQuanHe || 'Không rõ'}
                         </span>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid #f3f4f6' }}>
-                        <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>Năm sinh</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid var(--border-color)' }}>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Năm sinh</span>
                         <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{formatDate(tn.ngaySinh) || '—'}</span>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#9ca3af' }}>
+                <div style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
                   <p>Chưa có thông tin thân nhân</p>
                 </div>
               )}
@@ -189,13 +189,13 @@ export const EmployeeDetailPanel: React.FC<Props> = ({ employee, isOpen, onClose
                 <div className="emp-detail-card">
                   <div className="emp-detail-row">
                     <span className="emp-detail-label">Lương P1 (Vị trí)</span>
-                    <span className="emp-detail-value" style={{ color: '#6d28d9' }}>
+                    <span className="emp-detail-value" style={{ color: 'var(--primary)' }}>
                       {employee.luongP1 ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(employee.luongP1) : 'Chưa cập nhật'}
                     </span>
                   </div>
                   <div className="emp-detail-row">
                     <span className="emp-detail-label">Hệ số P2 (Năng lực)</span>
-                    <span className="emp-detail-value" style={{ color: '#d97706' }}>
+                    <span className="emp-detail-value" style={{ color: 'var(--warning-text, #d97706)' }}>
                       {employee.heSoP2 ? `${employee.heSoP2}` : '1.00'}
                     </span>
                   </div>

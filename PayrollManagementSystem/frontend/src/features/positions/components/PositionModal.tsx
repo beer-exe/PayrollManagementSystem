@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { PositionDto } from '../types/position.types';
 import { DepartmentDto } from '../../departments/types/department.types';
+import { positionApi } from '../api/positionApi';
 
 interface JobGradeDto {
   idNgachLuong: string;
@@ -41,6 +42,7 @@ export const PositionModal: React.FC<Props> = ({
   const [hasManager, setHasManager] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [allPositions, setAllPositions] = useState<PositionDto[]>([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -66,6 +68,19 @@ export const PositionModal: React.FC<Props> = ({
         setHasManager(false);
       }
       setErrors({});
+
+      // Fetch all active positions across all departments for manager selection
+      const fetchAllPos = async () => {
+        try {
+          const res = await positionApi.getPositions({ trangThai: 'HOAT_DONG' });
+          if (res.succeeded) {
+            setAllPositions(res.data);
+          }
+        } catch (error) {
+          console.error("Lỗi tải danh sách chức vụ:", error);
+        }
+      };
+      fetchAllPos();
     }
   }, [isOpen, editingPos, selectedDepartmentId]);
 
@@ -241,7 +256,7 @@ export const PositionModal: React.FC<Props> = ({
                   className="pos-form-select"
                 >
                   <option value="">Chọn chức vụ quản lý</option>
-                  {positions?.filter(p => p.idChucVu !== editingPos?.idChucVu && p.trangThai === "HOAT_DONG").map(p => (
+                  {allPositions?.filter(p => p.idChucVu !== editingPos?.idChucVu).map(p => (
                     <option key={p.idChucVu} value={p.idChucVu}>
                       {p.tenChucVu} - {p.tenPhongBan}
                     </option>
