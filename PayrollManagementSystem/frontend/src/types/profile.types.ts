@@ -25,6 +25,7 @@ export interface UserProfileDetail {
   soHopDong?: string | null;
   loaiHopDong?: string | null;
   ngayBatDauHopDong?: string | null;
+  userAvatar?: string;
   
   thanNhans: ThanNhanDto[];
   idPb?: string | null;

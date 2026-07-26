@@ -104,11 +104,15 @@ export const Header: React.FC<HeaderProps> = ({ isCollapsed, toggleCollapse, tog
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             aria-expanded={isDropdownOpen}
           >
-            <div className="header-user-avatar">
-              {getInitials(user?.name || 'User')}
+            <div className="header-user-avatar overflow-hidden">
+              {user?.userAvatar ? (
+                <img src={user.userAvatar} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                getInitials(user?.fullName || user?.email || 'User')
+              )}
             </div>
             <div className="header-user-info">
-              <span className="header-user-name">{user?.name || 'Tài khoản'}</span>
+              <span className="header-user-name">{user?.fullName || 'Tài khoản'}</span>
               <span className="header-user-role">{user?.email || 'Admin'}</span>
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`header-user-chevron ${isDropdownOpen ? 'open' : ''}`}>

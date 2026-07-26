@@ -36,6 +36,7 @@ namespace PayrollManagementSystem.Application.Features.Profile.DTOs
         public List<ProfileThanNhanDto> ThanNhans { get; set; } = new List<ProfileThanNhanDto>();
         public List<LichSuCongTacDto> LichSuCongTac { get; set; } = new List<LichSuCongTacDto>();
         public string? IdPb { get; set; }
+        public string? UserAvatar { get; set; }
     }
 
     public class ProfileThanNhanDto

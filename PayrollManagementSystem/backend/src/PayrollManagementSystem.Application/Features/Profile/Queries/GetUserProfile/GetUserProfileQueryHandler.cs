@@ -30,6 +30,7 @@ namespace PayrollManagementSystem.Application.Features.Profile.Queries.GetUserPr
                     GioiTinh = nv.GioiTinh,
                     Sdt = nv.Sdt,
                     Email = nv.Email,
+                    UserAvatar = _context.TaiKhoans.Where(t => t.IdTaiKhoan == nv.IdTaiKhoan).Select(t => t.UserAvatar).FirstOrDefault(),
                     NgaySinh = nv.NgaySinh,
                     DanToc = nv.DanToc,
                     DiaChi = nv.DiaChi,

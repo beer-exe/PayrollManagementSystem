@@ -12,6 +12,7 @@ export interface AuthResponseDto {
   accessToken: string;
   refreshToken: string;
   hasDirectReports: boolean;
+  userAvatar?: string;
 }
 
 export interface LoginRequestDto {
@@ -25,4 +26,5 @@ export interface UserProfile {
   email: string;
   role: string;
   hasDirectReports: boolean;
+  userAvatar?: string;
 }

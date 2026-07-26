@@ -8,5 +8,6 @@ namespace PayrollManagementSystem.Application.Features.Auth.DTOs
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
         public bool HasDirectReports { get; set; }
+        public string? UserAvatar { get; set; }
     }
 }

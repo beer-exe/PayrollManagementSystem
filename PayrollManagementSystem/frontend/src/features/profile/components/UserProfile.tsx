@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { UserProfileDetail } from '@/types/profile.types';
+import React, { useState, useEffect, useRef } from 'react';
+import { UserProfileDetail, LichSuCongTac } from '@/types/profile.types';
+import { useAuthStore } from '@/store/useAuthStore';
 import { profileApi } from '../api/profileApi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Toast } from '@/components/Toast/Toast';
@@ -13,6 +14,9 @@ export const UserProfile: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('personal');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user, login } = useAuthStore();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -41,10 +45,53 @@ export const UserProfile: React.FC = () => {
   }, []);
 
   const getInitials = (name: string) => {
-    if (!name) return 'U';
-    const parts = name.trim().split(' ');
-    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
-    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .substring(0, 2)
+      .toUpperCase();
+  };
+
+  const handleAvatarClick = () => {
+    if (!isUploading) {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64String = reader.result as string;
+        try {
+          const res = await profileApi.updateAvatar(base64String);
+          if (res && res.succeeded) {
+            setToast({ message: 'Cập nhật ảnh đại diện thành công', type: 'success' });
+            setProfile(prev => prev ? { ...prev, userAvatar: base64String } : null);
+            if (user) {
+              login({ ...user, userAvatar: base64String });
+            }
+          }
+        } catch (err: unknown) {
+          const errorMsg = err instanceof Error ? err.message : 'Có lỗi khi cập nhật ảnh đại diện';
+          setToast({ message: errorMsg, type: 'error' });
+        } finally {
+          setIsUploading(false);
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (_: unknown) {
+      setIsUploading(false);
+      setToast({ message: 'Không thể đọc file ảnh', type: 'error' });
+    }
   };
 
   const formatDate = (dateString: string | null | undefined) => {
@@ -58,7 +105,7 @@ export const UserProfile: React.FC = () => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
 
-  const getDecisionStatus = (history: any, idx: number, allHistories: any[]) => {
+  const getDecisionStatus = (history: LichSuCongTac, idx: number, allHistories: LichSuCongTac[]) => {
     if (history.trangThai === 'HUY_BO') {
       return { text: history.tenTrangThai || 'Hủy bỏ', color: 'text-red-600 dark:text-red-400', dot: 'bg-red-400' };
     }
@@ -74,7 +121,7 @@ export const UserProfile: React.FC = () => {
             return { text: 'Chờ áp dụng', color: 'text-yellow-600 dark:text-yellow-400', dot: 'bg-yellow-500 shadow-[0_0_0_3px_rgba(234,179,8,0.2)]' };
         }
         
-        const currentActiveIdx = allHistories.findIndex((h: any) => h.trangThai === 'HIEU_LUC' && h.ngayHieuLuc <= todayStr);
+        const currentActiveIdx = allHistories.findIndex((h: LichSuCongTac) => h.trangThai === 'HIEU_LUC' && h.ngayHieuLuc <= todayStr);
         if (idx === currentActiveIdx) {
             return { text: 'Đang áp dụng', color: 'text-green-600 dark:text-green-400', dot: 'bg-green-500 shadow-[0_0_0_3px_rgba(34,197,94,0.2)]' };
         }
@@ -437,9 +484,24 @@ export const UserProfile: React.FC = () => {
       <div className="profile-sidebar">
         <div className="profile-avatar-card">
           <div className="profile-avatar-header">
-            <div className="profile-avatar-large">
-              {getInitials(profile.hoTen)}
+            <div 
+              className={`profile-avatar-large ${isUploading ? 'opacity-50' : 'cursor-pointer hover:opacity-80 transition-opacity'}`}
+              onClick={handleAvatarClick}
+              title="Nhấn để thay đổi ảnh đại diện"
+            >
+              {profile.userAvatar ? (
+                <img src={profile.userAvatar} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                getInitials(profile.hoTen)
+              )}
             </div>
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              className="hidden" 
+              accept="image/*" 
+              onChange={handleFileChange} 
+            />
           </div>
           <div className="profile-avatar-info">
             <h1 className="profile-name">{profile.hoTen}</h1>
