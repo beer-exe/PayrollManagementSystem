@@ -12,15 +12,12 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.CreateC
     public class CreateChamCongCommandHandler : IRequestHandler<CreateChamCongCommand, Response<Guid>>
     {
         private readonly IApplicationDbContext _context;
+        private readonly ITimekeepingCalculatorService _calculatorService;
 
-        // Cấu hình nghiệp vụ tính ngày công
-        private const decimal GIO_TIEU_CHUAN = 8m;       // Số giờ tiêu chuẩn một ca
-        private const decimal GRACE_PERIOD_PHUT = 15m;   // Phút ân hạn đi trễ/về sớm
-        private const decimal GIO_NGHI_TRUA = 1m;        // Giờ nghỉ trưa trừ khi làm > 5h
-
-        public CreateChamCongCommandHandler(IApplicationDbContext context)
+        public CreateChamCongCommandHandler(IApplicationDbContext context, ITimekeepingCalculatorService calculatorService)
         {
             _context = context;
+            _calculatorService = calculatorService;
         }
 
         public async Task<Response<Guid>> Handle(CreateChamCongCommand request, CancellationToken cancellationToken)
@@ -38,64 +35,12 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.CreateC
             if (exists)
                 throw new ApiException($"Đã tồn tại bản ghi chấm công của nhân viên {nhanVien.HoTen} vào ngày {request.NgayChamCong:dd/MM/yyyy}.");
 
-            var chiTietLich = await _context.ChiTietLichLamViecs
-                .FirstOrDefaultAsync(ct => ct.Ngay == request.NgayChamCong, cancellationToken);
-
-            var loaiNgayTrongLich = chiTietLich?.LoaiNgay ?? LoaiNgay.NGAY_LAM_VIEC;
-            var soGioChuanNgay = chiTietLich?.SoGioLam ?? GIO_TIEU_CHUAN;
-
-            decimal soGioLamThucTe = 0;
-            LoaiNgayCong loaiNgayCong;
-            decimal soNgayCong = 0;
-
-            if (loaiNgayTrongLich == LoaiNgay.NGHI_LE)
-            {
-                loaiNgayCong = LoaiNgayCong.NGHI_LE;
-                soNgayCong = 0;
-                soGioLamThucTe = 0;
-            }
-            else if (loaiNgayTrongLich == LoaiNgay.NGHI_CUOI_TUAN)
-            {
-                loaiNgayCong = LoaiNgayCong.NGHI_CUOI_TUAN;
-                soNgayCong = 0;
-                soGioLamThucTe = 0;
-            }
-            else if (request.GioVao == null || request.GioRa == null)
-            {
-                loaiNgayCong = LoaiNgayCong.VANG_KHONG_PHEP;
-                soNgayCong = 0;
-                soGioLamThucTe = 0;
-            }
-            else
-            {
-                var tongGioRaw = (decimal)(request.GioRa.Value - request.GioVao.Value).TotalHours;
-                if (tongGioRaw < 0) tongGioRaw = 0;
-
-                soGioLamThucTe = tongGioRaw > 5 ? tongGioRaw - GIO_NGHI_TRUA : tongGioRaw;
-                soGioLamThucTe = Math.Round(Math.Max(soGioLamThucTe, 0), 2);
-
-                var gracePeriodGio = GRACE_PERIOD_PHUT / 60m;
-                var soGioHieuQua = Math.Min(soGioLamThucTe, soGioChuanNgay); // không vượt giờ chuẩn
-                var heSo = soGioHieuQua / soGioChuanNgay;
-
-                if (heSo >= 1m - (gracePeriodGio / soGioChuanNgay))
-                {
-                    soNgayCong = 1m;
-                    loaiNgayCong = LoaiNgayCong.LAM_DU_CA;
-                }
-                else if (heSo >= 0.5m - (gracePeriodGio / soGioChuanNgay) && heSo < 1m)
-                {
-                    soNgayCong = Math.Round(heSo, 2);
-                    loaiNgayCong = Math.Abs(heSo - 0.5m) < 0.01m
-                        ? LoaiNgayCong.NUA_CA
-                        : LoaiNgayCong.DI_TRE_VE_SOM;
-                }
-                else
-                {
-                    soNgayCong = Math.Round(heSo, 2);
-                    loaiNgayCong = LoaiNgayCong.DI_TRE_VE_SOM;
-                }
-            }
+            var calcResult = await _calculatorService.CalculateTimekeepingAsync(
+                request.CccdNhanVien,
+                request.NgayChamCong,
+                request.GioVao,
+                request.GioRa,
+                cancellationToken);
 
             var chamCong = new Domain.Models.ChamCong
             {
@@ -104,11 +49,13 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.CreateC
                 NgayChamCong = request.NgayChamCong,
                 GioVao = request.GioVao,
                 GioRa = request.GioRa,
-                SoGioLamThucTe = soGioLamThucTe,
-                SoNgayCong = soNgayCong,
-                LoaiNgayCong = loaiNgayCong,
+                SoGioLamThucTe = calcResult.SoGioLamThucTe,
+                SoNgayCong = calcResult.SoNgayCong,
+                LoaiNgayCong = calcResult.LoaiNgayCong,
+                SoPhutDiTre = calcResult.SoPhutDiTre,
+                SoPhutVeSom = calcResult.SoPhutVeSom,
                 IsNhapTay = true,
-                GhiChu = request.GhiChu,
+                GhiChu = request.GhiChu ?? calcResult.GhiChu,
                 TrangThai = TrangThaiChamCong.DA_XAC_NHAN
             };
 
@@ -117,7 +64,7 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.CreateC
 
             return new Response<Guid>(chamCong.Id,
                 $"Nhập chấm công thành công cho nhân viên {nhanVien.HoTen} ngày {request.NgayChamCong:dd/MM/yyyy}. " +
-                $"Số ngày công: {soNgayCong:F2} ({loaiNgayCong.GetDescription()}).");
+                $"Số ngày công: {calcResult.SoNgayCong:F2} ({calcResult.LoaiNgayCong.GetDescription()}).");
         }
     }
 }

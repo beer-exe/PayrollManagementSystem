@@ -10,12 +10,15 @@ import { SortableHeader } from '../../../components/DataTable/SortableHeader';
 import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import "./WorkShiftManagement.css";
 
+import { WorkShiftInstructionModal } from './WorkShiftInstructionModal';
+
 export const WorkShiftManagement: React.FC = () => {
     const [shifts, setShifts] = useState<CaLamViec[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isInstructionModalOpen, setIsInstructionModalOpen] = useState(false);
     const [editingShift, setEditingShift] = useState<CaLamViec | null>(null);
 
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -41,8 +44,8 @@ export const WorkShiftManagement: React.FC = () => {
         const columns: ExportColumn<CaLamViec>[] = [
             { header: 'Tên ca', key: 'tenCa' },
             { header: 'Hệ số lương', key: 'heSoLuong' },
-            { header: 'Xuyên ngày', key: 'xuyenNgay', format: (val) => val ? 'Có' : 'Không' },
-            { header: 'Trạng thái', key: 'trangThai', format: (val) => val ? 'Hoạt động' : 'Ngừng hoạt động' },
+            { header: 'Xuyên ngày', key: 'xuyenNgay', render: (item) => item.xuyenNgay ? 'Có' : 'Không' },
+            { header: 'Trạng thái', key: 'trangThai', render: (item) => item.trangThai ? 'Hoạt động' : 'Ngừng hoạt động' },
         ];
         exportToExcel(shifts, columns, 'DanhSachCaLamViec');
     };
@@ -51,8 +54,8 @@ export const WorkShiftManagement: React.FC = () => {
         const columns: ExportColumn<CaLamViec>[] = [
             { header: 'Tên ca', key: 'tenCa' },
             { header: 'Hệ số lương', key: 'heSoLuong' },
-            { header: 'Xuyên ngày', key: 'xuyenNgay', format: (val) => val ? 'Có' : 'Không' },
-            { header: 'Trạng thái', key: 'trangThai', format: (val) => val ? 'Hoạt động' : 'Ngừng hoạt động' },
+            { header: 'Xuyên ngày', key: 'xuyenNgay', render: (item) => item.xuyenNgay ? 'Có' : 'Không' },
+            { header: 'Trạng thái', key: 'trangThai', render: (item) => item.trangThai ? 'Hoạt động' : 'Ngừng hoạt động' },
         ];
         exportToPdf(shifts, columns, 'DanhSachCaLamViec', 'Danh Sách Ca Làm Việc');
     };
@@ -121,7 +124,13 @@ export const WorkShiftManagement: React.FC = () => {
                     <h2>Cấu hình Ca làm việc</h2>
                     <p>Quản lý các ca làm việc và khung giờ nghỉ của nhân viên trong công ty</p>
                 </div>
-                <div className="wsh-header-actions">
+                <div className="wsh-header-actions" style={{ display: 'flex', gap: '0.75rem' }}>
+                    <button className="wsh-btn-secondary wsh-btn-instruction" onClick={() => setIsInstructionModalOpen(true)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clipRule="evenodd" />
+                        </svg>
+                        Hướng dẫn cấu hình
+                    </button>
                     <button className="wsh-btn-create" onClick={() => handleOpenModal()}>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                             <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
@@ -302,6 +311,11 @@ export const WorkShiftManagement: React.FC = () => {
                     }}
                 />
             )}
+
+            <WorkShiftInstructionModal 
+                isOpen={isInstructionModalOpen} 
+                onClose={() => setIsInstructionModalOpen(false)} 
+            />
         </div>
     );
 };

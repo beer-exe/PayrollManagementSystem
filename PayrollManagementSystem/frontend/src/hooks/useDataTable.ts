@@ -5,7 +5,7 @@ export type SortDirection = 'asc' | 'desc' | null;
 interface UseDataTableProps<T> {
   data: T[];
   initialPageSize?: number;
-  searchableFields?: (keyof T | string)[]; // Can be keys or nested paths if needed, but we'll stick to simple keys or a custom filter function
+  searchableFields?: (keyof T | string)[];
   customFilter?: (item: T, searchTerm: string) => boolean;
 }
 
@@ -31,7 +31,6 @@ export function useDataTable<T>({
           return customFilter(item, lowerTerm);
         }
         
-        // Default search across specified searchableFields
         for (const field of searchableFields) {
           const value = (item as any)[field];
           if (value != null && String(value).toLowerCase().includes(lowerTerm)) {
@@ -63,7 +62,6 @@ export function useDataTable<T>({
   const totalItems = sortedData.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   
-  // Ensure current page is valid after filtering/sorting
   const validCurrentPage = Math.min(currentPage, totalPages);
 
   const paginatedData = useMemo(() => {
@@ -82,7 +80,6 @@ export function useDataTable<T>({
       setSortKey(key);
       setSortDirection('asc');
     }
-    // Reset to page 1 when sorting changes
     setCurrentPage(1);
   };
 
@@ -92,11 +89,9 @@ export function useDataTable<T>({
   };
 
   return {
-    // Data
     currentData: paginatedData,
-    allFilteredAndSortedData: sortedData, // Useful for exporting
+    allFilteredAndSortedData: sortedData,
     
-    // Pagination
     currentPage: validCurrentPage,
     pageSize,
     totalItems,
@@ -104,12 +99,10 @@ export function useDataTable<T>({
     setCurrentPage,
     setPageSize,
     
-    // Sorting
     sortKey,
     sortDirection,
     handleSort,
     
-    // Search
     searchTerm,
     setSearchTerm: handleSearch
   };

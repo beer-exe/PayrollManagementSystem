@@ -15,6 +15,11 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Cre
             RuleFor(x => x.GhiChu)
                 .MaximumLength(500)
                     .WithMessage("Ghi chú không được vượt quá 500 ký tự.");
+
+            RuleFor(x => x.DefaultShiftId)
+                .NotNull()
+                .When(x => x.UseDefaultShift)
+                .WithMessage("Vui lòng chọn ca làm việc mặc định.");
         }
     }
 }

@@ -22,11 +22,6 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.CreateC
                 .Must(x => (x.GioVao == null) == (x.GioRa == null))
                 .WithMessage("Giờ vào và giờ ra phải cùng được nhập hoặc cùng để trống.")
                 .When(x => x.GioVao != null || x.GioRa != null);
-
-            RuleFor(x => x)
-                .Must(x => x.GioRa > x.GioVao)
-                .WithMessage("Giờ ra phải sau giờ vào.")
-                .When(x => x.GioVao != null && x.GioRa != null);
         }
     }
 }

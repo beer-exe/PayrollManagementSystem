@@ -26,6 +26,15 @@ namespace PayrollManagementSystem.Application.Features.WorkShifts.Commands.Delet
                 throw new ApiException("Không tìm thấy ca làm việc.");
             }
 
+            bool isUsed = await _context.ChiTietLichLamViecs.AnyAsync(c => c.IdCaLamViecMacDinh == request.Id && !c.IsDeleted, cancellationToken)
+                       || await _context.PhanCongCas.AnyAsync(p => p.IdCaLamViec == request.Id && !p.IsDeleted, cancellationToken);
+
+            if (isUsed)
+            {
+                //throw new ApiException("Không thể xoá ca làm việc đã được gán vào lịch làm việc hoặc phân công ca. Vui lòng chọn 'Chỉnh sửa' và tắt Trạng thái (Vô hiệu hoá) thay vì xoá.");
+                throw new ApiException("Không thể xoá ca làm việc đã được gán vào lịch làm việc hoặc phân công ca.");
+            }            
+
             // Using soft delete as per AGENTS.md rules
             _context.SoftRemove(caLamViec);
 

@@ -23,6 +23,10 @@ namespace PayrollManagementSystem.Domain.Models
 
         public bool IsNhapTay { get; set; } = false;
 
+        public int SoPhutDiTre { get; set; } = 0;
+
+        public int SoPhutVeSom { get; set; } = 0;
+
         public string? GhiChu { get; set; }
 
         public TrangThaiChamCong TrangThai { get; set; } = TrangThaiChamCong.CHUA_XAC_NHAN;

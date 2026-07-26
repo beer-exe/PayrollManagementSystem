@@ -83,7 +83,6 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Reset lại #root để không bị Vite ép style */
 #root {
   width: 100%;
   min-height: 100vh;
