@@ -17,7 +17,13 @@ namespace PayrollManagementSystem.Application.Features.Departments.Queries.GetEm
             var today = DateOnly.FromDateTime(DateTime.Today);
 
             var employees = await _context.NhanViens
-                .Where(nv => nv.IdPb == request.IdPb)
+                .Where(nv => nv.IdPb == request.IdPb || 
+                            (nv.IdPb == null && _context.QuyetDinhNhanSus
+                                .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC && qd.NgayHieuLuc <= today)
+                                .OrderByDescending(qd => qd.NgayHieuLuc)
+                                .ThenByDescending(qd => qd.CreatedAt)
+                                .Select(qd => _context.ChucVus.Where(cv => cv.IdChucVu == qd.IdChucVuMoi).Select(cv => cv.IdPhongBan).FirstOrDefault())
+                                .FirstOrDefault() == request.IdPb))
                 .Select(nv => new EmployeeInDepartmentDto
                 {
                     Cccd = nv.Cccd,

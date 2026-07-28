@@ -4,6 +4,7 @@ import { ColumnSetupDrawer } from './ColumnSetupDrawer';
 import { EmployeeDetailPanel } from './EmployeeDetailPanel';
 import { ChangeStatusModal } from './ChangeStatusModal';
 import { CreateEmployeeStepper } from './CreateEmployeeStepper';
+import { AssignDepartmentModal } from './AssignDepartmentModal';
 import { UpdateEmployeeModal } from './UpdateEmployeeModal';
 import { UserProfileDetail } from '@/types/profile.types';
 import { CreateEmployeeCommand } from '../types/employee.types';
@@ -30,6 +31,9 @@ export const EmployeeManagement: React.FC = () => {
   
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [employeeToUpdate, setEmployeeToUpdate] = useState<UserProfileDetail | null>(null);
+
+  const [isAssignDeptModalOpen, setIsAssignDeptModalOpen] = useState(false);
+  const [employeeToAssign, setEmployeeToAssign] = useState<UserProfileDetail | null>(null);
 
   useEffect(() => {
     fetchEmployees('', 1, pageSize);
@@ -91,6 +95,7 @@ export const EmployeeManagement: React.FC = () => {
         onRowClick={(emp) => { setSelectedEmp(emp); setIsPanelOpen(true); }}
         onStatusClick={(emp) => setEmployeeToChangeStatus(emp)}
         onEditClick={handleEditClick}
+        onAssignDeptClick={(emp) => { setEmployeeToAssign(emp); setIsAssignDeptModalOpen(true); }}
       />
 
       <ColumnSetupDrawer 
@@ -135,6 +140,20 @@ export const EmployeeManagement: React.FC = () => {
             }
             return success;
           }}
+        />
+      )}
+
+      {isAssignDeptModalOpen && employeeToAssign && (
+        <AssignDepartmentModal
+          isOpen={isAssignDeptModalOpen}
+          onClose={() => {
+            setIsAssignDeptModalOpen(false);
+            setEmployeeToAssign(null);
+          }}
+          onSuccess={() => {
+            fetchEmployees('', 1, pageSize);
+          }}
+          employee={employeeToAssign}
         />
       )}
 

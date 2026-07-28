@@ -54,7 +54,20 @@ namespace PayrollManagementSystem.Application.Features.Employees.Queries.GetEmpl
                     TrangThai = nv.TrangThai.ToString(),
                     SoBhxh = nv.SoBhxh,
                     SoBhyt = nv.SoBhyt,
-                    TenPhongBan = nv.PhongBan != null ? nv.PhongBan.TenPb : null,
+                    IdPb = nv.IdPb ?? _context.QuyetDinhNhanSus
+                        .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC && qd.NgayHieuLuc <= today)
+                        .OrderByDescending(qd => qd.NgayHieuLuc)
+                        .ThenByDescending(qd => qd.CreatedAt)
+                        .Select(qd => _context.ChucVus.FirstOrDefault(cv => cv.IdChucVu == qd.IdChucVuMoi).IdPhongBan)
+                        .FirstOrDefault(),
+
+                    TenPhongBan = nv.PhongBan != null ? nv.PhongBan.TenPb : _context.QuyetDinhNhanSus
+                        .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC && qd.NgayHieuLuc <= today)
+                        .OrderByDescending(qd => qd.NgayHieuLuc)
+                        .ThenByDescending(qd => qd.CreatedAt)
+                        .Select(qd => _context.ChucVus.Where(cv => cv.IdChucVu == qd.IdChucVuMoi)
+                            .Select(cv => cv.PhongBan.TenPb).FirstOrDefault())
+                        .FirstOrDefault(),
 
                     TenChucVu = _context.QuyetDinhNhanSus
                         .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC && qd.NgayHieuLuc <= today)

@@ -36,9 +36,9 @@ namespace PayrollManagementSystem.Application.Features.Departments.Commands.Tran
             if (chucVuMoi?.IdNgachLuong == null)
                 throw new ApiException($"Chức vụ mới không được gán Ngạch lương hợp lệ.");
             
-            var bacLuongMoi = await _context.BacLuongs.FirstOrDefaultAsync(b => b.IdNgachLuong == chucVuMoi.IdNgachLuong, cancellationToken);
+            var bacLuongMoi = await _context.BacLuongs.FirstOrDefaultAsync(b => b.IdBacLuong == request.IdBacLuongMoi && b.IdNgachLuong == chucVuMoi.IdNgachLuong, cancellationToken);
             if (bacLuongMoi == null)
-                throw new ApiException($"Chưa có cấu hình Bậc lương nào cho ngạch lương của chức vụ mới. Vui lòng thiết lập bậc lương trước khi điều chuyển.");
+                throw new ApiException($"Bậc lương '{request.IdBacLuongMoi}' không hợp lệ hoặc không thuộc ngạch lương của chức vụ mới.");
 
             nhanVien.IdPb = request.IdPbMoi;
 
@@ -46,7 +46,7 @@ namespace PayrollManagementSystem.Application.Features.Departments.Commands.Tran
             {
                 SoQuyetDinh = request.SoQuyetDinh,
                 Cccd = request.Cccd,
-                LoaiQuyetDinh = "Điều chuyển công tác",
+                LoaiQuyetDinh = string.IsNullOrWhiteSpace(request.LoaiQuyetDinh) ? "Điều chuyển công tác" : request.LoaiQuyetDinh,
                 IdChucVuCu = quyetDinhHienTai?.IdChucVuMoi,
                 IdBacLuongCu = quyetDinhHienTai?.IdBacLuongMoi,
                 IdChucVuMoi = request.IdChucVuMoi,

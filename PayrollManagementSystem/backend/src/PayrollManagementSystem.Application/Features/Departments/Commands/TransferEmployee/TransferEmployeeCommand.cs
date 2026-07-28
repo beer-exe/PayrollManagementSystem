@@ -12,6 +12,8 @@ namespace PayrollManagementSystem.Application.Features.Departments.Commands.Tran
         public string SoQuyetDinh { get; set; } = null!;
         public DateOnly NgayHieuLuc { get; set; }
         public string? NguoiKy { get; set; }
+        public string IdBacLuongMoi { get; set; } = null!;
+        public string? LoaiQuyetDinh { get; set; }
 
         public string CacheKeyPrefix => "Departments_";
     }

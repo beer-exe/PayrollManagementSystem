@@ -21,6 +21,7 @@ namespace PayrollManagementSystem.Application.Features.Employees.DTOs
         public string? TenTrangThai => TrangThai != null && Enum.TryParse<TrangThaiNhanVien>(TrangThai, out var e) ? e.GetDescription() : TrangThai;
         public string? SoBhxh { get; set; }
         public string? SoBhyt { get; set; }
+        public string? IdPb { get; set; }
         public string? TenPhongBan { get; set; }
         public string? TenChucVu { get; set; }
         

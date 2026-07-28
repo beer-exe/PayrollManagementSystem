@@ -24,7 +24,7 @@ namespace PayrollManagementSystem.API.Controllers
         {
             var query = new GetNextDecisionCodeQuery { Type = type };
             var result = await _mediator.Send(query);
-            return Ok(new Response<string>(result));
+            return Ok(new Response<string> { Data = result, Succeeded = true });
         }
     }
 }

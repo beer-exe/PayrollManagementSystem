@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { UserProfileDetail } from '@/types/profile.types';
 import { useDataTable } from '../../../hooks/useDataTable';
 import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
@@ -13,13 +13,27 @@ interface EmpTableProps {
   onRowClick: (record: UserProfileDetail) => void;
   onStatusClick: (record: UserProfileDetail) => void;
   onEditClick: (record: UserProfileDetail) => void;
+  onAssignDeptClick: (record: UserProfileDetail) => void;
 }
 
 export const EmpTable: React.FC<EmpTableProps> = ({ 
   data, visibleColumns, isLoading,
-  onOpenSettings, onRowClick, onStatusClick, onEditClick 
+  onOpenSettings, onRowClick, onStatusClick, onEditClick, onAssignDeptClick 
 }) => {
   const isVisible = (key: string) => visibleColumns.includes(key);
+
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setActiveDropdown(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const {
     currentData,
@@ -150,18 +164,44 @@ export const EmpTable: React.FC<EmpTableProps> = ({
                     </td>
                   )}
                   <td style={{ textAlign: 'right' }}>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); onEditClick(row); }} 
-                      className="emp-action-link edit"
-                    >
-                      Sửa
-                    </button>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); onStatusClick(row); }} 
-                      className="emp-action-link status"
-                    >
-                      Đổi TT
-                    </button>
+                    <div className="emp-dropdown-container" ref={activeDropdown === row.cccd ? dropdownRef : null}>
+                      <button 
+                        className="emp-btn-more"
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          setActiveDropdown(activeDropdown === row.cccd ? null : row.cccd);
+                        }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                        </svg>
+                      </button>
+
+                      {activeDropdown === row.cccd && (
+                        <div className="emp-dropdown-menu">
+                          {(!row.idPb || row.idPb === '') && row.trangThai === 'DANG_LAM_VIEC' && (
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); setActiveDropdown(null); onAssignDeptClick(row); }} 
+                              className="emp-dropdown-item assign"
+                            >
+                              Thêm vào phòng ban
+                            </button>
+                          )}
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); setActiveDropdown(null); onEditClick(row); }} 
+                            className="emp-dropdown-item edit"
+                          >
+                            Sửa thông tin
+                          </button>
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); setActiveDropdown(null); onStatusClick(row); }} 
+                            className="emp-dropdown-item status"
+                          >
+                            Đổi trạng thái
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))
