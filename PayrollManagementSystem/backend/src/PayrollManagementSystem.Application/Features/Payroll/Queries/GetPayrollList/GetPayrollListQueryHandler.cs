@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 using Microsoft.EntityFrameworkCore;
@@ -51,6 +51,8 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetPayrol
                     HeSoP3 = bl.HeSoP3,
                     NgayCongChuan = bl.NgayCongChuan,
                     NgayCongThucTe = bl.NgayCongThucTe,
+                    GioCongChuan = bl.GioCongChuan,
+                    GioCongThucTe = bl.GioCongThucTe,
                     LuongThoiGian = bl.LuongThoiGian,
                     LuongHieuSuatP3 = bl.LuongHieuSuatP3,
                     PhuCap = bl.PhuCap,

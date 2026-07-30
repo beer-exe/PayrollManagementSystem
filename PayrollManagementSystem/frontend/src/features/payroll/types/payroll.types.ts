@@ -16,6 +16,9 @@ export interface PayrollListDto {
   ngayCongChuan: number;
   ngayCongThucTe: number;
   
+  gioCongChuan: number;
+  gioCongThucTe: number;
+  
   luongThoiGian: number;
   luongHieuSuatP3: number;
   

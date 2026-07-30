@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Enums;
@@ -131,21 +131,20 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                 // Tổng ngày công để tính lương = Ngày đi làm + Nghỉ phép có lương + Nghỉ lễ
                 decimal ngayCongThucTe = ngayDiLam + soNgayNghiLe;
 
-                // Nếu không có ngày công thực tế -> Bỏ qua không tính lương
-                if (ngayCongThucTe <= 0) continue;
-
-                // Tính NgayCongChuan
+                // Tính Giờ công chuẩn & Giờ công thực tế
                 decimal empTongGioChuan = 0;
+                decimal empTongGioThucTe = 0;
                 phanCongGroup.TryGetValue(nv.Cccd, out var empPhanCongs);
                 empPhanCongs ??= new Dictionary<int, Domain.Models.PhanCongCa>();
 
                 for (int d = 1; d <= daysInMonth; d++)
                 {
+                    decimal hoursForDay = 0;
                     if (empPhanCongs.TryGetValue(d, out var phanCong))
                     {
                         if (phanCong.IdCaLamViec != null && phanCong.CaLamViec != null)
                         {
-                            empTongGioChuan += phanCong.CaLamViec.CalculateWorkingHours();
+                            hoursForDay = phanCong.CaLamViec.CalculateWorkingHours();
                         }
                     }
                     else
@@ -154,13 +153,37 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                         {
                             if (chiTiet.LoaiNgay == LoaiNgay.NGAY_LAM_VIEC)
                             {
-                                empTongGioChuan += chiTiet.CaLamViecMacDinh?.CalculateWorkingHours() ?? 8m;
+                                hoursForDay = chiTiet.CaLamViecMacDinh?.CalculateWorkingHours() ?? 8m;
                             }
+                        }
+                    }
+                    empTongGioChuan += hoursForDay;
+
+                    var chamCongDay = nvChamCong.FirstOrDefault(x => x.NgayChamCong.Day == d);
+                    if (chamCongDay != null)
+                    {
+                        if (chamCongDay.LoaiNgayCong == LoaiNgayCong.LAM_DU_CA || 
+                            chamCongDay.LoaiNgayCong == LoaiNgayCong.NUA_CA || 
+                            chamCongDay.LoaiNgayCong == LoaiNgayCong.DI_TRE_VE_SOM)
+                        {
+                            empTongGioThucTe += chamCongDay.SoGioLamThucTe;
+                        }
+                        else if (chamCongDay.LoaiNgayCong == LoaiNgayCong.VANG_CO_PHEP || 
+                                 chamCongDay.LoaiNgayCong == LoaiNgayCong.NGHI_LE)
+                        {
+                            empTongGioThucTe += hoursForDay;
                         }
                     }
                 }
                 decimal ngayCongChuan = Math.Round(empTongGioChuan / 8m, 3);
                 if (ngayCongChuan == 0) ngayCongChuan = 21.375m; // Fallback nếu dữ liệu lỗi
+                
+                decimal gioCongChuan = empTongGioChuan;
+                decimal gioCongThucTe = empTongGioThucTe;
+                if (gioCongChuan == 0) gioCongChuan = ngayCongChuan * 8m;
+
+                // Nếu không có giờ công thực tế -> Bỏ qua không tính lương
+                if (gioCongThucTe <= 0) continue;
 
                 // Lấy Quyết định nhân sự có hiệu lực cuối cùng trong tháng
                 var qd = await _context.QuyetDinhNhanSus
@@ -190,8 +213,8 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                 // Công thức chuẩn theo ý (Cách 1: Lương 3P = P1 * P2 * P3)
                 decimal luong3P = p1 * heSoP2 * heSoP3;
 
-                // Lương thời gian = (Lương 3P * Ngày công thực tế) / Ngày công chuẩn
-                decimal luongThoiGian = (luong3P * ngayCongThucTe) / ngayCongChuan;
+                // Lương thời gian = (Lương 3P * Giờ công thực tế) / Giờ công chuẩn
+                decimal luongThoiGian = (luong3P * gioCongThucTe) / gioCongChuan;
                 
                 // Do P3 đã tính thẳng vào Lương 3P và Lương thời gian nên cục Lương hiệu suất để riêng = 0
                 decimal luongHieuSuat = 0;
@@ -212,6 +235,8 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                     HeSoP3 = heSoP3,
                     NgayCongChuan = Math.Round(ngayCongChuan, 3),
                     NgayCongThucTe = Math.Round(ngayCongThucTe, 3),
+                    GioCongChuan = Math.Round(gioCongChuan, 2),
+                    GioCongThucTe = Math.Round(gioCongThucTe, 2),
                     LuongThoiGian = Math.Round(luongThoiGian, 0),
                     LuongHieuSuatP3 = Math.Round(luongHieuSuat, 0),
                     PhuCap = 0,

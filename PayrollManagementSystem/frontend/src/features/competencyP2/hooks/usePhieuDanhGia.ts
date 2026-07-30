@@ -47,10 +47,11 @@ export const usePhieuDanhGia = () => {
         setToast({ message: "Đã tạo phiếu đánh giá thành công.", type: 'success' });
         return true;
       }
+      setToast({ message: (res as any).message || "Lỗi khi tạo phiếu đánh giá.", type: 'error' });
       return false;
-    } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
+    } catch (err) { const error = err as import('axios').AxiosError<{Message?: string, message?: string}>;
       console.error(error);
-      setToast({ message: error.response?.data?.Message || "Lỗi khi sinh phiếu", type: 'error' });
+      setToast({ message: error.response?.data?.Message || error.response?.data?.message || "Lỗi khi sinh phiếu", type: 'error' });
       return false;
     }
   };

@@ -88,7 +88,7 @@ function App() {
 
           {/* 4. Time & Attendance Group */}
 
-          <Route element={<ProtectedRoute allowedRoles={["Admin", "HR"]} />}>
+          <Route element={<ProtectedRoute allowedRoles={["HR"]} />}>
             <Route path="/time/don-nghi" element={<DonNghiManagement />} />
           </Route>
 
@@ -102,7 +102,7 @@ function App() {
             <Route path="/performance/cau-hinh" element={<MucQuyDoiManagement />} />
           </Route>
 
-          <Route element={<ProtectedRoute allowedRoles={["Admin", "HR"]} />}>
+          <Route element={<ProtectedRoute allowedRoles={["HR"]} />}>
             <Route path="/performance/ky-danh-gia" element={<KyDanhGiaManagement />} />
           </Route>
 

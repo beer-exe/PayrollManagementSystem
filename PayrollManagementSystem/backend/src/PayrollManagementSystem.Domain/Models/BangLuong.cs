@@ -19,6 +19,8 @@ namespace PayrollManagementSystem.Domain.Models
         // Thời gian làm việc
         public decimal NgayCongChuan { get; set; }
         public decimal NgayCongThucTe { get; set; }
+        public decimal GioCongChuan { get; set; }
+        public decimal GioCongThucTe { get; set; }
         
         // Các khoản thu nhập
         public decimal LuongThoiGian { get; set; }

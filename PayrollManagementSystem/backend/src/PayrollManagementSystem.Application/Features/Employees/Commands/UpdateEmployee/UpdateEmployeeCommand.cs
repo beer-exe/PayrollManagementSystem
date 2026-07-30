@@ -1,10 +1,14 @@
 using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
 
+using PayrollManagementSystem.Application.Common.Interfaces;
+
 namespace PayrollManagementSystem.Application.Features.Employees.Commands.UpdateEmployee
 {
-    public class UpdateEmployeeCommand : IRequest<Response<bool>>
+    public class UpdateEmployeeCommand : IRequest<Response<bool>>, ICacheInvalidatorCommand
     {
+        public string CacheKeyPrefix => "Departments_";
+
         public string Cccd { get; set; } = null!;
 
         public string HoTen { get; set; } = null!;

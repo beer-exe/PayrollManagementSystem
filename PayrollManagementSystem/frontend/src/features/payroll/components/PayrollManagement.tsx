@@ -183,7 +183,12 @@ const PayrollManagement: React.FC = () => {
                     <div className="position-name">{row.tenChucVu}</div>
                   </td>
                   <td className="text-right fw-bold text-primary">{formatCurrency(row.p1)}</td>
-                  <td className="text-center">{row.ngayCongThucTe} / {row.ngayCongChuan}</td>
+                  <td className="text-center">
+                    <div>{row.ngayCongThucTe} / {row.ngayCongChuan} ngày</div>
+                    <div style={{ fontSize: '0.85em', color: 'var(--text-secondary)' }}>
+                      {row.gioCongThucTe} / {row.gioCongChuan} giờ
+                    </div>
+                  </td>
                   <td className="text-right">{formatCurrency(row.luongThoiGian)}</td>
                   <td className="text-right">{formatCurrency(row.luongHieuSuatP3)}</td>
                   <td className="text-right text-danger">0 đ</td>

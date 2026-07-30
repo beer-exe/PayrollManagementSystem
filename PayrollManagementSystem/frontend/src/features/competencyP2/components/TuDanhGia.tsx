@@ -6,10 +6,11 @@ import { useDataTable } from '../../../hooks/useDataTable';
 import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
 import { SortableHeader } from '../../../components/DataTable/SortableHeader';
 import { ExportButtons } from '../../../components/DataTable/ExportButtons';
+import { Toast } from '../../../components/Toast/Toast';
 import './CompetencyManagement.css';
 
 export const TuDanhGia: React.FC = () => {
-  const { data: myForms, loading: formLoading, fetchMyEvaluations, generate } = usePhieuDanhGia();
+  const { data: myForms, loading: formLoading, fetchMyEvaluations, generate, toast, setToast } = usePhieuDanhGia();
   const { data: kyDanhGias, loading: kyLoading, fetchKyDanhGia } = useKyDanhGia();
   const navigate = useNavigate();
 
@@ -237,6 +238,13 @@ export const TuDanhGia: React.FC = () => {
         )}
       </div>
 
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

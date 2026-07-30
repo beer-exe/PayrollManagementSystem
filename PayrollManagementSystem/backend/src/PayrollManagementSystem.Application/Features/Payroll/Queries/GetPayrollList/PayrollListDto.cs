@@ -19,6 +19,9 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetPayrol
         public decimal NgayCongChuan { get; set; }
         public decimal NgayCongThucTe { get; set; }
         
+        public decimal GioCongChuan { get; set; }
+        public decimal GioCongThucTe { get; set; }
+        
         public decimal LuongThoiGian { get; set; }
         public decimal LuongHieuSuatP3 { get; set; }
         

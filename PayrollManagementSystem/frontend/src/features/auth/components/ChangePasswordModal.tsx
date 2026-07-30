@@ -112,8 +112,15 @@ export const ChangePasswordModal: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="pwd-modal-overlay" onClick={handleClose}>
-      <div className="pwd-modal" onClick={e => e.stopPropagation()}>
+    <div 
+      className="pwd-modal-overlay" 
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) {
+          handleClose();
+        }
+      }}
+    >
+      <div className="pwd-modal">
         <div className="pwd-modal-header">
           <h2 className="pwd-modal-title">Đổi mật khẩu</h2>
           <button className="pwd-modal-close" onClick={handleClose}>&times;</button>

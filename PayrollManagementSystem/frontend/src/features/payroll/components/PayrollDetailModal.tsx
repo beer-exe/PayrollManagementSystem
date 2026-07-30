@@ -40,6 +40,10 @@ export const PayrollDetailModal: React.FC<Props> = ({ payroll, onClose }) => {
               <span className="info-label">Ngày công:</span>
               <span className="info-value">{payroll.ngayCongThucTe} / {payroll.ngayCongChuan}</span>
             </div>
+            <div className="emp-info-row">
+              <span className="info-label">Giờ công:</span>
+              <span className="info-value">{payroll.gioCongThucTe} / {payroll.gioCongChuan}</span>
+            </div>
           </div>
 
           <div className="salary-details-section">
@@ -77,7 +81,7 @@ export const PayrollDetailModal: React.FC<Props> = ({ payroll, onClose }) => {
             <div className="salary-row sub-total">
               <div className="salary-label">
                 Lương thời gian
-                <span className="salary-formula">({formatCurrency(luong3P)} x {payroll.ngayCongThucTe}) / {payroll.ngayCongChuan}</span>
+                <span className="salary-formula">({formatCurrency(luong3P)} x {payroll.gioCongThucTe} giờ) / {payroll.gioCongChuan} giờ</span>
               </div>
               <div className="salary-amount amount-positive">{formatCurrency(payroll.luongThoiGian)}</div>
             </div>
