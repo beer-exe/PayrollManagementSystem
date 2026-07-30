@@ -157,7 +157,7 @@ export const NgachLuongManagement: React.FC = () => {
     <div className="jg-container">
       <div className="jg-header">
         <div className="jg-header-title">
-          <h2>Danh Mục Ngạch Lương</h2>
+          <h2>📈 Danh Mục Ngạch Lương</h2>
           <p>Quản lý các ngạch lương và bậc lương tương ứng</p>
         </div>
         <button

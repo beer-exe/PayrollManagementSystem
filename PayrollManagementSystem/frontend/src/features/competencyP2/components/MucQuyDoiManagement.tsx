@@ -182,7 +182,7 @@ export const MucQuyDoiManagement: React.FC = () => {
     <div className="cp2-container">
       <div className="cp2-header">
         <div className="cp2-header-title">
-          <h2>Cấu Hình Mức Quy Đổi P2</h2>
+          <h2>⚙️ Cấu Hình Mức Quy Đổi</h2>
           <p>Quản lý các dải điểm đánh giá năng lực và hệ số lương P2 tương ứng</p>
         </div>
         <button 
@@ -223,7 +223,7 @@ export const MucQuyDoiManagement: React.FC = () => {
                   <SortableHeader label="Điểm tối thiểu" sortKey="diemToiThieu" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'right' }} />
                   <SortableHeader label="Điểm tối đa" sortKey="diemToiDa" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'right' }} />
                   <SortableHeader label="Hệ số P2" sortKey="heSoP2" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
-                  <th style={{ textAlign: 'right' }}>Hành Động</th>
+                  <th style={{ textAlign: 'right' }}>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -420,7 +420,7 @@ export const MucQuyDoiManagement: React.FC = () => {
       <ConfirmModal 
         isOpen={!!confirmDelete} 
         title="Xác nhận xóa" 
-        message={`Bạn có chắc chắn muốn xóa xếp loại "${confirmDelete?.xepLoai}" không? Hành động này không thể hoàn tác.`} 
+        message={`Bạn có chắc chắn muốn xóa xếp loại "${confirmDelete?.xepLoai}" không? thao tác này không thể hoàn tác.`} 
         onConfirm={confirmDeleteAction} 
         onCancel={() => setConfirmDelete(null)} 
       />

@@ -58,7 +58,7 @@ export const DuyetDanhGia: React.FC = () => {
     <div className="cp2-container">
       <div className="cp2-header">
         <div className="cp2-header-title">
-          <h2>Danh sách & Duyệt đánh giá</h2>
+          <h2>✅ Danh sách & Duyệt đánh giá</h2>
           <p>Quản lý và đánh giá phiếu năng lực của nhân viên cấp dưới</p>
         </div>
       </div>
@@ -91,7 +91,7 @@ export const DuyetDanhGia: React.FC = () => {
                   <SortableHeader label="Trạng thái" sortKey="trangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
                   <SortableHeader label="Điểm tổng hợp" sortKey="diemTongHop" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
                   <SortableHeader label="Xếp loại" sortKey="xepLoai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
-                  <th style={{ textAlign: 'right' }}>Hành động</th>
+                  <th style={{ textAlign: 'right' }}>Thao tác</th>
                 </tr>
               </thead>
               <tbody>

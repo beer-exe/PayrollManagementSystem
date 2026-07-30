@@ -402,8 +402,8 @@ export const ShiftAssignment: React.FC = () => {
         <div className="sa-container">
             <div className="sa-header">
                 <div className="sa-header-left">
-                    <h2>Phân công ca luân phiên</h2>
-                    <p className="sa-subtitle-desktop">Sắp xếp và quản lý ca làm việc bằng thao tác kéo thả (Drag & Drop)</p>
+                    <h2>📅 Phân công ca làm việc</h2>
+                    <p className="sa-subtitle-desktop">Sắp xếp và quản lý ca làm việc bằng thao tác kéo thả</p>
                     <p className="sa-subtitle-mobile">Chạm vào hộp chọn để gán ca làm việc cho nhân viên</p>
                 </div>
             </div>

@@ -73,7 +73,7 @@ export const WorkShiftInstructionModal: React.FC<WorkShiftInstructionModalProps>
                             <h4 style={{ color: 'var(--primary-color)', marginBottom: '0.5rem', fontWeight: 600 }}>3. Lưu ý khi Xoá</h4>
                             <ul style={{ paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                 <li>Chỉ có thể xoá những Ca làm việc <strong>chưa từng được gán</strong> cho bất kỳ Lịch làm việc hay Phân công ca nào.</li>
-                                <li>Nếu Ca đã được sử dụng (dù là ở quá khứ hay tương lai), hệ thống sẽ chặn hành động Xoá để tránh làm lỗi dữ liệu. Thay vào đó, hãy <strong>Vô hiệu hoá (Tắt trạng thái Hoạt động)</strong>.</li>
+                                <li>Nếu Ca đã được sử dụng (dù là ở quá khứ hay tương lai), hệ thống sẽ chặn thao tác Xoá để tránh làm lỗi dữ liệu. Thay vào đó, hãy <strong>Vô hiệu hoá (Tắt trạng thái Hoạt động)</strong>.</li>
                             </ul>
                         </div>
 

@@ -199,7 +199,7 @@ export const DonNghiManagement: React.FC = () => {
   };
 
   const handleHuyDaDuyet = async (id: string, name: string) => {
-    if (!confirm(`Xác nhận hủy đơn nghỉ ĐÃ DUYỆT của "${name}"?\n(Hành động này sẽ hoàn trả lại ngày phép và cập nhật lại lịch chấm công)`)) return;
+    if (!confirm(`Xác nhận hủy đơn nghỉ ĐÃ DUYỆT của "${name}"?\n(Thao tác này sẽ hoàn trả lại ngày phép và cập nhật lại lịch chấm công)`)) return;
     const err = await huyDonNghiDaDuyet(id);
     if (err) showToast('error', err);
     else { showToast('success', 'Hủy đơn thành công!'); loadData(); }
@@ -304,7 +304,7 @@ export const DonNghiManagement: React.FC = () => {
       {/* HEADER */}
       <div className="dn-header">
         <div className="dn-header__left">
-          <h1 className="dn-title">Quản lý Đơn Xin Nghỉ</h1>
+          <h1 className="dn-title">🏖️ Quản lý Đơn Xin Nghỉ</h1>
           <p className="dn-subtitle">Quản lý đơn nghỉ và ngày phép năm của nhân viên</p>
         </div>
         {isHR && (
@@ -462,7 +462,7 @@ export const DonNghiManagement: React.FC = () => {
                               <button className="dn-dropdown__danger" onClick={() => handleHuyDaDuyet(row.id, row.hoTenNhanVien)}>🔙 Hủy đơn</button>
                             )}
                             {row.trangThai !== 'Chờ duyệt' && row.trangThai !== 'Đã duyệt' && (
-                              <button disabled className="dn-dropdown__disabled">Không có hành động</button>
+                              <button disabled className="dn-dropdown__disabled">Không có thao tác</button>
                             )}
                           </div>
                         )}

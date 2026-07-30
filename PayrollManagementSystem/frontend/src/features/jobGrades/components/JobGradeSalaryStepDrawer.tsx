@@ -169,7 +169,7 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
                     <th>Mức Lương P1 (VNĐ)</th>
                     <th>Ngày Áp Dụng</th>
                     <th style={{ textAlign: 'center' }}>Trạng Thái</th>
-                    <th style={{ textAlign: 'right' }}>Hành Động</th>
+                    <th style={{ textAlign: 'right' }}>Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>

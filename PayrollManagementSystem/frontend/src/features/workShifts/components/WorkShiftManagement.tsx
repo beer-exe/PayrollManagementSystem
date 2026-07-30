@@ -121,7 +121,7 @@ export const WorkShiftManagement: React.FC = () => {
         <div className="wsh-container">
             <div className="wsh-header">
                 <div className="wsh-header-left">
-                    <h2>Cấu hình Ca làm việc</h2>
+                    <h2>⏰ Cấu hình Ca làm việc</h2>
                     <p>Quản lý các ca làm việc và khung giờ nghỉ của nhân viên trong công ty</p>
                 </div>
                 <div className="wsh-header-actions" style={{ display: 'flex', gap: '0.75rem' }}>

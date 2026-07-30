@@ -84,7 +84,7 @@ export const UserManagement: React.FC = () => {
     <div className="usr-container">
       <div className="usr-header">
         <div className="usr-header-title">
-          <h2>Quản lý Tài khoản</h2>
+          <h2>🔐 Quản lý Tài khoản</h2>
           <p>Phân quyền và kiểm soát truy cập hệ thống</p>
         </div>
         <button className="usr-btn usr-btn-primary" onClick={() => setIsCreateOpen(true)}>
@@ -139,7 +139,7 @@ export const UserManagement: React.FC = () => {
                     currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} 
                     style={{ textAlign: 'center' }}
                   />
-                  <th style={{ textAlign: 'right' }}>Hành động</th>
+                  <th style={{ textAlign: 'right' }}>Thao tác</th>
                 </tr>
               </thead>
               <tbody>

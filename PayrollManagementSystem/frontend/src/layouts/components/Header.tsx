@@ -104,9 +104,9 @@ export const Header: React.FC<HeaderProps> = ({ isCollapsed, toggleCollapse, tog
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             aria-expanded={isDropdownOpen}
           >
-            <div className="header-user-avatar overflow-hidden">
+            <div className="header-user-avatar">
               {user?.userAvatar ? (
-                <img src={user.userAvatar} alt="Avatar" className="w-full h-full object-cover" />
+                <img src={user.userAvatar} alt="Avatar" />
               ) : (
                 getInitials(user?.fullName || user?.email || 'User')
               )}

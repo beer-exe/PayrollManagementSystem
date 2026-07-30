@@ -36,7 +36,8 @@ export const useLogin = () => {
           name: response.data.fullName,
           email: response.data.email,
           role: role, // Lưu role vào store
-          hasDirectReports: response.data.hasDirectReports
+          hasDirectReports: response.data.hasDirectReports,
+          userAvatar: response.data.userAvatar
         });
         
         return true;

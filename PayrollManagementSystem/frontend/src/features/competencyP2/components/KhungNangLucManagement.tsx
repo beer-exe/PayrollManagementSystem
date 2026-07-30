@@ -246,7 +246,7 @@ export const KhungNangLucManagement: React.FC = () => {
     <div className="cp2-container">
       <div className="cp2-header">
         <div className="cp2-header-title">
-          <h2>Cấu hình Khung Năng Lực (P2)</h2>
+          <h2>🎯 Cấu hình Khung Năng Lực</h2>
           <p>Thiết lập các tiêu chí năng lực cốt lõi cho từng chức vụ</p>
         </div>
         <button
@@ -335,7 +335,7 @@ export const KhungNangLucManagement: React.FC = () => {
                       <SortableHeader label="Tên năng lực" sortKey="tenNangLuc" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ width: '35%' }} />
                       <th style={{ width: '40%' }}>Mô tả</th>
                       <SortableHeader label="Tỷ trọng" sortKey="tyTrong" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center', width: '15%' }} />
-                      <th style={{ textAlign: 'right', width: '10%' }}>Hành động</th>
+                      <th style={{ textAlign: 'right', width: '10%' }}>Thao tác</th>
                     </tr>
                   </thead>
                   <tbody>

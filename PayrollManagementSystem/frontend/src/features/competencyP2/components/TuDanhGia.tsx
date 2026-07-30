@@ -74,7 +74,7 @@ export const TuDanhGia: React.FC = () => {
       <div className="cp2-controls-wrapper" style={{ flex: 'none' }}>
         <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid var(--border-color)' }}>
           <div className="cp2-header-title">
-            <h2>Kỳ đánh giá đang mở</h2>
+            <h2>🔓 Kỳ đánh giá đang mở</h2>
             <p>Danh sách các kỳ đánh giá bạn có thể tham gia</p>
           </div>
         </div>
@@ -134,7 +134,7 @@ export const TuDanhGia: React.FC = () => {
       <div className="cp2-controls-wrapper">
         <div className="cp2-header" style={{ padding: '1.5rem', marginBottom: 0, borderBottom: '1px solid var(--border-color)', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '1rem' }}>
           <div className="cp2-header-title">
-            <h2>Danh sách phiếu đánh giá của tôi</h2>
+            <h2>📝 Danh sách phiếu đánh giá của tôi</h2>
             <p>Lịch sử tự đánh giá năng lực của bạn</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -164,7 +164,7 @@ export const TuDanhGia: React.FC = () => {
                   <SortableHeader label="Hệ số P2" sortKey="heSoP2" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
                   <SortableHeader label="Xếp loại" sortKey="xepLoai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
                   <SortableHeader label="Trạng thái" sortKey="trangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
-                  <th style={{ textAlign: 'right' }}>Hành động</th>
+                  <th style={{ textAlign: 'right' }}>Thao tác</th>
                 </tr>
               </thead>
               <tbody>

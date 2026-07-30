@@ -125,7 +125,7 @@ export const EmpTable: React.FC<EmpTableProps> = ({
               {isVisible('tenPhongBan') && <SortableHeader label="Phòng ban" sortKey="tenPhongBan" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />}
               {isVisible('ngayVaoLam') && <SortableHeader label="Ngày vào làm" sortKey="ngayVaoLam" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />}
               {isVisible('trangThai') && <SortableHeader label="Trạng thái" sortKey="tenTrangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />}
-              <th style={{ textAlign: 'right' }}>Hành động</th>
+              <th style={{ textAlign: 'right' }}>Thao tác</th>
             </tr>
           </thead>
           <tbody>

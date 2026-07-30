@@ -203,7 +203,7 @@ export const MyDonNghiPortal: React.FC = () => {
       {/* HEADER */}
       <div className="mdp-header">
         <div>
-          <h1 className="mdp-title">Đề xuất nghỉ phép</h1>
+          <h1 className="mdp-title">🏖️ Đề xuất nghỉ phép</h1>
           <p className="mdp-subtitle">
             {myName ? `${myName} — CCCD: ${myCccd}` : 'Quản lý đơn xin nghỉ của bản thân'}
           </p>

@@ -342,7 +342,7 @@ export const WorkScheduleManagement: React.FC = () => {
             <h3>Xác nhận xóa lịch</h3>
             <p>
               Bạn có chắc muốn xóa lịch làm việc năm <strong>{confirmDelete.nam}</strong>?
-              <br />Hành động này không thể hoàn tác.
+              <br />Thao tác này không thể hoàn tác.
             </p>
             <div className="ws-confirm-actions">
               <button

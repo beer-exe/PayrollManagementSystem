@@ -140,8 +140,8 @@ export const KyDanhGiaManagement: React.FC = () => {
     <div className="cp2-container">
       <div className="cp2-header">
         <div className="cp2-header-title">
-          <h2>Quản lý Kỳ đánh giá Năng lực</h2>
-          <p>Tạo và quản lý các kỳ đánh giá P2 định kỳ</p>
+          <h2>🏆 Quản lý Kỳ đánh giá Năng lực</h2>
+          <p>Tạo và quản lý các kỳ đánh giá định kỳ</p>
         </div>
         <button 
           className="cp2-btn cp2-btn-primary" 
@@ -185,7 +185,7 @@ export const KyDanhGiaManagement: React.FC = () => {
                   <SortableHeader label="Ngày bắt đầu" sortKey="ngayBatDau" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
                   <SortableHeader label="Ngày kết thúc" sortKey="ngayKetThuc" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
                   <SortableHeader label="Trạng thái" sortKey="trangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
-                  <th style={{ textAlign: 'right' }}>Hành động</th>
+                  <th style={{ textAlign: 'right' }}>Thao Tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -288,7 +288,7 @@ export const KyDanhGiaManagement: React.FC = () => {
                               
                               {record.trangThai !== 'KHOI_TAO' && record.trangThai !== 'DANG_DANH_GIA' && (
                                 <div style={{ padding: '0.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center' }}>
-                                  Không có hành động
+                                  Không có thao tác khả dụng
                                 </div>
                               )}
                             </div>

@@ -100,7 +100,7 @@ const PayrollManagement: React.FC = () => {
   return (
     <div className="payroll-management">
       <div className="payroll-header">
-        <h2>Bảng tính lương (3P)</h2>
+        <h2>💰 Bảng tính lương</h2>
         <div className="payroll-actions">
           {validYears.length > 0 && (
             <>

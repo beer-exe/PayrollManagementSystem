@@ -144,8 +144,8 @@ export const PositionManagement: React.FC = () => {
     <div className="pos-container">
       <div className="pos-header">
         <div className="pos-header-title">
-          <h2>Danh Mục Chức Vụ</h2>
-          <p>Quản lý các chức vụ và mô tả công việc (3P)</p>
+          <h2>👔 Danh Mục Chức Vụ</h2>
+          <p>Quản lý các chức vụ và mô tả công việc</p>
         </div>
         <button
           className="pos-btn pos-btn-primary"
@@ -215,7 +215,7 @@ export const PositionManagement: React.FC = () => {
                   <th>Mô Tả Công Việc</th>
                   <SortableHeader label="Ngạch Lương" sortKey="tenNgachLuong" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
                   <SortableHeader label="Trạng Thái" sortKey="tenTrangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
-                  <th style={{ textAlign: 'right' }}>Hành Động</th>
+                  <th style={{ textAlign: 'right' }}>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
