@@ -27,13 +27,14 @@ export interface PayrollListDto {
   tangCa: number;
   
   phat: number;
-  truBaoHiem: number;
+  khauTru: number;
   truThue: number;
   
   tongThuNhap: number;
   thucLinh: number;
   
   ghiChu?: string;
+  chiTietKhauTru?: string;
 }
 
 export interface CalculatePayrollCommand {

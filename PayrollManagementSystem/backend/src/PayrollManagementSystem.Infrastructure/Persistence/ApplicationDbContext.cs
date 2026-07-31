@@ -55,6 +55,8 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
         public virtual DbSet<KyLuong> KyLuongs { get; set; }
         public virtual DbSet<BangLuong> BangLuongs { get; set; }
 
+        public virtual DbSet<KhoanKhauTru> KhoanKhauTrus { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -952,7 +954,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                 entity.Property(e => e.TangCa).HasPrecision(18, 2).HasColumnName("tang_ca");
                 
                 entity.Property(e => e.Phat).HasPrecision(18, 2).HasColumnName("phat");
-                entity.Property(e => e.TruBaoHiem).HasPrecision(18, 2).HasColumnName("tru_bao_hiem");
+                entity.Property(e => e.KhauTru).HasPrecision(18, 2).HasColumnName("khau_tru");
                 entity.Property(e => e.TruThue).HasPrecision(18, 2).HasColumnName("tru_thue");
 
                 entity.Property(e => e.TongThuNhap).HasPrecision(18, 2).HasColumnName("tong_thu_nhap");
@@ -974,6 +976,27 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                     .HasConstraintName("bang_luongs_cccd_nhan_vien_fkey");
 
                 entity.HasIndex(e => new { e.IdKyLuong, e.CccdNhanVien }).IsUnique().HasDatabaseName("idx_bang_luong_ky_nv");
+            });
+
+            modelBuilder.Entity<KhoanKhauTru>(entity =>
+            {
+                entity.HasKey(e => e.IdKhoanKhauTru).HasName("khoan_khau_trus_pkey");
+                entity.ToTable("khoan_khau_trus");
+
+                entity.Property(e => e.IdKhoanKhauTru).HasColumnName("id_khoan_khau_tru");
+                entity.Property(e => e.TenKhoanKhauTru).IsRequired().HasMaxLength(200).HasColumnName("ten_khoan_khau_tru");
+                entity.Property(e => e.LoaiCongThuc).HasConversion<string>().HasMaxLength(50).HasColumnName("loai_cong_thuc");
+                entity.Property(e => e.GiaTri).HasPrecision(18, 4).HasColumnName("gia_tri");
+                entity.Property(e => e.GhiChu).HasMaxLength(500).HasColumnName("ghi_chu");
+                entity.Property(e => e.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+                entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+                entity.Property(e => e.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
+
+                entity.HasIndex(e => e.TenKhoanKhauTru).IsUnique().HasDatabaseName("idx_khoan_khau_tru_ten");
             });
         }
     }

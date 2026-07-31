@@ -24,15 +24,22 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetPayrol
 
             // Cần lấy thêm Chức vụ hiện tại (hoặc chức vụ tại thời điểm tính lương). Tạm lấy Quyết định nhân sự mới nhất
             var cccdList = bangLuongs.Select(x => x.CccdNhanVien).ToList();
+            var endOfMonth = new DateOnly(request.Nam, request.Thang, DateTime.DaysInMonth(request.Nam, request.Thang));
+            var startOfMonth = new DateOnly(request.Nam, request.Thang, 1);
+
             var quyetDinhs = await _context.QuyetDinhNhanSus
                 .Include(x => x.ChucVuMoi)
-                .Where(x => cccdList.Contains(x.Cccd) && x.TrangThai == Domain.Enums.TrangThaiQuyetDinh.HIEU_LUC)
+                    .ThenInclude(cv => cv.PhongBan)
+                .Where(x => cccdList.Contains(x.Cccd) 
+                         && x.TrangThai != Domain.Enums.TrangThaiQuyetDinh.HUY_BO)
                 .ToListAsync(cancellationToken);
 
             var result = bangLuongs.Select(bl => 
             {
                 var qd = quyetDinhs
-                    .Where(x => x.Cccd == bl.CccdNhanVien && x.NgayHieuLuc <= new DateOnly(request.Nam, request.Thang, DateTime.DaysInMonth(request.Nam, request.Thang)))
+                    .Where(x => x.Cccd == bl.CccdNhanVien 
+                             && x.NgayHieuLuc <= endOfMonth
+                             && (x.NgayHetHan == null || x.NgayHetHan >= startOfMonth))
                     .OrderByDescending(x => x.NgayHieuLuc)
                     .FirstOrDefault();
 
@@ -42,7 +49,7 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetPayrol
                     IdKyLuong = bl.IdKyLuong,
                     CccdNhanVien = bl.CccdNhanVien,
                     TenNhanVien = bl.NhanVien?.HoTen ?? "",
-                    TenPhongBan = bl.NhanVien?.PhongBan?.TenPb ?? "",
+                    TenPhongBan = qd?.ChucVuMoi?.PhongBan?.TenPb ?? (bl.NhanVien?.PhongBan?.TenPb ?? ""),
                     TenChucVu = qd?.ChucVuMoi?.TenChucVu ?? "",
                     Thang = bl.Thang,
                     Nam = bl.Nam,
@@ -59,11 +66,12 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetPayrol
                     Thuong = bl.Thuong,
                     TangCa = bl.TangCa,
                     Phat = bl.Phat,
-                    TruBaoHiem = bl.TruBaoHiem,
+                    KhauTru = bl.KhauTru,
                     TruThue = bl.TruThue,
                     TongThuNhap = bl.TongThuNhap,
                     ThucLinh = bl.ThucLinh,
-                    GhiChu = bl.GhiChu
+                    GhiChu = bl.GhiChu,
+                    ChiTietKhauTru = bl.ChiTietKhauTru
                 };
             }).OrderBy(x => x.TenPhongBan).ThenBy(x => x.TenNhanVien).ToList();
 

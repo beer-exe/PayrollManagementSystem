@@ -44,6 +44,8 @@ namespace PayrollManagementSystem.Application.Common.Interfaces
         DbSet<KyLuong> KyLuongs { get; set; }
         DbSet<BangLuong> BangLuongs { get; set; }
 
+        DbSet<KhoanKhauTru> KhoanKhauTrus { get; set; }
+
         DatabaseFacade Database { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 

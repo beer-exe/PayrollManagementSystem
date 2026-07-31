@@ -98,6 +98,7 @@ namespace PayrollManagementSystem.Application.Features.Profile.Queries.GetUserPr
                             SoQuyetDinh = qd.SoQuyetDinh,
                             LoaiQuyetDinh = qd.LoaiQuyetDinh,
                             NgayHieuLuc = qd.NgayHieuLuc,
+                            TenPhongBanMoi = _context.ChucVus.Where(cv => cv.IdChucVu == qd.IdChucVuMoi).Select(cv => cv.PhongBan.TenPb).FirstOrDefault(),
                             TenChucVuMoi = _context.ChucVus.FirstOrDefault(cv => cv.IdChucVu == qd.IdChucVuMoi).TenChucVu,
                             LuongP1Moi = (decimal?)_context.BacLuongs.FirstOrDefault(bl => bl.IdBacLuong == qd.IdBacLuongMoi).LuongP1,
                             TrangThai = qd.TrangThai.ToString()

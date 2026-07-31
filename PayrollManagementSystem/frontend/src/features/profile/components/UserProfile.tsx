@@ -452,6 +452,13 @@ export const UserProfile: React.FC = () => {
                               <span className="text-sm font-medium text-violet-700 dark:text-violet-400">{history.tenChucVuMoi}</span>
                             </div>
                           )}
+
+                          {history.tenPhongBanMoi && (
+                            <div className="flex flex-col">
+                              <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Phòng ban</span>
+                              <span className="text-sm font-medium text-violet-700 dark:text-violet-400">{history.tenPhongBanMoi}</span>
+                            </div>
+                          )}
                           
                           {history.luongP1Moi && (
                             <div className="flex flex-col">

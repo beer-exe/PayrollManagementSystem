@@ -29,6 +29,8 @@ import { ChamCongManagement } from '@/features/chamCong/components/ChamCongManag
 import { DonNghiManagement } from '@/features/donNghi/components/DonNghiManagement';
 import { MyDonNghiPortal } from '@/features/donNghi/components/MyDonNghiPortal';
 import PayrollManagement from '@/features/payroll/components/PayrollManagement';
+import { KhoanKhauTruManagement } from '@/features/khoanKhauTru/components/KhoanKhauTruManagement';
+
 
 const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string[], requireManager?: boolean }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -79,6 +81,8 @@ function App() {
             <Route path="/hr/ngach-luong" element={<NgachLuongManagement />} />
             <Route path="/hr/chuc-vu" element={<PositionManagement />} />
             <Route path="/hr/bang-luong" element={<PayrollManagement />} />
+            <Route path="/hr/khoan-khau-tru" element={<KhoanKhauTruManagement />} />
+
             
             <Route path="/time/ca-lam-viec" element={<WorkShiftManagement />} />
             <Route path="/time/phan-cong-ca" element={<ShiftAssignment />} />

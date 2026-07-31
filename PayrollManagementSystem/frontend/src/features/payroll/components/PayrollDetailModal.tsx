@@ -14,6 +14,28 @@ export const PayrollDetailModal: React.FC<Props> = ({ payroll, onClose }) => {
 
   const luong3P = payroll.p1 * payroll.heSoP2 * payroll.heSoP3;
 
+  const renderChiTietKhauTru = () => {
+    if (!payroll.chiTietKhauTru) return null;
+    try {
+      const details = JSON.parse(payroll.chiTietKhauTru);
+      if (!Array.isArray(details) || details.length === 0) return null;
+      return (
+        <div style={{ marginBottom: '8px' }}>
+          {details.map((item: any, index: number) => (
+            <div className="salary-row" key={index} style={{ paddingLeft: '16px', opacity: 0.8, fontSize: '0.95em' }}>
+              <div className="salary-label">{item.ten}</div>
+              <div className="salary-amount amount-negative">-{formatCurrency(item.soTien)}</div>
+            </div>
+          ))}
+          <div style={{ borderBottom: '1px dashed var(--border-color)', margin: '8px 0' }}></div>
+        </div>
+      );
+    } catch (e) {
+      console.error("Error parsing chiTietKhauTru", e);
+      return null;
+    }
+  };
+
   return (
     <div className="payroll-modal-overlay" onClick={onClose}>
       <div className="payroll-modal-content" onClick={e => e.stopPropagation()}>
@@ -110,9 +132,11 @@ export const PayrollDetailModal: React.FC<Props> = ({ payroll, onClose }) => {
 
             <h4 style={{ marginTop: '24px' }}>3. Khấu trừ (Bảo hiểm, Thuế)</h4>
             
-            <div className="salary-row">
-              <div className="salary-label">Trừ Bảo hiểm (BHXH, BHYT, BHTN)</div>
-              <div className="salary-amount amount-negative">-{formatCurrency(payroll.truBaoHiem)}</div>
+            {renderChiTietKhauTru()}
+
+            <div className="salary-row sub-total">
+              <div className="salary-label">Tổng Khấu trừ</div>
+              <div className="salary-amount amount-negative">-{formatCurrency(payroll.khauTru)}</div>
             </div>
             
             <div className="salary-row">

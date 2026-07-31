@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PayrollManagementSystem.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using PayrollManagementSystem.Infrastructure.Persistence;
 namespace PayrollManagementSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260731053943_RemoveThuTuHienThi")]
+    partial class RemoveThuTuHienThi
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,9 +97,6 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("cccd_nhan_vien");
 
-                    b.Property<string>("ChiTietKhauTru")
-                        .HasColumnType("text");
-
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -130,11 +130,6 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
-
-                    b.Property<decimal>("KhauTru")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)")
-                        .HasColumnName("khau_tru");
 
                     b.Property<decimal>("LuongHieuSuatP3")
                         .HasPrecision(18, 2)
@@ -198,6 +193,11 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)")
                         .HasColumnName("tong_thu_nhap");
+
+                    b.Property<decimal>("TruBaoHiem")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("tru_bao_hiem");
 
                     b.Property<decimal>("TruThue")
                         .HasPrecision(18, 2)

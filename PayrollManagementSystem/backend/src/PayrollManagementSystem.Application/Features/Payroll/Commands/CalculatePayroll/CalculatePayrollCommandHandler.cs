@@ -107,6 +107,9 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                     g => g.OrderByDescending(p => p.KyDanhGia.NgayKetThuc).FirstOrDefault()
                 );
 
+            // Lấy danh sách khoản khấu trừ đang kích hoạt
+            var activeKhoanKhauTrus = await _context.KhoanKhauTrus.Where(x => x.IsActive).ToListAsync(cancellationToken);
+
             var listBangLuong = new List<BangLuong>();
 
             foreach (var nv in activeEmployees)
@@ -222,8 +225,29 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
 
                 decimal tongThuNhap = luongThoiGian + luongHieuSuat;
                 
-                // Thuế, bảo hiểm = 0
-                decimal thucLinh = tongThuNhap;
+                // Khấu trừ
+                decimal tongKhauTru = 0;
+                var listChiTietKhauTru = new List<object>();
+                foreach (var khauTru in activeKhoanKhauTrus)
+                {
+                    decimal soTienTru = 0;
+                    if (khauTru.LoaiCongThuc == LoaiCongThucKhauTru.TY_LE_PHAN_TRAM)
+                    {
+                        soTienTru = (khauTru.GiaTri / 100m) * p1;
+                    }
+                    else if (khauTru.LoaiCongThuc == LoaiCongThucKhauTru.SO_TIEN_CO_DINH)
+                    {
+                        soTienTru = khauTru.GiaTri;
+                    }
+                    tongKhauTru += soTienTru;
+                    listChiTietKhauTru.Add(new {
+                        ten = khauTru.TenKhoanKhauTru,
+                        soTien = Math.Round(soTienTru, 0)
+                    });
+                }
+                
+                decimal thucLinh = tongThuNhap - tongKhauTru;
+                string chiTietKhauTruJson = System.Text.Json.JsonSerializer.Serialize(listChiTietKhauTru);
 
                 var bangLuong = new BangLuong
                 {
@@ -244,7 +268,8 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                     Thuong = 0,
                     TangCa = 0,
                     Phat = 0,
-                    TruBaoHiem = 0,
+                    KhauTru = Math.Round(tongKhauTru, 0),
+                    ChiTietKhauTru = chiTietKhauTruJson,
                     TruThue = 0,
                     TongThuNhap = Math.Round(tongThuNhap, 0),
                     ThucLinh = Math.Round(thucLinh, 0),

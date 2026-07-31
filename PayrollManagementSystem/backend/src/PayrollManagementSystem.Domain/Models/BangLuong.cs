@@ -31,7 +31,7 @@ namespace PayrollManagementSystem.Domain.Models
         
         // Các khoản trừ
         public decimal Phat { get; set; } = 0m;
-        public decimal TruBaoHiem { get; set; } = 0m;
+        public decimal KhauTru { get; set; } = 0m;
         public decimal TruThue { get; set; } = 0m;
         
         // Tổng hợp
@@ -40,6 +40,9 @@ namespace PayrollManagementSystem.Domain.Models
 
         // Ghi chú (ví dụ diễn giải công thức nếu cần)
         public string? GhiChu { get; set; }
+        
+        // Chi tiết khoản mục khấu trừ (lưu trữ JSON)
+        public string? ChiTietKhauTru { get; set; }
 
         // Navigation properties
         public KyLuong KyLuong { get; set; } = null!;

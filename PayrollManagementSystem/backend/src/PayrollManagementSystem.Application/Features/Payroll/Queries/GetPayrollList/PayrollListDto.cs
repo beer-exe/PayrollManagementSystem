@@ -30,12 +30,13 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetPayrol
         public decimal TangCa { get; set; }
         
         public decimal Phat { get; set; }
-        public decimal TruBaoHiem { get; set; }
+        public decimal KhauTru { get; set; }
         public decimal TruThue { get; set; }
         
         public decimal TongThuNhap { get; set; }
         public decimal ThucLinh { get; set; }
         
         public string? GhiChu { get; set; }
+        public string? ChiTietKhauTru { get; set; }
     }
 }
