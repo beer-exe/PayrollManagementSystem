@@ -38,6 +38,7 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.UpdateC
             chamCong.GioRa = request.GioRa;
             chamCong.GhiChu = request.GhiChu;
             chamCong.IsNhapTay = true;
+            chamCong.TrangThai = TrangThaiChamCong.DA_XAC_NHAN;
 
             if (loaiNgayTrongLich is LoaiNgay.NGHI_LE or LoaiNgay.NGHI_CUOI_TUAN)
             {
@@ -80,7 +81,6 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.UpdateC
                 }
 
                 chamCong.SoGioLamThucTe = soGioLam;
-                chamCong.TrangThai = TrangThaiChamCong.DA_XAC_NHAN;
             }
 
             await _context.SaveChangesAsync(cancellationToken);

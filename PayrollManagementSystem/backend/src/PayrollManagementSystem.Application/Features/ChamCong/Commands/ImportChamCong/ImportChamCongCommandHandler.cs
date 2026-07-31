@@ -147,7 +147,7 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.ImportC
                         SoPhutVeSom = calcResult.SoPhutVeSom,
                         IsNhapTay = false,
                         GhiChu = ghiChu ?? calcResult.GhiChu,
-                        TrangThai = TrangThaiChamCong.CHUA_XAC_NHAN
+                        TrangThai = TrangThaiChamCong.DA_XAC_NHAN
                     });
 
                     // Thêm vào set để tránh trùng trong cùng 1 file

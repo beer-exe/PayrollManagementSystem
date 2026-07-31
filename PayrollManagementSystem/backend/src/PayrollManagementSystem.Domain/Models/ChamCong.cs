@@ -29,7 +29,7 @@ namespace PayrollManagementSystem.Domain.Models
 
         public string? GhiChu { get; set; }
 
-        public TrangThaiChamCong TrangThai { get; set; } = TrangThaiChamCong.CHUA_XAC_NHAN;
+        public TrangThaiChamCong TrangThai { get; set; } = TrangThaiChamCong.DA_XAC_NHAN;
 
         // Navigation
         public NhanVien NhanVien { get; set; } = null!;
