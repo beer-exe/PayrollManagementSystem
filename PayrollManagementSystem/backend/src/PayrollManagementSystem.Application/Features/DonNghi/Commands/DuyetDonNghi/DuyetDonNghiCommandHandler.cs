@@ -76,7 +76,19 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DuyetDon
                 remainingNgayNghi -= ngayTru;
 
                 var chamCong = existingChamCongs.FirstOrDefault(c => c.NgayChamCong == lich.Ngay);
-                var loaiCong = ngayTru == 1m ? LoaiNgayCong.VANG_CO_PHEP : LoaiNgayCong.NUA_CA;
+                
+                LoaiNgayCong loaiCongToAssign;
+                if (ngayTru == 1m) 
+                {
+                    loaiCongToAssign = (donNghi.LoaiNghi == LoaiNghi.NGHI_KHONG_LUONG) 
+                        ? LoaiNgayCong.VANG_CO_PHEP_KHONG_LUONG 
+                        : LoaiNgayCong.VANG_CO_PHEP;
+                }
+                else 
+                {
+                    loaiCongToAssign = LoaiNgayCong.NUA_CA;
+                }
+
                 var soGio = (1m - ngayTru) * 8m; // Default 8 hours per day
 
                 if (chamCong == null)
@@ -85,7 +97,7 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DuyetDon
                     {
                         CccdNhanVien = donNghi.CccdNhanVien,
                         NgayChamCong = lich.Ngay,
-                        LoaiNgayCong = loaiCong,
+                        LoaiNgayCong = loaiCongToAssign,
                         SoGioLamThucTe = soGio,
                         SoNgayCong = 1m - ngayTru,
                         GhiChu = $"Nghỉ phép: {donNghi.LyDo}",
@@ -95,7 +107,7 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DuyetDon
                 }
                 else
                 {
-                    chamCong.LoaiNgayCong = loaiCong;
+                    chamCong.LoaiNgayCong = loaiCongToAssign;
                     chamCong.SoGioLamThucTe = soGio;
                     chamCong.SoNgayCong = 1m - ngayTru;
                     chamCong.GhiChu = $"Nghỉ phép: {donNghi.LyDo}";

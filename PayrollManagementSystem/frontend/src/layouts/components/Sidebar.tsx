@@ -288,9 +288,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, isOpenMobile, onC
 
               let visibleChildren = item.children?.filter(child => {
                 if (!child.allowedRoles.includes(userRole)) return false;
-                // Ẩn menu Duyệt đánh giá nếu không phải HR và không có quyền quản lý
+                // Ẩn menu Duyệt đánh giá nếu không có quyền quản lý
                 if (child.path === "/performance/duyet-danh-gia") {
-                  if (userRole !== "Admin" && !user?.hasDirectReports) return false;
+                  if (!user?.hasDirectReports) return false;
                 }
                 return true;
               }) || [];

@@ -173,6 +173,7 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                         {
                             empTongGioThucTe += hoursForDay;
                         }
+                        // VANG_CO_PHEP_KHONG_LUONG does not add to empTongGioThucTe
                     }
                 }
                 decimal ngayCongChuan = Math.Round(empTongGioChuan / 8m, 3);

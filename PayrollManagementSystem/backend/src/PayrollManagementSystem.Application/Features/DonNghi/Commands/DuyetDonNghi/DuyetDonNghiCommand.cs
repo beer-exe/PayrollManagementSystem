@@ -8,6 +8,6 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DuyetDon
     {
         public Guid Id { get; set; }
         public string CccdNguoiDuyet { get; set; } = null!;
-        public string CacheKeyPrefix => "DonNghi,NgayPhep"; // Clear cache for both DonNghi and NgayPhep
+        public string CacheKeyPrefix => "DonNghi,NgayPhep,ChamCong"; // Clear cache for DonNghi, NgayPhep, and ChamCong
     }
 }

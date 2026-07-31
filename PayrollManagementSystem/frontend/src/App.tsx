@@ -39,7 +39,7 @@ const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string
     return <Navigate to="/profile" replace />;
   }
 
-  if (requireManager && user?.role !== "Admin" && !user?.hasDirectReports) {
+  if (requireManager && !user?.hasDirectReports) {
     return <Navigate to="/profile" replace />;
   }
 
