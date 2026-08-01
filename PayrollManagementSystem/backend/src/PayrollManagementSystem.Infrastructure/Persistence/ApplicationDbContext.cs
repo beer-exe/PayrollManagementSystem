@@ -56,6 +56,8 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
         public virtual DbSet<BangLuong> BangLuongs { get; set; }
 
         public virtual DbSet<KhoanKhauTru> KhoanKhauTrus { get; set; }
+        public virtual DbSet<BacThue> BacThues { get; set; }
+        public virtual DbSet<CauHinhGiamTru> CauHinhGiamTrus { get; set; }
 
 
 
@@ -997,6 +999,43 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                 entity.Property(e => e.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
 
                 entity.HasIndex(e => e.TenKhoanKhauTru).IsUnique().HasDatabaseName("idx_khoan_khau_tru_ten");
+            });
+
+            modelBuilder.Entity<BacThue>(entity =>
+            {
+                entity.HasKey(e => e.IdBacThue).HasName("bac_thues_pkey");
+                entity.ToTable("bac_thues");
+
+                entity.Property(e => e.IdBacThue).HasColumnName("id_bac_thue");
+                entity.Property(e => e.Bac).HasColumnName("bac");
+                entity.Property(e => e.TuGia).HasPrecision(18, 2).HasColumnName("tu_gia");
+                entity.Property(e => e.DenGia).HasPrecision(18, 2).HasColumnName("den_gia");
+                entity.Property(e => e.ThueSuat).HasPrecision(5, 2).HasColumnName("thue_suat");
+                entity.Property(e => e.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+                entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+                entity.Property(e => e.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
+            });
+
+            modelBuilder.Entity<CauHinhGiamTru>(entity =>
+            {
+                entity.HasKey(e => e.IdCauHinhGiamTru).HasName("cau_hinh_giam_trus_pkey");
+                entity.ToTable("cau_hinh_giam_trus");
+
+                entity.Property(e => e.IdCauHinhGiamTru).HasColumnName("id_cau_hinh_giam_tru");
+                entity.Property(e => e.GiamTruBanThan).HasPrecision(18, 2).HasColumnName("giam_tru_ban_than");
+                entity.Property(e => e.GiamTruNguoiPhuThuoc).HasPrecision(18, 2).HasColumnName("giam_tru_nguoi_phu_thuoc");
+                entity.Property(e => e.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+                entity.Property(e => e.GhiChu).HasMaxLength(500).HasColumnName("ghi_chu");
+
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+                entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+                entity.Property(e => e.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
             });
         }
     }

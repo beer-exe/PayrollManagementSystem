@@ -338,11 +338,8 @@ export const KhoanKhauTruManagement: React.FC = () => {
 
         {/* Pagination */}
         {totalPages > 0 && (
-          <div className="kkt-pagination">
-            <div className="kkt-pagination-info">
-              Trang <span>{currentPage}</span> / {totalPages}
-            </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div className="kkt-pagination" style={{ justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
               <button
                 className="kkt-btn kkt-btn-secondary"
                 disabled={currentPage <= 1 || loading}
@@ -351,6 +348,9 @@ export const KhoanKhauTruManagement: React.FC = () => {
               >
                 Trước
               </button>
+              <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
+                Trang <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{currentPage}</span> / <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{totalPages}</span>
+              </span>
               <button
                 className="kkt-btn kkt-btn-secondary"
                 disabled={currentPage >= totalPages || loading}
@@ -488,3 +488,4 @@ export const KhoanKhauTruManagement: React.FC = () => {
     </div>
   );
 };
+

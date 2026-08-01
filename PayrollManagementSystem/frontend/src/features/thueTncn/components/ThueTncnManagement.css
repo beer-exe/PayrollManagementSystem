@@ -1,0 +1,437 @@
+/* =====================================================
+   Thue TNCN Management — Styles
+   Prefix: tncn-
+   ===================================================== */
+
+.tncn-container {
+  padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-hover);
+  min-width: 0;
+  overflow: auto;
+  gap: 1.5rem;
+}
+
+/* ---- Header ---- */
+.tncn-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .tncn-header {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.tncn-header-title h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.tncn-header-title p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0 0;
+}
+
+/* ---- Card ---- */
+.tncn-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
+}
+
+.tncn-card-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background-color: var(--bg-surface);
+}
+
+.tncn-card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tncn-card-header h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.tncn-card-header p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0 0;
+}
+
+.tncn-card-body {
+  padding: 1.5rem;
+}
+
+/* ---- Buttons ---- */
+.tncn-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.tncn-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tncn-btn-primary {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.tncn-btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
+  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.2);
+}
+
+.tncn-btn-secondary {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-hover);
+}
+
+.tncn-btn-secondary:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.tncn-btn-text {
+  background: transparent;
+  color: var(--primary);
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+}
+
+.tncn-btn-text:hover {
+  background: var(--bg-hover);
+}
+
+.tncn-btn-text.danger {
+  color: var(--danger-text);
+}
+
+.tncn-btn-text.danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.tncn-btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+/* ---- Table ---- */
+.tncn-table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.tncn-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.tncn-table thead {
+  position: sticky;
+  top: 0;
+  background: var(--bg-hover);
+  z-index: 10;
+}
+
+.tncn-table thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.tncn-table thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+.tncn-table th {
+  padding: 0.9rem 1.1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+  border-bottom: 2px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.tncn-table tbody tr {
+  transition: background-color 0.2s;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tncn-table tbody tr:hover {
+  background-color: var(--bg-hover);
+}
+
+.tncn-table tbody td {
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.tncn-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.tncn-bac-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(109, 40, 217, 0.1);
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.tncn-rate-pill {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: rgba(109, 40, 217, 0.1);
+  color: var(--primary);
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+/* Inline Edit */
+.tncn-inline-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.tncn-inline-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.1);
+}
+
+.tncn-actions {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+/* Add Row Form */
+.tncn-add-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  padding: 1.5rem;
+  background: var(--bg-hover);
+  border-radius: 8px;
+  margin-top: 1rem;
+  border: 1px dashed var(--border-color);
+}
+
+.tncn-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 150px;
+}
+
+.tncn-form-group label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tncn-form-input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: var(--bg-surface);
+  outline: none;
+  transition: border 0.2s;
+}
+
+.tncn-form-input:focus {
+  border-color: var(--primary);
+}
+
+/* Giam tru section */
+.tncn-giamtru-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 600px) {
+  .tncn-giamtru-grid { grid-template-columns: 1fr; }
+}
+
+.tncn-giamtru-card {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: var(--bg-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tncn-giamtru-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tncn-giamtru-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.tncn-giamtru-input {
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tncn-giamtru-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.1);
+}
+
+.tncn-note-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tncn-note-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  resize: vertical;
+  min-height: 80px;
+  outline: none;
+  transition: border 0.2s;
+  box-sizing: border-box;
+}
+
+.tncn-note-textarea:focus {
+  border-color: var(--primary);
+}
+
+.tncn-save-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Empty & Loader */
+.tncn-empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+}
+
+.tncn-loader {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.tncn-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-hover);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: tncn-spin 0.7s linear infinite;
+}
+
+@keyframes tncn-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Toast */
+.tncn-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9999;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: tncn-slide-up 0.3s ease;
+}
+
+.tncn-toast-success { background: #10b981; color: #fff; }
+.tncn-toast-error { background: #ef4444; color: #fff; }
+
+@keyframes tncn-slide-up {
+  from { opacity: 0; transform: translateY(1rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
