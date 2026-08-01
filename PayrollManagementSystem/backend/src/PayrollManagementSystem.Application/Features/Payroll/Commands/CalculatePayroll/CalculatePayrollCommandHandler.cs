@@ -110,6 +110,18 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
             // Lấy danh sách khoản khấu trừ đang kích hoạt
             var activeKhoanKhauTrus = await _context.KhoanKhauTrus.Where(x => x.IsActive).ToListAsync(cancellationToken);
 
+            // Lấy dữ liệu Thuế TNCN
+            var cauHinhGiamTru = await _context.CauHinhGiamTrus.FirstOrDefaultAsync(cancellationToken);
+            var giamTruBanThan = cauHinhGiamTru?.GiamTruBanThan ?? 11000000m;
+            var giamTruNguoiPhuThuoc = cauHinhGiamTru?.GiamTruNguoiPhuThuoc ?? 4400000m;
+            var bacThues = await _context.BacThues.OrderBy(b => b.Bac).ToListAsync(cancellationToken);
+
+            // Lấy số lượng người phụ thuộc (Option 1: Tạm đếm số ThanNhanNhanVien của mỗi nhân viên)
+            var nptGroups = await _context.TNhanNviens
+                .GroupBy(t => t.Cccd)
+                .Select(g => new { Cccd = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(g => g.Cccd, g => g.Count, cancellationToken);
+
             var listBangLuong = new List<BangLuong>();
 
             foreach (var nv in activeEmployees)
@@ -249,6 +261,54 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                 decimal thucLinh = tongThuNhap - tongKhauTru;
                 string chiTietKhauTruJson = System.Text.Json.JsonSerializer.Serialize(listChiTietKhauTru);
 
+                // --- TÍNH THUẾ TNCN LŨY TIẾN ---
+                decimal thuNhapTruocThue = tongThuNhap - tongKhauTru; // Không trừ phạt
+                
+                // Số người phụ thuộc
+                int soNguoiPhuThuoc = nptGroups.TryGetValue(nv.Cccd, out int nptCount) ? nptCount : 0;
+                decimal tongGiamTru = giamTruBanThan + (soNguoiPhuThuoc * giamTruNguoiPhuThuoc);
+                
+                decimal thuNhapTinhThue = Math.Max(0, thuNhapTruocThue - tongGiamTru);
+                decimal truThue = 0;
+
+                var listChiTietBacThue = new List<object>();
+
+                if (thuNhapTinhThue > 0)
+                {
+                    foreach (var bac in bacThues)
+                    {
+                        if (thuNhapTinhThue > bac.TuGia)
+                        {
+                            decimal maxInBracket = bac.DenGia ?? decimal.MaxValue;
+                            decimal taxableInBracket = Math.Min(thuNhapTinhThue, maxInBracket) - bac.TuGia;
+                            decimal taxForBracket = taxableInBracket * (bac.ThueSuat / 100m);
+                            truThue += taxForBracket;
+                            
+                            listChiTietBacThue.Add(new {
+                                bac = bac.Bac,
+                                thueSuat = bac.ThueSuat,
+                                thuNhapTinh = Math.Round(taxableInBracket, 0),
+                                soTien = Math.Round(taxForBracket, 0)
+                            });
+                        }
+                    }
+                }
+
+                var thueDetails = new {
+                    thuNhapTruocThue = Math.Round(thuNhapTruocThue, 0),
+                    soNguoiPhuThuoc = soNguoiPhuThuoc,
+                    tongGiamTru = Math.Round(tongGiamTru, 0),
+                    thuNhapTinhThue = Math.Round(thuNhapTinhThue, 0),
+                    chiTietBacThue = listChiTietBacThue
+                };
+                string chiTietThueJson = System.Text.Json.JsonSerializer.Serialize(thueDetails);
+
+                // Tiền phạt hiện tại mặc định là 0 (sẽ lấy từ dữ liệu nếu có module Phạt sau này)
+                decimal phat = 0;
+
+                // Tính lại Thực Lĩnh sau khi trừ thuế và trừ phạt
+                thucLinh = tongThuNhap - tongKhauTru - truThue - phat;
+
                 var bangLuong = new BangLuong
                 {
                     IdKyLuong = kyLuong.IdKyLuong,
@@ -267,10 +327,11 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                     PhuCap = 0,
                     Thuong = 0,
                     TangCa = 0,
-                    Phat = 0,
+                    Phat = phat,
                     KhauTru = Math.Round(tongKhauTru, 0),
                     ChiTietKhauTru = chiTietKhauTruJson,
-                    TruThue = 0,
+                    TruThue = Math.Round(truThue, 0),
+                    ChiTietThue = chiTietThueJson,
                     TongThuNhap = Math.Round(tongThuNhap, 0),
                     ThucLinh = Math.Round(thucLinh, 0),
                 };

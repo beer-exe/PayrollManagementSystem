@@ -38,5 +38,6 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetPayrol
         
         public string? GhiChu { get; set; }
         public string? ChiTietKhauTru { get; set; }
+        public string? ChiTietThue { get; set; }
     }
 }

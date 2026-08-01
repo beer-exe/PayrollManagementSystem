@@ -71,7 +71,8 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetPayrol
                     TongThuNhap = bl.TongThuNhap,
                     ThucLinh = bl.ThucLinh,
                     GhiChu = bl.GhiChu,
-                    ChiTietKhauTru = bl.ChiTietKhauTru
+                    ChiTietKhauTru = bl.ChiTietKhauTru,
+                    ChiTietThue = bl.ChiTietThue
                 };
             }).OrderBy(x => x.TenPhongBan).ThenBy(x => x.TenNhanVien).ToList();
 

@@ -279,32 +279,32 @@ const PayrollManagement: React.FC = () => {
           </table>
         </div>
 
-        {/* Pagination */}
-        {totalPages > 0 && (
-          <div className="prl-pagination">
-            <div className="prl-pagination-info">
-              Trang <span>{currentPage}</span> / {totalPages}
+          {/* Pagination */}
+          {totalPages > 0 && (
+            <div className="prl-pagination" style={{ justifyContent: 'center' }}>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <button
+                  className="prl-btn prl-btn-secondary"
+                  disabled={currentPage <= 1 || loading}
+                  onClick={() => setCurrentPage(p => p - 1)}
+                  style={{ padding: '0.35rem 0.75rem' }}
+                >
+                  Trước
+                </button>
+                <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
+                  Trang <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{currentPage}</span> / <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{totalPages}</span>
+                </span>
+                <button
+                  className="prl-btn prl-btn-secondary"
+                  disabled={currentPage >= totalPages || loading}
+                  onClick={() => setCurrentPage(p => p + 1)}
+                  style={{ padding: '0.35rem 0.75rem' }}
+                >
+                  Sau
+                </button>
+              </div>
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button
-                className="prl-btn prl-btn-secondary"
-                disabled={currentPage <= 1 || loading}
-                onClick={() => setCurrentPage(p => p - 1)}
-                style={{ padding: '0.35rem 0.75rem' }}
-              >
-                Trước
-              </button>
-              <button
-                className="prl-btn prl-btn-secondary"
-                disabled={currentPage >= totalPages || loading}
-                onClick={() => setCurrentPage(p => p + 1)}
-                style={{ padding: '0.35rem 0.75rem' }}
-              >
-                Sau
-              </button>
-            </div>
-          </div>
-        )}
+          )}
       </div>
 
       {toast && (
