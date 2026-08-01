@@ -32,6 +32,7 @@ import PayrollManagement from '@/features/payroll/components/PayrollManagement';
 import { KhoanKhauTruManagement } from '@/features/khoanKhauTru/components/KhoanKhauTruManagement';
 import { BangThueLuyTienManagement } from '@/features/thueTncn/components/BangThueLuyTienManagement';
 import { CauHinhGiamTruManagement } from '@/features/thueTncn/components/CauHinhGiamTruManagement';
+import { SystemLogViewer } from '@/features/systemLogs/components/SystemLogViewer';
 
 
 const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string[], requireManager?: boolean }) => {
@@ -74,6 +75,7 @@ function App() {
           {/* 2. System Administration Group */}
           <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
             <Route path="/admin/tai-khoan" element={<UserManagement />} />
+            <Route path="/admin/system-logs" element={<SystemLogViewer />} />
           </Route>
 
           {/* 3. Human Resources Group */}

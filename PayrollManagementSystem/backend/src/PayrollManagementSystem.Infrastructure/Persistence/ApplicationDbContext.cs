@@ -59,7 +59,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
         public virtual DbSet<BacThue> BacThues { get; set; }
         public virtual DbSet<CauHinhGiamTru> CauHinhGiamTrus { get; set; }
 
-
+        public virtual DbSet<SystemLog> SystemLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1036,6 +1036,19 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
                 entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
                 entity.Property(e => e.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
+            });
+
+            modelBuilder.Entity<SystemLog>(entity =>
+            {
+                entity.ToTable("SystemLogs");
+                entity.HasNoKey();
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.Message).HasColumnName("message");
+                entity.Property(e => e.MessageTemplate).HasColumnName("message_template");
+                entity.Property(e => e.Level).HasColumnName("level");
+                entity.Property(e => e.RaiseDate).HasColumnName("raise_date");
+                entity.Property(e => e.Exception).HasColumnName("exception");
+                entity.Property(e => e.Properties).HasColumnName("properties");
             });
         }
     }
