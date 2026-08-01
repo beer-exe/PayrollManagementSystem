@@ -13,4 +13,11 @@ public static class CacheKeyConstants
     public const string LichLamViec  = "LichLamViec_";
     public const string CaLamViec    = "CaLamViec_";
     public const string KhoanKhauTru = "KhoanKhauTru_";
+    public const string Payroll      = "Payroll_";
+    public const string PhanCongCa   = "PhanCongCa_";
+    public const string KhungNangLuc = "KhungNangLuc_";
+    public const string KyDanhGia    = "KyDanhGia_";
+    public const string MucQuyDoi    = "MucQuyDoi_";
+    public const string BacThue      = "BacThue_";
+    public const string CauHinhGiamTru = "CauHinhGiamTru_";
 }

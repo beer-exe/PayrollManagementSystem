@@ -27,6 +27,7 @@ namespace PayrollManagementSystem.Infrastructure
             services.AddTransient<ITimekeepingCalculatorService, TimekeepingCalculatorService>();
 
             services.AddHostedService<PayrollManagementSystem.Infrastructure.BackgroundJobs.UpdateExpiredDecisionsJob>();
+            services.AddHostedService<PayrollManagementSystem.Infrastructure.BackgroundJobs.CacheWarmingService>();
 
             var cacheSettings = new PayrollManagementSystem.Application.Common.Models.CacheSettings
             {
@@ -44,13 +45,16 @@ namespace PayrollManagementSystem.Infrastructure
 
             if (cacheSettings.Provider == "Redis")
             {
-                services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(sp => 
+                services.AddMemoryCache();
+                services.AddSingleton<MemoryCacheService>();
+                services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(sp =>
                 {
                     var options = StackExchange.Redis.ConfigurationOptions.Parse(cacheSettings.RedisConnectionString);
                     options.AllowAdmin = true;
                     return StackExchange.Redis.ConnectionMultiplexer.Connect(options);
                 });
-                services.AddSingleton<ICacheService, RedisCacheService>();
+                services.AddSingleton<RedisCacheService>();
+                services.AddSingleton<ICacheService, ResilientRedisCacheService>();
             }
             else
             {
