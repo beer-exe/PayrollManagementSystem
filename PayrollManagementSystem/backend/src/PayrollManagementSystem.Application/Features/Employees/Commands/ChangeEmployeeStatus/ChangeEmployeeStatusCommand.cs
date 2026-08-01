@@ -2,13 +2,14 @@ using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Enums;
 
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.Employees.Commands.ChangeEmployeeStatus
 {
     public class ChangeEmployeeStatusCommand : IRequest<Response<bool>>, ICacheInvalidatorCommand
     {
-        public string CacheKeyPrefix => "Departments_";
+        public string CacheKeyPrefix => CacheKeyConstants.Departments;
 
         public string Cccd { get; set; } = null!;
         public TrangThaiNhanVien TrangThaiMoi { get; set; }

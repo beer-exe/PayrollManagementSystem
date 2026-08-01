@@ -1,6 +1,7 @@
 using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
 
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.SalarySteps.Commands.UpdateSalaryStepVersion
@@ -12,6 +13,6 @@ namespace PayrollManagementSystem.Application.Features.SalarySteps.Commands.Upda
         public decimal NewP1Salary { get; set; }
         public DateTime NewEffectiveDate { get; set; }
 
-        public string CacheKeyPrefix => "SalarySteps_";
+        public string CacheKeyPrefix => CacheKeyConstants.SalarySteps;
     }
 }

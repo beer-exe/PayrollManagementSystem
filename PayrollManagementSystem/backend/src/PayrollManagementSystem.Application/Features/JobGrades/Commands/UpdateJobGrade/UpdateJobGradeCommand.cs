@@ -1,6 +1,7 @@
 using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
 
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.JobGrades.Commands.UpdateJobGrade
@@ -12,6 +13,6 @@ namespace PayrollManagementSystem.Application.Features.JobGrades.Commands.Update
         public string? MoTa { get; set; }
         public int TrangThai { get; set; }
 
-        public string CacheKeyPrefix => "JobGrades_";
+        public string CacheKeyPrefix => CacheKeyConstants.JobGrades;
     }
 }

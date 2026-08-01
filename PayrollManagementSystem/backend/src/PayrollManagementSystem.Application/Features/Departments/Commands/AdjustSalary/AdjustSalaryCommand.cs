@@ -1,5 +1,6 @@
 using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.Departments.Commands.AdjustSalary
@@ -12,6 +13,6 @@ namespace PayrollManagementSystem.Application.Features.Departments.Commands.Adju
         public DateTime NgayHieuLuc { get; set; }
         public string? LyDo { get; set; }
 
-        public string CacheKeyPrefix => "Departments_";
+        public string CacheKeyPrefix => CacheKeyConstants.Departments;
     }
 }

@@ -1,6 +1,7 @@
 using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
 
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.JobGrades.Commands.DeleteJobGrade
@@ -9,6 +10,6 @@ namespace PayrollManagementSystem.Application.Features.JobGrades.Commands.Delete
     {
         public string IdNgachLuong { get; set; } = null!;
 
-        public string CacheKeyPrefix => "JobGrades_";
+        public string CacheKeyPrefix => CacheKeyConstants.JobGrades;
     }
 }

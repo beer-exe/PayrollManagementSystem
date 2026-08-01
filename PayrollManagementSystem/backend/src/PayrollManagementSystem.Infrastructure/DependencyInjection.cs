@@ -35,6 +35,13 @@ namespace PayrollManagementSystem.Infrastructure
                 RedisConnectionString = configuration["CacheSettings:RedisConnectionString"]
             };
 
+            services.Configure<PayrollManagementSystem.Application.Common.Models.CacheSettings>(opts =>
+            {
+                opts.Provider = cacheSettings.Provider;
+                opts.DefaultExpirationInMinutes = cacheSettings.DefaultExpirationInMinutes;
+                opts.RedisConnectionString = cacheSettings.RedisConnectionString;
+            });
+
             if (cacheSettings.Provider == "Redis")
             {
                 services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(sp => 

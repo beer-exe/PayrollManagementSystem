@@ -1,6 +1,7 @@
 using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
 
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.JobGrades.Commands.CreateJobGrade
@@ -10,6 +11,6 @@ namespace PayrollManagementSystem.Application.Features.JobGrades.Commands.Create
         public string TenNgachLuong { get; set; } = null!;
         public string? MoTa { get; set; }
 
-        public string CacheKeyPrefix => "JobGrades_";
+        public string CacheKeyPrefix => CacheKeyConstants.JobGrades;
     }
 }

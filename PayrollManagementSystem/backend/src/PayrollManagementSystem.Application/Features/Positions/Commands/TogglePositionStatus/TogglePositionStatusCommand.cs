@@ -1,6 +1,7 @@
 using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
 
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.Positions.Commands.TogglePositionStatus
@@ -9,6 +10,6 @@ namespace PayrollManagementSystem.Application.Features.Positions.Commands.Toggle
     {
         public string IdChucVu { get; set; } = null!;
 
-        public string CacheKeyPrefix => "Positions_";
+        public string CacheKeyPrefix => CacheKeyConstants.Positions;
     }
 }

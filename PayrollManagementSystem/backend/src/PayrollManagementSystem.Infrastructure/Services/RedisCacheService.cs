@@ -48,11 +48,20 @@ public class RedisCacheService : ICacheService
         foreach (var endpoint in endpoints)
         {
             var server = _connectionMultiplexer.GetServer(endpoint);
-            var keys = server.Keys(pattern: prefixKey + "*");
-            foreach (var key in keys)
+
+            var batch = new List<RedisKey>();
+            await foreach (var key in server.KeysAsync(pattern: prefixKey + "*"))
             {
-                await _db.KeyDeleteAsync(key);
+                batch.Add(key);
+                if (batch.Count >= 100)
+                {
+                    await _db.KeyDeleteAsync(batch.ToArray());
+                    batch.Clear();
+                }
             }
+
+            if (batch.Count > 0)
+                await _db.KeyDeleteAsync(batch.ToArray());
         }
     }
 

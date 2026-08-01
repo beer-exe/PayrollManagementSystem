@@ -23,7 +23,10 @@ public class MemoryCacheService(IMemoryCache memoryCache) : ICacheService
             {
                 options.SetSlidingExpiration(slidingExpiration.Value);
             }
-            
+
+            options.RegisterPostEvictionCallback((evictedKey, _, _, _) =>
+                CacheKeys.TryRemove(evictedKey.ToString()!, out _));
+
             memoryCache.Set(key, value, options);
             CacheKeys.TryAdd(key, true);
         }

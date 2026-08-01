@@ -1,12 +1,20 @@
 using MediatR;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using PayrollManagementSystem.Application.Common.Interfaces;
+using PayrollManagementSystem.Application.Common.Models;
 
 namespace PayrollManagementSystem.Application.Behaviours;
 
-public class CachingBehavior<TRequest, TResponse>(ICacheService cacheService, ILogger<CachingBehavior<TRequest, TResponse>> logger, IConfiguration configuration) : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+public class CachingBehavior<TRequest, TResponse>(
+    ICacheService cacheService,
+    IOptions<CacheSettings> cacheOptions,
+    ILogger<CachingBehavior<TRequest, TResponse>> logger)
+    : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
+    private readonly TimeSpan _defaultExpiration =
+        TimeSpan.FromMinutes(cacheOptions.Value.DefaultExpirationInMinutes);
+
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         if (request is not ICacheableQuery cacheableQuery)
@@ -32,9 +40,7 @@ public class CachingBehavior<TRequest, TResponse>(ICacheService cacheService, IL
         var response = await next();
         try
         {
-            var defaultExpiration = int.Parse(configuration["CacheSettings:DefaultExpirationInMinutes"] ?? "60");
-            var expiration = cacheableQuery.Expiration ?? TimeSpan.FromMinutes(defaultExpiration);
-
+            var expiration = cacheableQuery.Expiration ?? _defaultExpiration;
             await cacheService.SetAsync(cacheKey, response, expiration, cancellationToken);
             logger.LogInformation("Added to Cache -> '{CacheKey}'", cacheKey);
         }

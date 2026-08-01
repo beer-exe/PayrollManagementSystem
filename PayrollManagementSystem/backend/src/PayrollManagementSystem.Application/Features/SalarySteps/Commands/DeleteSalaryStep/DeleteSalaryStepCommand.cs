@@ -1,6 +1,7 @@
 using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
 
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.SalarySteps.Commands.DeleteSalaryStep
@@ -10,6 +11,6 @@ namespace PayrollManagementSystem.Application.Features.SalarySteps.Commands.Dele
         public string JobGradeId { get; set; } = null!;
         public string StepName { get; set; } = null!;
 
-        public string CacheKeyPrefix => "SalarySteps_";
+        public string CacheKeyPrefix => CacheKeyConstants.SalarySteps;
     }
 }
