@@ -1,4 +1,5 @@
 using MediatR;
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Enums;
@@ -13,6 +14,6 @@ namespace PayrollManagementSystem.Application.Features.KhoanKhauTru.Commands.Cre
         public string? GhiChu { get; set; }
         public bool IsActive { get; set; } = true;
 
-        public string CacheKeyPrefix => "KhoanKhauTru_";
+        public string CacheKeyPrefix => CacheKeyConstants.KhoanKhauTru;
     }
 }

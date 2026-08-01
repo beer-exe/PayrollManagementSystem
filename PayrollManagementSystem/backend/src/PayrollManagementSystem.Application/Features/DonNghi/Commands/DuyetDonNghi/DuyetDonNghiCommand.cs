@@ -1,4 +1,5 @@
 using MediatR;
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 
@@ -8,6 +9,6 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DuyetDon
     {
         public Guid Id { get; set; }
         public string CccdNguoiDuyet { get; set; } = null!;
-        public string CacheKeyPrefix => "DonNghi,NgayPhep,ChamCong"; // Clear cache for DonNghi, NgayPhep, and ChamCong
+        public string CacheKeyPrefix => $"{CacheKeyConstants.DonNghi},{CacheKeyConstants.NgayPhep},{CacheKeyConstants.ChamCong}";
     }
 }

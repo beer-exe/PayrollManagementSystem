@@ -16,10 +16,13 @@ namespace PayrollManagementSystem.Application
             services.AddMediatR(options =>
             {
                 options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+                // Thứ tự thực thi (FIFO - đăng ký trước = outermost = chạy trước):
+                // ValidationBehaviour → CacheInvalidationBehavior → CachingBehavior → TransactionBehavior → Handler
+                // Nhờ đó CacheInvalidation chỉ xóa cache SAU khi Transaction đã commit thành công.
                 options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-                options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
-                options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
                 options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(CacheInvalidationBehavior<,>));
+                options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
+                options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
             });
 
             return services;

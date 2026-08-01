@@ -2,6 +2,6 @@ namespace PayrollManagementSystem.Application.Common.Interfaces;
 
 public interface ICacheableQuery
 {
-    string CacheKey { get; }
+    string? CacheKey { get; }
     TimeSpan? Expiration { get; }
 }

@@ -1,4 +1,5 @@
 using MediatR;
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 
@@ -9,6 +10,6 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DeleteMy
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
 
-        public string CacheKeyPrefix => "DonNghi";
+        public string CacheKeyPrefix => CacheKeyConstants.DonNghi;
     }
 }

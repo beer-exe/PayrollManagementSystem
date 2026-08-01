@@ -1,4 +1,5 @@
 using MediatR;
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 
@@ -8,6 +9,6 @@ namespace PayrollManagementSystem.Application.Features.KhoanKhauTru.Commands.Del
     {
         public Guid IdKhoanKhauTru { get; set; }
 
-        public string CacheKeyPrefix => "KhoanKhauTru_";
+        public string CacheKeyPrefix => CacheKeyConstants.KhoanKhauTru;
     }
 }

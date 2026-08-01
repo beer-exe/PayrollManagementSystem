@@ -1,4 +1,5 @@
 using MediatR;
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 
@@ -14,6 +15,6 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.CreateMy
         public string LyDo { get; set; } = null!;
         public string? TaiLieuDinhKem { get; set; }
 
-        public string CacheKeyPrefix => "DonNghi";
+        public string CacheKeyPrefix => CacheKeyConstants.DonNghi;
     }
 }

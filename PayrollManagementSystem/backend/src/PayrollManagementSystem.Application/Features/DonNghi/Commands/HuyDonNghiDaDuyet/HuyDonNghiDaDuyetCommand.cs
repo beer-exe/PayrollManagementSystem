@@ -1,4 +1,5 @@
 using MediatR;
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Wrappers;
 
 using PayrollManagementSystem.Application.Common.Interfaces;
@@ -9,6 +10,6 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.HuyDonNg
     {
         public Guid Id { get; set; }
         
-        public string CacheKeyPrefix => "DonNghi,NgayPhep";
+        public string CacheKeyPrefix => $"{CacheKeyConstants.DonNghi},{CacheKeyConstants.NgayPhep}";
     }
 }

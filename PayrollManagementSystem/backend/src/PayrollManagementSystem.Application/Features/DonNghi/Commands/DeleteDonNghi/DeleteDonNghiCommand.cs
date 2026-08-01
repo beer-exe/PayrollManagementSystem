@@ -1,4 +1,5 @@
 using MediatR;
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 
@@ -7,6 +8,6 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DeleteDo
     public class DeleteDonNghiCommand : IRequest<Response<bool>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
         public Guid Id { get; set; }
-        public string CacheKeyPrefix => "DonNghi";
+        public string CacheKeyPrefix => CacheKeyConstants.DonNghi;
     }
 }
