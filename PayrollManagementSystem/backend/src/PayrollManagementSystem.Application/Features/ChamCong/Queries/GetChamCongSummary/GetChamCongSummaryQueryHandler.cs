@@ -59,6 +59,24 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
                 .ToDictionary(g => g.Key, g => g.ToDictionary(p => p.NgayLamViec.Day));
 
             var daysInMonth = DateTime.DaysInMonth(request.Nam, request.Thang);
+            var startOfMonth = new DateOnly(request.Nam, request.Thang, 1);
+            var endOfMonth = new DateOnly(request.Nam, request.Thang, daysInMonth);
+
+            var quyetDinhs = await _context.QuyetDinhNhanSus
+                .Include(qd => qd.ChucVuMoi)
+                    .ThenInclude(cv => cv.PhongBan)
+                .Where(qd => allCccd.Contains(qd.Cccd) 
+                          && qd.TrangThai != TrangThaiQuyetDinh.HUY_BO
+                          && qd.NgayHieuLuc <= endOfMonth
+                          && (qd.NgayHetHan == null || qd.NgayHetHan >= startOfMonth))
+                .ToListAsync(cancellationToken);
+                
+            var quyetDinhGroup = quyetDinhs
+                .GroupBy(qd => qd.Cccd)
+                .ToDictionary(
+                    g => g.Key, 
+                    g => g.OrderByDescending(qd => qd.NgayHieuLuc).FirstOrDefault()
+                );
 
             var result = nhanViens.Select(nv =>
             {
@@ -92,11 +110,14 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
                 
                 var empNgayCongChuan = Math.Round(empTongGioChuan / 8m, 3);
 
+                quyetDinhGroup.TryGetValue(nv.Cccd, out var qd);
+                string? tenPhongBan = qd?.ChucVuMoi?.PhongBan?.TenPb ?? nv.PhongBan?.TenPb;
+
                 return new ChamCongSummaryDto
                 {
                     CccdNhanVien = nv.Cccd,
                     HoTenNhanVien = nv.HoTen,
-                    TenPhongBan = nv.PhongBan?.TenPb,
+                    TenPhongBan = tenPhongBan,
                     Thang = request.Thang,
                     Nam = request.Nam,
                     NgayCongChuan = empNgayCongChuan,

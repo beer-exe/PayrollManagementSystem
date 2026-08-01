@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PayrollManagementSystem.Application.Features.Payroll.Commands.CalculatePayroll;
+using PayrollManagementSystem.Application.Features.Payroll.Commands.ClosePayroll;
 using PayrollManagementSystem.Application.Features.Payroll.Queries.GetPayrollList;
 
 namespace PayrollManagementSystem.API.Controllers
@@ -20,6 +21,13 @@ namespace PayrollManagementSystem.API.Controllers
 
         [HttpPost("calculate")]
         public async Task<IActionResult> CalculatePayroll([FromBody] CalculatePayrollCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        [HttpPost("close")]
+        public async Task<IActionResult> ClosePayroll([FromBody] ClosePayrollCommand command)
         {
             var result = await _mediator.Send(command);
             return Ok(result);

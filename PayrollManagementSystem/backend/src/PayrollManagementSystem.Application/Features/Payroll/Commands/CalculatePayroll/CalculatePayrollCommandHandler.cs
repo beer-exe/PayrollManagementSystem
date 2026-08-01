@@ -19,16 +19,16 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
 
         public async Task<Response<bool>> Handle(CalculatePayrollCommand request, CancellationToken cancellationToken)
         {
-            // 1. Kiểm tra kỳ lương trước đã chốt chưa (nếu có)
-            var prevMonth = request.Thang == 1 ? 12 : request.Thang - 1;
-            var prevYear = request.Thang == 1 ? request.Nam - 1 : request.Nam;
-            
-            var prevKyLuong = await _context.KyLuongs
-                .FirstOrDefaultAsync(x => x.Thang == prevMonth && x.Nam == prevYear, cancellationToken);
+            // 1. Kiểm tra xem có kỳ lương nào trước đó chưa chốt không
+            var unclosedKyLuong = await _context.KyLuongs
+                .Where(x => (x.Nam < request.Nam) || (x.Nam == request.Nam && x.Thang < request.Thang))
+                .Where(x => x.TrangThai == TrangThaiKyLuong.CHUA_CHOT)
+                .OrderBy(x => x.Nam).ThenBy(x => x.Thang)
+                .FirstOrDefaultAsync(cancellationToken);
                 
-            if (prevKyLuong != null && prevKyLuong.TrangThai == TrangThaiKyLuong.CHUA_CHOT)
+            if (unclosedKyLuong != null)
             {
-                throw new ApiException($"Không thể chạy lương tháng {request.Thang}/{request.Nam} vì kỳ lương tháng {prevMonth}/{prevYear} chưa được chốt!");
+                throw new ApiException($"Không thể chạy lương tháng {request.Thang}/{request.Nam} vì kỳ lương tháng {unclosedKyLuong.Thang}/{unclosedKyLuong.Nam} chưa được chốt!");
             }
 
             // 2. Tạo hoặc lấy Kỳ lương hiện tại
@@ -116,8 +116,9 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
             var giamTruNguoiPhuThuoc = cauHinhGiamTru?.GiamTruNguoiPhuThuoc ?? 4400000m;
             var bacThues = await _context.BacThues.OrderBy(b => b.Bac).ToListAsync(cancellationToken);
 
-            // Lấy số lượng người phụ thuộc (Option 1: Tạm đếm số ThanNhanNhanVien của mỗi nhân viên)
+            // Lấy số lượng người phụ thuộc (Đếm các ThanNhanNhanVien có cờ LaNguoiPhuThuoc = true)
             var nptGroups = await _context.TNhanNviens
+                .Where(t => t.LaNguoiPhuThuoc)
                 .GroupBy(t => t.Cccd)
                 .Select(g => new { Cccd = g.Key, Count = g.Count() })
                 .ToDictionaryAsync(g => g.Cccd, g => g.Count, cancellationToken);

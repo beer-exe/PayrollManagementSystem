@@ -1,18 +1,17 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { BacThueDto, CauHinhGiamTruDto, CreateBacThueRequest } from "../types/thueTncn.types";
+import { BacThueDto, CreateBacThueRequest } from "../types/thueTncn.types";
 import { thueTncnApi } from "../api/thueTncnApi";
 import { useDataTable } from "@/hooks/useDataTable";
 import { SortableHeader } from "@/components/DataTable/SortableHeader";
 import { ExportButtons } from "@/components/DataTable/ExportButtons";
 import { exportToExcel, exportToPdf, ExportColumn } from "@/utils/exportUtils";
-import "./ThueTncnManagement.css";
+import { Toast } from "@/components/Toast/Toast";
+import "./ThueTncn.css";
 
 const formatCurrency = (val: number) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(val);
 
 const formatPercent = (val: number) => `${val}%`;
-
-interface Toast { msg: string; type: "success" | "error"; }
 
 interface EditRow {
   tuGia: string;
@@ -20,11 +19,10 @@ interface EditRow {
   thueSuat: string;
 }
 
-export const ThueTncnManagement: React.FC = () => {
+export const BangThueLuyTienManagement: React.FC = () => {
   const [bacThueList, setBacThueList] = useState<BacThueDto[]>([]);
-  const [cauHinh, setCauHinh] = useState<CauHinhGiamTruDto>({ giamTruBanThan: 11000000, giamTruNguoiPhuThuoc: 4400000 });
   const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState<Toast | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
   const {
     searchTerm,
@@ -71,29 +69,25 @@ export const ThueTncnManagement: React.FC = () => {
   const [addForm, setAddForm] = useState<CreateBacThueRequest>({ bac: 0, tuGia: 0, denGia: null, thueSuat: 0 });
   const [saving, setSaving] = useState(false);
 
-  // GiamTru editing
-  const [editGiamTru, setEditGiamTru] = useState<CauHinhGiamTruDto>({ giamTruBanThan: 11000000, giamTruNguoiPhuThuoc: 4400000 });
-  const [savingGiamTru, setSavingGiamTru] = useState(false);
-
   const showToast = (msg: string, type: "success" | "error") => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 3500);
+    setToast({ message: msg, type });
+  };
+
+  const getErrorMessage = (err: any, defaultMsg: string) => {
+    const data = err?.response?.data;
+    if (data?.Errors && Array.isArray(data.Errors) && data.Errors.length > 0) {
+      return data.Errors.join(" ");
+    }
+    return data?.Message || defaultMsg;
   };
 
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [btRes, ghRes] = await Promise.all([
-        thueTncnApi.getBacThueList(),
-        thueTncnApi.getCauHinhGiamTru(),
-      ]);
+      const btRes = await thueTncnApi.getBacThueList();
       setBacThueList(btRes || []);
-      if (ghRes) {
-        setCauHinh(ghRes);
-        setEditGiamTru(ghRes);
-      }
     } catch (err: any) {
-      showToast(err?.response?.data?.Message || "Lỗi khi tải dữ liệu.", "error");
+      showToast(getErrorMessage(err, "Lỗi khi tải dữ liệu."), "error");
     } finally {
       setLoading(false);
     }
@@ -126,7 +120,7 @@ export const ThueTncnManagement: React.FC = () => {
       setEditingId(null);
       await loadData();
     } catch (err: any) {
-      showToast(err?.response?.data?.Message || "Có lỗi khi cập nhật.", "error");
+      showToast(getErrorMessage(err, "Có lỗi khi cập nhật."), "error");
     } finally {
       setSaving(false);
     }
@@ -139,7 +133,7 @@ export const ThueTncnManagement: React.FC = () => {
       showToast("Xóa bậc thuế thành công.", "success");
       await loadData();
     } catch (err: any) {
-      showToast(err?.response?.data?.Message || "Có lỗi khi xóa.", "error");
+      showToast(getErrorMessage(err, "Có lỗi khi xóa."), "error");
     }
   };
 
@@ -152,27 +146,9 @@ export const ThueTncnManagement: React.FC = () => {
       setAddForm({ bac: 0, tuGia: 0, denGia: null, thueSuat: 0 });
       await loadData();
     } catch (err: any) {
-      showToast(err?.response?.data?.Message || "Có lỗi khi thêm.", "error");
+      showToast(getErrorMessage(err, "Có lỗi khi thêm."), "error");
     } finally {
       setSaving(false);
-    }
-  };
-
-  // ---- CauHinhGiamTru ----
-  const saveGiamTru = async () => {
-    setSavingGiamTru(true);
-    try {
-      await thueTncnApi.upsertCauHinhGiamTru({
-        giamTruBanThan: editGiamTru.giamTruBanThan,
-        giamTruNguoiPhuThuoc: editGiamTru.giamTruNguoiPhuThuoc,
-        ghiChu: editGiamTru.ghiChu,
-      });
-      showToast("Cập nhật cấu hình giảm trừ thành công.", "success");
-      setCauHinh(editGiamTru);
-    } catch (err: any) {
-      showToast(err?.response?.data?.Message || "Có lỗi khi lưu.", "error");
-    } finally {
-      setSavingGiamTru(false);
     }
   };
 
@@ -189,18 +165,17 @@ export const ThueTncnManagement: React.FC = () => {
       {/* Page header */}
       <div className="tncn-header">
         <div className="tncn-header-title">
-          <h2>Thuế Thu nhập Cá nhân (TNCN)</h2>
-          <p>Quản lý bảng thuế lũy tiến và Cấu hình Giảm trừ Gia cảnh</p>
+          <h2>Cấu hình Bảng Tính Thuế Lũy Tiến</h2>
+          <p>Quản lý các bậc thuế thu nhập cá nhân</p>
         </div>
       </div>
 
-      {/* ===== Card 1: Bang thue luy tien ===== */}
       <div className="tncn-card">
         <div className="tncn-card-header">
           <div className="tncn-card-header-left">
             <div>
               <h2>Bảng Tính Thuế Lũy Tiến</h2>
-              <p>Cấu hình các bậc thuế thu nhập cá nhân</p>
+              <p>Danh sách cấu hình các bậc thuế</p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
@@ -360,79 +335,13 @@ export const ThueTncnManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* ===== Card 2: Cau hinh giam tru ===== */}
-      <div className="tncn-card">
-        <div className="tncn-card-header">
-          <div className="tncn-card-header-left">
-            <div>
-              <h2>Cấu hình Giảm trừ Gia cảnh</h2>
-              <p>Mức giảm trừ bản thân và người phụ thuộc áp dụng khi tính thuế TNCN</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="tncn-card-body">
-          {loading ? (
-            <div className="tncn-loader"><div className="tncn-spinner" /></div>
-          ) : (
-            <>
-
-
-              <div className="tncn-giamtru-grid">
-                <div className="tncn-giamtru-card">
-                  <span className="tncn-giamtru-label">Giảm trừ bản thân</span>
-                  <span className="tncn-giamtru-value">{formatCurrency(editGiamTru.giamTruBanThan)}</span>
-                  <input
-                    type="number"
-                    className="tncn-giamtru-input"
-                    value={editGiamTru.giamTruBanThan}
-                    onChange={(e) => setEditGiamTru((p) => ({ ...p, giamTruBanThan: Number(e.target.value) }))}
-                    placeholder="VD: 11000000"
-                  />
-                </div>
-                <div className="tncn-giamtru-card">
-                  <span className="tncn-giamtru-label">Giảm trừ người phụ thuộc</span>
-                  <span className="tncn-giamtru-value">{formatCurrency(editGiamTru.giamTruNguoiPhuThuoc)}</span>
-                  <input
-                    type="number"
-                    className="tncn-giamtru-input"
-                    value={editGiamTru.giamTruNguoiPhuThuoc}
-                    onChange={(e) => setEditGiamTru((p) => ({ ...p, giamTruNguoiPhuThuoc: Number(e.target.value) }))}
-                    placeholder="VD: 4400000"
-                  />
-                </div>
-              </div>
-
-              <div className="tncn-note-row" style={{ marginBottom: "1rem" }}>
-                <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--text-secondary)" }}>Ghi chú</label>
-                <textarea
-                  className="tncn-note-textarea"
-                  value={editGiamTru.ghiChu || ""}
-                  onChange={(e) => setEditGiamTru((p) => ({ ...p, ghiChu: e.target.value }))}
-                  placeholder="Ghi chú thêm (không bắt buộc)..."
-                />
-              </div>
-
-              <div className="tncn-save-row">
-                <button className="tncn-btn tncn-btn-primary" onClick={saveGiamTru} disabled={savingGiamTru}>
-                  {savingGiamTru ? "Đang lưu..." : (
-                    <>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: 16, height: 16 }}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                      </svg>
-                      Lưu cấu hình
-                    </>
-                  )}
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-
       {/* Toast */}
       {toast && (
-        <div className={`tncn-toast tncn-toast-${toast.type}`}>{toast.msg}</div>
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </div>
   );

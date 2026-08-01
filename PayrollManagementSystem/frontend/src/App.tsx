@@ -30,7 +30,8 @@ import { DonNghiManagement } from '@/features/donNghi/components/DonNghiManageme
 import { MyDonNghiPortal } from '@/features/donNghi/components/MyDonNghiPortal';
 import PayrollManagement from '@/features/payroll/components/PayrollManagement';
 import { KhoanKhauTruManagement } from '@/features/khoanKhauTru/components/KhoanKhauTruManagement';
-import { ThueTncnManagement } from '@/features/thueTncn/components/ThueTncnManagement';
+import { BangThueLuyTienManagement } from '@/features/thueTncn/components/BangThueLuyTienManagement';
+import { CauHinhGiamTruManagement } from '@/features/thueTncn/components/CauHinhGiamTruManagement';
 
 
 const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string[], requireManager?: boolean }) => {
@@ -83,7 +84,8 @@ function App() {
             <Route path="/hr/chuc-vu" element={<PositionManagement />} />
             <Route path="/hr/bang-luong" element={<PayrollManagement />} />
             <Route path="/hr/khoan-khau-tru" element={<KhoanKhauTruManagement />} />
-            <Route path="/hr/thue-tncn" element={<ThueTncnManagement />} />
+            <Route path="/hr/bang-thue-luy-tien" element={<BangThueLuyTienManagement />} />
+            <Route path="/hr/cau-hinh-giam-tru" element={<CauHinhGiamTruManagement />} />
 
             
             <Route path="/time/ca-lam-viec" element={<WorkShiftManagement />} />

@@ -53,7 +53,8 @@ export const UpdateEmployeeModal: React.FC<Props> = ({ isOpen, onClose, employee
           maDinhDanh: t.maDinhDanh,
           tenTn: t.tenTn,
           ngaySinh: t.ngaySinh || '',
-          idMqh: t.idMqh || null
+          idMqh: t.idMqh || null,
+          laNguoiPhuThuoc: t.laNguoiPhuThuoc || false
         })) || [],
       });
     }
@@ -187,11 +188,11 @@ export const UpdateEmployeeModal: React.FC<Props> = ({ isOpen, onClose, employee
             <div style={{ marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                 <h4 style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
-                  Danh sách người phụ thuộc (Thân nhân)
+                  Danh sách người phụ thuộc
                 </h4>
                 <button 
                   type="button" 
-                  onClick={() => append({ maDinhDanh: null, tenTn: '', ngaySinh: null, idMqh: null })}
+                  onClick={() => append({ maDinhDanh: null, tenTn: '', ngaySinh: null, idMqh: null, laNguoiPhuThuoc: false })}
                   style={{ background: 'var(--primary-light)', color: 'var(--primary)', border: '1px solid var(--primary-light)', borderRadius: '8px', padding: '0.35rem 0.75rem', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
                 >
                   + Thêm người thân
@@ -251,6 +252,17 @@ export const UpdateEmployeeModal: React.FC<Props> = ({ isOpen, onClose, employee
                               </option>
                             ))}
                           </select>
+                        </div>
+                        <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
+                          <input 
+                            type="checkbox"
+                            {...register(`thanNhans.${index}.laNguoiPhuThuoc`)} 
+                            id={`laNguoiPhuThuoc-${index}`}
+                            style={{ cursor: 'pointer', width: '1rem', height: '1rem' }}
+                          />
+                          <label htmlFor={`laNguoiPhuThuoc-${index}`} className="emp-form-label" style={{ fontSize: '0.85rem', cursor: 'pointer', margin: 0, fontWeight: 500, color: 'var(--text-primary)' }}>
+                            Là người phụ thuộc
+                          </label>
                         </div>
                       </div>
                     </div>

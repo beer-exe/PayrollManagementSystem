@@ -8,4 +8,7 @@ export const payrollApi = {
     
   calculatePayroll: (data: CalculatePayrollCommand) => 
     axiosClient.post('/Payroll/calculate', data) as unknown as Promise<Response<boolean>>,
+
+  closePayroll: (data: { thang: number; nam: number }) => 
+    axiosClient.post('/Payroll/close', data) as unknown as Promise<Response<boolean>>,
 };

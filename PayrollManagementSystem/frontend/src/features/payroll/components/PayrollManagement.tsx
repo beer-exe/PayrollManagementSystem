@@ -16,6 +16,7 @@ const PayrollManagement: React.FC = () => {
   const [payrolls, setPayrolls] = useState<PayrollListDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [calculating, setCalculating] = useState(false);
+  const [closing, setClosing] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [selectedPayroll, setSelectedPayroll] = useState<PayrollListDto | null>(null);
   const [validYears, setValidYears] = useState<number[]>([]);
@@ -89,10 +90,29 @@ const PayrollManagement: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Lỗi khi tính lương', error);
-      const msg = error.response?.data?.message || 'Có lỗi xảy ra khi tính lương.';
+      const msg = error.response?.data?.Message || error.response?.data?.message || 'Có lỗi xảy ra khi tính lương.';
       setToast({ message: msg, type: 'error' });
     } finally {
       setCalculating(false);
+    }
+  };
+
+  const handleClosePayroll = async () => {
+    if (!window.confirm(`Bạn có chắc chắn muốn CHỐT lương tháng ${thang}/${nam}? Sau khi chốt sẽ không thể tính lại.`)) return;
+
+    try {
+      setClosing(true);
+      const res = await payrollApi.closePayroll({ thang, nam });
+      if (res.succeeded) {
+        setToast({ message: `Đã chốt lương tháng ${thang}/${nam} thành công!`, type: 'success' });
+        fetchPayrolls();
+      }
+    } catch (error: any) {
+      console.error('Lỗi khi chốt lương', error);
+      const msg = error.response?.data?.Message || error.response?.data?.message || 'Có lỗi xảy ra khi chốt lương.';
+      setToast({ message: msg, type: 'error' });
+    } finally {
+      setClosing(false);
     }
   };
 
@@ -168,6 +188,31 @@ const PayrollManagement: React.FC = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>
                     Chạy tính lương
+                  </>
+                )}
+              </button>
+              
+              <button
+                className="prl-btn"
+                onClick={handleClosePayroll}
+                disabled={closing || payrolls.length === 0}
+                style={{
+                  background: 'var(--success-color, #10b981)',
+                  color: 'white',
+                  border: 'none'
+                }}
+              >
+                {closing ? (
+                  <>
+                    <div className="prl-spinner" style={{ width: 14, height: 14, borderRightColor: 'transparent', borderTopColor: '#fff', borderLeftColor: '#fff', borderBottomColor: '#fff' }} />
+                    Đang chốt...
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: 18, height: 18 }}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    Chốt kỳ lương
                   </>
                 )}
               </button>
