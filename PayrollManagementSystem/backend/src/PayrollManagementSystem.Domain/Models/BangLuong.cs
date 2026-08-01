@@ -44,6 +44,9 @@ namespace PayrollManagementSystem.Domain.Models
         // Chi tiết khoản mục khấu trừ (lưu trữ JSON)
         public string? ChiTietKhauTru { get; set; }
 
+        // Chi tiết khoản mục thuế (lưu trữ JSON)
+        public string? ChiTietThue { get; set; }
+
         // Navigation properties
         public KyLuong KyLuong { get; set; } = null!;
         public NhanVien NhanVien { get; set; } = null!;

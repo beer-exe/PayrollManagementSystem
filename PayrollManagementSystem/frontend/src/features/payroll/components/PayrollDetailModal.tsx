@@ -36,6 +36,45 @@ export const PayrollDetailModal: React.FC<Props> = ({ payroll, onClose }) => {
     }
   };
 
+  const renderChiTietThue = () => {
+    if (!payroll.chiTietThue) return null;
+    try {
+      const details = JSON.parse(payroll.chiTietThue);
+      
+      return (
+        <div style={{ marginBottom: '8px', paddingLeft: '16px', opacity: 0.9, fontSize: '0.9em' }}>
+          <div className="salary-row" style={{ color: 'var(--text-secondary)' }}>
+            <div className="salary-label">Thu nhập trước thuế:</div>
+            <div>{formatCurrency(details.thuNhapTruocThue)}</div>
+          </div>
+          <div className="salary-row" style={{ color: 'var(--text-secondary)' }}>
+            <div className="salary-label">Giảm trừ gia cảnh ({details.soNguoiPhuThuoc} NPT):</div>
+            <div>-{formatCurrency(details.tongGiamTru)}</div>
+          </div>
+          <div className="salary-row" style={{ color: 'var(--text-secondary)' }}>
+            <div className="salary-label">Thu nhập tính thuế:</div>
+            <div>{formatCurrency(details.thuNhapTinhThue)}</div>
+          </div>
+          
+          {details.chiTietBacThue && details.chiTietBacThue.length > 0 && (
+            <div style={{ marginTop: '4px', paddingLeft: '8px', borderLeft: '2px solid var(--border-color)' }}>
+              {details.chiTietBacThue.map((bac: any, index: number) => (
+                <div className="salary-row" key={index} style={{ fontSize: '0.9em', color: 'var(--text-secondary)' }}>
+                  <div className="salary-label">Bậc {bac.bac} ({bac.thueSuat}% của {formatCurrency(bac.thuNhapTinh)}):</div>
+                  <div>-{formatCurrency(bac.soTien)}</div>
+                </div>
+              ))}
+            </div>
+          )}
+          <div style={{ borderBottom: '1px dashed var(--border-color)', margin: '8px 0' }}></div>
+        </div>
+      );
+    } catch (e) {
+      console.error("Error parsing chiTietThue", e);
+      return null;
+    }
+  };
+
   return (
     <div className="payroll-modal-overlay" onClick={onClose}>
       <div className="payroll-modal-content" onClick={e => e.stopPropagation()}>
@@ -143,6 +182,7 @@ export const PayrollDetailModal: React.FC<Props> = ({ payroll, onClose }) => {
               <div className="salary-label">Thuế TNCN</div>
               <div className="salary-amount amount-negative">-{formatCurrency(payroll.truThue)}</div>
             </div>
+            {renderChiTietThue()}
 
             <div className="salary-row grand-total">
               <div className="salary-label">THỰC LĨNH</div>
