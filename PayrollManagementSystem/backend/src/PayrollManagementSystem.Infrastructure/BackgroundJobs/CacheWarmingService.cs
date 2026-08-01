@@ -28,17 +28,14 @@ namespace PayrollManagementSystem.Infrastructure.BackgroundJobs
 
             try
             {
-                using var scope = _serviceProvider.CreateScope();
-                var sender = scope.ServiceProvider.GetRequiredService<ISender>();
-
                 var warmupTasks = new List<Task>
                 {
-                    WarmAsync(sender, new GetAllDepartmentsQuery(), "Departments", cancellationToken),
-                    WarmAsync(sender, new GetJobGradesQuery(), "JobGrades", cancellationToken),
-                    WarmAsync(sender, new GetBacThueListQuery(), "BacThue", cancellationToken),
-                    WarmAsync(sender, new GetCauHinhGiamTruQuery(), "CauHinhGiamTru", cancellationToken),
-                    WarmAsync(sender, new GetKyDanhGiasQuery(), "KyDanhGia", cancellationToken),
-                    WarmAsync(sender, new GetMucQuyDoisQuery(), "MucQuyDoi", cancellationToken),
+                    WarmAsync(new GetAllDepartmentsQuery(), "Departments", cancellationToken),
+                    WarmAsync(new GetJobGradesQuery(), "JobGrades", cancellationToken),
+                    WarmAsync(new GetBacThueListQuery(), "BacThue", cancellationToken),
+                    WarmAsync(new GetCauHinhGiamTruQuery(), "CauHinhGiamTru", cancellationToken),
+                    WarmAsync(new GetKyDanhGiasQuery(), "KyDanhGia", cancellationToken),
+                    WarmAsync(new GetMucQuyDoisQuery(), "MucQuyDoi", cancellationToken),
                 };
 
                 await Task.WhenAll(warmupTasks);
@@ -52,10 +49,12 @@ namespace PayrollManagementSystem.Infrastructure.BackgroundJobs
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-        private async Task WarmAsync<TResponse>(ISender sender, IRequest<TResponse> request, string name, CancellationToken cancellationToken)
+        private async Task WarmAsync<TResponse>(IRequest<TResponse> request, string name, CancellationToken cancellationToken)
         {
             try
             {
+                using var scope = _serviceProvider.CreateScope();
+                var sender = scope.ServiceProvider.GetRequiredService<ISender>();
                 await sender.Send(request, cancellationToken);
                 _logger.LogInformation("CacheWarmingService: warmed [{Name}].", name);
             }
