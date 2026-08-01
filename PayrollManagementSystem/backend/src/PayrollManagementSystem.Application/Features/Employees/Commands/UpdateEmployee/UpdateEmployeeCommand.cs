@@ -36,5 +36,6 @@ namespace PayrollManagementSystem.Application.Features.Employees.Commands.Update
         public string TenTn { get; set; } = null!;
         public DateOnly? NgaySinh { get; set; }
         public Guid? IdMqh { get; set; } // Quan hệ
+        public bool LaNguoiPhuThuoc { get; set; }
     }
 }

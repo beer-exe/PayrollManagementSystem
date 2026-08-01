@@ -7,5 +7,6 @@ namespace PayrollManagementSystem.Application.Features.Profile.DTOs
         public string? NgaySinh { get; set; }
         public Guid? IdMqh { get; set; }
         public string? MoiQuanHe { get; set; }
+        public bool LaNguoiPhuThuoc { get; set; }
     }
 }

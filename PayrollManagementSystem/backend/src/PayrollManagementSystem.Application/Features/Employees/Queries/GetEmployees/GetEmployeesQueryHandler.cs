@@ -119,7 +119,8 @@ namespace PayrollManagementSystem.Application.Features.Employees.Queries.GetEmpl
                             TenTn = tn.ThanNhan.TenTn,
                             NgaySinh = tn.ThanNhan.NgaySinh.HasValue ? tn.ThanNhan.NgaySinh.Value.ToString("yyyy-MM-dd") : null,
                             IdMqh = tn.IdMqh,
-                            MoiQuanHe = tn.MoiQuanHe != null ? tn.MoiQuanHe.TenQuanHe : "Khác"
+                            MoiQuanHe = tn.MoiQuanHe != null ? tn.MoiQuanHe.TenQuanHe : "Khác",
+                            LaNguoiPhuThuoc = tn.LaNguoiPhuThuoc
                         }).ToList() ?? new List<ThanNhanDto>()
                 })
                 .ToListAsync(cancellationToken);
