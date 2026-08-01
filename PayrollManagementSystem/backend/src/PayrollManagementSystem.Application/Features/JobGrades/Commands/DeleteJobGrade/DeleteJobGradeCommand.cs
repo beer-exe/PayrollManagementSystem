@@ -6,7 +6,7 @@ using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.JobGrades.Commands.DeleteJobGrade
 {
-    public class DeleteJobGradeCommand : IRequest<Response<bool>>, ICacheInvalidatorCommand
+    public class DeleteJobGradeCommand : IRequest<Response<bool>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
         public string IdNgachLuong { get; set; } = null!;
 

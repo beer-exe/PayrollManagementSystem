@@ -6,7 +6,7 @@ using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.Positions.Commands.UpdatePosition
 {
-    public class UpdatePositionCommand : IRequest<Response<bool>>, ICacheInvalidatorCommand
+    public class UpdatePositionCommand : IRequest<Response<bool>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
         public string IdChucVu { get; set; } = null!;
         public string TenChucVu { get; set; } = null!;

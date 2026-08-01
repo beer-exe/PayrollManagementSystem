@@ -18,11 +18,11 @@ public class CachingBehavior<TRequest, TResponse>(
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         if (request is not ICacheableQuery cacheableQuery)
-        {
             return await next();
-        }
 
         var cacheKey = cacheableQuery.CacheKey;
+        if (string.IsNullOrEmpty(cacheKey))
+            return await next();
         try
         {
             var cachedResponse = await cacheService.GetAsync<TResponse>(cacheKey, cancellationToken);

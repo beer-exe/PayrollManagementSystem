@@ -6,7 +6,7 @@ using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.SalarySteps.Commands.DeleteSalaryStep
 {
-    public class DeleteSalaryStepCommand : IRequest<Response<bool>>, ICacheInvalidatorCommand
+    public class DeleteSalaryStepCommand : IRequest<Response<bool>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
         public string JobGradeId { get; set; } = null!;
         public string StepName { get; set; } = null!;

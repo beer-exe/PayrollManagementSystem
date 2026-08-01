@@ -5,7 +5,7 @@ using PayrollManagementSystem.Application.Wrappers;
 
 namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.DeleteLichLamViec
 {
-    public class DeleteLichLamViecCommand : IRequest<Response<bool>>, ICacheInvalidatorCommand
+    public class DeleteLichLamViecCommand : IRequest<Response<bool>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
         public Guid IdLich { get; set; }
 

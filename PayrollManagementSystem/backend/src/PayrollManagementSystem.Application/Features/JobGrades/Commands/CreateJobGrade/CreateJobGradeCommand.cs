@@ -6,7 +6,7 @@ using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.JobGrades.Commands.CreateJobGrade
 {
-    public class CreateJobGradeCommand : IRequest<Response<string>>, ICacheInvalidatorCommand
+    public class CreateJobGradeCommand : IRequest<Response<string>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
         public string TenNgachLuong { get; set; } = null!;
         public string? MoTa { get; set; }

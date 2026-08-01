@@ -7,7 +7,7 @@ using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.Employees.Commands.ChangeEmployeeStatus
 {
-    public class ChangeEmployeeStatusCommand : IRequest<Response<bool>>, ICacheInvalidatorCommand
+    public class ChangeEmployeeStatusCommand : IRequest<Response<bool>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
         public string CacheKeyPrefix => CacheKeyConstants.Departments;
 

@@ -6,7 +6,7 @@ using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.JobGrades.Commands.UpdateJobGrade
 {
-    public class UpdateJobGradeCommand : IRequest<Response<bool>>, ICacheInvalidatorCommand
+    public class UpdateJobGradeCommand : IRequest<Response<bool>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
         public string IdNgachLuong { get; set; } = null!;
         public string TenNgachLuong { get; set; } = null!;

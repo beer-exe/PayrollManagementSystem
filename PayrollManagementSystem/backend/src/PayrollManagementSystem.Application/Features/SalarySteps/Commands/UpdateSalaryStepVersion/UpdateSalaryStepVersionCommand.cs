@@ -6,7 +6,7 @@ using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.SalarySteps.Commands.UpdateSalaryStepVersion
 {
-    public class UpdateSalaryStepVersionCommand : IRequest<Response<string>>, ICacheInvalidatorCommand
+    public class UpdateSalaryStepVersionCommand : IRequest<Response<string>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
         public string JobGradeId { get; set; } = null!;
         public string StepName { get; set; } = null!;

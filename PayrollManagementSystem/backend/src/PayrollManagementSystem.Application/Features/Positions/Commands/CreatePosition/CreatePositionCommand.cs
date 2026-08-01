@@ -5,7 +5,7 @@ using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.Positions.Commands.CreatePosition
 {
-    public class CreatePositionCommand : IRequest<Response<string>>, ICacheInvalidatorCommand
+    public class CreatePositionCommand : IRequest<Response<string>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
         public string IdChucVu { get; set; } = null!;
         public string TenChucVu { get; set; } = null!;

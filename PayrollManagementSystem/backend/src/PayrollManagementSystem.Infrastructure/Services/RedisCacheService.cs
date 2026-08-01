@@ -27,14 +27,14 @@ public class RedisCacheService : ICacheService
         return JsonSerializer.Deserialize<T>(value!);
     }
 
-    public async Task SetAsync<T>(string key, T value, TimeSpan? slidingExpiration = null, CancellationToken cancellationToken = default)
+    public async Task SetAsync<T>(string key, T value, TimeSpan? expiration = null, CancellationToken cancellationToken = default)
     {
         if (value == null) return;
 
         var json = JsonSerializer.Serialize(value);
-        var expiration = slidingExpiration ?? TimeSpan.FromMinutes(_defaultExpirationInMinutes);
+        var ttl = expiration ?? TimeSpan.FromMinutes(_defaultExpirationInMinutes);
 
-        await _db.StringSetAsync(key, json, expiration);
+        await _db.StringSetAsync(key, json, ttl);
     }
 
     public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)

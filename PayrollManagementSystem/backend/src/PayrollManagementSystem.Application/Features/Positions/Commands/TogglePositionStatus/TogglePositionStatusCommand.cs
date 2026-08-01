@@ -6,7 +6,7 @@ using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.Positions.Commands.TogglePositionStatus
 {
-    public class TogglePositionStatusCommand : IRequest<Response<bool>>, ICacheInvalidatorCommand
+    public class TogglePositionStatusCommand : IRequest<Response<bool>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
         public string IdChucVu { get; set; } = null!;
 
