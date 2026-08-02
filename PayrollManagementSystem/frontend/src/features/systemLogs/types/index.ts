@@ -12,6 +12,8 @@ export interface SystemLogFilter {
   fromDate?: string;
   toDate?: string;
   keyword?: string;
+  sortBy?: string;
+  sortDirection?: string;
   pageNumber: number;
   pageSize: number;
 }

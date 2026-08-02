@@ -21,6 +21,8 @@ namespace PayrollManagementSystem.Application.Features.SystemManagement.Queries.
                 request.FromDate,
                 request.ToDate,
                 request.Keyword,
+                request.SortBy,
+                request.SortDirection,
                 request.PageNumber,
                 request.PageSize,
                 cancellationToken);

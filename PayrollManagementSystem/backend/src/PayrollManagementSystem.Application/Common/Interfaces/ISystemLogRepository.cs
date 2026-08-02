@@ -10,6 +10,8 @@ namespace PayrollManagementSystem.Application.Common.Interfaces
             DateTime? fromDate,
             DateTime? toDate,
             string? keyword,
+            string? sortBy,
+            string? sortDirection,
             int pageNumber,
             int pageSize,
             CancellationToken cancellationToken);

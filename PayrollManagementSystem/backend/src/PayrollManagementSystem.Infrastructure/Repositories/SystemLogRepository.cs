@@ -38,6 +38,7 @@ namespace PayrollManagementSystem.Infrastructure.Repositories
 
         public async Task<PagedResponse<List<SystemLogDto>>> GetLogsAsync(
             string? level, DateTime? fromDate, DateTime? toDate, string? keyword,
+            string? sortBy, string? sortDirection,
             int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var connection = _context.Database.GetDbConnection();
@@ -109,6 +110,15 @@ namespace PayrollManagementSystem.Infrastructure.Repositories
                 totalRecords = Convert.ToInt64(await cmd.ExecuteScalarAsync(cancellationToken) ?? 0L);
             }
 
+            var orderByCol = tsCol;
+            if (!string.IsNullOrWhiteSpace(sortBy))
+            {
+                if (sortBy.Equals("level", StringComparison.OrdinalIgnoreCase)) orderByCol = lvlCol;
+                else if (sortBy.Equals("message", StringComparison.OrdinalIgnoreCase)) orderByCol = msgCol;
+                else if (sortBy.Equals("raiseDate", StringComparison.OrdinalIgnoreCase)) orderByCol = tsCol;
+            }
+            var direction = string.Equals(sortDirection, "asc", StringComparison.OrdinalIgnoreCase) ? "ASC" : "DESC";
+
             var logs = new List<SystemLogDto>();
             await using (var cmd = connection.CreateCommand())
             {
@@ -117,7 +127,7 @@ namespace PayrollManagementSystem.Infrastructure.Repositories
 
                 cmd.CommandText = $@"
                     SELECT
-                        ROW_NUMBER() OVER (ORDER BY {qt}.""{tsCol}"" DESC) AS __id,
+                        ROW_NUMBER() OVER (ORDER BY {qt}.""{orderByCol}"" {direction}) AS __id,
                         {qt}.""{tsCol}"",
                         {qt}.""{lvlCol}"",
                         {qt}.""{msgCol}"",
@@ -125,7 +135,7 @@ namespace PayrollManagementSystem.Infrastructure.Repositories
                         {propSql}
                     FROM {qt}
                     {whereStr}
-                    ORDER BY {qt}.""{tsCol}"" DESC
+                    ORDER BY {qt}.""{orderByCol}"" {direction}
                     LIMIT @pageSize OFFSET @offset";
 
                 ApplyParams(cmd, ps);

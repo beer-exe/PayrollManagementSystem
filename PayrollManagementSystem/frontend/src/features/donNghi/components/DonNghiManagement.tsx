@@ -329,8 +329,9 @@ export const DonNghiManagement: React.FC = () => {
         )}
       </div>
 
-      {/* FILTER BAR */}
-      <div className="dn-filter-bar">
+      <div className="dn-controls-wrapper">
+        {/* FILTER BAR */}
+        <div className="dn-filter-bar">
         <div className="dn-filter-group">
           <label className="dn-filter-label">Tháng</label>
           <select className="dn-select" value={thang} onChange={e => setThang(+e.target.value)}>
@@ -392,24 +393,26 @@ export const DonNghiManagement: React.FC = () => {
         <div className="dn-filter-group" style={{ display: 'flex', alignItems: 'flex-end' }}>
           <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
         </div>
-      </div>
+        </div>
 
-      {/* TABS */}
-      <div className="dn-tabs">
+        {/* TABS */}
+        <div style={{ padding: '16px 20px 0' }}>
+          <div className="dn-tabs" style={{ marginBottom: '16px' }}>
         <button className={`dn-tab ${activeTab === 'don-nghi' ? 'active' : ''}`} onClick={() => setActiveTab('don-nghi')}>
           Danh sách đơn nghỉ
         </button>
         <button className={`dn-tab ${activeTab === 'ngay-phep' ? 'active' : ''}`} onClick={() => setActiveTab('ngay-phep')}>
           Ngày phép năm
         </button>
-      </div>
+          </div>
+        </div>
 
-      {/* CONTENT */}
-      {loading ? (
-        <div className="dn-loading"><div className="dn-spinner" /><span>Đang tải...</span></div>
-      ) : activeTab === 'don-nghi' ? (
-        /* BẢNG ĐƠN NGHỈ */
-        <div className="dn-table-wrap">
+        {/* CONTENT */}
+        {loading ? (
+          <div className="dn-loading" style={{ flex: 1 }}><div className="dn-spinner" /><span>Đang tải...</span></div>
+        ) : activeTab === 'don-nghi' ? (
+          /* BẢNG ĐƠN NGHỈ */
+          <div className="dn-table-wrap custom-scrollbar">
           <table className="dn-table">
             <thead>
               <tr>
@@ -483,7 +486,7 @@ export const DonNghiManagement: React.FC = () => {
         </div>
       ) : (
         /* BẢNG NGÀY PHÉP */
-        <div className="dn-table-wrap">
+        <div className="dn-table-wrap custom-scrollbar">
           <table className="dn-table">
             <thead>
               <tr>
@@ -534,6 +537,7 @@ export const DonNghiManagement: React.FC = () => {
           )}
         </div>
       )}
+      </div>
 
       {/* MODAL: Tạo đơn nghỉ */}
       {showFormModal && (

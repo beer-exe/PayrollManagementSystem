@@ -1,114 +1,806 @@
-/* ===== SystemLogViewer — sl- prefix ===== */
-.sl-page { padding: 24px; display: flex; flex-direction: column; gap: 20px; min-height: 100%; }
+/* =====================================================
+   System Log Viewer â€” Styles
+   Prefix: syslog-
+   ===================================================== */
 
-/* Header */
-.sl-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.sl-title { font-size: 1.5rem; font-weight: 700; color: #1e1b4b; }
-.sl-title-icon { margin-right: 10px; vertical-align: middle; }
-.sl-realtime-toggle { display: flex; align-items: center; gap: 10px; background: #f5f3ff; border: 1.5px solid #7c3aed; border-radius: 10px; padding: 8px 16px; cursor: pointer; transition: all 0.2s; }
-.sl-realtime-toggle:hover { background: #ede9fe; }
-.sl-realtime-toggle.active { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; border-color: #6d28d9; }
-.sl-toggle-dot { width: 8px; height: 8px; border-radius: 50%; background: #9ca3af; transition: background 0.2s; }
-.sl-realtime-toggle.active .sl-toggle-dot { background: #4ade80; animation: sl-pulse 1.2s infinite; }
-@keyframes sl-pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
-.sl-toggle-label { font-size: 0.85rem; font-weight: 600; }
-.sl-connection-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: rgba(255,255,255,0.2); }
+.syslog-container {
+  padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-hover);
+  min-width: 0;
+  overflow: auto;
+  gap: 1.5rem;
+}
 
-/* Filter bar */
-.sl-filterbar { background: #fff; border-radius: 14px; padding: 16px 20px; box-shadow: 0 2px 8px rgba(124,58,237,0.07); display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
-.sl-filter-group { display: flex; flex-direction: column; gap: 4px; }
-.sl-filter-label { font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; }
-.sl-filter-input, .sl-filter-select { height: 38px; padding: 0 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 0.9rem; color: #1f2937; outline: none; transition: border-color 0.2s; background: #fafafa; }
-.sl-filter-input:focus, .sl-filter-select:focus { border-color: #7c3aed; background: #fff; }
-.sl-filter-input { min-width: 220px; }
-.sl-filter-select { min-width: 150px; }
-.sl-filter-actions { display: flex; gap: 8px; align-items: flex-end; margin-left: auto; }
-.sl-btn { height: 38px; padding: 0 18px; border: none; border-radius: 8px; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-.sl-btn-primary { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; }
-.sl-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(124,58,237,0.3); }
-.sl-btn-ghost { background: #f3f4f6; color: #6b7280; }
-.sl-btn-ghost:hover { background: #e5e7eb; color: #374151; }
+/* ---- Header ---- */
+.syslog-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
 
-/* Content grid */
-.sl-content { display: grid; grid-template-columns: 1fr; gap: 16px; }
-.sl-content.with-realtime { grid-template-columns: 1fr 340px; }
+@media (min-width: 640px) {
+  .syslog-header {
+    flex-direction: row;
+    align-items: center;
+  }
+}
 
-/* Card */
-.sl-card { background: #fff; border-radius: 14px; box-shadow: 0 2px 8px rgba(124,58,237,0.07); overflow: hidden; }
+.syslog-header-title h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
 
-/* Table */
-.sl-table-wrapper { overflow-x: auto; }
-.sl-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-.sl-table thead tr { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; }
-.sl-table thead th { padding: 12px 16px; text-align: left; font-weight: 600; white-space: nowrap; }
-.sl-table tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.15s; }
-.sl-table tbody tr:hover { background: #faf5ff; }
-.sl-table tbody td { padding: 10px 16px; vertical-align: middle; }
-.sl-col-time { width: 155px; white-space: nowrap; color: #6b7280; font-size: 0.8rem; font-family: 'Courier New', monospace; }
-.sl-col-level { width: 70px; }
-.sl-col-msg { max-width: 600px; }
-.sl-msg-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 580px; color: #1f2937; }
-.sl-col-action { width: 50px; text-align: center; }
+.syslog-header-title-icon {
+  margin-right: 10px;
+  vertical-align: middle;
+}
 
-/* Level badge */
-.sl-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; }
+.syslog-header-title p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0 0;
+}
 
-/* Action menu */
-.sl-action-menu-wrapper { position: relative; }
-.sl-action-btn { background: none; border: 1px solid #e5e7eb; border-radius: 6px; padding: 3px 8px; cursor: pointer; font-size: 1rem; color: #6b7280; transition: all 0.15s; }
-.sl-action-btn:hover { background: #f3f4f6; color: #374151; }
-.sl-dropdown { position: absolute; right: 0; top: 110%; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 100; min-width: 140px; overflow: hidden; animation: sl-fadeIn 0.15s ease; }
-@keyframes sl-fadeIn { from { opacity:0; transform: translateY(-6px); } to { opacity:1; transform: translateY(0); } }
-.sl-dropdown-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; font-size: 0.875rem; color: #374151; cursor: pointer; transition: background 0.15s; }
-.sl-dropdown-item:hover { background: #f5f3ff; color: #7c3aed; }
+/* Realtime Toggle in Header */
+.syslog-realtime-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--primary);
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-primary);
+}
+
+.syslog-realtime-toggle:hover {
+  background: var(--bg-hover);
+}
+
+.syslog-realtime-toggle.active {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  color: #fff;
+  border-color: #6d28d9;
+}
+
+.syslog-toggle-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9ca3af;
+  transition: background 0.2s;
+}
+
+.syslog-realtime-toggle.active .syslog-toggle-dot {
+  background: #4ade80;
+  animation: syslog-pulse 1.2s infinite;
+}
+
+@keyframes syslog-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.syslog-toggle-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.syslog-connection-badge {
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.syslog-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #fff;
+}
+
+.syslog-live-dot.connected {
+  background-color: #4ade80;
+}
+
+.syslog-live-dot.disconnected {
+  background-color: #f87171;
+}
+
+/* ---- Card ---- */
+.syslog-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+}
+
+.syslog-card-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background-color: var(--bg-surface);
+  flex-wrap: wrap;
+}
+
+.syslog-card-body {
+  padding: 1.5rem;
+}
+
+/* Controls wrapper (Contains filters + table + pagination) */
+.syslog-controls-wrapper {
+  background: var(--bg-surface);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+  margin-bottom: 1.5rem;
+}
+
+/* Filter bar inside wrapper */
+.syslog-filterbar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+@media (min-width: 1024px) {
+  .syslog-filterbar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.syslog-filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.syslog-filter-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  flex: 1 1 auto;
+}
+
+.syslog-search-group {
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+}
+
+.syslog-action-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.syslog-divider-vertical {
+  width: 1px;
+  height: 24px;
+  background-color: var(--border-color);
+  margin: 0 4px;
+}
+
+.syslog-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.syslog-filter-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.syslog-filter-input,
+.syslog-filter-select {
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s;
+  background: var(--bg-surface);
+}
+
+.syslog-filter-input:focus,
+.syslog-filter-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.1);
+}
+
+
+/* ---- Buttons ---- */
+.syslog-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  height: 38px;
+}
+
+.syslog-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.syslog-btn-primary {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.syslog-btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
+  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.2);
+}
+
+.syslog-btn-secondary {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-hover);
+}
+
+.syslog-btn-secondary:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.syslog-btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.syslog-btn-outline:hover:not(:disabled) {
+  background: rgba(109, 40, 217, 0.05);
+}
+
+/* ---- Table ---- */
+.syslog-table-container {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  position: relative;
+}
+
+.syslog-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.syslog-table thead {
+  position: sticky;
+  top: 0;
+  background: var(--bg-hover);
+  z-index: 10;
+}
+
+.syslog-table thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.syslog-table thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+.syslog-table th {
+  padding: 0.9rem 1.1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+  border-bottom: 2px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.syslog-table tbody tr {
+  transition: background-color 0.2s;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.syslog-table tbody tr:hover {
+  background-color: var(--bg-hover);
+}
+
+.syslog-table tbody td {
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.syslog-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.syslog-col-time {
+  width: 155px;
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+tbody .syslog-col-time {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.8rem;
+}
+
+.syslog-col-level {
+  width: 70px;
+}
+
+.syslog-col-msg {
+  max-width: 600px;
+}
+
+.syslog-msg-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 580px;
+}
+
+.syslog-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* Action Menu */
+.syslog-action-menu-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.syslog-action-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 3px 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  transition: all 0.15s;
+}
+
+.syslog-action-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.syslog-dropdown {
+  position: absolute;
+  right: 0;
+  top: 110%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  min-width: 140px;
+  overflow: hidden;
+  animation: syslog-fadeIn 0.15s ease;
+}
+
+@keyframes syslog-fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.syslog-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.syslog-dropdown-item:hover {
+  background: var(--bg-hover);
+  color: var(--primary);
+}
 
 /* Pagination */
-.sl-pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid #f3f4f6; }
-.sl-page-info { font-size: 0.8rem; color: #6b7280; }
-.sl-page-controls { display: flex; align-items: center; gap: 8px; }
-.sl-page-btn { background: #f3f4f6; border: none; border-radius: 6px; width: 32px; height: 32px; cursor: pointer; font-size: 0.85rem; color: #374151; transition: all 0.15s; }
-.sl-page-btn:hover:not(:disabled) { background: #ede9fe; color: #7c3aed; }
-.sl-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.sl-page-indicator { font-size: 0.85rem; font-weight: 600; color: #374151; min-width: 80px; text-align: center; }
+.syslog-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-body);
+}
+
+.syslog-page-info {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.syslog-page-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Content grid */
+.syslog-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+.syslog-content.with-realtime {
+  grid-template-columns: 1fr 340px;
+}
 
 /* Empty / Loading */
-.sl-empty { text-align: center; padding: 60px 20px; color: #9ca3af; }
-.sl-empty-icon { font-size: 3rem; margin-bottom: 12px; }
-.sl-loading-row td { padding: 40px; text-align: center; color: #9ca3af; }
-.sl-spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid #e5e7eb; border-top-color: #7c3aed; border-radius: 50%; animation: sl-spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
-@keyframes sl-spin { to { transform: rotate(360deg); } }
+.syslog-empty {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--text-secondary);
+}
+
+.syslog-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.syslog-loading-row td {
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.syslog-spinner {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 3px solid var(--border-hover);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: syslog-spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+@keyframes syslog-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* Real-time panel */
-.sl-realtime-panel { display: flex; flex-direction: column; background: #1e1b4b; border-radius: 14px; overflow: hidden; }
-.sl-realtime-header { background: linear-gradient(135deg, #7c3aed, #6d28d9); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
-.sl-realtime-title { color: #fff; font-size: 0.9rem; font-weight: 700; }
-.sl-realtime-count { background: rgba(255,255,255,0.15); color: #fff; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; }
-.sl-realtime-feed { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 4px; max-height: 600px; }
-.sl-realtime-entry { background: rgba(255,255,255,0.05); border-radius: 6px; padding: 6px 10px; border-left: 3px solid transparent; animation: sl-slideIn 0.2s ease; }
-@keyframes sl-slideIn { from { opacity:0; transform:translateX(8px); } to { opacity:1; transform:translateX(0); } }
-.sl-realtime-entry.Information { border-left-color: #3b82f6; }
-.sl-realtime-entry.Warning { border-left-color: #f59e0b; }
-.sl-realtime-entry.Error, .sl-realtime-entry.Fatal { border-left-color: #ef4444; }
-.sl-realtime-entry .sl-rt-time { font-size: 0.68rem; color: #6b7280; font-family: monospace; }
-.sl-realtime-entry .sl-rt-msg { font-size: 0.78rem; color: #d1d5db; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sl-realtime-empty { text-align: center; color: #4b5563; padding: 40px 16px; font-size: 0.85rem; }
+.syslog-realtime-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.syslog-realtime-header {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.syslog-realtime-title {
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.syslog-realtime-count {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.syslog-realtime-feed {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 600px;
+}
+
+.syslog-realtime-entry {
+  background: var(--bg-body);
+  border-radius: 6px;
+  padding: 8px 12px;
+  border-left: 3px solid transparent;
+  animation: syslog-slideIn 0.2s ease;
+  border: 1px solid var(--border-color);
+}
+
+@keyframes syslog-slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.syslog-realtime-entry.Information {
+  border-left-color: #3b82f6;
+}
+
+.syslog-realtime-entry.Warning {
+  border-left-color: #f59e0b;
+}
+
+.syslog-realtime-entry.Error,
+.syslog-realtime-entry.Fatal {
+  border-left-color: #ef4444;
+}
+
+.syslog-realtime-entry .syslog-rt-time {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-family: monospace;
+}
+
+.syslog-realtime-entry .syslog-rt-msg {
+  font-size: 0.825rem;
+  color: var(--text-primary);
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.syslog-realtime-empty {
+  text-align: center;
+  color: #4b5563;
+  padding: 40px 16px;
+  font-size: 0.85rem;
+}
 
 /* Modal */
-.sl-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; animation: sl-fadeIn 0.15s ease; }
-.sl-modal { background: #fff; border-radius: 16px; max-width: 800px; width: 100%; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(0,0,0,0.25); }
-.sl-modal-header { background: linear-gradient(135deg, #7c3aed, #6d28d9); padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; }
-.sl-modal-title { color: #fff; font-size: 1rem; font-weight: 700; }
-.sl-modal-close { background: rgba(255,255,255,0.15); border: none; border-radius: 8px; width: 32px; height: 32px; color: #fff; cursor: pointer; font-size: 1.1rem; transition: background 0.2s; }
-.sl-modal-close:hover { background: rgba(255,255,255,0.25); }
-.sl-modal-body { padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
-.sl-modal-section { display: flex; flex-direction: column; gap: 6px; }
-.sl-modal-section-label { font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; }
-.sl-modal-code { background: #1e1b4b; color: #e2e8f0; border-radius: 8px; padding: 14px; font-size: 0.8rem; font-family: 'Courier New', monospace; white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto; }
-.sl-modal-code.error { border-left: 3px solid #ef4444; }
-.sl-modal-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.sl-modal-meta-item { background: #f9fafb; border-radius: 8px; padding: 10px 14px; }
-.sl-modal-meta-key { font-size: 0.72rem; color: #9ca3af; font-weight: 600; text-transform: uppercase; }
-.sl-modal-meta-val { font-size: 0.875rem; color: #1f2937; font-weight: 500; margin-top: 2px; }
+.syslog-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: syslog-fadeIn 0.15s ease;
+}
+
+.syslog-modal {
+  background: var(--bg-surface);
+  border-radius: 16px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+}
+
+.syslog-modal-header {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.syslog-modal-title {
+  color: #fff;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.syslog-modal-close {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background 0.2s;
+}
+
+.syslog-modal-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.syslog-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.syslog-modal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.syslog-modal-section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.syslog-table thead {
+  position: sticky;
+  top: 0;
+  background: var(--bg-hover);
+  z-index: 10;
+}
+
+.syslog-table thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.syslog-table thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+.syslog-table th {
+  padding: 0.9rem 1.1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.syslog-modal-code {
+  background: #1e1b4b;
+  /* Kept dark for code snippet feel */
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.8rem;
+  font-family: 'Courier New', monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.syslog-modal-code.error {
+  border-left: 3px solid #ef4444;
+}
+
+.syslog-modal-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.syslog-modal-meta-item {
+  background: var(--bg-hover);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.syslog-modal-meta-key {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.syslog-modal-meta-val {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  margin-top: 2px;
+}
 
 /* Error state */
-.sl-error-banner { background: #fee2e2; border: 1px solid #fca5a5; border-radius: 10px; padding: 12px 16px; color: #b91c1c; font-size: 0.875rem; }
+.syslog-error-banner {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #b91c1c;
+  font-size: 0.875rem;
+}
+
+.syslog-header-title-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--primary);
+  margin-right: 8px;
+}

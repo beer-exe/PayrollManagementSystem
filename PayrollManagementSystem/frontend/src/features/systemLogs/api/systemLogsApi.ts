@@ -8,6 +8,8 @@ export const systemLogsApi = {
     if (filter.fromDate) params.set('fromDate', filter.fromDate);
     if (filter.toDate) params.set('toDate', filter.toDate);
     if (filter.keyword) params.set('keyword', filter.keyword);
+    if (filter.sortBy) params.set('sortBy', filter.sortBy);
+    if (filter.sortDirection) params.set('sortDirection', filter.sortDirection);
     params.set('pageNumber', String(filter.pageNumber));
     params.set('pageSize', String(filter.pageSize));
 

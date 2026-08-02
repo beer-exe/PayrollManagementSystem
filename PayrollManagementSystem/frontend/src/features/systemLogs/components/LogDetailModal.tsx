@@ -31,22 +31,22 @@ export function LogDetailModal({ log, onClose }: LogDetailModalProps) {
   }
 
   return (
-    <div className="sl-modal-overlay" ref={overlayRef} onClick={e => { if (e.target === overlayRef.current) onClose(); }}>
-      <div className="sl-modal">
-        <div className="sl-modal-header">
-          <span className="sl-modal-title">🔍 Chi tiết Log</span>
-          <button className="sl-modal-close" onClick={onClose}>✕</button>
+    <div className="syslog-modal-overlay" ref={overlayRef} onClick={e => { if (e.target === overlayRef.current) onClose(); }}>
+      <div className="syslog-modal">
+        <div className="syslog-modal-header">
+          <span className="syslog-modal-title">🔍 Chi tiết Log</span>
+          <button className="syslog-modal-close" onClick={onClose}>✕</button>
         </div>
-        <div className="sl-modal-body">
-          <div className="sl-modal-meta">
-            <div className="sl-modal-meta-item">
-              <div className="sl-modal-meta-key">Thời gian</div>
-              <div className="sl-modal-meta-val">{formatDate(log.raiseDate)}</div>
+        <div className="syslog-modal-body">
+          <div className="syslog-modal-meta">
+            <div className="syslog-modal-meta-item">
+              <div className="syslog-modal-meta-key">Thời gian</div>
+              <div className="syslog-modal-meta-val">{formatDate(log.raiseDate)}</div>
             </div>
-            <div className="sl-modal-meta-item">
-              <div className="sl-modal-meta-key">Level</div>
-              <div className="sl-modal-meta-val">
-                <span className="sl-badge" style={{ background: levelInfo.bg, color: levelInfo.text }}>
+            <div className="syslog-modal-meta-item">
+              <div className="syslog-modal-meta-key">Level</div>
+              <div className="syslog-modal-meta-val">
+                <span className="syslog-badge" style={{ background: levelInfo.bg, color: levelInfo.text }}>
                   {levelInfo.label}
                 </span>
               </div>
@@ -54,23 +54,23 @@ export function LogDetailModal({ log, onClose }: LogDetailModalProps) {
           </div>
 
           {log.message && (
-            <div className="sl-modal-section">
-              <div className="sl-modal-section-label">Message</div>
-              <div className="sl-modal-code">{log.message}</div>
+            <div className="syslog-modal-section">
+              <div className="syslog-modal-section-label">Message</div>
+              <div className="syslog-modal-code">{log.message}</div>
             </div>
           )}
 
           {log.exception && (
-            <div className="sl-modal-section">
-              <div className="sl-modal-section-label">Exception / Stack Trace</div>
-              <div className="sl-modal-code error">{log.exception}</div>
+            <div className="syslog-modal-section">
+              <div className="syslog-modal-section-label">Exception / Stack Trace</div>
+              <div className="syslog-modal-code error">{log.exception}</div>
             </div>
           )}
 
           {parsedProperties && (
-            <div className="sl-modal-section">
-              <div className="sl-modal-section-label">Properties (JSON)</div>
-              <div className="sl-modal-code">{parsedProperties}</div>
+            <div className="syslog-modal-section">
+              <div className="syslog-modal-section-label">Properties (JSON)</div>
+              <div className="syslog-modal-code">{parsedProperties}</div>
             </div>
           )}
         </div>
