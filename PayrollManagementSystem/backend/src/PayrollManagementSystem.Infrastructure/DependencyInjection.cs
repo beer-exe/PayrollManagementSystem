@@ -2,8 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PayrollManagementSystem.Application.Common.Interfaces;
+using PayrollManagementSystem.Infrastructure.BackgroundJobs;
+using PayrollManagementSystem.Infrastructure.Logging;
 using PayrollManagementSystem.Infrastructure.Persistence;
+using PayrollManagementSystem.Infrastructure.Repositories;
 using PayrollManagementSystem.Infrastructure.Services;
+using Serilog.Core;
 
 namespace PayrollManagementSystem.Infrastructure
 {
@@ -19,6 +23,7 @@ namespace PayrollManagementSystem.Infrastructure
             });
 
             services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+            services.AddScoped<ISystemLogRepository, SystemLogRepository>();
 
             services.AddTransient<IEmailService, EmailService>();
             services.AddTransient<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -26,8 +31,12 @@ namespace PayrollManagementSystem.Infrastructure
             services.AddTransient<IExcelService, ExcelService>();
             services.AddTransient<ITimekeepingCalculatorService, TimekeepingCalculatorService>();
 
-            services.AddHostedService<PayrollManagementSystem.Infrastructure.BackgroundJobs.UpdateExpiredDecisionsJob>();
-            services.AddHostedService<PayrollManagementSystem.Infrastructure.BackgroundJobs.CacheWarmingService>();
+            services.AddHostedService<UpdateExpiredDecisionsJob>();
+            services.AddHostedService<CacheWarmingService>();
+            services.AddHostedService<LogBroadcastService>();
+
+            services.AddSingleton<LogEventChannel>();
+            services.AddSingleton<ILogEventSink, SignalRLogSink>();
 
             var cacheSettings = new PayrollManagementSystem.Application.Common.Models.CacheSettings
             {
