@@ -13,6 +13,7 @@ namespace PayrollManagementSystem.Domain.Models
         public Guid? IdVaiTro { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
+        public string? UserAvatar { get; set; } // Base64 string
 
         // Navigation properties
         public NhanVien? NhanVien { get; set; }

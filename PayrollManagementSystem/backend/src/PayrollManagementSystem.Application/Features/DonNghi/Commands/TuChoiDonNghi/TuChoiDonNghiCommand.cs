@@ -1,9 +1,7 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using PayrollManagementSystem.Application.Common.Exceptions;
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
-using PayrollManagementSystem.Domain.Enums;
 
 namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.TuChoiDonNghi
 {
@@ -12,6 +10,6 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.TuChoiDo
         public Guid Id { get; set; }
         public string CccdNguoiDuyet { get; set; } = null!;
         public string LyDoTuChoi { get; set; } = null!;
-        public string CacheKeyPrefix => "DonNghi";
+        public string CacheKeyPrefix => CacheKeyConstants.DonNghi;
     }
 }

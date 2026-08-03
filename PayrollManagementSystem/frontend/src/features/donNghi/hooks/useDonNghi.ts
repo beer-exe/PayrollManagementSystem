@@ -6,29 +6,33 @@ export const useDonNghi = () => {
   const [list, setList] = useState<DonNghiDto[]>([]);
   const [ngayPhepList, setNgayPhepList] = useState<NgayPhepDto[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = useCallback((type: 'success' | 'error', msg: string) => {
+    setToast({ message: msg, type });
+  }, []);
 
   const fetchList = useCallback(async (params: {
     thang?: number; nam?: number; cccd?: string; trangThai?: string; idPhongBan?: string;
   }) => {
-    setLoading(true); setError(null);
+    setLoading(true);
     try {
       const res = await donNghiApi.getList(params);
       setList(res.data ?? []);
     } catch {
-      setError('Không thể tải danh sách đơn nghỉ.');
+      showToast('error', 'Không thể tải danh sách đơn nghỉ.');
     } finally {
       setLoading(false);
     }
   }, []);
 
   const fetchNgayPhep = useCallback(async (nam: number, idPhongBan?: string) => {
-    setLoading(true); setError(null);
+    setLoading(true);
     try {
       const res = await donNghiApi.getNgayPhep(nam, idPhongBan);
       setNgayPhepList(res.data ?? []);
     } catch {
-      setError('Không thể tải danh sách ngày phép.');
+      showToast('error', 'Không thể tải danh sách ngày phép.');
     } finally {
       setLoading(false);
     }
@@ -84,9 +88,19 @@ export const useDonNghi = () => {
     }
   }, []);
 
+  const huyDonNghiDaDuyet = useCallback(async (id: string): Promise<string | null> => {
+    try {
+      await donNghiApi.huyDaDuyet(id);
+      return null;
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string; Message?: string } } };
+      return err?.response?.data?.Message ?? err?.response?.data?.message ?? 'Hủy đơn thất bại.';
+    }
+  }, []);
+
   return {
-    list, ngayPhepList, loading, error,
+    list, ngayPhepList, loading, toast, setToast, showToast,
     fetchList, fetchNgayPhep,
-    createDonNghi, duyetDonNghi, tuChoiDonNghi, deleteDonNghi, updateNgayPhep,
+    createDonNghi, duyetDonNghi, tuChoiDonNghi, deleteDonNghi, updateNgayPhep, huyDonNghiDaDuyet
   };
 };

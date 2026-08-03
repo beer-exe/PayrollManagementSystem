@@ -2,6 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useKhungNangLuc } from '../hooks/useKhungNangLuc';
 import { positionApi } from '@/features/positions/api/positionApi';
 import { PositionDto } from '@/features/positions/types/position.types';
+import { useDataTable } from '../../../hooks/useDataTable';
+import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { ExportButtons } from '../../../components/DataTable/ExportButtons';
+import { Toast } from '../../../components/Toast/Toast';
 import './CompetencyManagement.css';
 
 // Array of vibrant colors for the donut chart slices
@@ -22,7 +27,7 @@ export const KhungNangLucManagement: React.FC = () => {
   const [positions, setPositions] = useState<PositionDto[]>([]);
   const [selectedChucVu, setSelectedChucVu] = useState<string>('');
 
-  const { data, loading, fetchByChucVu, createCriteria, updateCriteria, deleteCriteria } = useKhungNangLuc();
+  const { data, loading, fetchByChucVu, createCriteria, updateCriteria, deleteCriteria, toast, setToast } = useKhungNangLuc();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,12 +41,40 @@ export const KhungNangLucManagement: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
-  const totalItems = data.length;
-  const totalPages = Math.ceil(totalItems / pageSize);
-  const currentData = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const {
+    currentData,
+    allFilteredAndSortedData,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    sortKey,
+    sortDirection,
+    handleSort,
+    searchTerm: dtSearchTerm,
+    setSearchTerm: setDtSearchTerm
+  } = useDataTable<any>({
+    data: data,
+    initialPageSize: 10,
+    searchableFields: ['tenNangLuc', 'moTa']
+  });
+
+  const handleExportExcel = () => {
+    const columns: ExportColumn<any>[] = [
+      { header: 'Tên năng lực', key: 'tenNangLuc' },
+      { header: 'Mô tả', key: 'moTa' },
+      { header: 'Tỷ trọng', key: 'tyTrong' },
+    ];
+    exportToExcel(allFilteredAndSortedData, columns, 'KhungNangLuc');
+  };
+
+  const handleExportPdf = () => {
+    const columns: ExportColumn<any>[] = [
+      { header: 'Tên năng lực', key: 'tenNangLuc' },
+      { header: 'Mô tả', key: 'moTa' },
+      { header: 'Tỷ trọng', key: 'tyTrong' },
+    ];
+    exportToPdf(allFilteredAndSortedData, columns, 'KhungNangLuc', 'Danh sách Tiêu chí năng lực');
+  };
 
   const totalWeightPercent = criteriaList.reduce((sum: number, item) => sum + (Number(item.tyTrong) || 0), 0);
   const isOverweight = totalWeightPercent > 100;
@@ -124,19 +157,19 @@ export const KhungNangLucManagement: React.FC = () => {
 
     // Validation
     if (totalWeightPercent > 100) {
-      alert("Tổng tỷ trọng không được vượt quá 100%");
+      setToast({ message: "Tổng tỷ trọng không được vượt quá 100%", type: 'error' });
       return;
     }
 
     const hasEmptyName = criteriaList.some(c => !c.tenNangLuc.trim());
     if (hasEmptyName) {
-      alert("Vui lòng nhập đầy đủ tên tiêu chí năng lực.");
+      setToast({ message: "Vui lòng nhập đầy đủ tên tiêu chí năng lực.", type: 'error' });
       return;
     }
 
     const hasInvalidWeight = criteriaList.some(c => Number(c.tyTrong) <= 0);
     if (hasInvalidWeight) {
-      alert("Tỷ trọng phải lớn hơn 0%.");
+      setToast({ message: "Tỷ trọng phải lớn hơn 0%.", type: 'error' });
       return;
     }
 
@@ -154,9 +187,9 @@ export const KhungNangLucManagement: React.FC = () => {
       const updatePromises = criteriaList
         .filter(c => c.idTieuChi)
         .map(c => updateCriteria(c.idTieuChi!, {
-          idTieuChi: c.idTieuChi,
+          idTieuChi: c.idTieuChi!,
           tenNangLuc: c.tenNangLuc,
-          moTa: c.moTa || null,
+          moTa: c.moTa || undefined,
           tyTrong: Number(c.tyTrong) / 100
         }));
 
@@ -166,7 +199,7 @@ export const KhungNangLucManagement: React.FC = () => {
         .map(c => createCriteria({
           idChucVu: selectedChucVu,
           tenNangLuc: c.tenNangLuc,
-          moTa: c.moTa || null,
+          moTa: c.moTa || undefined,
           tyTrong: Number(c.tyTrong) / 100
         }));
 
@@ -175,7 +208,7 @@ export const KhungNangLucManagement: React.FC = () => {
       fetchByChucVu(selectedChucVu);
     } catch (error) {
       console.error("Lỗi khi lưu cấu hình:", error);
-      alert("Có lỗi xảy ra khi lưu cấu hình");
+      setToast({ message: "Có lỗi xảy ra khi lưu cấu hình", type: 'error' });
     } finally {
       setIsSubmitting(false);
     }
@@ -213,7 +246,7 @@ export const KhungNangLucManagement: React.FC = () => {
     <div className="cp2-container">
       <div className="cp2-header">
         <div className="cp2-header-title">
-          <h2>Cấu hình Khung Năng Lực (P2)</h2>
+          <h2>🎯 Cấu hình Khung Năng Lực</h2>
           <p>Thiết lập các tiêu chí năng lực cốt lõi cho từng chức vụ</p>
         </div>
         <button
@@ -268,6 +301,20 @@ export const KhungNangLucManagement: React.FC = () => {
               )}
             </div>
           </div>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: '1rem', alignItems: 'center' }}>
+            <div className="cp2-input-wrapper" style={{ position: 'relative', width: '250px' }}>
+              <input
+                type="text"
+                placeholder="Tìm tiêu chí..."
+                value={dtSearchTerm}
+                onChange={(e) => setDtSearchTerm(e.target.value)}
+                className="cp2-select"
+                style={{ width: '100%', paddingLeft: '0.75rem' }}
+                disabled={!selectedChucVu}
+              />
+            </div>
+            <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
+          </div>
         </div>
 
         {!selectedChucVu ? (
@@ -285,10 +332,10 @@ export const KhungNangLucManagement: React.FC = () => {
                 <table className="cp2-table">
                   <thead>
                     <tr>
-                      <th style={{ width: '35%' }}>Tên năng lực</th>
+                      <SortableHeader label="Tên năng lực" sortKey="tenNangLuc" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ width: '35%' }} />
                       <th style={{ width: '40%' }}>Mô tả</th>
-                      <th style={{ textAlign: 'center', width: '15%' }}>Tỷ trọng</th>
-                      <th style={{ textAlign: 'right', width: '10%' }}>Hành động</th>
+                      <SortableHeader label="Tỷ trọng" sortKey="tyTrong" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center', width: '15%' }} />
+                      <th style={{ textAlign: 'right', width: '10%' }}>Thao tác</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -515,6 +562,14 @@ export const KhungNangLucManagement: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </div>
   );

@@ -1,7 +1,9 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PayrollManagementSystem.Application.Features.Profile.Queries.GetUserProfile;
+using PayrollManagementSystem.Application.Features.Profile.Commands.UpdateAvatar;
+using PayrollManagementSystem.Application.Features.Users.Commands.ChangePassword;
 using PayrollManagementSystem.Application.Wrappers;
 using System.Security.Claims;
 
@@ -32,6 +34,20 @@ namespace PayrollManagementSystem.API.Controllers
             var query = new GetUserProfileQuery { TaiKhoanId = userId };
             var response = await _mediator.Send(query);
 
+            return Ok(response);
+        }
+
+        [HttpPut("me/change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+        {
+            var response = await _mediator.Send(command);
+            return Ok(response);
+        }
+
+        [HttpPut("me/avatar")]
+        public async Task<IActionResult> UpdateAvatar([FromBody] UpdateAvatarCommand command)
+        {
+            var response = await _mediator.Send(command);
             return Ok(response);
         }
     }

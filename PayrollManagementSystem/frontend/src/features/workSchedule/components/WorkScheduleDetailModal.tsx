@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import type { LichLamViecDto } from '../types/workSchedule.types';
 import { useChiTietLich } from '../hooks/useWorkSchedule';
+import { Toast } from '@/components/Toast/Toast';
 import './WorkScheduleManagement.css';
 
 interface Props {
   lich: LichLamViecDto;
-  onClose: () => void;
+  onClose: (hasChanges?: boolean) => void;
 }
 
 const MONTH_NAMES = [
@@ -36,6 +37,29 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
   const [page, setPage] = useState(1);
   const { chiTiets, isLoading, totalRecords, totalPages, fetch } = useChiTietLich();
 
+  const [editingRow, setEditingRow] = useState<any>(null);
+  const [editLoaiNgay, setEditLoaiNgay] = useState<string>('');
+  const [editTenNgayNghi, setEditTenNgayNghi] = useState<string>('');
+  const [editIdCaLamViecMacDinh, setEditIdCaLamViecMacDinh] = useState<string>('');
+  const [shifts, setShifts] = useState<any[]>([]);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  useEffect(() => {
+    const fetchShifts = async () => {
+      try {
+        const { workShiftApi } = await import('../../workShifts/api/workShiftApi');
+        const res = await workShiftApi.getAll();
+        if (res.succeeded) {
+          setShifts(res.data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchShifts();
+  }, []);
+
   useEffect(() => {
     fetch(lich.idLich, selectedThang, page);
   }, [lich.idLich, selectedThang, page, fetch]);
@@ -52,8 +76,35 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
   const totalWeekend = countByType('Nghỉ cuối tuần');
   const totalHoliday = countByType('Nghỉ lễ');
 
+  const showToast = (type: 'success' | 'error', text: string) => {
+    setToast({ type, message: text });
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingRow || !editLoaiNgay) return;
+    try {
+      const { workScheduleApi } = await import('../api/workScheduleApi');
+      let finalTenNgayNghi = editTenNgayNghi || null;
+      if (editLoaiNgay === 'Nghỉ cuối tuần' && !finalTenNgayNghi) {
+        finalTenNgayNghi = `Nghỉ ${editingRow.thu}`;
+      }
+
+      await workScheduleApi.updateChiTiet(editingRow.id, editLoaiNgay, editTenNgayNghi, editIdCaLamViecMacDinh || undefined);
+
+      setHasChanges(true);
+      setEditingRow(null);
+      showToast('success', 'Cập nhật ngày thành công.');
+      // Refetch to get the latest soGioLam calculated by the backend
+      fetch(lich.idLich, selectedThang, page);
+    } catch (err: any) {
+      const errorData = err.response?.data;
+      const errMsg = errorData?.Errors?.join(', ') || errorData?.errors?.join(', ') || errorData?.Message || errorData?.message || 'Lỗi khi cập nhật loại ngày.';
+      showToast('error', errMsg);
+    }
+  };
+
   return (
-    <div className="ws-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="ws-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose(hasChanges)}>
       <div className="ws-modal">
         {/* Header */}
         <div className="ws-modal-header">
@@ -63,7 +114,7 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
               Tổng: {lich.tongNgayLam} ngày làm &bull; {lich.tongNgayNghiCuoiTuan} ngày T7/CN &bull; {lich.tongNgayLe} ngày lễ
             </p>
           </div>
-          <button className="ws-modal-close" onClick={onClose} aria-label="Đóng">
+          <button className="ws-modal-close" onClick={() => onClose(hasChanges)} aria-label="Đóng">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.2rem', height: '1.2rem' }}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
             </svg>
@@ -116,14 +167,16 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
                   <th>Ngày</th>
                   <th>Thứ</th>
                   <th>Loại ngày</th>
+                  <th>Ca làm việc</th>
                   <th>Tên ngày nghỉ</th>
                   <th style={{ textAlign: 'center' }}>Số giờ làm</th>
+                  <th style={{ textAlign: 'center', width: '5rem' }}>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
                 {chiTiets.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                    <td colSpan={7} style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
                       Không có dữ liệu
                     </td>
                   </tr>
@@ -138,11 +191,31 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
                       <td>
                         <span className={getBadgeClass(c.loaiNgay)}>{c.loaiNgay}</span>
                       </td>
+                      <td style={{ color: 'var(--text-primary)', fontSize: '0.85rem' }}>
+                        {c.loaiNgay === 'Ngày làm việc' ? (c.tenCaLamViecMacDinh ?? 'Mặc định') : '—'}
+                      </td>
                       <td style={{ color: 'var(--text-secondary)', fontSize: '0.82rem' }}>
                         {c.tenNgayNghi ?? '—'}
                       </td>
                       <td style={{ textAlign: 'center', fontWeight: 600, color: c.soGioLam > 0 ? 'var(--success-text)' : 'var(--text-muted)' }}>
                         {c.soGioLam > 0 ? `${c.soGioLam}h` : '0h'}
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <button 
+                          className="ws-btn-actions" 
+                          style={{ padding: '0.35rem', border: '1px solid var(--border-color)', borderRadius: '6px', cursor: 'pointer', transition: 'all 0.2s' }}
+                          onClick={() => {
+                            setEditingRow(c);
+                            setEditLoaiNgay(c.loaiNgay);
+                            setEditTenNgayNghi(c.tenNgayNghi ?? '');
+                            setEditIdCaLamViecMacDinh(c.idCaLamViecMacDinh ?? '');
+                          }}
+                          title="Sửa ngày"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1rem', height: '1rem', color: 'var(--text-secondary)' }}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                          </svg>
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -187,6 +260,96 @@ export const WorkScheduleDetailModal: React.FC<Props> = ({ lich, onClose }) => {
           </div>
         )}
       </div>
+
+      {/* Edit Sub-Modal */}
+      {editingRow && (
+        <div className="ws-modal-overlay" style={{ zIndex: 1100, background: 'rgba(0,0,0,0.5)', animation: 'fadeIn 0.2s ease-out' }} onClick={() => setEditingRow(null)}>
+          <div className="ws-modal" style={{ width: '400px', maxWidth: '90%', animation: 'slideUp 0.3s ease-out', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+            <div className="ws-modal-header" style={{ padding: '1.25rem 1.5rem', background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+              <h3 style={{ margin: 0, color: '#fff', fontSize: '1.1rem', fontWeight: 600 }}>Chỉnh sửa ngày {formatDate(editingRow.ngay)}</h3>
+              <button 
+                onClick={() => setEditingRow(null)} 
+                style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', opacity: 0.8 }}
+                title="Đóng"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.2rem', height: '1.2rem' }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="ws-modal-body" style={{ padding: '1.5rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                Loại ngày
+              </label>
+              <select 
+                className="ws-input" 
+                value={editLoaiNgay}
+                onChange={(e) => {
+                  setEditLoaiNgay(e.target.value);
+                  if (e.target.value !== 'Nghỉ lễ') setEditTenNgayNghi('');
+                }}
+              >
+                <option value="Ngày làm việc">Ngày làm việc</option>
+                <option value="Nghỉ cuối tuần">Nghỉ cuối tuần</option>
+                <option value="Nghỉ lễ">Nghỉ lễ</option>
+              </select>
+            </div>
+            {editLoaiNgay === 'Ngày làm việc' && (
+              <div className="ws-modal-body" style={{ padding: '0 1.5rem 1.5rem 1.5rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                  Ca làm việc
+                </label>
+                <select 
+                  className="ws-input" 
+                  value={editIdCaLamViecMacDinh}
+                  onChange={(e) => setEditIdCaLamViecMacDinh(e.target.value)}
+                >
+                  <option value="">-- Mặc định (Không gán) --</option>
+                  {shifts.map(shift => (
+                    <option key={shift.id} value={shift.id}>{shift.tenCa}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {editLoaiNgay === 'Nghỉ lễ' && (
+              <div className="ws-modal-body" style={{ padding: '0 1.5rem 1.5rem 1.5rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                  Tên ngày lễ / Ghi chú <span style={{ color: 'var(--danger-text)' }}>*</span>
+                </label>
+                <input 
+                  type="text"
+                  className="ws-input" 
+                  placeholder="Nhập tên ngày lễ (VD: Quốc khánh, Tết...)"
+                  value={editTenNgayNghi}
+                  onChange={(e) => setEditTenNgayNghi(e.target.value)}
+                />
+              </div>
+            )}
+            <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button 
+                onClick={() => setEditingRow(null)}
+                style={{ padding: '0.5rem 1rem', border: '1px solid var(--border-color)', borderRadius: '6px', background: 'var(--bg-surface)', cursor: 'pointer', fontWeight: 600, color: 'var(--text-secondary)' }}
+              >
+                Hủy
+              </button>
+              <button 
+                onClick={handleSaveEdit}
+                style={{ padding: '0.5rem 1rem', border: 'none', borderRadius: '6px', background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', cursor: 'pointer', fontWeight: 600, color: '#fff', boxShadow: '0 2px 4px rgba(124, 58, 237, 0.25)' }}
+              >
+                Lưu thay đổi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

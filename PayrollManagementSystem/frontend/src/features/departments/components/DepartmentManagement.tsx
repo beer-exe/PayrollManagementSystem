@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSystemData } from '../hooks/useSystemData';
 import { departmentApi } from '../api/departmentApi';
 import type { EmployeeInDepartmentDto } from '../types/department.types';
+import { Toast } from '@/components/Toast/Toast';
 
 import { CreateDeptModal } from './Modals/CreateDeptModal';
 import { TransferModal } from './Modals/TransferModal';
@@ -9,15 +10,20 @@ import { AdjustSalaryModal } from './Modals/AdjustSalaryModal';
 import { ChangePositionModal } from './Modals/ChangePositionModal';
 
 import { usePositions } from '@/features/positions/hooks/usePositions';
+import { useDataTable } from '../../../hooks/useDataTable';
+import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import './DepartmentManagement.css';
 
 export const DepartmentManagement: React.FC = () => {
-  const { departments, isLoading, refreshData } = useSystemData();
-  const { positions, fetchPositions } = usePositions();
+  const { departments, isLoading, refreshData, toast: sysToast, setToast: setSysToast } = useSystemData();
+  const { positions, fetchPositions, toast: posToast, setToast: setPosToast } = usePositions();
 
   const [selectedDeptId, setSelectedDeptId] = useState<string | null>(null);
   const [deptEmployees, setDeptEmployees] = useState<EmployeeInDepartmentDto[]>([]);
   const [loadingEmp, setLoadingEmp] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const [isDeptModalOpen, setIsDeptModalOpen] = useState(false);
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
@@ -27,11 +33,42 @@ export const DepartmentManagement: React.FC = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeInDepartmentDto | null>(null);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
-  const totalPages = Math.ceil(deptEmployees.length / pageSize) || 1;
-  const currentData = deptEmployees.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const {
+    currentData,
+    allFilteredAndSortedData,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    sortKey,
+    sortDirection,
+    handleSort,
+    searchTerm,
+    setSearchTerm
+  } = useDataTable<EmployeeInDepartmentDto>({
+    data: deptEmployees,
+    initialPageSize: 10,
+    searchableFields: ['cccd', 'hoTen', 'tenChucVu']
+  });
+
+  const handleExportExcel = () => {
+    const columns: ExportColumn<EmployeeInDepartmentDto>[] = [
+      { header: 'Mã NV', key: 'cccd' },
+      { header: 'Họ Tên', key: 'hoTen' },
+      { header: 'Chức Vụ', key: 'tenChucVu' },
+      { header: 'Trạng Thái', key: 'tenTrangThai' },
+    ];
+    exportToExcel(allFilteredAndSortedData, columns, 'NhanSuPhongBan');
+  };
+
+  const handleExportPdf = () => {
+    const columns: ExportColumn<EmployeeInDepartmentDto>[] = [
+      { header: 'Mã NV', key: 'cccd' },
+      { header: 'Họ Tên', key: 'hoTen' },
+      { header: 'Chức Vụ', key: 'tenChucVu' },
+      { header: 'Trạng Thái', key: 'tenTrangThai' },
+    ];
+    exportToPdf(allFilteredAndSortedData, columns, 'NhanSuPhongBan', 'Danh sách nhân sự phòng ban');
+  };
 
   useEffect(() => {
     fetchPositions('', 'HOAT_DONG');
@@ -40,7 +77,6 @@ export const DepartmentManagement: React.FC = () => {
   useEffect(() => {
     if (selectedDeptId) {
       fetchEmployees(selectedDeptId);
-      setCurrentPage(1); // Reset page on dept change
     } else {
       setDeptEmployees([]);
     }
@@ -63,6 +99,7 @@ export const DepartmentManagement: React.FC = () => {
       if (res.succeeded) setDeptEmployees(res.data);
     } catch (error) {
       console.error('Lỗi tải danh sách nhân viên', error);
+      setToast({ message: 'Lỗi tải danh sách nhân viên', type: 'error' });
     } finally {
       setLoadingEmp(false);
     }
@@ -163,6 +200,21 @@ export const DepartmentManagement: React.FC = () => {
             </span>
           </div>
 
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', borderBottom: '1px solid var(--border-color)', gap: '1rem', flexWrap: 'wrap' }}>
+              <div className="dept-search-box" style={{ flex: 1, minWidth: '250px' }}>
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm nhân sự (Tên, CCCD)..."
+                  className="dept-search-input"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}
+                  disabled={!selectedDeptId}
+                />
+              </div>
+              <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
+            </div>
+            
           <div className="dept-table-wrapper">
             {!selectedDeptId ? (
               <div className="dept-empty">
@@ -186,10 +238,10 @@ export const DepartmentManagement: React.FC = () => {
                   <table className="dept-table" aria-label="Danh sách nhân sự">
                     <thead>
                       <tr>
-                        <th>Mã NV</th>
-                        <th>Họ tên</th>
-                        <th>Chức vụ</th>
-                        <th>Trạng thái</th>
+                        <SortableHeader label="Mã NV" sortKey="cccd" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                        <SortableHeader label="Họ tên" sortKey="hoTen" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                        <SortableHeader label="Chức vụ" sortKey="tenChucVu" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                        <SortableHeader label="Trạng thái" sortKey="tenTrangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
                         <th style={{ textAlign: 'center' }}>Thao tác</th>
                       </tr>
                     </thead>
@@ -270,8 +322,7 @@ export const DepartmentManagement: React.FC = () => {
                   </table>
                 </div>
 
-                {/* Custom Pagination */}
-                {deptEmployees.length > 0 && (
+                {totalPages > 0 && (
                   <div className="dept-pagination">
                     <button 
                       className="dept-btn-page" 
@@ -303,7 +354,10 @@ export const DepartmentManagement: React.FC = () => {
         <CreateDeptModal
           isOpen={isDeptModalOpen}
           onClose={() => setIsDeptModalOpen(false)}
-          onSuccess={refreshData}
+          onSuccess={() => {
+            refreshData();
+            setToast({ message: 'Tạo phòng ban thành công!', type: 'success' });
+          }}
         />
       )}
 
@@ -317,6 +371,7 @@ export const DepartmentManagement: React.FC = () => {
           onSuccess={() => {
             refreshData();
             if (selectedDeptId) fetchEmployees(selectedDeptId);
+            setToast({ message: 'Điều chuyển nhân sự thành công!', type: 'success' });
           }}
           departments={departments}
           positions={positions}
@@ -334,6 +389,7 @@ export const DepartmentManagement: React.FC = () => {
           onSuccess={() => {
             refreshData();
             if (selectedDeptId) fetchEmployees(selectedDeptId);
+            setToast({ message: 'Điều chỉnh lương thành công!', type: 'success' });
           }}
           employee={selectedEmployee}
           positions={positions}
@@ -350,9 +406,34 @@ export const DepartmentManagement: React.FC = () => {
           onSuccess={() => {
             refreshData();
             if (selectedDeptId) fetchEmployees(selectedDeptId);
+            setToast({ message: 'Bổ nhiệm/miễn nhiệm thành công!', type: 'success' });
           }}
           employee={selectedEmployee}
           positions={positions.filter(p => p.idPhongBan === selectedDeptId)}
+        />
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+      
+      {posToast && (
+        <Toast
+          message={posToast.message}
+          type={posToast.type}
+          onClose={() => setPosToast(null)}
+        />
+      )}
+
+      {sysToast && (
+        <Toast
+          message={sysToast.message}
+          type={sysToast.type}
+          onClose={() => setSysToast(null)}
         />
       )}
     </div>

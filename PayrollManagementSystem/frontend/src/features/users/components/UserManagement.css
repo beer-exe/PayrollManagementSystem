@@ -520,6 +520,40 @@ input:checked + .usr-slider:before {
   font-family: inherit;
 }
 
+.usr-password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.usr-password-wrapper .usr-form-input {
+  padding-right: 2.5rem; /* Space for the toggle button */
+}
+
+.usr-password-toggle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  padding: 0 0.75rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.usr-password-toggle:hover {
+  color: var(--text-primary);
+}
+
+.usr-icon-btn {
+  width: 18px;
+  height: 18px;
+}
+
 .usr-form-select {
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd'/%3E%3C/svg%3E");

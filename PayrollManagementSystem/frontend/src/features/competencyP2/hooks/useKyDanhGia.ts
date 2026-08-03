@@ -1,11 +1,12 @@
 import { useState, useCallback } from "react";
-import { message } from "antd";
+
 import { kyDanhGiaApi } from "../api/kyDanhGiaApi";
 import { KyDanhGiaDto, CreateKyDanhGiaDto } from "../types/kyDanhGia.types";
 
 export const useKyDanhGia = () => {
   const [data, setData] = useState<KyDanhGiaDto[]>([]);
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const fetchKyDanhGia = useCallback(async () => {
     setLoading(true);
@@ -16,7 +17,7 @@ export const useKyDanhGia = () => {
       }
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       console.error(error);
-      message.error(error.response?.data?.Message || "Lỗi khi tải dữ liệu kỳ đánh giá");
+      setToast({ message: error.response?.data?.Message || "Lỗi khi tải dữ liệu kỳ đánh giá", type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -26,13 +27,13 @@ export const useKyDanhGia = () => {
     try {
       const res = await kyDanhGiaApi.create(payload);
       if (res.succeeded) {
-        message.success("Thêm mới thành công");
+        setToast({ message: "Thêm mới thành công", type: 'success' });
         return true;
       }
       return false;
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       console.error(error);
-      message.error(error.response?.data?.Message || "Lỗi khi tạo kỳ đánh giá");
+      setToast({ message: error.response?.data?.Message || "Lỗi khi tạo kỳ đánh giá", type: 'error' });
       return false;
     }
   };
@@ -42,5 +43,7 @@ export const useKyDanhGia = () => {
     loading,
     fetchKyDanhGia,
     createKyDanhGia,
+    toast,
+    setToast,
   };
 };

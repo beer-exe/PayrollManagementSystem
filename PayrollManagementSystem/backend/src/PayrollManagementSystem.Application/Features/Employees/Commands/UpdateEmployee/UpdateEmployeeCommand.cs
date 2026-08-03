@@ -1,10 +1,15 @@
 using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
 
+using PayrollManagementSystem.Application.Common.Constants;
+using PayrollManagementSystem.Application.Common.Interfaces;
+
 namespace PayrollManagementSystem.Application.Features.Employees.Commands.UpdateEmployee
 {
-    public class UpdateEmployeeCommand : IRequest<Response<bool>>
+    public class UpdateEmployeeCommand : IRequest<Response<bool>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
+        public string CacheKeyPrefix => CacheKeyConstants.Departments;
+
         public string Cccd { get; set; } = null!;
 
         public string HoTen { get; set; } = null!;
@@ -28,9 +33,10 @@ namespace PayrollManagementSystem.Application.Features.Employees.Commands.Update
 
     public class UpdateThanNhanDto
     {
-        public string? MaDinhDanh { get; set; } // Nếu có mã định danh thì là cập nhật, nếu null/rỗng thì là thêm mới
+        public string? MaDinhDanh { get; set; }
         public string TenTn { get; set; } = null!;
         public DateOnly? NgaySinh { get; set; }
-        public Guid? IdMqh { get; set; } // Quan hệ
+        public Guid? IdMqh { get; set; }
+        public bool LaNguoiPhuThuoc { get; set; }
     }
 }

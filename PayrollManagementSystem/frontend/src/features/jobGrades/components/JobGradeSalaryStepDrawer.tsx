@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { salaryStepApi } from '../../salarySteps/api/salaryStepApi';
 import { SalaryStepDto } from '../../salarySteps/types/salaryStep.types';
+import { Toast } from '@/components/Toast/Toast';
 
 interface Props {
   jobGradeId: string | null;
@@ -17,6 +18,7 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
   const [historyModalOpen, setHistoryModalOpen] = useState(false);
   const [formModalOpen, setFormModalOpen] = useState(false);
   const [isUpdatingVersion, setIsUpdatingVersion] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   
   const [formData, setFormData] = useState({
     stepName: '',
@@ -63,7 +65,7 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
         setHistoryModalOpen(true);
       }
     } catch (error) { 
-      alert("Lỗi tải dữ liệu lịch sử"); 
+      setToast({ message: "Lỗi tải dữ liệu lịch sử", type: "error" });
     }
   };
 
@@ -72,13 +74,13 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
       salaryStepApi.delete(jobGradeId!, stepName)
         .then(res => {
           if (res.succeeded) {
-            alert("Đã xóa thành công");
+            setToast({ message: "Đã xóa thành công", type: "success" });
             fetchActiveSteps();
           }
         })
         .catch(error => {
           const err = error as import('axios').AxiosError<{Message?: string}>;
-          alert(err.response?.data?.Message || "Xóa thất bại");
+          setToast({ message: err.response?.data?.Message || "Xóa thất bại", type: "error" });
         });
     }
   };
@@ -110,7 +112,7 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
           newP1Salary: Number(formData.p1Salary),
           newEffectiveDate: formData.effectiveDate
         });
-        alert("Cập nhật phiên bản lương mới thành công!");
+        setToast({ message: "Cập nhật phiên bản lương mới thành công!", type: "success" });
       } else {
         await salaryStepApi.create({
           jobGradeId: jobGradeId!,
@@ -118,13 +120,13 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
           p1Salary: Number(formData.p1Salary),
           effectiveDate: formData.effectiveDate
         });
-        alert("Tạo bậc lương thành công!");
+        setToast({ message: "Tạo bậc lương thành công!", type: "success" });
       }
       setFormModalOpen(false);
       fetchActiveSteps();
     } catch (error) { 
       const err = error as import('axios').AxiosError<{Message?: string}>;
-      if (err.response) alert(err.response.data.Message);
+      setToast({ message: err.response?.data?.Message || 'Có lỗi xảy ra', type: "error" });
     }
   };
 
@@ -167,7 +169,7 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
                     <th>Mức Lương P1 (VNĐ)</th>
                     <th>Ngày Áp Dụng</th>
                     <th style={{ textAlign: 'center' }}>Trạng Thái</th>
-                    <th style={{ textAlign: 'right' }}>Hành Động</th>
+                    <th style={{ textAlign: 'right' }}>Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -324,6 +326,14 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
             </div>
           </div>
         </div>
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </>
   );

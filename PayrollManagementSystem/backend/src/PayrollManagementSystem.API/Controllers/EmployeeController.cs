@@ -15,7 +15,7 @@ namespace PayrollManagementSystem.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "HR")]
+    [Authorize(Roles = "Admin,HR")]
     public class EmployeeController : ControllerBase
     {
         private readonly IMediator _mediator;

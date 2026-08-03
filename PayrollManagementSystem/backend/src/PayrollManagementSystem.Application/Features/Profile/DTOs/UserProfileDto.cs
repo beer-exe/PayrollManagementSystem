@@ -36,6 +36,7 @@ namespace PayrollManagementSystem.Application.Features.Profile.DTOs
         public List<ProfileThanNhanDto> ThanNhans { get; set; } = new List<ProfileThanNhanDto>();
         public List<LichSuCongTacDto> LichSuCongTac { get; set; } = new List<LichSuCongTacDto>();
         public string? IdPb { get; set; }
+        public string? UserAvatar { get; set; }
     }
 
     public class ProfileThanNhanDto
@@ -51,6 +52,7 @@ namespace PayrollManagementSystem.Application.Features.Profile.DTOs
         public string SoQuyetDinh { get; set; } = null!;
         public string LoaiQuyetDinh { get; set; } = null!;
         public DateOnly NgayHieuLuc { get; set; }
+        public string? TenPhongBanMoi { get; set; }
         public string? TenChucVuMoi { get; set; }
         public decimal? LuongP1Moi { get; set; }
         public string TrangThai { get; set; } = null!;

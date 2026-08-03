@@ -32,10 +32,23 @@ namespace PayrollManagementSystem.Application.Common.Interfaces
         DbSet<LichLamViec> LichLamViecs { get; set; }
         DbSet<ChiTietLichLamViec> ChiTietLichLamViecs { get; set; }
 
+        DbSet<CaLamViec> CaLamViecs { get; set; }
+        DbSet<KhungGioNghi> KhungGioNghis { get; set; }
+        DbSet<PhanCongCa> PhanCongCas { get; set; }
+
         DbSet<ChamCong> ChamCongs { get; set; }
 
         DbSet<DonNghi> DonNghis { get; set; }
         DbSet<NgayPhepNhanVien> NgayPhepNhanViens { get; set; }
+
+        DbSet<KyLuong> KyLuongs { get; set; }
+        DbSet<BangLuong> BangLuongs { get; set; }
+
+        DbSet<KhoanKhauTru> KhoanKhauTrus { get; set; }
+        DbSet<BacThue> BacThues { get; set; }
+        DbSet<CauHinhGiamTru> CauHinhGiamTrus { get; set; }
+
+        DbSet<SystemLog> SystemLogs { get; }
 
         DatabaseFacade Database { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);

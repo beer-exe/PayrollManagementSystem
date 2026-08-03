@@ -4,6 +4,7 @@ import { EmployeeInDepartmentDto } from '../../types/department.types';
 import { PositionDto } from '@/features/positions/types/position.types';
 import { salaryStepApi } from '@/features/salarySteps/api/salaryStepApi';
 import { SalaryStepDto } from '@/features/salarySteps/types/salaryStep.types';
+import { hrDecisionsApi } from '@/features/hrDecisions/api/hrDecisions.api';
 import './DepartmentModals.css';
 
 interface ChangePositionModalProps {
@@ -42,6 +43,10 @@ export const ChangePositionModal: React.FC<ChangePositionModalProps> = ({
       setLyDo('');
       setErrorMsg('');
       setSalarySteps([]);
+
+      hrDecisionsApi.generateCode('BN').then(res => {
+        if (res.succeeded) setSoQuyetDinh(res.data);
+      }).catch(err => console.error('Failed to generate code:', err));
     }
   }, [isOpen]);
 

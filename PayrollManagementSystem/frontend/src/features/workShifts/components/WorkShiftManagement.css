@@ -1,0 +1,677 @@
+/* =====================================================
+   Work Shift Management — Styles
+   ===================================================== */
+
+.wsh-container {
+    padding: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: var(--bg-hover);
+    min-height: 100%;
+}
+
+/* ---- Header ---- */
+.wsh-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+}
+
+.wsh-header-left h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.2rem;
+}
+
+.wsh-header-left p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.wsh-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* ---- Filters ---- */
+.wsh-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.wsh-input-wrapper {
+    position: relative;
+    flex: 1;
+    max-width: 400px;
+    min-width: 250px;
+}
+
+.wsh-input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+.wsh-input-search {
+    width: 100%;
+    padding: 0.65rem 1rem 0.65rem 2.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s;
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+}
+
+.wsh-input-search:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.wsh-filters-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* ---- Buttons ---- */
+.wsh-btn-create {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.25rem;
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.wsh-btn-create:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(109, 40, 217, 0.3);
+}
+
+.wsh-btn-instruction {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.wsh-btn-instruction svg {
+    width: 20px;
+    height: 20px;
+    color: var(--primary);
+}
+
+.wsh-btn-create:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.wsh-btn-create svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* ---- Table ---- */
+.wsh-content {
+    background: var(--bg-surface);
+    border-radius: 16px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.wsh-loading {
+    padding: 4rem;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.wsh-table-wrapper {
+    overflow-x: auto;
+}
+
+.wsh-table {
+    width: 100%;
+    min-width: 1000px;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.wsh-table thead {
+    background: var(--bg-hover);
+}
+
+.wsh-table thead th:first-child {
+    border-top-left-radius: 15px;
+}
+
+.wsh-table thead th:last-child {
+    border-top-right-radius: 15px;
+}
+
+.wsh-table th {
+    padding: 0.9rem 1.1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--primary);
+    white-space: nowrap;
+}
+
+.wsh-table td {
+    padding: 0.85rem 1.1rem;
+    border-top: 1px solid var(--border-color);
+    vertical-align: middle;
+    color: var(--text-primary);
+}
+
+.wsh-table tr:hover td {
+    background: var(--bg-hover);
+}
+
+.wsh-font-medium {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.wsh-text-center {
+    text-align: center;
+}
+
+.wsh-empty {
+    text-align: center;
+    padding: 5rem 2rem;
+    color: var(--text-muted);
+}
+
+/* ---- Badges ---- */
+.wsh-time-badge {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.wsh-badge-success {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--success-bg);
+    color: var(--success-text);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.wsh-badge-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--bg-hover);
+    color: var(--text-muted);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.wsh-small-badge {
+    background-color: var(--primary-light);
+    color: var(--primary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    margin-left: 8px;
+}
+
+.wsh-status-active {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--success-bg);
+    color: var(--success-text);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.wsh-status-inactive {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--bg-hover);
+    color: var(--text-muted);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+/* ---- Lists ---- */
+.wsh-break-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.wsh-break-list li {
+    margin-bottom: 4px;
+}
+
+.wsh-text-muted {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
+/* ---- Actions Dropdown ---- */
+.wsh-td-actions {
+    position: relative;
+}
+
+.wsh-btn-actions {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.wsh-btn-actions:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.wsh-actions-dropdown {
+    position: absolute;
+    top: calc(100% - 4px);
+    right: 2rem;
+    z-index: 9999;
+    background: var(--bg-surface);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    animation: fadeIn 0.15s ease-out;
+}
+
+.wsh-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s, color 0.2s;
+}
+
+.wsh-dropdown-item:hover {
+    background: var(--bg-hover);
+}
+
+.wsh-dropdown-item.delete {
+    color: var(--danger-text);
+}
+
+.wsh-dropdown-item.delete:hover {
+    background: var(--danger-bg);
+}
+
+/* =====================================================
+   Detail Modal
+   ===================================================== */
+.wsh-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease;
+}
+
+.wsh-modal-content {
+    background: var(--bg-surface);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 900px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    overflow: hidden;
+    animation: slideUp 0.25s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.wsh-modal-header {
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.wsh-modal-header h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.wsh-close-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 0.4rem;
+    display: flex;
+    align-items: center;
+    transition: background 0.15s;
+}
+
+.wsh-close-btn:hover { background: rgba(255,255,255,0.3); }
+
+/* Form styles */
+.wsh-form {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.wsh-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.wsh-col-span-2 {
+    grid-column: span 2;
+}
+
+.wsh-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.wsh-form-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.wsh-input {
+    padding: 0.6rem 0.85rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s;
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+}
+
+.wsh-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.wsh-checkbox-group {
+    justify-content: center;
+    padding-top: 10px;
+}
+
+.wsh-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 500 !important;
+    color: var(--text-secondary);
+}
+
+.wsh-checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary);
+}
+
+/* Breaks section */
+.wsh-breaks-section {
+    background-color: var(--bg-hover);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-color);
+}
+
+.wsh-breaks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.wsh-breaks-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.wsh-btn-outline {
+    background: var(--primary-light);
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 0.4rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.wsh-btn-outline:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.wsh-empty-text {
+    text-align: center;
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.wsh-breaks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.wsh-break-item {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+    background: var(--bg-surface);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.wsh-checkbox-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.wsh-btn-icon-danger {
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-bg);
+    cursor: pointer;
+    color: var(--danger-text);
+    padding: 0.4rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+}
+
+.wsh-btn-icon-danger:hover {
+    background: var(--danger-text);
+    color: white;
+}
+
+.wsh-btn-icon-danger svg {
+    width: 20px;
+    height: 20px;
+}
+
+.wsh-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 1.25rem 1.5rem;
+    background: var(--bg-hover);
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.wsh-btn-secondary {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.55rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.wsh-btn-secondary:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.wsh-text-danger {
+    color: var(--danger-text);
+}
+
+/* =====================================================
+   Responsive
+   ===================================================== */
+@media (max-width: 768px) {
+    .wsh-container {
+        padding: 1rem;
+    }
+    
+    .wsh-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .wsh-header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .wsh-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .wsh-input-wrapper {
+        max-width: none;
+    }
+    
+    .wsh-filters-right {
+        justify-content: flex-start;
+    }
+    
+    .wsh-form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .wsh-col-span-2 {
+        grid-column: span 1;
+    }
+    
+    .wsh-break-item {
+        grid-template-columns: 1fr;
+    }
+    
+    .wsh-modal-content {
+        width: 95%;
+        margin: 1rem;
+    }
+}

@@ -89,6 +89,7 @@ namespace PayrollManagementSystem.Application.Features.Employees.Commands.Update
                         if (relation != null)
                         {
                             relation.IdMqh = reqTn.IdMqh;
+                            relation.LaNguoiPhuThuoc = reqTn.LaNguoiPhuThuoc;
                             relation.ThanNhan.TenTn = reqTn.TenTn;
                             relation.ThanNhan.NgaySinh = reqTn.NgaySinh;
                         }
@@ -109,7 +110,8 @@ namespace PayrollManagementSystem.Application.Features.Employees.Commands.Update
                         {
                             Cccd = request.Cccd,
                             MaDinhDanh = newMaDinhDanh,
-                            IdMqh = reqTn.IdMqh
+                            IdMqh = reqTn.IdMqh,
+                            LaNguoiPhuThuoc = reqTn.LaNguoiPhuThuoc
                         };
                         _context.TNhanNviens.Add(newRelation);
                     }

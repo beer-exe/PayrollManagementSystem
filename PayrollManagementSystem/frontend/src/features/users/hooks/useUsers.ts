@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { message } from 'antd';
 import { userApi } from '../api/userApi';
 import { UserDto, RoleDto, CreateUserCommand, UpdateUserRoleCommand, ResetPasswordCommand, EmployeeNoAccount } from '../types/user.types';
 
@@ -7,8 +6,13 @@ export const useUsers = () => {
   const [users, setUsers] = useState<UserDto[]>([]);
   const [roles, setRoles] = useState<RoleDto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-const fetchData = useCallback(async () => {
+  const showToast = useCallback((msg: string, type: 'success' | 'error') => {
+    setToast({ message: msg, type });
+  }, []);
+
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       const [usersRes, rolesRes] = await Promise.all([
@@ -19,12 +23,13 @@ const fetchData = useCallback(async () => {
       if (usersRes.succeeded) setUsers(usersRes.data);
       if (rolesRes.succeeded) setRoles(rolesRes.data);
       
+      
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
-      message.error(error?.response?.data?.Message || 'Lỗi khi tải dữ liệu.');
+      showToast(error?.response?.data?.Message || 'Lỗi khi tải dữ liệu.', 'error');
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [showToast]);
 
   useEffect(() => {
     fetchData();
@@ -34,13 +39,13 @@ const fetchData = useCallback(async () => {
     try {
       const res = await userApi.createUser(data);
       if (res.succeeded) {
-        message.success('Tạo tài khoản thành công!');
+        showToast('Tạo tài khoản thành công!', 'success');
         fetchData();
         return true;
       }
       return false;
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
-      message.error(error?.response?.data?.Message || 'Lỗi khi tạo tài khoản.');
+      showToast(error?.response?.data?.Message || 'Lỗi khi tạo tài khoản.', 'error');
       return false;
     }
   };
@@ -49,13 +54,13 @@ const fetchData = useCallback(async () => {
     try {
       const res = await userApi.updateRole(id, data);
       if (res.succeeded) {
-        message.success('Cập nhật quyền thành công!');
+        showToast('Cập nhật quyền thành công!', 'success');
         fetchData();
         return true;
       }
       return false;
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
-      message.error(error?.response?.data?.Message || 'Lỗi khi cập nhật quyền.');
+      showToast(error?.response?.data?.Message || 'Lỗi khi cập nhật quyền.', 'error');
       return false;
     }
   };
@@ -64,11 +69,11 @@ const fetchData = useCallback(async () => {
     try {
       const res = await userApi.toggleStatus(id);
       if (res.succeeded) {
-        message.success('Đã thay đổi trạng thái tài khoản!');
+        showToast('Đã thay đổi trạng thái tài khoản!', 'success');
         fetchData();
       }
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
-      message.error(error?.response?.data?.Message || 'Lỗi khi thay đổi trạng thái.');
+      showToast(error?.response?.data?.Message || 'Lỗi khi thay đổi trạng thái.', 'error');
     }
   };
 
@@ -76,12 +81,12 @@ const fetchData = useCallback(async () => {
     try {
       const res = await userApi.resetPassword(id, data);
       if (res.succeeded) {
-        message.success('Đặt lại mật khẩu thành công! Đã gửi thông báo qua email.');
+        showToast('Đặt lại mật khẩu thành công! Đã gửi thông báo qua email.', 'success');
         return true;
       }
       return false;
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
-      message.error(error?.response?.data?.Message || 'Lỗi khi đặt lại mật khẩu.');
+      showToast(error?.response?.data?.Message || 'Lỗi khi đặt lại mật khẩu.', 'error');
       return false;
     }
   };
@@ -94,7 +99,9 @@ const fetchData = useCallback(async () => {
     handleUpdateRole,
     handleToggleStatus,
     handleResetPassword,
-    refreshUsers: fetchData
+    refreshUsers: fetchData,
+    toast,
+    setToast
   };
 };
 

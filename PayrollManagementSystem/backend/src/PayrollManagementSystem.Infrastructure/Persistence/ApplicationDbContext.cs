@@ -43,12 +43,23 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
         public virtual DbSet<LichLamViec> LichLamViecs { get; set; }
         public virtual DbSet<ChiTietLichLamViec> ChiTietLichLamViecs { get; set; }
 
+        public virtual DbSet<CaLamViec> CaLamViecs { get; set; }
+        public virtual DbSet<KhungGioNghi> KhungGioNghis { get; set; }
+        public virtual DbSet<PhanCongCa> PhanCongCas { get; set; }
+
         public virtual DbSet<ChamCong> ChamCongs { get; set; }
 
         public virtual DbSet<DonNghi> DonNghis { get; set; }
         public virtual DbSet<NgayPhepNhanVien> NgayPhepNhanViens { get; set; }
 
+        public virtual DbSet<KyLuong> KyLuongs { get; set; }
+        public virtual DbSet<BangLuong> BangLuongs { get; set; }
 
+        public virtual DbSet<KhoanKhauTru> KhoanKhauTrus { get; set; }
+        public virtual DbSet<BacThue> BacThues { get; set; }
+        public virtual DbSet<CauHinhGiamTru> CauHinhGiamTrus { get; set; }
+
+        public virtual DbSet<SystemLog> SystemLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -578,7 +589,10 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
 
                 entity.Property(e => e.IdLich).HasColumnName("id_lich");
                 entity.Property(e => e.Nam).HasColumnName("nam");
-                entity.HasIndex(e => e.Nam).IsUnique().HasDatabaseName("idx_lich_lam_viec_nam_unique");
+                entity.HasIndex(e => e.Nam)
+                      .IsUnique()
+                      .HasFilter("\"IsDeleted\" = false")
+                      .HasDatabaseName("idx_lich_lam_viec_nam_unique");
 
                 entity.Property(e => e.TrangThai)
                     .HasConversion<string>()
@@ -615,11 +629,20 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                 entity.Property(e => e.SoGioLam)
                     .HasColumnType("decimal(4,1)")
                     .HasColumnName("so_gio_lam");
+                    
+                entity.Property(e => e.IdCaLamViecMacDinh)
+                    .HasColumnName("id_ca_lam_viec_mac_dinh");
 
                 entity.HasOne(e => e.LichLamViec)
                     .WithMany(l => l.ChiTietLichLamViecs)
                     .HasForeignKey(e => e.IdLich)
                     .HasConstraintName("fk_chi_tiet_lich_lam_viec");
+
+                entity.HasOne(e => e.CaLamViecMacDinh)
+                    .WithMany(c => c.ChiTietLichLamViecs)
+                    .HasForeignKey(e => e.IdCaLamViecMacDinh)
+                    .HasConstraintName("fk_chi_tiet_lich_ca_lam_viec_mac_dinh")
+                    .OnDelete(DeleteBehavior.SetNull);
 
                 entity.HasIndex(e => new { e.IdLich, e.Ngay })
                     .HasDatabaseName("idx_chi_tiet_lich_ngay");
@@ -687,6 +710,9 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
             });
 
             ConfigureDonNghi(modelBuilder);
+            ConfigureCaLamViec(modelBuilder);
+            ConfigurePhanCongCa(modelBuilder);
+            ConfigureBangLuong(modelBuilder);
         }
 
         private void ConfigureDonNghi(ModelBuilder modelBuilder)
@@ -818,6 +844,212 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
                 entity.IsDeleted = true;
                 Entry(entity).State = EntityState.Modified;
             }
+        }
+
+        private void ConfigureCaLamViec(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CaLamViec>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("ca_lam_viecs_pkey");
+                entity.ToTable("ca_lam_viecs");
+
+                entity.Property(e => e.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+                entity.Property(e => e.TenCa).IsRequired().HasMaxLength(150).HasColumnName("ten_ca");
+                entity.Property(e => e.GioBatDau).HasColumnName("gio_bat_dau");
+                entity.Property(e => e.GioKetThuc).HasColumnName("gio_ket_thuc");
+                entity.Property(e => e.XuyenNgay).HasDefaultValue(false).HasColumnName("xuyen_ngay");
+                entity.Property(e => e.HeSoLuong).HasPrecision(5, 2).HasDefaultValue(1.0m).HasColumnName("he_so_luong");
+                entity.Property(e => e.TrangThai).HasDefaultValue(true).HasColumnName("trang_thai");
+            });
+
+            modelBuilder.Entity<KhungGioNghi>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("khung_gio_nghis_pkey");
+                entity.ToTable("khung_gio_nghis");
+
+                entity.Property(e => e.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+                entity.Property(e => e.IdCaLamViec).HasColumnName("id_ca_lam_viec");
+                entity.Property(e => e.TenKhoangNghi).IsRequired().HasMaxLength(150).HasColumnName("ten_khoang_nghi");
+                entity.Property(e => e.GioBatDau).HasColumnName("gio_bat_dau");
+                entity.Property(e => e.GioKetThuc).HasColumnName("gio_ket_thuc");
+                entity.Property(e => e.TinhVaoGioLam).HasDefaultValue(false).HasColumnName("tinh_vao_gio_lam");
+
+                entity.HasOne(d => d.CaLamViec)
+                      .WithMany(p => p.KhungGioNghis)
+                      .HasForeignKey(d => d.IdCaLamViec)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .HasConstraintName("khung_gio_nghis_id_ca_lam_viec_fkey");
+            });
+        }
+
+        private void ConfigurePhanCongCa(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PhanCongCa>(entity =>
+            {
+                entity.HasKey(e => e.IdPhanCong).HasName("phan_cong_cas_pkey");
+                entity.ToTable("phan_cong_cas");
+
+                entity.Property(e => e.IdPhanCong).HasColumnName("id_phan_cong");
+                entity.Property(e => e.CccdNhanVien).IsRequired().HasMaxLength(20).HasColumnName("cccd_nhan_vien");
+                entity.Property(e => e.NgayLamViec).HasColumnName("ngay_lam_viec");
+                entity.Property(e => e.IdCaLamViec).HasColumnName("id_ca_lam_viec");
+                entity.Property(e => e.GhiChu).HasMaxLength(255).HasColumnName("ghi_chu");
+
+                entity.HasOne(e => e.NhanVien)
+                    .WithMany()
+                    .HasForeignKey(e => e.CccdNhanVien)
+                    .HasConstraintName("fk_phan_cong_ca_nhan_vien");
+
+                entity.HasOne(e => e.CaLamViec)
+                    .WithMany(c => c.PhanCongCas)
+                    .HasForeignKey(e => e.IdCaLamViec)
+                    .HasConstraintName("fk_phan_cong_ca_ca_lam_viec");
+
+                entity.HasIndex(e => new { e.CccdNhanVien, e.NgayLamViec })
+                    .IsUnique()
+                    .HasDatabaseName("idx_phan_cong_ca_nv_ngay_unique");
+            });
+        }
+        private void ConfigureBangLuong(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<KyLuong>(entity =>
+            {
+                entity.HasKey(e => e.IdKyLuong).HasName("ky_luongs_pkey");
+                entity.ToTable("ky_luongs");
+
+                entity.Property(e => e.IdKyLuong).HasColumnName("id_ky_luong");
+                entity.Property(e => e.Thang).HasColumnName("thang");
+                entity.Property(e => e.Nam).HasColumnName("nam");
+                entity.Property(e => e.TenKyLuong).HasMaxLength(150).HasColumnName("ten_ky_luong");
+                entity.Property(e => e.NgayBatDau).HasColumnName("ngay_bat_dau");
+                entity.Property(e => e.NgayKetThuc).HasColumnName("ngay_ket_thuc");
+                entity.Property(e => e.TrangThai)
+                    .HasConversion<string>()
+                    .HasMaxLength(50)
+                    .HasColumnName("trang_thai");
+
+                entity.HasIndex(e => new { e.Thang, e.Nam }).IsUnique().HasDatabaseName("idx_ky_luong_thang_nam");
+            });
+
+            modelBuilder.Entity<BangLuong>(entity =>
+            {
+                entity.HasKey(e => e.IdBangLuong).HasName("bang_luongs_pkey");
+                entity.ToTable("bang_luongs");
+
+                entity.Property(e => e.IdBangLuong).HasColumnName("id_bang_luong");
+                entity.Property(e => e.IdKyLuong).HasColumnName("id_ky_luong");
+                entity.Property(e => e.CccdNhanVien).IsRequired().HasMaxLength(20).HasColumnName("cccd_nhan_vien");
+                entity.Property(e => e.Thang).HasColumnName("thang");
+                entity.Property(e => e.Nam).HasColumnName("nam");
+
+                entity.Property(e => e.P1).HasPrecision(18, 2).HasColumnName("p1");
+                entity.Property(e => e.HeSoP2).HasPrecision(5, 2).HasColumnName("he_so_p2");
+                entity.Property(e => e.HeSoP3).HasPrecision(5, 2).HasColumnName("he_so_p3");
+
+                entity.Property(e => e.NgayCongChuan).HasPrecision(5, 2).HasColumnName("ngay_cong_chuan");
+                entity.Property(e => e.NgayCongThucTe).HasPrecision(5, 2).HasColumnName("ngay_cong_thuc_te");
+
+                entity.Property(e => e.LuongThoiGian).HasPrecision(18, 2).HasColumnName("luong_thoi_gian");
+                entity.Property(e => e.LuongHieuSuatP3).HasPrecision(18, 2).HasColumnName("luong_hieu_suat_p3");
+                entity.Property(e => e.PhuCap).HasPrecision(18, 2).HasColumnName("phu_cap");
+                entity.Property(e => e.Thuong).HasPrecision(18, 2).HasColumnName("thuong");
+                entity.Property(e => e.TangCa).HasPrecision(18, 2).HasColumnName("tang_ca");
+                
+                entity.Property(e => e.Phat).HasPrecision(18, 2).HasColumnName("phat");
+                entity.Property(e => e.KhauTru).HasPrecision(18, 2).HasColumnName("khau_tru");
+                entity.Property(e => e.TruThue).HasPrecision(18, 2).HasColumnName("tru_thue");
+
+                entity.Property(e => e.TongThuNhap).HasPrecision(18, 2).HasColumnName("tong_thu_nhap");
+                entity.Property(e => e.ThucLinh).HasPrecision(18, 2).HasColumnName("thuc_linh");
+                
+                entity.Property(e => e.GhiChu).HasMaxLength(500).HasColumnName("ghi_chu");
+
+                entity.HasOne(d => d.KyLuong)
+                    .WithMany(p => p.BangLuongs)
+                    .HasForeignKey(d => d.IdKyLuong)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("bang_luongs_id_ky_luong_fkey");
+
+                entity.HasOne(d => d.NhanVien)
+                    .WithMany()
+                    .HasForeignKey(d => d.CccdNhanVien)
+                    .HasPrincipalKey(p => p.Cccd)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("bang_luongs_cccd_nhan_vien_fkey");
+
+                entity.HasIndex(e => new { e.IdKyLuong, e.CccdNhanVien }).IsUnique().HasDatabaseName("idx_bang_luong_ky_nv");
+            });
+
+            modelBuilder.Entity<KhoanKhauTru>(entity =>
+            {
+                entity.HasKey(e => e.IdKhoanKhauTru).HasName("khoan_khau_trus_pkey");
+                entity.ToTable("khoan_khau_trus");
+
+                entity.Property(e => e.IdKhoanKhauTru).HasColumnName("id_khoan_khau_tru");
+                entity.Property(e => e.TenKhoanKhauTru).IsRequired().HasMaxLength(200).HasColumnName("ten_khoan_khau_tru");
+                entity.Property(e => e.LoaiCongThuc).HasConversion<string>().HasMaxLength(50).HasColumnName("loai_cong_thuc");
+                entity.Property(e => e.GiaTri).HasPrecision(18, 4).HasColumnName("gia_tri");
+                entity.Property(e => e.GhiChu).HasMaxLength(500).HasColumnName("ghi_chu");
+                entity.Property(e => e.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+                entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+                entity.Property(e => e.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
+
+                entity.HasIndex(e => e.TenKhoanKhauTru).IsUnique().HasDatabaseName("idx_khoan_khau_tru_ten");
+            });
+
+            modelBuilder.Entity<BacThue>(entity =>
+            {
+                entity.HasKey(e => e.IdBacThue).HasName("bac_thues_pkey");
+                entity.ToTable("bac_thues");
+
+                entity.Property(e => e.IdBacThue).HasColumnName("id_bac_thue");
+                entity.Property(e => e.Bac).HasColumnName("bac");
+                entity.Property(e => e.TuGia).HasPrecision(18, 2).HasColumnName("tu_gia");
+                entity.Property(e => e.DenGia).HasPrecision(18, 2).HasColumnName("den_gia");
+                entity.Property(e => e.ThueSuat).HasPrecision(5, 2).HasColumnName("thue_suat");
+                entity.Property(e => e.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+                entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+                entity.Property(e => e.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
+            });
+
+            modelBuilder.Entity<CauHinhGiamTru>(entity =>
+            {
+                entity.HasKey(e => e.IdCauHinhGiamTru).HasName("cau_hinh_giam_trus_pkey");
+                entity.ToTable("cau_hinh_giam_trus");
+
+                entity.Property(e => e.IdCauHinhGiamTru).HasColumnName("id_cau_hinh_giam_tru");
+                entity.Property(e => e.GiamTruBanThan).HasPrecision(18, 2).HasColumnName("giam_tru_ban_than");
+                entity.Property(e => e.GiamTruNguoiPhuThuoc).HasPrecision(18, 2).HasColumnName("giam_tru_nguoi_phu_thuoc");
+                entity.Property(e => e.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+                entity.Property(e => e.GhiChu).HasMaxLength(500).HasColumnName("ghi_chu");
+
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+                entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+                entity.Property(e => e.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
+            });
+
+            modelBuilder.Entity<SystemLog>(entity =>
+            {
+                entity.ToTable("SystemLogs");
+                entity.HasNoKey();
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.Message).HasColumnName("message");
+                entity.Property(e => e.MessageTemplate).HasColumnName("message_template");
+                entity.Property(e => e.Level).HasColumnName("level");
+                entity.Property(e => e.RaiseDate).HasColumnName("raise_date");
+                entity.Property(e => e.Exception).HasColumnName("exception");
+                entity.Property(e => e.Properties).HasColumnName("properties");
+            });
         }
     }
 }

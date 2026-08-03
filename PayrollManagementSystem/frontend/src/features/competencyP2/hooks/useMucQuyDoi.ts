@@ -1,11 +1,12 @@
 import { useState, useCallback } from "react";
-import { message } from "antd";
+
 import { mucQuyDoiApi } from "../api/mucQuyDoiApi";
 import { MucQuyDoiDto, CreateMucQuyDoiDto } from "../types/mucQuyDoi.types";
 
 export const useMucQuyDoi = () => {
   const [data, setData] = useState<MucQuyDoiDto[]>([]);
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const fetchQuyDoi = useCallback(async () => {
     setLoading(true);
@@ -16,7 +17,7 @@ export const useMucQuyDoi = () => {
       }
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       console.error(error);
-      message.error(error.response?.data?.Message || "Lỗi khi tải dữ liệu cấu hình P2");
+      setToast({ message: error.response?.data?.Message || "Lỗi khi tải dữ liệu cấu hình P2", type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -26,13 +27,13 @@ export const useMucQuyDoi = () => {
     try {
       const res = await mucQuyDoiApi.create(payload);
       if (res.succeeded) {
-        message.success("Thêm mới thành công");
+        setToast({ message: "Thêm mới thành công", type: 'success' });
         return true;
       }
       return false;
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       console.error(error);
-      message.error(error.response?.data?.Message || "Lỗi khi lưu cấu hình P2");
+      setToast({ message: error.response?.data?.Message || "Lỗi khi lưu cấu hình P2", type: 'error' });
       return false;
     }
   };
@@ -41,13 +42,13 @@ export const useMucQuyDoi = () => {
     try {
       const res = await mucQuyDoiApi.update(id, payload);
       if (res.succeeded) {
-        message.success("Cập nhật thành công");
+        setToast({ message: "Cập nhật thành công", type: 'success' });
         return true;
       }
       return false;
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       console.error(error);
-      message.error(error.response?.data?.Message || "Lỗi khi cập nhật cấu hình P2");
+      setToast({ message: error.response?.data?.Message || "Lỗi khi cập nhật cấu hình P2", type: 'error' });
       return false;
     }
   };
@@ -56,13 +57,13 @@ export const useMucQuyDoi = () => {
     try {
       const res = await mucQuyDoiApi.delete(id);
       if (res.succeeded) {
-        message.success("Xóa thành công");
+        setToast({ message: "Xóa thành công", type: 'success' });
         return true;
       }
       return false;
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
       console.error(error);
-      message.error(error.response?.data?.Message || "Lỗi khi xóa cấu hình P2");
+      setToast({ message: error.response?.data?.Message || "Lỗi khi xóa cấu hình P2", type: 'error' });
       return false;
     }
   };
@@ -74,5 +75,7 @@ export const useMucQuyDoi = () => {
     createQuyDoi,
     updateQuyDoi,
     deleteQuyDoi,
+    toast,
+    setToast,
   };
 };

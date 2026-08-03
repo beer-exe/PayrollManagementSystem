@@ -9,6 +9,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { MainLayout } from "@/layouts/MainLayout";
 import { LoginForm } from "@/features/auth/components/LoginForm";
+import { SessionExpiredModal } from '@/features/auth/components/SessionExpiredModal';
 import { UserProfile } from "@/features/profile/components/UserProfile";
 import { EmployeeManagement } from "@/features/employees/components/EmployeeManagement";
 import { UserManagement } from "@/features/users/components/UserManagement";
@@ -23,8 +24,17 @@ import { TuDanhGiaForm } from "@/features/competencyP2/components/TuDanhGiaForm"
 import { DuyetDanhGia } from "@/features/competencyP2/components/DuyetDanhGia";
 import { DuyetDanhGiaForm } from "@/features/competencyP2/components/DuyetDanhGiaForm";
 import { WorkScheduleManagement } from "@/features/workSchedule/components/WorkScheduleManagement";
+import { WorkShiftManagement } from "@/features/workShifts/components/WorkShiftManagement";
+import { ShiftAssignment } from "@/features/shiftAssignment/components/ShiftAssignment";
 import { ChamCongManagement } from '@/features/chamCong/components/ChamCongManagement';
 import { DonNghiManagement } from '@/features/donNghi/components/DonNghiManagement';
+import { MyDonNghiPortal } from '@/features/donNghi/components/MyDonNghiPortal';
+import PayrollManagement from '@/features/payroll/components/PayrollManagement';
+import { KhoanKhauTruManagement } from '@/features/khoanKhauTru/components/KhoanKhauTruManagement';
+import { BangThueLuyTienManagement } from '@/features/thueTncn/components/BangThueLuyTienManagement';
+import { CauHinhGiamTruManagement } from '@/features/thueTncn/components/CauHinhGiamTruManagement';
+import { SystemLogViewer } from '@/features/systemLogs/components/SystemLogViewer';
+
 
 const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string[], requireManager?: boolean }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -35,7 +45,7 @@ const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string
     return <Navigate to="/profile" replace />;
   }
 
-  if (requireManager && user?.role !== "Admin" && !user?.hasDirectReports) {
+  if (requireManager && !user?.hasDirectReports) {
     return <Navigate to="/profile" replace />;
   }
 
@@ -66,6 +76,7 @@ function App() {
           {/* 2. System Administration Group */}
           <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
             <Route path="/admin/tai-khoan" element={<UserManagement />} />
+            <Route path="/admin/system-logs" element={<SystemLogViewer />} />
           </Route>
 
           {/* 3. Human Resources Group */}
@@ -74,25 +85,35 @@ function App() {
             <Route path="/hr/phong-ban" element={<DepartmentManagement />} />
             <Route path="/hr/ngach-luong" element={<NgachLuongManagement />} />
             <Route path="/hr/chuc-vu" element={<PositionManagement />} />
-          </Route>
+            <Route path="/hr/bang-luong" element={<PayrollManagement />} />
+            <Route path="/hr/khoan-khau-tru" element={<KhoanKhauTruManagement />} />
+            <Route path="/hr/bang-thue-luy-tien" element={<BangThueLuyTienManagement />} />
+            <Route path="/hr/cau-hinh-giam-tru" element={<CauHinhGiamTruManagement />} />
 
-          {/* 4. Time & Attendance Group */}
-          <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
+            
+            <Route path="/time/ca-lam-viec" element={<WorkShiftManagement />} />
+            <Route path="/time/phan-cong-ca" element={<ShiftAssignment />} />
+            <Route path="/time/cham-cong" element={<ChamCongManagement />} />
             <Route path="/time/lich-lam-viec" element={<WorkScheduleManagement />} />
           </Route>
 
-          <Route element={<ProtectedRoute allowedRoles={["Admin", "HR"]} />}>
-            <Route path="/time/cham-cong" element={<ChamCongManagement />} />
+          {/* 4. Time & Attendance Group */}
+
+          <Route element={<ProtectedRoute allowedRoles={["HR"]} />}>
             <Route path="/time/don-nghi" element={<DonNghiManagement />} />
           </Route>
 
-          {/* 5. Performance Evaluation Group (P2) */}
+          <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
+            <Route path="/me/don-nghi" element={<MyDonNghiPortal />} />
+          </Route>
+
+          {/* Đánh giá năng lực P2 */}
           <Route element={<ProtectedRoute allowedRoles={["HR"]} />}>
             <Route path="/performance/khung-nang-luc" element={<KhungNangLucManagement />} />
             <Route path="/performance/cau-hinh" element={<MucQuyDoiManagement />} />
           </Route>
 
-          <Route element={<ProtectedRoute allowedRoles={["Admin", "HR"]} />}>
+          <Route element={<ProtectedRoute allowedRoles={["HR"]} />}>
             <Route path="/performance/ky-danh-gia" element={<KyDanhGiaManagement />} />
           </Route>
 
@@ -109,6 +130,7 @@ function App() {
 
         <Route path="*" element={<Navigate to="/profile" replace />} />
       </Routes>
+      <SessionExpiredModal />
     </BrowserRouter>
   );
 }

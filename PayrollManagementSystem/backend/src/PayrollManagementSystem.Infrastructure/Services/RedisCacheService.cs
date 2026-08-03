@@ -27,14 +27,14 @@ public class RedisCacheService : ICacheService
         return JsonSerializer.Deserialize<T>(value!);
     }
 
-    public async Task SetAsync<T>(string key, T value, TimeSpan? slidingExpiration = null, CancellationToken cancellationToken = default)
+    public async Task SetAsync<T>(string key, T value, TimeSpan? expiration = null, CancellationToken cancellationToken = default)
     {
         if (value == null) return;
 
         var json = JsonSerializer.Serialize(value);
-        var expiration = slidingExpiration ?? TimeSpan.FromMinutes(_defaultExpirationInMinutes);
+        var ttl = expiration ?? TimeSpan.FromMinutes(_defaultExpirationInMinutes);
 
-        await _db.StringSetAsync(key, json, expiration);
+        await _db.StringSetAsync(key, json, ttl);
     }
 
     public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
@@ -48,11 +48,20 @@ public class RedisCacheService : ICacheService
         foreach (var endpoint in endpoints)
         {
             var server = _connectionMultiplexer.GetServer(endpoint);
-            var keys = server.Keys(pattern: prefixKey + "*");
-            foreach (var key in keys)
+
+            var batch = new List<RedisKey>();
+            await foreach (var key in server.KeysAsync(pattern: prefixKey + "*"))
             {
-                await _db.KeyDeleteAsync(key);
+                batch.Add(key);
+                if (batch.Count >= 100)
+                {
+                    await _db.KeyDeleteAsync(batch.ToArray());
+                    batch.Clear();
+                }
             }
+
+            if (batch.Count > 0)
+                await _db.KeyDeleteAsync(batch.ToArray());
         }
     }
 

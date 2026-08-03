@@ -19,7 +19,7 @@
 }
 
 .profile-avatar-large {
-  @apply absolute -bottom-10 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full bg-white dark:bg-gray-800 text-violet-700 dark:text-violet-400 flex items-center justify-center text-3xl font-bold tracking-wider shadow-md border-4 border-white dark:border-gray-800;
+  @apply absolute -bottom-10 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full overflow-hidden bg-white dark:bg-gray-800 text-violet-700 dark:text-violet-400 flex items-center justify-center text-3xl font-bold tracking-wider shadow-md border-4 border-white dark:border-gray-800;
 }
 
 .profile-avatar-info {

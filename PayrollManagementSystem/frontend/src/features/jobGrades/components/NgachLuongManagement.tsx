@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useJobGrades } from '../hooks/useJobGrades';
 import { JobGrade } from '../types/jobGrade.types';
+import { useDataTable } from '../../../hooks/useDataTable';
+import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import { JobGradeSalaryStepDrawer } from './JobGradeSalaryStepDrawer';
+import { Toast } from '@/components/Toast/Toast';
 import './JobGradeManagement.css';
 
 export const NgachLuongManagement: React.FC = () => {
-  const { jobGrades, loading, fetchJobGrades, createJobGrade, updateJobGrade, deleteJobGrade } = useJobGrades();
+  const { jobGrades, loading, toast, setToast, fetchJobGrades, createJobGrade, updateJobGrade, deleteJobGrade } = useJobGrades();
 
   useEffect(() => {
     fetchJobGrades();
@@ -27,12 +32,42 @@ export const NgachLuongManagement: React.FC = () => {
 
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
-  const totalItems = jobGrades.length;
-  const totalPages = Math.ceil(totalItems / pageSize);
-  const currentData = jobGrades.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const {
+    currentData,
+    allFilteredAndSortedData,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    sortKey,
+    sortDirection,
+    handleSort,
+    searchTerm,
+    setSearchTerm
+  } = useDataTable<JobGrade>({
+    data: jobGrades,
+    initialPageSize: 10,
+    searchableFields: ['idNgachLuong', 'tenNgachLuong']
+  });
+
+  const handleExportExcel = () => {
+    const columns: ExportColumn<JobGrade>[] = [
+      { header: 'Mã Ngạch', key: 'idNgachLuong' },
+      { header: 'Tên Ngạch', key: 'tenNgachLuong' },
+      { header: 'Mô Tả', key: 'moTa' },
+      { header: 'Trạng Thái', key: 'tenTrangThai' },
+    ];
+    exportToExcel(allFilteredAndSortedData, columns, 'DanhSachNgachLuong');
+  };
+
+  const handleExportPdf = () => {
+    const columns: ExportColumn<JobGrade>[] = [
+      { header: 'Mã Ngạch', key: 'idNgachLuong' },
+      { header: 'Tên Ngạch', key: 'tenNgachLuong' },
+      { header: 'Mô Tả', key: 'moTa' },
+      { header: 'Trạng Thái', key: 'tenTrangThai' },
+    ];
+    exportToPdf(allFilteredAndSortedData, columns, 'DanhSachNgachLuong', 'Danh sách Ngạch lương');
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -122,7 +157,7 @@ export const NgachLuongManagement: React.FC = () => {
     <div className="jg-container">
       <div className="jg-header">
         <div className="jg-header-title">
-          <h2>Danh Mục Ngạch Lương</h2>
+          <h2>📈 Danh Mục Ngạch Lương</h2>
           <p>Quản lý các ngạch lương và bậc lương tương ứng</p>
         </div>
         <button
@@ -137,6 +172,24 @@ export const NgachLuongManagement: React.FC = () => {
       </div>
 
       <div className="jg-controls-wrapper">
+        <div className="jg-filters" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem 1.5rem', borderBottom: '1px solid var(--border-color)', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="jg-input-wrapper" style={{ position: 'relative', minWidth: '300px' }}>
+            <svg className="jg-input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', width: '1.1rem', height: '1.1rem', color: 'var(--text-muted)' }}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Tìm theo Mã, Tên ngạch..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="jg-input"
+              style={{ paddingLeft: '2.25rem', width: '100%', height: '38px', borderRadius: '6px', border: '1px solid var(--border-color)' }}
+            />
+          </div>
+          
+          <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
+        </div>
+
         <div className="jg-table-container custom-scrollbar">
           {loading ? (
             <div className="jg-loader">
@@ -146,10 +199,10 @@ export const NgachLuongManagement: React.FC = () => {
             <table className="jg-table">
               <thead>
                 <tr>
-                  <th>Mã Ngạch</th>
-                  <th>Tên Ngạch</th>
+                  <SortableHeader label="Mã Ngạch" sortKey="idNgachLuong" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
+                  <SortableHeader label="Tên Ngạch" sortKey="tenNgachLuong" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} />
                   <th>Mô Tả</th>
-                  <th style={{ textAlign: 'center' }}>Trạng Thái</th>
+                  <SortableHeader label="Trạng Thái" sortKey="tenTrangThai" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
                   <th style={{ textAlign: 'right' }}>Thao Tác</th>
                 </tr>
               </thead>
@@ -333,6 +386,14 @@ export const NgachLuongManagement: React.FC = () => {
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

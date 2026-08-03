@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import { message } from 'antd';
 import { employeeApi } from '../api/employeeApi';
 import { ChangeStatusDto, CreateEmployeeCommand, UpdateEmployeeCommand } from '../types/employee.types';
 import { UserProfileDetail } from '@/types/profile.types';
@@ -8,6 +7,11 @@ export const useEmployees = () => {
   const [employees, setEmployees] = useState<UserProfileDetail[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+
+  const showToast = (message: string, type: "success" | "error") => {
+    setToast({ message, type });
+  };
 
   const fetchEmployees = useCallback(async (searchTerm: string, pageNumber: number, pageSize: number) => {
     setLoading(true);
@@ -18,7 +22,7 @@ export const useEmployees = () => {
         setTotalRecords(response.totalRecords);
       }
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
-      message.error(error?.response?.data?.Message || 'Lỗi khi tải danh sách nhân viên');
+      showToast(error?.response?.data?.Message || 'Lỗi khi tải danh sách nhân viên', 'error');
     } finally {
       setLoading(false);
     }
@@ -36,9 +40,9 @@ export const useEmployees = () => {
       link.setAttribute('download', `NhanVien_${new Date().getTime()}.xlsx`);
       document.body.appendChild(link);
       link.click();
-      message.success('Xuất file Excel thành công');
+      showToast('Xuất file Excel thành công', 'success');
     } catch (error) {
-      message.error('Lỗi khi xuất file Excel');
+      showToast('Lỗi khi xuất file Excel', 'error');
     } finally {
       setIsExporting(false);
     }
@@ -48,12 +52,12 @@ export const useEmployees = () => {
     try {
       const res = await employeeApi.createEmployee(data);
       if (res.succeeded) {
-        message.success('Thêm mới nhân viên thành công!');
+        showToast('Thêm mới nhân viên thành công!', 'success');
         return true;
       }
       return false;
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
-      message.error(error?.response?.data?.Message || 'Lỗi khi thêm mới nhân viên');
+      showToast(error?.response?.data?.Message || 'Lỗi khi thêm mới nhân viên', 'error');
       return false;
     }
   };
@@ -62,12 +66,12 @@ export const useEmployees = () => {
     try {
       const res = await employeeApi.updateEmployee(cccd, data);
       if (res.succeeded) {
-        message.success('Cập nhật hồ sơ nhân viên thành công!');
+        showToast('Cập nhật hồ sơ nhân viên thành công!', 'success');
         return true;
       }
       return false;
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
-      message.error(error?.response?.data?.Message || 'Lỗi khi cập nhật hồ sơ');
+      showToast(error?.response?.data?.Message || 'Lỗi khi cập nhật hồ sơ', 'error');
       return false;
     }
   };
@@ -76,15 +80,15 @@ export const useEmployees = () => {
     try {
       const res = await employeeApi.changeStatus(cccd, payload);
       if (res.succeeded) {
-        message.success('Cập nhật trạng thái thành công!');
+        showToast('Cập nhật trạng thái thành công!', 'success');
         return true;
       }
       return false;
     } catch (err) { const error = err as import('axios').AxiosError<{Message?: string}>;
-      message.error(error?.response?.data?.Message || 'Lỗi khi cập nhật trạng thái');
+      showToast(error?.response?.data?.Message || 'Lỗi khi cập nhật trạng thái', 'error');
       return false;
     }
   };
 
-return { employees, totalRecords, loading, isExporting, fetchEmployees, exportExcel, createEmployee, changeStatus, updateEmployee };
+return { employees, totalRecords, loading, isExporting, fetchEmployees, exportExcel, createEmployee, changeStatus, updateEmployee, toast, setToast };
 };

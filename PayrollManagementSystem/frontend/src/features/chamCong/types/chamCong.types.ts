@@ -6,7 +6,8 @@ export type LoaiNgayCong =
   | 'Vắng có phép'
   | 'Vắng không phép'
   | 'Nghỉ lễ'
-  | 'Nghỉ cuối tuần';
+  | 'Nghỉ cuối tuần'
+  | 'Vắng có phép (Không lương)';
 
 export type TrangThaiChamCong =
   | 'Chưa xác nhận'

@@ -47,14 +47,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.55rem 1.25rem;
+  gap: 6px;
+  padding: 9px 18px;
   border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
   border: none;
+  box-shadow: none !important;
 }
 
 .cp2-btn:disabled {
@@ -65,12 +66,12 @@
 .cp2-btn-primary {
   background: linear-gradient(135deg, #7c3aed, #6d28d9);
   color: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: none !important;
 }
 
 .cp2-btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #6d28d9, #5b21b6);
-  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.2);
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 .cp2-btn-secondary {
@@ -84,12 +85,12 @@
 }
 
 .cp2-btn-danger {
-  background: #ef4444;
+  background: var(--danger);
   color: #fff;
 }
 
 .cp2-btn-danger:hover:not(:disabled) {
-  background: #dc2626;
+  background: var(--danger-text);
 }
 
 .cp2-btn-dashed {
@@ -614,7 +615,7 @@
 
 .cp2-modal-header {
   padding: 1.25rem 1.5rem;
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
   color: #fff;
   display: flex;
   align-items: center;
@@ -815,4 +816,40 @@
 }
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
   background-color: rgba(156, 163, 175, 0.8);
+}
+
+/* ---- Mobile Responsiveness ---- */
+@media (max-width: 640px) {
+  .cp2-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .cp2-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .cp2-filters {
+    flex-direction: column;
+    padding: 0.75rem;
+  }
+  .cp2-input-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+  .cp2-modal {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+    height: auto;
+  }
+  .cp2-form-group.flex {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .cp2-modal-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .cp2-modal-footer .cp2-btn {
+    width: 100%;
+  }
 }

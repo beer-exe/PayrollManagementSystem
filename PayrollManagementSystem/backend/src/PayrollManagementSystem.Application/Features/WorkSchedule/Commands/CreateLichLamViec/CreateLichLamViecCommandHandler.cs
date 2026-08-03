@@ -26,6 +26,21 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Cre
             if (exists)
                 throw new ApiException($"Lịch làm việc năm {request.Nam} đã tồn tại trong hệ thống.");
 
+            decimal defaultWorkingHours = 8;
+            CaLamViec? defaultShift = null;
+
+            if (request.UseDefaultShift && request.DefaultShiftId.HasValue)
+            {
+                defaultShift = await _context.CaLamViecs
+                    .Include(c => c.KhungGioNghis)
+                    .FirstOrDefaultAsync(c => c.Id == request.DefaultShiftId.Value, cancellationToken);
+                
+                if (defaultShift == null)
+                    throw new ApiException("Không tìm thấy ca làm việc mặc định đã chọn.");
+                
+                defaultWorkingHours = defaultShift.CalculateWorkingHours();
+            }
+
             var lich = new LichLamViec
             {
                 IdLich = Guid.NewGuid(),
@@ -44,7 +59,7 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Cre
             {
                 LoaiNgay loaiNgay;
                 string? tenNgayNghi = null;
-                decimal soGioLam = 8;
+                decimal soGioLam = defaultWorkingHours;
 
                 if (holidays.TryGetValue(date, out var tenLe))
                 {
@@ -78,6 +93,7 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Cre
                     LoaiNgay = loaiNgay,
                     TenNgayNghi = tenNgayNghi,
                     SoGioLam = soGioLam,
+                    IdCaLamViecMacDinh = (request.UseDefaultShift && loaiNgay == LoaiNgay.NGAY_LAM_VIEC) ? request.DefaultShiftId : null,
                     LichLamViec = lich
                 });
             }

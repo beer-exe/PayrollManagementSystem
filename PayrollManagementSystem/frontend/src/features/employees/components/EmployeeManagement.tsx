@@ -4,22 +4,22 @@ import { ColumnSetupDrawer } from './ColumnSetupDrawer';
 import { EmployeeDetailPanel } from './EmployeeDetailPanel';
 import { ChangeStatusModal } from './ChangeStatusModal';
 import { CreateEmployeeStepper } from './CreateEmployeeStepper';
+import { AssignDepartmentModal } from './AssignDepartmentModal';
 import { UpdateEmployeeModal } from './UpdateEmployeeModal';
 import { UserProfileDetail } from '@/types/profile.types';
 import { CreateEmployeeCommand } from '../types/employee.types';
 import { useEmployees } from '../hooks/useEmployees';
+import { Toast } from '@/components/Toast/Toast';
 import './EmployeeManagement.css';
 import './EmployeeModals.css';
 
 export const EmployeeManagement: React.FC = () => {
   const { 
-    employees, totalRecords, loading, isExporting,
-    fetchEmployees, exportExcel, changeStatus, createEmployee, updateEmployee 
+    employees, loading, toast, setToast,
+    fetchEmployees, changeStatus, createEmployee, updateEmployee 
   } = useEmployees();
   
-  const [searchTerm, setSearchTerm] = useState('');
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize] = useState(15); 
+  const [pageSize] = useState(10000); // Fetch all for client-side DataTable 
 
   const [selectedEmp, setSelectedEmp] = useState<UserProfileDetail | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
@@ -32,12 +32,12 @@ export const EmployeeManagement: React.FC = () => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [employeeToUpdate, setEmployeeToUpdate] = useState<UserProfileDetail | null>(null);
 
+  const [isAssignDeptModalOpen, setIsAssignDeptModalOpen] = useState(false);
+  const [employeeToAssign, setEmployeeToAssign] = useState<UserProfileDetail | null>(null);
+
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      fetchEmployees(searchTerm, pageNumber, pageSize);
-    }, 400);
-    return () => clearTimeout(timeoutId);
-  }, [searchTerm, pageNumber, pageSize, fetchEmployees]);
+    fetchEmployees('', 1, pageSize);
+  }, [pageSize, fetchEmployees]);
 
   useEffect(() => {
     const saved = localStorage.getItem('empTableColumns');
@@ -56,8 +56,7 @@ export const EmployeeManagement: React.FC = () => {
     const success = await createEmployee(command);
     if (success) {
       setIsCreateModalOpen(false);
-      setPageNumber(1); 
-      fetchEmployees(searchTerm, 1, pageSize);
+      fetchEmployees('', 1, pageSize);
     }
     return success;
   };
@@ -92,18 +91,11 @@ export const EmployeeManagement: React.FC = () => {
         data={employees}
         visibleColumns={visibleColumns}
         isLoading={loading}
-        isExporting={isExporting}
-        searchTerm={searchTerm}
-        onSearchChange={(v) => { setSearchTerm(v); setPageNumber(1); }}
-        pageNumber={pageNumber}
-        pageSize={pageSize}
-        totalRecords={totalRecords}
-        onPageChange={setPageNumber}
         onOpenSettings={() => setIsDrawerOpen(true)}
         onRowClick={(emp) => { setSelectedEmp(emp); setIsPanelOpen(true); }}
         onStatusClick={(emp) => setEmployeeToChangeStatus(emp)}
         onEditClick={handleEditClick}
-        onExportExcel={() => exportExcel(searchTerm)}
+        onAssignDeptClick={(emp) => { setEmployeeToAssign(emp); setIsAssignDeptModalOpen(true); }}
       />
 
       <ColumnSetupDrawer 
@@ -144,10 +136,24 @@ export const EmployeeManagement: React.FC = () => {
           onSubmitUpdate={async (cccd, data) => {
             const success = await updateEmployee(cccd, data);
             if (success) {
-              fetchEmployees(searchTerm, pageNumber, pageSize);
+              fetchEmployees('', 1, pageSize);
             }
             return success;
           }}
+        />
+      )}
+
+      {isAssignDeptModalOpen && employeeToAssign && (
+        <AssignDepartmentModal
+          isOpen={isAssignDeptModalOpen}
+          onClose={() => {
+            setIsAssignDeptModalOpen(false);
+            setEmployeeToAssign(null);
+          }}
+          onSuccess={() => {
+            fetchEmployees('', 1, pageSize);
+          }}
+          employee={employeeToAssign}
         />
       )}
 
@@ -159,9 +165,17 @@ export const EmployeeManagement: React.FC = () => {
           currentStatus={employeeToChangeStatus.trangThai || 'DANG_LAM_VIEC'}
           onSubmitStatus={async (data) => {
             const success = await changeStatus(employeeToChangeStatus.cccd, data);
-            if (success) fetchEmployees(searchTerm, pageNumber, pageSize);
+            if (success) fetchEmployees('', 1, pageSize);
             return success;
           }}
+        />
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
         />
       )}
     </div>

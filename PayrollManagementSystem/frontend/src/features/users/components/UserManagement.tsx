@@ -1,35 +1,38 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUsers } from '../hooks/useUsers';
+import { useDataTable } from '../../../hooks/useDataTable';
+import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { SortableHeader } from '../../../components/DataTable/SortableHeader';
+import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import { CreateUserModal } from './CreateUserModal';
 import { UpdateRoleModal } from './UpdateRoleModal';
 import { UserDto } from '../types/user.types';
+import { Toast } from '../../../components/Toast/Toast';
 import './UserManagement.css';
 
 export const UserManagement: React.FC = () => {
-  const { users, roles, isLoading, handleCreateUser, handleUpdateRole, handleToggleStatus, handleResetPassword } = useUsers();
-  
-  const [searchTerm, setSearchTerm] = useState('');
+  const { users, roles, isLoading, handleCreateUser, handleUpdateRole, handleToggleStatus, handleResetPassword, toast, setToast } = useUsers();
+
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [roleModalUser, setRoleModalUser] = useState<UserDto | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
-
-  const filteredUsers = useMemo(() => {
-    if (!searchTerm) return users;
-    const lower = searchTerm.toLowerCase();
-    return users.filter(u => 
-      u.tenTaiKhoan.toLowerCase().includes(lower) || 
-      (u.hoTen && u.hoTen.toLowerCase().includes(lower)) ||
-      (u.email && u.email.toLowerCase().includes(lower))
-    );
-  }, [users, searchTerm]);
-
-  const totalItems = filteredUsers.length;
-  const totalPages = Math.ceil(totalItems / pageSize);
-  const currentData = filteredUsers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  
+  const {
+    currentData,
+    allFilteredAndSortedData,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    sortKey,
+    sortDirection,
+    handleSort,
+    searchTerm,
+    setSearchTerm
+  } = useDataTable<UserDto>({
+    data: users,
+    initialPageSize: 10,
+    searchableFields: ['tenTaiKhoan', 'hoTen', 'email']
+  });
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -41,9 +44,27 @@ export const UserManagement: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [activeDropdown]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm]);
+  const handleExportExcel = () => {
+    const columns: ExportColumn<UserDto>[] = [
+      { header: 'Tài khoản', key: 'tenTaiKhoan' },
+      { header: 'Họ Tên', key: 'hoTen' },
+      { header: 'Email', key: 'email' },
+      { header: 'Vai trò', key: 'tenVaiTro' },
+      { header: 'Trạng thái', key: 'tenTrangThai' },
+    ];
+    exportToExcel(allFilteredAndSortedData, columns, 'DanhSachTaiKhoan');
+  };
+
+  const handleExportPdf = () => {
+    const columns: ExportColumn<UserDto>[] = [
+      { header: 'Tài khoản', key: 'tenTaiKhoan' },
+      { header: 'Họ Tên', key: 'hoTen' },
+      { header: 'Email', key: 'email' },
+      { header: 'Vai trò', key: 'tenVaiTro' },
+      { header: 'Trạng thái', key: 'tenTrangThai' },
+    ];
+    exportToPdf(allFilteredAndSortedData, columns, 'DanhSachTaiKhoan', 'Danh sách Tài khoản Hệ thống');
+  };
 
   const onResetPasswordClick = (user: UserDto) => {
     if (window.confirm(`Xác nhận đặt lại mật khẩu cho tài khoản ${user.tenTaiKhoan}?`)) {
@@ -63,7 +84,7 @@ export const UserManagement: React.FC = () => {
     <div className="usr-container">
       <div className="usr-header">
         <div className="usr-header-title">
-          <h2>Quản lý Tài khoản</h2>
+          <h2>🔐 Quản lý Tài khoản</h2>
           <p>Phân quyền và kiểm soát truy cập hệ thống</p>
         </div>
         <button className="usr-btn usr-btn-primary" onClick={() => setIsCreateOpen(true)}>
@@ -75,8 +96,8 @@ export const UserManagement: React.FC = () => {
       </div>
 
       <div className="usr-controls-wrapper">
-        <div className="usr-filters">
-          <div className="usr-input-wrapper">
+        <div className="usr-filters" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
+          <div className="usr-input-wrapper" style={{ width: 'auto', minWidth: '300px' }}>
             <svg className="usr-input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
             </svg>
@@ -88,6 +109,8 @@ export const UserManagement: React.FC = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          
+          <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
         </div>
 
         <div className="usr-table-container custom-scrollbar">
@@ -99,11 +122,24 @@ export const UserManagement: React.FC = () => {
             <table className="usr-table">
               <thead>
                 <tr>
-                  <th>Tài khoản</th>
-                  <th>Thông tin nhân viên</th>
-                  <th>Vai trò</th>
-                  <th style={{ textAlign: 'center' }}>Trạng thái</th>
-                  <th style={{ textAlign: 'right' }}>Hành động</th>
+                  <SortableHeader 
+                    label="Tài khoản" sortKey="tenTaiKhoan" 
+                    currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} 
+                  />
+                  <SortableHeader 
+                    label="Thông tin nhân viên" sortKey="hoTen" 
+                    currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} 
+                  />
+                  <SortableHeader 
+                    label="Vai trò" sortKey="tenVaiTro" 
+                    currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} 
+                  />
+                  <SortableHeader 
+                    label="Trạng thái" sortKey="tenTrangThai" 
+                    currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} 
+                    style={{ textAlign: 'center' }}
+                  />
+                  <th style={{ textAlign: 'right' }}>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -207,7 +243,7 @@ export const UserManagement: React.FC = () => {
               disabled={currentPage === 1 || isLoading}
               style={{ padding: '0.35rem 0.75rem' }}
             >
-              [Trước]
+              Trước
             </button>
             <div className="usr-pagination-info">
               Trang <span>{currentPage}</span> / <span>{totalPages}</span>
@@ -218,7 +254,7 @@ export const UserManagement: React.FC = () => {
               disabled={currentPage === totalPages || isLoading}
               style={{ padding: '0.35rem 0.75rem' }}
             >
-              [Sau]
+              Sau
             </button>
           </div>
         )}
@@ -238,6 +274,14 @@ export const UserManagement: React.FC = () => {
         onSubmit={handleUpdateRole}
         roles={roles}
       />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

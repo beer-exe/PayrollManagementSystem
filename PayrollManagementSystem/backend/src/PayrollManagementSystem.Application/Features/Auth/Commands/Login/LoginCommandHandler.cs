@@ -71,7 +71,8 @@ namespace PayrollManagementSystem.Application.Features.Auth.Commands.Login
                 Email = taiKhoan.NhanVien?.Email ?? string.Empty,
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
-                HasDirectReports = hasDirectReports
+                HasDirectReports = hasDirectReports,
+                UserAvatar = taiKhoan.UserAvatar
             };
 
             return new Response<AuthResponseDto>(responseData, "Đăng nhập thành công.");

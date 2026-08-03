@@ -13,7 +13,9 @@ namespace PayrollManagementSystem.Application.Features.Positions.Queries.GetPosi
         public TrangThaiChucVu? TrangThai { get; set; }
         public string? IdPhongBan { get; set; }
 
-        public string CacheKey => $"Positions_{SearchTerm ?? "All"}_{TrangThai?.ToString() ?? "All"}_{IdPhongBan ?? "All"}";
+        public string? CacheKey => string.IsNullOrEmpty(SearchTerm)
+            ? $"Positions_{TrangThai?.ToString() ?? "All"}_{IdPhongBan ?? "All"}"
+            : null;
         public TimeSpan? Expiration => null;
     }
 }

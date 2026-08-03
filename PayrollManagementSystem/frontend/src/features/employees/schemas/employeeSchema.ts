@@ -30,6 +30,7 @@ export const thanNhanSchema = z.object({
   tenTn: z.string().min(1, 'Tên người thân không được để trống'),
   ngaySinh: z.string().optional().nullable(),
   idMqh: z.string().uuid('Mối quan hệ không hợp lệ').optional().nullable().or(z.literal('')),
+  laNguoiPhuThuoc: z.boolean().default(false),
 });
 
 export type ThanNhanFormValues = z.infer<typeof thanNhanSchema>;

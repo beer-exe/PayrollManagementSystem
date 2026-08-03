@@ -2,8 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PayrollManagementSystem.Application.Common.Interfaces;
+using PayrollManagementSystem.Infrastructure.BackgroundJobs;
+using PayrollManagementSystem.Infrastructure.Logging;
 using PayrollManagementSystem.Infrastructure.Persistence;
+using PayrollManagementSystem.Infrastructure.Repositories;
 using PayrollManagementSystem.Infrastructure.Services;
+using Serilog.Core;
 
 namespace PayrollManagementSystem.Infrastructure
 {
@@ -19,13 +23,20 @@ namespace PayrollManagementSystem.Infrastructure
             });
 
             services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+            services.AddScoped<ISystemLogRepository, SystemLogRepository>();
 
             services.AddTransient<IEmailService, EmailService>();
             services.AddTransient<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddTransient<IPasswordHasher, PasswordHasher>();
             services.AddTransient<IExcelService, ExcelService>();
+            services.AddTransient<ITimekeepingCalculatorService, TimekeepingCalculatorService>();
 
-            services.AddHostedService<PayrollManagementSystem.Infrastructure.BackgroundJobs.UpdateExpiredDecisionsJob>();
+            services.AddHostedService<UpdateExpiredDecisionsJob>();
+            services.AddHostedService<CacheWarmingService>();
+            services.AddHostedService<LogBroadcastService>();
+
+            services.AddSingleton<LogEventChannel>();
+            services.AddSingleton<ILogEventSink, SignalRLogSink>();
 
             var cacheSettings = new PayrollManagementSystem.Application.Common.Models.CacheSettings
             {
@@ -34,15 +45,25 @@ namespace PayrollManagementSystem.Infrastructure
                 RedisConnectionString = configuration["CacheSettings:RedisConnectionString"]
             };
 
+            services.Configure<PayrollManagementSystem.Application.Common.Models.CacheSettings>(opts =>
+            {
+                opts.Provider = cacheSettings.Provider;
+                opts.DefaultExpirationInMinutes = cacheSettings.DefaultExpirationInMinutes;
+                opts.RedisConnectionString = cacheSettings.RedisConnectionString;
+            });
+
             if (cacheSettings.Provider == "Redis")
             {
-                services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(sp => 
+                services.AddMemoryCache();
+                services.AddSingleton<MemoryCacheService>();
+                services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(sp =>
                 {
                     var options = StackExchange.Redis.ConfigurationOptions.Parse(cacheSettings.RedisConnectionString);
                     options.AllowAdmin = true;
                     return StackExchange.Redis.ConnectionMultiplexer.Connect(options);
                 });
-                services.AddSingleton<ICacheService, RedisCacheService>();
+                services.AddSingleton<RedisCacheService>();
+                services.AddSingleton<ICacheService, ResilientRedisCacheService>();
             }
             else
             {

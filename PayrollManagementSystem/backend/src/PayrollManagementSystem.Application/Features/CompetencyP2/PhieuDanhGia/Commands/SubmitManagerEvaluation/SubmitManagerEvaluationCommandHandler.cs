@@ -18,9 +18,39 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
             var phieu = await _context.PhieuDanhGiaNangLucs
                 .Include(x => x.ChiTietDanhGias)
                 .ThenInclude(c => c.TieuChi)
-                .FirstOrDefaultAsync(x => x.IdPhieu == request.IdPhieu && (request.IsHr || x.CccdQuanLy == manager.Cccd), cancellationToken);
+                .FirstOrDefaultAsync(x => x.IdPhieu == request.IdPhieu, cancellationToken);
 
-            if (phieu == null) return new Response<bool>("Không tìm thấy phiếu hoặc bạn không có quyền duyệt phiếu này.");
+            if (phieu == null) return new Response<bool>("Không tìm thấy phiếu đánh giá.");
+
+            bool isCurrentManager = false;
+            var empQd = await _context.QuyetDinhNhanSus
+                .Where(x => x.Cccd == phieu.CccdNhanVien && x.TrangThai == Domain.Enums.TrangThaiQuyetDinh.HIEU_LUC && x.NgayHieuLuc <= DateOnly.FromDateTime(DateTime.Today))
+                .OrderByDescending(x => x.NgayHieuLuc)
+                .ThenByDescending(x => x.CreatedAt)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (empQd != null)
+            {
+                var empChucVu = await _context.ChucVus.FirstOrDefaultAsync(c => c.IdChucVu == empQd.IdChucVuMoi, cancellationToken);
+                if (empChucVu != null && !string.IsNullOrEmpty(empChucVu.IdChucVuQuanLy))
+                {
+                    var userQd = await _context.QuyetDinhNhanSus
+                        .Where(x => x.Cccd == manager.Cccd && x.TrangThai == Domain.Enums.TrangThaiQuyetDinh.HIEU_LUC && x.NgayHieuLuc <= DateOnly.FromDateTime(DateTime.Today))
+                        .OrderByDescending(x => x.NgayHieuLuc)
+                        .ThenByDescending(x => x.CreatedAt)
+                        .FirstOrDefaultAsync(cancellationToken);
+                    
+                    if (userQd != null && userQd.IdChucVuMoi == empChucVu.IdChucVuQuanLy)
+                    {
+                        isCurrentManager = true;
+                    }
+                }
+            }
+
+            if (!request.IsHr && phieu.CccdQuanLy != manager.Cccd && !isCurrentManager)
+            {
+                return new Response<bool>("Bạn không có quyền duyệt phiếu này.");
+            }
             if (phieu.TrangThai == Domain.Enums.TrangThaiPhieuDanhGia.DA_HOAN_THANH)
                 return new Response<bool>("Phiếu này đã được chốt và hoàn thành.");
 

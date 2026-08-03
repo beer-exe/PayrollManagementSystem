@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PayrollManagementSystem.Application.Features.WorkSchedule.Commands.CreateLichLamViec;
 using PayrollManagementSystem.Application.Features.WorkSchedule.Commands.DeleteLichLamViec;
+using PayrollManagementSystem.Application.Features.WorkSchedule.Commands.UpdateChiTietLichLamViec;
 using PayrollManagementSystem.Application.Features.WorkSchedule.Queries.GetChiTietLichLamViec;
 using PayrollManagementSystem.Application.Features.WorkSchedule.Queries.GetLichLamViecs;
 
@@ -58,6 +59,14 @@ namespace PayrollManagementSystem.API.Controllers
                 PageNumber = pageNumber,
                 PageSize = pageSize
             });
+            return Ok(response);
+        }
+
+        [HttpPut("chi-tiet")]
+        [Authorize(Roles = "Admin,HR")]
+        public async Task<IActionResult> UpdateChiTiet([FromBody] UpdateChiTietLichLamViecCommand command)
+        {
+            var response = await _mediator.Send(command);
             return Ok(response);
         }
     }

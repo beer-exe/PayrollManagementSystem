@@ -1,11 +1,14 @@
 using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.Employees.Commands.CreateEmployee
 {
-    public class CreateEmployeeCommand : IRequest<Response<string>>, ITransactionalCommand
+    public class CreateEmployeeCommand : IRequest<Response<string>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
+        public string CacheKeyPrefix => CacheKeyConstants.Departments;
+
         public string Cccd { get; set; } = null!;
         public string HoTen { get; set; } = null!;
         public bool? GioiTinh { get; set; }
