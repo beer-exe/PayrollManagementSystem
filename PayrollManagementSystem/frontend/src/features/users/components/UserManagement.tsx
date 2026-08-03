@@ -144,7 +144,7 @@ export const UserManagement: React.FC = () => {
               </thead>
               <tbody>
                 {currentData.map(record => {
-                  const isActive = record.trangThai === 'HOAT_DONG';
+                  const isActive = record.trangThai === 'HOAT_DONG' || record.trangThai === 'Hoạt động';
 
                   return (
                     <tr key={record.idTaiKhoan}>
