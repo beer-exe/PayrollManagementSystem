@@ -9,6 +9,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { MainLayout } from "@/layouts/MainLayout";
 import { LoginForm } from "@/features/auth/components/LoginForm";
+import { SessionExpiredModal } from '@/features/auth/components/SessionExpiredModal';
 import { UserProfile } from "@/features/profile/components/UserProfile";
 import { EmployeeManagement } from "@/features/employees/components/EmployeeManagement";
 import { UserManagement } from "@/features/users/components/UserManagement";
@@ -129,6 +130,7 @@ function App() {
 
         <Route path="*" element={<Navigate to="/profile" replace />} />
       </Routes>
+      <SessionExpiredModal />
     </BrowserRouter>
   );
 }
