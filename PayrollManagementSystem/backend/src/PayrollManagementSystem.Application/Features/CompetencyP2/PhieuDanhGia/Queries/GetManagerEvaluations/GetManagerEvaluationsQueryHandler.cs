@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.DTOs;
+using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Extensions;
 
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Queries.GetManagerEvaluations
 {
@@ -51,10 +53,11 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
                 }
             }
 
-            var data = await _context.PhieuDanhGiaNangLucs
+            var dataRaw = await _context.PhieuDanhGiaNangLucs
+                .AsNoTracking()
                 .Include(x => x.KyDanhGia)
                 .Where(x => (request.IsHr || x.CccdQuanLy == manager.Cccd || reportingEmployees.Contains(x.CccdNhanVien)) && x.TrangThai != Domain.Enums.TrangThaiPhieuDanhGia.CHO_NV_DANH_GIA)
-                .Select(x => new PhieuDanhGiaDto
+                .Select(x => new 
                 {
                     IdPhieu = x.IdPhieu,
                     IdKyDanhGia = x.IdKyDanhGia,
@@ -64,10 +67,24 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
                     HeSoP2 = x.HeSoP2,
                     XepLoai = x.XepLoai,
                     NhanXetChung = x.NhanXetChung,
-                    TrangThai = x.TrangThai.ToString(),
+                    TrangThai = x.TrangThai,
                     CanEvaluate = (x.CccdQuanLy == manager.Cccd || reportingEmployees.Contains(x.CccdNhanVien))
                 })
                 .ToListAsync(cancellationToken);
+
+            var data = dataRaw.Select(x => new PhieuDanhGiaDto
+            {
+                IdPhieu = x.IdPhieu,
+                IdKyDanhGia = x.IdKyDanhGia,
+                TenKyDanhGia = x.TenKyDanhGia,
+                CccdNhanVien = x.CccdNhanVien,
+                DiemTongHop = x.DiemTongHop,
+                HeSoP2 = x.HeSoP2,
+                XepLoai = x.XepLoai,
+                NhanXetChung = x.NhanXetChung,
+                TrangThai = x.TrangThai.GetDescription(),
+                CanEvaluate = x.CanEvaluate
+            }).ToList();
 
             return new Response<IEnumerable<PhieuDanhGiaDto>>(data);
         }

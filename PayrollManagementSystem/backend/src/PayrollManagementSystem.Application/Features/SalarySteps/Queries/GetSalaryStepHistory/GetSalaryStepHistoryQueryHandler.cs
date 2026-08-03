@@ -2,8 +2,9 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.SalarySteps.DTOs;
+using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Extensions;
 using PayrollManagementSystem.Application.Wrappers;
-
 namespace PayrollManagementSystem.Application.Features.SalarySteps.Queries.GetSalaryStepHistory
 {
     public class GetSalaryStepHistoryQueryHandler : IRequestHandler<GetSalaryStepHistoryQuery, Response<IEnumerable<SalaryStepDto>>>
@@ -14,6 +15,7 @@ namespace PayrollManagementSystem.Application.Features.SalarySteps.Queries.GetSa
         public async Task<Response<IEnumerable<SalaryStepDto>>> Handle(GetSalaryStepHistoryQuery request, CancellationToken cancellationToken)
         {
             var entities = await _context.BacLuongs
+                        .AsNoTracking()
                         .Where(x => x.IdNgachLuong == request.JobGradeId && x.TenBacLuong == request.StepName)
                         .OrderByDescending(x => x.NgayApDung)
                         .ToListAsync(cancellationToken);
@@ -25,7 +27,7 @@ namespace PayrollManagementSystem.Application.Features.SalarySteps.Queries.GetSa
                 P1Salary = x.LuongP1,
                 EffectiveDate = x.NgayApDung.ToDateTime(TimeOnly.MinValue),
                 EndDate = x.NgayKetThuc?.ToDateTime(TimeOnly.MinValue),
-                Status = x.TrangThai.ToString()
+                Status = x.TrangThai.GetDescription()
             }).ToList();
 
             return new Response<IEnumerable<SalaryStepDto>>(history);
