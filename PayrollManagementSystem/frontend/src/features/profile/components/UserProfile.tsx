@@ -106,22 +106,22 @@ export const UserProfile: React.FC = () => {
   };
 
   const getDecisionStatus = (history: LichSuCongTac, idx: number, allHistories: LichSuCongTac[]) => {
-    if (history.trangThai === 'HUY_BO') {
+    if (history.trangThai === 'HUY_BO' || history.trangThai === 'Hủy bỏ') {
       return { text: history.tenTrangThai || 'Hủy bỏ', color: 'text-red-600 dark:text-red-400', dot: 'bg-red-400' };
     }
 
-    if (history.trangThai === 'HET_HAN') {
+    if (history.trangThai === 'HET_HAN' || history.trangThai === 'Hết hạn') {
       return { text: history.tenTrangThai || 'Hết hạn', color: 'text-gray-500 dark:text-gray-400', dot: 'bg-gray-400' };
     }
 
     const todayStr = new Date().toLocaleDateString('en-CA'); 
     
-    if (history.trangThai === 'HIEU_LUC') {
+    if (history.trangThai === 'HIEU_LUC' || history.trangThai === 'Hiệu lực') {
         if (history.ngayHieuLuc > todayStr) {
             return { text: 'Chờ áp dụng', color: 'text-yellow-600 dark:text-yellow-400', dot: 'bg-yellow-500 shadow-[0_0_0_3px_rgba(234,179,8,0.2)]' };
         }
         
-        const currentActiveIdx = allHistories.findIndex((h: LichSuCongTac) => h.trangThai === 'HIEU_LUC' && h.ngayHieuLuc <= todayStr);
+        const currentActiveIdx = allHistories.findIndex((h: LichSuCongTac) => h.trangThai === 'HIEU_LUC' || h.trangThai === 'Hiệu lực' && h.ngayHieuLuc <= todayStr);
         if (idx === currentActiveIdx) {
             return { text: 'Đang áp dụng', color: 'text-green-600 dark:text-green-400', dot: 'bg-green-500 shadow-[0_0_0_3px_rgba(34,197,94,0.2)]' };
         }
@@ -516,7 +516,7 @@ export const UserProfile: React.FC = () => {
               {profile.tenChucVu || 'Chưa phân bổ chức vụ'} • {profile.tenPhongBan || 'Chưa thuộc phòng ban'}
             </p>
             <span className="profile-badge">
-              {profile.trangThai === 'DANG_LAM_VIEC' ? (
+              {profile.trangThai === 'DANG_LAM_VIEC' || profile.trangThai === 'Đang làm việc' ? (
                 <><span className="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5"></span>{profile.tenTrangThai || 'Đang làm việc'}</>
               ) : (
                 <><span className="w-1.5 h-1.5 rounded-full bg-gray-500 mr-1.5"></span>{profile.tenTrangThai || 'Đã nghỉ việc'}</>

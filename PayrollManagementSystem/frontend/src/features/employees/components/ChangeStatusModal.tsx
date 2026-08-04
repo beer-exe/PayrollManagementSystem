@@ -12,13 +12,23 @@ interface Props {
 }
 
 export const ChangeStatusModal: React.FC<Props> = ({ isOpen, onClose, cccd, currentStatus, onSubmitStatus }) => {
+  const mapStatusToEnum = (status: string): string => {
+    switch (status) {
+      case 'Đang làm việc': return 'DANG_LAM_VIEC';
+      case 'Đã nghỉ việc': return 'DA_NGHI_VIEC';
+      case 'Nghỉ thai sản': return 'THAI_SAN';
+      case 'Tạm đình chỉ': return 'TAM_DINH_CHI';
+      default: return status;
+    }
+  };
+
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ChangeStatusDto>({
-    defaultValues: { cccd, trangThaiMoi: currentStatus as TrangThaiNhanVien, lyDo: '' }
+    defaultValues: { cccd, trangThaiMoi: mapStatusToEnum(currentStatus) as TrangThaiNhanVien, lyDo: '' }
   });
 
   useEffect(() => {
     if (isOpen) {
-      reset({ cccd, trangThaiMoi: currentStatus as TrangThaiNhanVien, lyDo: '' });
+      reset({ cccd, trangThaiMoi: mapStatusToEnum(currentStatus) as TrangThaiNhanVien, lyDo: '' });
     }
   }, [isOpen, cccd, currentStatus, reset]);
 
@@ -48,6 +58,13 @@ export const ChangeStatusModal: React.FC<Props> = ({ isOpen, onClose, cccd, curr
           </div>
 
           <form id="change-status-form" onSubmit={handleSubmit(onSubmit)}>
+            <div className="emp-form-group">
+              <label className="emp-form-label">Trạng thái hiện tại</label>
+              <div style={{ fontWeight: 600, color: '#4f46e5', padding: '0.5rem 0.75rem', backgroundColor: '#f3f4f6', borderRadius: '4px', border: '1px solid #e5e7eb' }}>
+                {currentStatus === 'DANG_LAM_VIEC' ? 'Đang làm việc' : currentStatus}
+              </div>
+            </div>
+
             <div className="emp-form-group">
               <label className="emp-form-label">Trạng thái mới</label>
               <select 

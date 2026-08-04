@@ -157,9 +157,9 @@ export const EmpTable: React.FC<EmpTableProps> = ({
                   {isVisible('ngayVaoLam') && <td>{row.ngayVaoLam || '—'}</td>}
                   {isVisible('trangThai') && (
                     <td>
-                      <span className={`emp-badge ${row.trangThai === 'DANG_LAM_VIEC' ? 'active' : 'inactive'}`}>
+                      <span className={`emp-badge ${row.trangThai === 'DANG_LAM_VIEC' || row.trangThai === 'Đang làm việc' ? 'active' : 'inactive'}`}>
                         <span className="emp-badge-dot"></span>
-                        {row.tenTrangThai || (row.trangThai === 'DANG_LAM_VIEC' ? 'Đang làm việc' : 'Đã nghỉ')}
+                        {row.tenTrangThai || (row.trangThai === 'DANG_LAM_VIEC' || row.trangThai === 'Đang làm việc' ? 'Đang làm việc' : row.trangThai)}
                       </span>
                     </td>
                   )}
@@ -179,7 +179,7 @@ export const EmpTable: React.FC<EmpTableProps> = ({
 
                       {activeDropdown === row.cccd && (
                         <div className="emp-dropdown-menu">
-                          {(!row.idPb || row.idPb === '') && row.trangThai === 'DANG_LAM_VIEC' && (
+                          {(!row.idPb || row.idPb === '') && (row.trangThai === 'DANG_LAM_VIEC' || row.trangThai === 'Đang làm việc') && (
                             <button 
                               onClick={(e) => { e.stopPropagation(); setActiveDropdown(null); onAssignDeptClick(row); }} 
                               className="emp-dropdown-item assign"
