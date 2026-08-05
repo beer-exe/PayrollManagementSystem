@@ -97,8 +97,8 @@ export const DuyetDanhGia: React.FC = () => {
               <tbody>
                 {currentData.map(record => {
                   let badgeClass = "cp2-badge-gray";
-                  if (record.trangThai === 'CHO_QL_DANH_GIA') badgeClass = "cp2-badge-blue";
-                  if (record.trangThai === 'DA_HOAN_THANH') badgeClass = "cp2-badge-success";
+                  if (record.trangThai === 'CHO_QL_DANH_GIA' || record.trangThai === 'Chờ quản lý đánh giá') badgeClass = "cp2-badge-blue";
+                  if (record.trangThai === 'DA_HOAN_THANH' || record.trangThai === 'Đã hoàn thành') badgeClass = "cp2-badge-success";
 
                   return (
                     <tr key={record.idPhieu}>
@@ -121,11 +121,11 @@ export const DuyetDanhGia: React.FC = () => {
                       </td>
                       <td style={{ textAlign: 'right' }}>
                         <button 
-                          className={`cp2-btn ${record.canEvaluate && record.trangThai === 'CHO_QL_DANH_GIA' ? 'cp2-btn-primary' : 'cp2-btn-secondary'}`}
+                          className={`cp2-btn ${record.canEvaluate && (record.trangThai === 'CHO_QL_DANH_GIA' || record.trangThai === 'Chờ quản lý đánh giá') ? 'cp2-btn-primary' : 'cp2-btn-secondary'}`}
                           style={{ padding: '0.4rem 1rem' }}
                           onClick={() => navigate(`/performance/duyet-danh-gia/${record.idPhieu}`)}
                         >
-                          {record.canEvaluate && record.trangThai === 'CHO_QL_DANH_GIA' ? 'Chấm điểm' : 'Xem chi tiết'}
+                          {record.canEvaluate && (record.trangThai === 'CHO_QL_DANH_GIA' || record.trangThai === 'Chờ quản lý đánh giá') ? 'Chấm điểm' : 'Xem chi tiết'}
                         </button>
                       </td>
                     </tr>

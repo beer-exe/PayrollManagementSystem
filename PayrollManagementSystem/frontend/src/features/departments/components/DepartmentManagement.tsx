@@ -252,13 +252,13 @@ export const DepartmentManagement: React.FC = () => {
                           <td className="dept-td-bold">{emp.hoTen}</td>
                           <td>{emp.tenChucVu}</td>
                           <td>
-                            <span className={`dept-badge ${emp.trangThai === 'DANG_LAM_VIEC' ? 'active' : 'inactive'}`}>
+                            <span className={`dept-badge ${emp.trangThai === 'DANG_LAM_VIEC' || emp.trangThai === 'Đang làm việc' ? 'active' : 'inactive'}`}>
                               <span className="dept-badge-dot"></span>
-                              {emp.tenTrangThai || (emp.trangThai === 'DANG_LAM_VIEC' ? 'Đang làm việc' : 'Đã nghỉ')}
+                              {emp.tenTrangThai || (emp.trangThai === 'DANG_LAM_VIEC' || emp.trangThai === 'Đang làm việc' ? 'Đang làm việc' : 'Đã nghỉ')}
                             </span>
                           </td>
                           <td className="dept-td-actions">
-                            {emp.trangThai === 'DANG_LAM_VIEC' && (
+                            {(emp.trangThai === 'DANG_LAM_VIEC' || emp.trangThai === 'Đang làm việc') && (
                               <div style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
                                 <button
                                   className="dept-btn-actions"
