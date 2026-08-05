@@ -171,9 +171,9 @@ export const TuDanhGia: React.FC = () => {
               <tbody>
                 {currentData.map(record => {
                   let badgeClass = "cp2-badge-gray";
-                  if (record.trangThai === 'CHO_NV_DANH_GIA') badgeClass = "cp2-badge-blue";
-                  if (record.trangThai === 'CHO_QL_DANH_GIA') badgeClass = "cp2-badge-warning";
-                  if (record.trangThai === 'DA_HOAN_THANH') badgeClass = "cp2-badge-success";
+                  if (record.trangThai === 'CHO_NV_DANH_GIA' || record.trangThai === 'Chờ nhân viên đánh giá') badgeClass = "cp2-badge-blue";
+                  if (record.trangThai === 'CHO_QL_DANH_GIA' || record.trangThai === 'Chờ quản lý đánh giá') badgeClass = "cp2-badge-warning";
+                  if (record.trangThai === 'DA_HOAN_THANH' || record.trangThai === 'Đã hoàn thành') badgeClass = "cp2-badge-success";
 
                   return (
                     <tr key={record.idPhieu}>
@@ -194,11 +194,11 @@ export const TuDanhGia: React.FC = () => {
                       </td>
                       <td style={{ textAlign: 'right' }}>
                         <button 
-                          className={`cp2-btn ${record.trangThai === 'CHO_NV_DANH_GIA' ? 'cp2-btn-primary' : 'cp2-btn-secondary'}`}
+                          className={`cp2-btn ${(record.trangThai === 'CHO_NV_DANH_GIA' || record.trangThai === 'Chờ nhân viên đánh giá') ? 'cp2-btn-primary' : 'cp2-btn-secondary'}`}
                           style={{ padding: '0.4rem 1rem' }}
                           onClick={() => navigate(`/performance/tu-danh-gia/${record.idPhieu}`)}
                         >
-                          {record.trangThai === 'CHO_NV_DANH_GIA' ? 'Làm phiếu' : 'Xem chi tiết'}
+                          {(record.trangThai === 'CHO_NV_DANH_GIA' || record.trangThai === 'Chờ nhân viên đánh giá') ? 'Làm phiếu' : 'Xem chi tiết'}
                         </button>
                       </td>
                     </tr>

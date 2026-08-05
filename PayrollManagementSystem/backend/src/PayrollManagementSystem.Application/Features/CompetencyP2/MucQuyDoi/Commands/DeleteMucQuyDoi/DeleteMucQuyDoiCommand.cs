@@ -1,9 +1,11 @@
 using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
+using PayrollManagementSystem.Application.Common.Interfaces;
+using PayrollManagementSystem.Application.Common.Constants;
 
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.MucQuyDoi.Commands.DeleteMucQuyDoi
 {
-    public class DeleteMucQuyDoiCommand : IRequest<Response<bool>>
+    public class DeleteMucQuyDoiCommand : IRequest<Response<bool>>, ICacheInvalidatorCommand
     {
         public System.Guid IdQuyDoi { get; set; }
 
@@ -11,5 +13,6 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.MucQuyDoi.Co
         {
             IdQuyDoi = idQuyDoi;
         }
+        public string CacheKeyPrefix => CacheKeyConstants.MucQuyDoi;
     }
 }
