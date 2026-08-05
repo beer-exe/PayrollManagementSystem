@@ -1,4 +1,5 @@
 using MediatR;
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.WorkShifts.DTOs;
 using PayrollManagementSystem.Application.Wrappers;
@@ -17,7 +18,7 @@ namespace PayrollManagementSystem.Application.Features.WorkShifts.Commands.Updat
 
         public List<UpdateKhungGioNghiCommand> KhungGioNghis { get; set; } = new();
 
-        public string CacheKeyPrefix => "CaLamViec_";
+        public string CacheKeyPrefix => CacheKeyConstants.CaLamViec;
     }
 
     public class UpdateKhungGioNghiCommand

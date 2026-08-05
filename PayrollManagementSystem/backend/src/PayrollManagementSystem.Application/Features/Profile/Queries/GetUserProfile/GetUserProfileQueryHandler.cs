@@ -5,6 +5,7 @@ using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.Profile.DTOs;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Extensions;
 
 namespace PayrollManagementSystem.Application.Features.Profile.Queries.GetUserProfile
 {
@@ -21,9 +22,10 @@ namespace PayrollManagementSystem.Application.Features.Profile.Queries.GetUserPr
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
 
-            var profile = await _context.NhanViens
+            var profileData = await _context.NhanViens
+                .AsNoTracking()
                 .Where(nv => nv.IdTaiKhoan == request.TaiKhoanId)
-                .Select(nv => new UserProfileDto
+                .Select(nv => new 
                 {
                     Cccd = nv.Cccd,
                     HoTen = nv.HoTen,
@@ -36,7 +38,7 @@ namespace PayrollManagementSystem.Application.Features.Profile.Queries.GetUserPr
                     DiaChi = nv.DiaChi,
                     ChuyenNganh = nv.ChuyenNganh,
                     NgayVaoLam = nv.NgayVaoLam,
-                    TrangThai = nv.TrangThai.ToString(),
+                    TrangThai = nv.TrangThai,
                     SoBhxh = nv.SoBhxh,
                     SoBhyt = nv.SoBhyt,
                     TenPhongBan = nv.PhongBan != null ? nv.PhongBan.TenPb : null,
@@ -93,7 +95,7 @@ namespace PayrollManagementSystem.Application.Features.Profile.Queries.GetUserPr
                         .Where(qd => qd.Cccd == nv.Cccd)
                         .OrderByDescending(qd => qd.NgayHieuLuc)
                         .ThenByDescending(qd => qd.CreatedAt)
-                        .Select(qd => new LichSuCongTacDto
+                        .Select(qd => new 
                         {
                             SoQuyetDinh = qd.SoQuyetDinh,
                             LoaiQuyetDinh = qd.LoaiQuyetDinh,
@@ -101,15 +103,55 @@ namespace PayrollManagementSystem.Application.Features.Profile.Queries.GetUserPr
                             TenPhongBanMoi = _context.ChucVus.Where(cv => cv.IdChucVu == qd.IdChucVuMoi).Select(cv => cv.PhongBan.TenPb).FirstOrDefault(),
                             TenChucVuMoi = _context.ChucVus.FirstOrDefault(cv => cv.IdChucVu == qd.IdChucVuMoi).TenChucVu,
                             LuongP1Moi = (decimal?)_context.BacLuongs.FirstOrDefault(bl => bl.IdBacLuong == qd.IdBacLuongMoi).LuongP1,
-                            TrangThai = qd.TrangThai.ToString()
+                            TrangThai = qd.TrangThai
                         }).ToList()
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (profile == null)
+            if (profileData == null)
             {
                 throw new ApiException("Không tìm thấy thông tin hồ sơ cho tài khoản này.");
             }
+
+            var profile = new UserProfileDto
+            {
+                Cccd = profileData.Cccd,
+                HoTen = profileData.HoTen,
+                GioiTinh = profileData.GioiTinh,
+                Sdt = profileData.Sdt,
+                Email = profileData.Email,
+                UserAvatar = profileData.UserAvatar,
+                NgaySinh = profileData.NgaySinh,
+                DanToc = profileData.DanToc,
+                DiaChi = profileData.DiaChi,
+                ChuyenNganh = profileData.ChuyenNganh,
+                NgayVaoLam = profileData.NgayVaoLam,
+                TrangThai = profileData.TrangThai?.GetDescription(),
+                SoBhxh = profileData.SoBhxh,
+                SoBhyt = profileData.SoBhyt,
+                TenPhongBan = profileData.TenPhongBan,
+                TenChucVu = profileData.TenChucVu,
+                SoTaiKhoan = profileData.SoTaiKhoan,
+                TenNganHang = profileData.TenNganHang,
+                MaSoThue = profileData.MaSoThue,
+                HeSoP2 = profileData.HeSoP2,
+                IdPb = profileData.IdPb,
+                LuongP1 = profileData.LuongP1,
+                SoHopDong = profileData.SoHopDong,
+                LoaiHopDong = profileData.LoaiHopDong,
+                NgayBatDauHopDong = profileData.NgayBatDauHopDong,
+                ThanNhans = profileData.ThanNhans,
+                LichSuCongTac = profileData.LichSuCongTac.Select(ls => new LichSuCongTacDto
+                {
+                    SoQuyetDinh = ls.SoQuyetDinh,
+                    LoaiQuyetDinh = ls.LoaiQuyetDinh,
+                    NgayHieuLuc = ls.NgayHieuLuc,
+                    TenPhongBanMoi = ls.TenPhongBanMoi,
+                    TenChucVuMoi = ls.TenChucVuMoi,
+                    LuongP1Moi = ls.LuongP1Moi,
+                    TrangThai = ls.TrangThai.GetDescription()
+                }).ToList()
+            };
 
             return new Response<UserProfileDto>(profile, "Lấy thông tin hồ sơ thành công.");
         }

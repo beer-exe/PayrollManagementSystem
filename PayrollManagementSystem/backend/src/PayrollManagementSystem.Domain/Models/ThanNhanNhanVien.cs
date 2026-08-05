@@ -6,6 +6,7 @@ namespace PayrollManagementSystem.Domain.Models
         public string Cccd { get; set; } = null!;
         public string MaDinhDanh { get; set; } = null!;
         public Guid? IdMqh { get; set; }
+        public bool LaNguoiPhuThuoc { get; set; } = false;
 
         // Navigation properties
         public NhanVien NhanVien { get; set; } = null!;

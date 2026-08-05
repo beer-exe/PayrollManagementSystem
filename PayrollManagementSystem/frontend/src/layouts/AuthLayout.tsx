@@ -1,6 +1,5 @@
 import React from 'react';
 import './AuthLayout.css';
-import { SessionExpiredModal } from '@/features/auth/components/SessionExpiredModal';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -26,7 +25,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
           </div>
           <h1 className="auth-brand-title">HRMS Portal</h1>
           <p className="auth-brand-subtitle">
-            Giải pháp quản lý nhân sự và tiền lương toàn diện, giúp tối ưu hóa quy trình doanh nghiệp của bạn.
+            Welcome to the HRMS Portal. Please log in to continue.
           </p>
         </div>
         
@@ -35,7 +34,9 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
         </div>
       </div>
       
-      <SessionExpiredModal />
+      <div className="auth-illustration">
+        <div className="auth-illustration-bg"></div>
+      </div>
     </div>
   );
 };

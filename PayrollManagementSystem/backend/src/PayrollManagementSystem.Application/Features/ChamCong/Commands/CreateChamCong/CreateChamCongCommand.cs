@@ -1,4 +1,5 @@
 using MediatR;
+using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 
@@ -12,6 +13,6 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.CreateC
         public TimeOnly? GioRa { get; set; }
         public string? GhiChu { get; set; }
 
-        public string CacheKeyPrefix => "ChamCong_";
+        public string CacheKeyPrefix => CacheKeyConstants.ChamCong;
     }
 }

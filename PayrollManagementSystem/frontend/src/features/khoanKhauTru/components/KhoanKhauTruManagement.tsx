@@ -185,7 +185,7 @@ export const KhoanKhauTruManagement: React.FC = () => {
       { header: 'Loại công thức', key: 'loaiCongThuc' },
       { header: 'Giá trị', key: 'giaTri' },
       { header: 'Ghi chú', key: 'ghiChu' },
-      { header: 'Trạng thái', key: 'isActive', formatter: (val) => val ? 'Đang kích hoạt' : 'Tạm dừng' },
+      { header: 'Trạng thái', key: 'isActive', render: (item) => item.isActive ? 'Đang kích hoạt' : 'Tạm dừng' },
     ];
     exportToExcel(allFilteredAndSortedData, columns, 'Danh_Sach_Khoan_Khau_Tru.xlsx');
   };
@@ -196,7 +196,7 @@ export const KhoanKhauTruManagement: React.FC = () => {
       { header: 'Loại công thức', key: 'loaiCongThuc' },
       { header: 'Giá trị', key: 'giaTri' },
       { header: 'Ghi chú', key: 'ghiChu' },
-      { header: 'Trạng thái', key: 'isActive', formatter: (val) => val ? 'Đang kích hoạt' : 'Tạm dừng' },
+      { header: 'Trạng thái', key: 'isActive', render: (item) => item.isActive ? 'Đang kích hoạt' : 'Tạm dừng' },
     ];
     exportToPdf(allFilteredAndSortedData, columns, 'Danh_Sach_Khoan_Khau_Tru.pdf', 'DANH SÁCH KHOẢN KHẤU TRỪ');
   };

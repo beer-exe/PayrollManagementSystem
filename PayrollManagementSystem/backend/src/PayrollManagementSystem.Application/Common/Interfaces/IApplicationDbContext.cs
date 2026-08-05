@@ -48,6 +48,8 @@ namespace PayrollManagementSystem.Application.Common.Interfaces
         DbSet<BacThue> BacThues { get; set; }
         DbSet<CauHinhGiamTru> CauHinhGiamTrus { get; set; }
 
+        DbSet<SystemLog> SystemLogs { get; }
+
         DatabaseFacade Database { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 

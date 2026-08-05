@@ -1922,6 +1922,9 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("LaNguoiPhuThuoc")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 

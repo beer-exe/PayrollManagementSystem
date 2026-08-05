@@ -38,6 +38,7 @@ export interface ThanNhanDto {
   ngaySinh: string | null;
   idMqh?: string | null;
   moiQuanHe: string | null;
+  laNguoiPhuThuoc: boolean;
 }
 
 export interface LichSuCongTacDto {

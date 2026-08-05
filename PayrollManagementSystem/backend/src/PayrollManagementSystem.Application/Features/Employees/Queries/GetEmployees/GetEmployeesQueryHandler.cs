@@ -5,6 +5,7 @@ using PayrollManagementSystem.Application.Features.Employees.DTOs;
 using PayrollManagementSystem.Application.Features.Profile.DTOs;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Extensions;
 
 namespace PayrollManagementSystem.Application.Features.Employees.Queries.GetEmployees
 {
@@ -35,23 +36,24 @@ namespace PayrollManagementSystem.Application.Features.Employees.Queries.GetEmpl
 
             int totalRecords = await query.CountAsync(cancellationToken);
 
-            var employees = await query
+            var employeesData = await query
+                .AsNoTracking()
                 .OrderByDescending(nv => nv.NgayVaoLam)
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
-                .Select(nv => new EmployeeDto
+                .Select(nv => new 
                 {
                     Cccd = nv.Cccd,
                     HoTen = nv.HoTen,
                     GioiTinh = nv.GioiTinh,
                     Sdt = nv.Sdt,
                     Email = nv.Email,
-                    NgaySinh = nv.NgaySinh.HasValue ? nv.NgaySinh.Value.ToString("yyyy-MM-dd") : null,
+                    NgaySinh = nv.NgaySinh,
                     DanToc = nv.DanToc,
                     DiaChi = nv.DiaChi,
                     ChuyenNganh = nv.ChuyenNganh,
-                    NgayVaoLam = nv.NgayVaoLam.HasValue ? nv.NgayVaoLam.Value.ToString("yyyy-MM-dd") : null,
-                    TrangThai = nv.TrangThai.ToString(),
+                    NgayVaoLam = nv.NgayVaoLam,
+                    TrangThai = nv.TrangThai,
                     SoBhxh = nv.SoBhxh,
                     SoBhyt = nv.SoBhyt,
                     IdPb = nv.IdPb ?? _context.QuyetDinhNhanSus
@@ -108,7 +110,7 @@ namespace PayrollManagementSystem.Application.Features.Employees.Queries.GetEmpl
                     NgayBatDauHopDong = _context.HopDongLaoDongs
                         .Where(hd => hd.Cccd == nv.Cccd && hd.TrangThai == TrangThaiHopDong.HIEU_LUC)
                         .OrderByDescending(hd => hd.NgayBatDau)
-                        .Select(hd => hd.NgayBatDau.ToString("yyyy-MM-dd"))
+                        .Select(hd => hd.NgayBatDau)
                         .FirstOrDefault(),
 
                     ThanNhans = _context.TNhanNviens
@@ -119,10 +121,40 @@ namespace PayrollManagementSystem.Application.Features.Employees.Queries.GetEmpl
                             TenTn = tn.ThanNhan.TenTn,
                             NgaySinh = tn.ThanNhan.NgaySinh.HasValue ? tn.ThanNhan.NgaySinh.Value.ToString("yyyy-MM-dd") : null,
                             IdMqh = tn.IdMqh,
-                            MoiQuanHe = tn.MoiQuanHe != null ? tn.MoiQuanHe.TenQuanHe : "Khác"
+                            MoiQuanHe = tn.MoiQuanHe != null ? tn.MoiQuanHe.TenQuanHe : "Khác",
+                            LaNguoiPhuThuoc = tn.LaNguoiPhuThuoc
                         }).ToList() ?? new List<ThanNhanDto>()
                 })
                 .ToListAsync(cancellationToken);
+
+            var employees = employeesData.Select(nv => new EmployeeDto
+            {
+                Cccd = nv.Cccd,
+                HoTen = nv.HoTen,
+                GioiTinh = nv.GioiTinh,
+                Sdt = nv.Sdt,
+                Email = nv.Email,
+                NgaySinh = nv.NgaySinh.HasValue ? nv.NgaySinh.Value.ToString("yyyy-MM-dd") : null,
+                DanToc = nv.DanToc,
+                DiaChi = nv.DiaChi,
+                ChuyenNganh = nv.ChuyenNganh,
+                NgayVaoLam = nv.NgayVaoLam.HasValue ? nv.NgayVaoLam.Value.ToString("yyyy-MM-dd") : null,
+                TrangThai = nv.TrangThai?.GetDescription(),
+                SoBhxh = nv.SoBhxh,
+                SoBhyt = nv.SoBhyt,
+                IdPb = nv.IdPb,
+                TenPhongBan = nv.TenPhongBan,
+                TenChucVu = nv.TenChucVu,
+                SoTaiKhoan = nv.SoTaiKhoan,
+                TenNganHang = nv.TenNganHang,
+                MaSoThue = nv.MaSoThue,
+                LuongP1 = nv.LuongP1,
+                HeSoP2 = nv.HeSoP2,
+                SoHopDong = nv.SoHopDong,
+                LoaiHopDong = nv.LoaiHopDong,
+                NgayBatDauHopDong = nv.NgayBatDauHopDong != default ? nv.NgayBatDauHopDong.ToString("yyyy-MM-dd") : null,
+                ThanNhans = nv.ThanNhans
+            }).ToList();
 
             return new PagedResponse<IEnumerable<EmployeeDto>>(
                 employees,

@@ -9,6 +9,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { MainLayout } from "@/layouts/MainLayout";
 import { LoginForm } from "@/features/auth/components/LoginForm";
+import { SessionExpiredModal } from '@/features/auth/components/SessionExpiredModal';
 import { UserProfile } from "@/features/profile/components/UserProfile";
 import { EmployeeManagement } from "@/features/employees/components/EmployeeManagement";
 import { UserManagement } from "@/features/users/components/UserManagement";
@@ -30,7 +31,9 @@ import { DonNghiManagement } from '@/features/donNghi/components/DonNghiManageme
 import { MyDonNghiPortal } from '@/features/donNghi/components/MyDonNghiPortal';
 import PayrollManagement from '@/features/payroll/components/PayrollManagement';
 import { KhoanKhauTruManagement } from '@/features/khoanKhauTru/components/KhoanKhauTruManagement';
-import { ThueTncnManagement } from '@/features/thueTncn/components/ThueTncnManagement';
+import { BangThueLuyTienManagement } from '@/features/thueTncn/components/BangThueLuyTienManagement';
+import { CauHinhGiamTruManagement } from '@/features/thueTncn/components/CauHinhGiamTruManagement';
+import { SystemLogViewer } from '@/features/systemLogs/components/SystemLogViewer';
 
 
 const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string[], requireManager?: boolean }) => {
@@ -73,6 +76,7 @@ function App() {
           {/* 2. System Administration Group */}
           <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
             <Route path="/admin/tai-khoan" element={<UserManagement />} />
+            <Route path="/admin/system-logs" element={<SystemLogViewer />} />
           </Route>
 
           {/* 3. Human Resources Group */}
@@ -83,7 +87,8 @@ function App() {
             <Route path="/hr/chuc-vu" element={<PositionManagement />} />
             <Route path="/hr/bang-luong" element={<PayrollManagement />} />
             <Route path="/hr/khoan-khau-tru" element={<KhoanKhauTruManagement />} />
-            <Route path="/hr/thue-tncn" element={<ThueTncnManagement />} />
+            <Route path="/hr/bang-thue-luy-tien" element={<BangThueLuyTienManagement />} />
+            <Route path="/hr/cau-hinh-giam-tru" element={<CauHinhGiamTruManagement />} />
 
             
             <Route path="/time/ca-lam-viec" element={<WorkShiftManagement />} />
@@ -125,6 +130,7 @@ function App() {
 
         <Route path="*" element={<Navigate to="/profile" replace />} />
       </Routes>
+      <SessionExpiredModal />
     </BrowserRouter>
   );
 }
