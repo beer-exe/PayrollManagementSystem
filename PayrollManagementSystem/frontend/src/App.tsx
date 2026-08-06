@@ -35,6 +35,7 @@ import { BangThueLuyTienManagement } from '@/features/thueTncn/components/BangTh
 import { CauHinhGiamTruManagement } from '@/features/thueTncn/components/CauHinhGiamTruManagement';
 import { SystemLogViewer } from '@/features/systemLogs/components/SystemLogViewer';
 import MySchedule from "@/features/personalSchedule/components/MySchedule";
+import MyAttendance from "@/features/personalAttendance/components/MyAttendance";
 
 
 const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string[], requireManager?: boolean }) => {
@@ -107,6 +108,7 @@ function App() {
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
             <Route path="/me/don-nghi" element={<MyDonNghiPortal />} />
             <Route path="/me/lich-lam-viec" element={<MySchedule />} />
+            <Route path="/me/cham-cong" element={<MyAttendance />} />
           </Route>
 
           {/* Đánh giá năng lực P2 */}
