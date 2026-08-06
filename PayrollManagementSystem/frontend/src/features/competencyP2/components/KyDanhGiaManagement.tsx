@@ -191,10 +191,10 @@ export const KyDanhGiaManagement: React.FC = () => {
               <tbody>
                 {currentData.map(record => {
                   let badgeClass = "cp2-badge-gray";
-                  if (record.trangThai === 'DANG_DANH_GIA') badgeClass = "cp2-badge-success";
-                  if (record.trangThai === 'KHOI_TAO') badgeClass = "cp2-badge-blue";
-                  if (record.trangThai === 'DA_CHOT') badgeClass = "cp2-badge-warning";
-                  if (record.trangThai === 'DA_HUY') badgeClass = "cp2-badge-danger";
+                  if (record.trangThai === 'DANG_DANH_GIA' || record.trangThai === 'Đang đánh giá') badgeClass = "cp2-badge-success";
+                  if (record.trangThai === 'KHOI_TAO' || record.trangThai === 'Khởi tạo') badgeClass = "cp2-badge-blue";
+                  if (record.trangThai === 'DA_CHOT' || record.trangThai === 'Đã chốt') badgeClass = "cp2-badge-warning";
+                  if (record.trangThai === 'DA_HUY' || record.trangThai === 'Đã hủy') badgeClass = "cp2-badge-danger";
 
                   return (
                     <tr key={record.idKyDanhGia}>
@@ -222,7 +222,7 @@ export const KyDanhGiaManagement: React.FC = () => {
                           
                           {activeDropdown === record.idKyDanhGia && (
                             <div className="cp2-actions-dropdown">
-                              {record.trangThai === 'KHOI_TAO' && (
+                              {(record.trangThai === 'KHOI_TAO' || record.trangThai === 'Khởi tạo') && (
                                 <>
                                   <button 
                                     className="cp2-dropdown-item success" 
@@ -253,7 +253,7 @@ export const KyDanhGiaManagement: React.FC = () => {
                                 </>
                               )}
                               
-                              {record.trangThai === 'DANG_DANH_GIA' && (
+                              {(record.trangThai === 'DANG_DANH_GIA' || record.trangThai === 'Đang đánh giá') && (
                                 <>
                                   <button 
                                     className="cp2-dropdown-item warning" 
@@ -286,7 +286,7 @@ export const KyDanhGiaManagement: React.FC = () => {
                                 </>
                               )}
                               
-                              {record.trangThai !== 'KHOI_TAO' && record.trangThai !== 'DANG_DANH_GIA' && (
+                              {record.trangThai !== 'KHOI_TAO' && record.trangThai !== 'Khởi tạo' && record.trangThai !== 'DANG_DANH_GIA' && record.trangThai !== 'Đang đánh giá' && (
                                 <div style={{ padding: '0.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center' }}>
                                   Không có thao tác khả dụng
                                 </div>
