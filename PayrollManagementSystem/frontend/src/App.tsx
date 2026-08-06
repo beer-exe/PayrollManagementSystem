@@ -34,6 +34,7 @@ import { KhoanKhauTruManagement } from '@/features/khoanKhauTru/components/Khoan
 import { BangThueLuyTienManagement } from '@/features/thueTncn/components/BangThueLuyTienManagement';
 import { CauHinhGiamTruManagement } from '@/features/thueTncn/components/CauHinhGiamTruManagement';
 import { SystemLogViewer } from '@/features/systemLogs/components/SystemLogViewer';
+import MySchedule from "@/features/personalSchedule/components/MySchedule";
 
 
 const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string[], requireManager?: boolean }) => {
@@ -105,6 +106,7 @@ function App() {
 
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
             <Route path="/me/don-nghi" element={<MyDonNghiPortal />} />
+            <Route path="/me/lich-lam-viec" element={<MySchedule />} />
           </Route>
 
           {/* Đánh giá năng lực P2 */}
