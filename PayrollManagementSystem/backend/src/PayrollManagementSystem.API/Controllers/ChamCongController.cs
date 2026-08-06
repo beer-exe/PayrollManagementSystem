@@ -7,6 +7,8 @@ using PayrollManagementSystem.Application.Features.ChamCong.Commands.ImportChamC
 using PayrollManagementSystem.Application.Features.ChamCong.Commands.UpdateChamCong;
 using PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamCongByNhanVien;
 using PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamCongSummary;
+using PayrollManagementSystem.Application.Features.ChamCong.Queries.GetMyChamCong;
+using System.Security.Claims;
 
 namespace PayrollManagementSystem.API.Controllers
 {
@@ -53,6 +55,26 @@ namespace PayrollManagementSystem.API.Controllers
                 Nam = nam,
                 IdPhongBan = idPhongBan
             });
+            return Ok(response);
+        }
+
+        [HttpGet("me")]
+        [Authorize(Roles = "Admin,HR,Employee")]
+        public async Task<IActionResult> GetMyChamCong([FromQuery] int thang, [FromQuery] int nam)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var response = await _mediator.Send(new GetMyChamCongQuery
+            {
+                UserId = Guid.Parse(userId),
+                Thang = thang,
+                Nam = nam
+            });
+
             return Ok(response);
         }
 
