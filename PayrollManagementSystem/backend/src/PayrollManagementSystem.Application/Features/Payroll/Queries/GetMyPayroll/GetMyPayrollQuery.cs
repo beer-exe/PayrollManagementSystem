@@ -6,10 +6,10 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetMyPayr
 {
     public class GetMyPayrollQuery : IRequest<Response<List<MyPayrollDto>>>, ICacheableQuery
     {
+        public Guid UserId { get; set; }
         public int Nam { get; set; }
         
-        // Cacheable Query properties
-        public string CacheKey => $"GetMyPayroll_{Nam}";
+        public string CacheKey => $"{PayrollManagementSystem.Application.Common.Constants.CacheKeyConstants.Payroll}My_{UserId}_{Nam}";
         public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
     }
 }
