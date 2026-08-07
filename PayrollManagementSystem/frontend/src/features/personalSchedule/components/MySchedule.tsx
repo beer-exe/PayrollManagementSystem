@@ -2,12 +2,13 @@ import React, { useState, useEffect, useMemo } from 'react';
 import './MySchedule.css';
 import { useMySchedule } from '../hooks/useMySchedule';
 import { useWorkSchedule } from '../../workSchedule/hooks/useWorkSchedule';
+import { Toast } from '@/components/Toast/Toast';
 
 const DAYS_OF_WEEK = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
 
 const MySchedule: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { schedule, isLoading, error, fetchSchedule } = useMySchedule();
+  const { schedule, isLoading, fetchSchedule, toast, setToast } = useMySchedule();
   const { lichList, fetchAll: fetchLichList } = useWorkSchedule();
 
   useEffect(() => {
@@ -139,8 +140,6 @@ const MySchedule: React.FC = () => {
         </div>
       </div>
 
-      {error && <div className="psch-error">{error}</div>}
-
       <div className="psch-calendar">
         <div className="psch-calendar-header">
           {DAYS_OF_WEEK.map(day => (
@@ -204,6 +203,14 @@ const MySchedule: React.FC = () => {
           <span>Nghỉ phép (Đã duyệt)</span>
         </div>
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

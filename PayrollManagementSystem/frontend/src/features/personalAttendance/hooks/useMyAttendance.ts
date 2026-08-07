@@ -6,6 +6,11 @@ export const useMyAttendance = () => {
   const [attendanceList, setAttendanceList] = useState<ChamCongDto[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = useCallback((message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+  }, []);
 
   const fetchAttendance = useCallback(async (thang: number, nam: number) => {
     setIsLoading(true);
@@ -16,7 +21,9 @@ export const useMyAttendance = () => {
       const finalData = Array.isArray(data) ? data : (data as any).data || [];
       setAttendanceList(finalData);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Có lỗi xảy ra khi tải dữ liệu chấm công cá nhân.');
+      const msg = err.response?.data?.message || 'Có lỗi xảy ra khi tải dữ liệu chấm công cá nhân.';
+      setError(msg);
+      showToast(msg, 'error');
       setAttendanceList([]);
     } finally {
       setIsLoading(false);
@@ -27,6 +34,8 @@ export const useMyAttendance = () => {
     attendanceList,
     isLoading,
     error,
-    fetchAttendance
+    fetchAttendance,
+    toast,
+    setToast
   };
 };
