@@ -36,6 +36,7 @@ import { CauHinhGiamTruManagement } from '@/features/thueTncn/components/CauHinh
 import { SystemLogViewer } from '@/features/systemLogs/components/SystemLogViewer';
 import MySchedule from "@/features/personalSchedule/components/MySchedule";
 import MyAttendance from "@/features/personalAttendance/components/MyAttendance";
+import { MyPayroll } from "@/features/personalPayroll/components/MyPayroll";
 
 
 const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string[], requireManager?: boolean }) => {
@@ -109,6 +110,7 @@ function App() {
             <Route path="/me/don-nghi" element={<MyDonNghiPortal />} />
             <Route path="/me/lich-lam-viec" element={<MySchedule />} />
             <Route path="/me/cham-cong" element={<MyAttendance />} />
+            <Route path="/me/bang-luong" element={<MyPayroll />} />
           </Route>
 
           {/* Đánh giá năng lực P2 */}
