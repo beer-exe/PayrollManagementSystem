@@ -20,8 +20,8 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetMyPayr
 
         public async Task<Response<List<MyPayrollDto>>> Handle(GetMyPayrollQuery request, CancellationToken cancellationToken)
         {
-            var userId = request.UserId;
-            if (userId == Guid.Empty)
+            var userId = _currentUserService.UserId;
+            if (userId == null)
             {
                 throw new ApiException("Không tìm thấy thông tin người dùng (chưa đăng nhập).");
             }

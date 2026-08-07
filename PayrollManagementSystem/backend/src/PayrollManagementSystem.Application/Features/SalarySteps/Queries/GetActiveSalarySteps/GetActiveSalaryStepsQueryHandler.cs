@@ -4,6 +4,7 @@ using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.SalarySteps.DTOs;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Extensions;
 
 namespace PayrollManagementSystem.Application.Features.SalarySteps.Queries.GetActiveSalarySteps
 {
@@ -17,6 +18,7 @@ namespace PayrollManagementSystem.Application.Features.SalarySteps.Queries.GetAc
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
             var entities = await _context.BacLuongs
+                .AsNoTracking()
                 .Where(x => x.IdNgachLuong == request.JobGradeId
                          && x.TrangThai == TrangThaiBacLuong.HIEU_LUC)
                 .OrderBy(x => x.TenBacLuong)
@@ -29,7 +31,7 @@ namespace PayrollManagementSystem.Application.Features.SalarySteps.Queries.GetAc
                 P1Salary = x.LuongP1,
                 EffectiveDate = x.NgayApDung.ToDateTime(TimeOnly.MinValue),
                 EndDate = x.NgayKetThuc?.ToDateTime(TimeOnly.MinValue),
-                Status = x.NgayApDung > today ? "CHUA_AP_DUNG" : x.TrangThai.ToString()
+                Status = x.NgayApDung > today ? "CHUA_AP_DUNG" : x.TrangThai.GetDescription()
             }).ToList();
 
             return new Response<IEnumerable<SalaryStepDto>>(list);

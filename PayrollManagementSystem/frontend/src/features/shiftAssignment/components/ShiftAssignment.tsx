@@ -194,7 +194,7 @@ export const ShiftAssignment: React.FC = () => {
             try {
                 const empRes = await employeeApi.getEmployees({ PageNumber: 1, PageSize: 1000 });
                 if (empRes.succeeded && empRes.data) {
-                    setEmployees(empRes.data.filter(e => e.trangThai === "DANG_LAM_VIEC")); 
+                    setEmployees(empRes.data.filter(e => e.trangThai === "DANG_LAM_VIEC" || e.trangThai === "Đang làm việc")); 
                 }
             } catch (err) {
                 console.error("Failed to load employees", err);

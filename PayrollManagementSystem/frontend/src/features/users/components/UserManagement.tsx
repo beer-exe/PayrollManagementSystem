@@ -144,7 +144,7 @@ export const UserManagement: React.FC = () => {
               </thead>
               <tbody>
                 {currentData.map(record => {
-                  const isActive = record.trangThai === 'HOAT_DONG';
+                  const isActive = record.trangThai === 'HOAT_DONG' || record.trangThai === 'Hoạt động';
 
                   return (
                     <tr key={record.idTaiKhoan}>
@@ -243,7 +243,7 @@ export const UserManagement: React.FC = () => {
               disabled={currentPage === 1 || isLoading}
               style={{ padding: '0.35rem 0.75rem' }}
             >
-              [Trước]
+              Trước
             </button>
             <div className="usr-pagination-info">
               Trang <span>{currentPage}</span> / <span>{totalPages}</span>
@@ -254,7 +254,7 @@ export const UserManagement: React.FC = () => {
               disabled={currentPage === totalPages || isLoading}
               style={{ padding: '0.35rem 0.75rem' }}
             >
-              [Sau]
+              Sau
             </button>
           </div>
         )}

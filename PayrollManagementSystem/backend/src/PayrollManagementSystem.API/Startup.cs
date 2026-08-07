@@ -4,6 +4,7 @@ using Serilog;
 using PayrollManagementSystem.API.Middlewares;
 using PayrollManagementSystem.Application;
 using PayrollManagementSystem.Infrastructure;
+using PayrollManagementSystem.Infrastructure.Hubs;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -27,6 +28,7 @@ namespace PayrollManagementSystem.API
         {
             services.AddApplicationServices(Configuration);  
             services.AddInfrastructureServices(Configuration);
+            services.AddSignalR();
 
             services.AddControllers().AddJsonOptions(options => 
             { 
@@ -178,6 +180,7 @@ namespace PayrollManagementSystem.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<LogMonitorHub>("/hubs/monitor");
                 endpoints.MapHealthChecks("/api/health", new HealthCheckOptions
                 {
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse

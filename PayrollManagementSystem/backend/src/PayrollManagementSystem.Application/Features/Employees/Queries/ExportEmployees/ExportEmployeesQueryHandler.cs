@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.Employees.DTOs;
 using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Extensions;
 
 namespace PayrollManagementSystem.Application.Features.Employees.Queries.ExportEmployees
 {
@@ -38,21 +39,22 @@ namespace PayrollManagementSystem.Application.Features.Employees.Queries.ExportE
                 query = query.Where(nv => nv.IdPb == request.IdPb);
             }
 
-            var employees = await query
+            var employeesData = await query
+                .AsNoTracking()
                 .OrderByDescending(nv => nv.NgayVaoLam)
-                .Select(nv => new EmployeeDto
+                .Select(nv => new 
                 {
                     Cccd = nv.Cccd,
                     HoTen = nv.HoTen,
                     GioiTinh = nv.GioiTinh,
                     Sdt = nv.Sdt,
                     Email = nv.Email,
-                    NgaySinh = nv.NgaySinh.HasValue ? nv.NgaySinh.Value.ToString("yyyy-MM-dd") : null,
+                    NgaySinh = nv.NgaySinh,
                     DanToc = nv.DanToc,
                     DiaChi = nv.DiaChi,
                     ChuyenNganh = nv.ChuyenNganh,
-                    NgayVaoLam = nv.NgayVaoLam.HasValue ? nv.NgayVaoLam.Value.ToString("yyyy-MM-dd") : null,
-                    TrangThai = nv.TrangThai.ToString(),
+                    NgayVaoLam = nv.NgayVaoLam,
+                    TrangThai = nv.TrangThai,
                     SoBhxh = nv.SoBhxh,
                     SoBhyt = nv.SoBhyt,
                     TenPhongBan = nv.PhongBan != null ? nv.PhongBan.TenPb : null,
@@ -82,6 +84,30 @@ namespace PayrollManagementSystem.Application.Features.Employees.Queries.ExportE
                         .FirstOrDefault() ?? 1.00m
                 })
                 .ToListAsync(cancellationToken);
+
+            var employees = employeesData.Select(nv => new EmployeeDto
+            {
+                Cccd = nv.Cccd,
+                HoTen = nv.HoTen,
+                GioiTinh = nv.GioiTinh,
+                Sdt = nv.Sdt,
+                Email = nv.Email,
+                NgaySinh = nv.NgaySinh.HasValue ? nv.NgaySinh.Value.ToString("yyyy-MM-dd") : null,
+                DanToc = nv.DanToc,
+                DiaChi = nv.DiaChi,
+                ChuyenNganh = nv.ChuyenNganh,
+                NgayVaoLam = nv.NgayVaoLam.HasValue ? nv.NgayVaoLam.Value.ToString("yyyy-MM-dd") : null,
+                TrangThai = nv.TrangThai?.GetDescription(),
+                SoBhxh = nv.SoBhxh,
+                SoBhyt = nv.SoBhyt,
+                TenPhongBan = nv.TenPhongBan,
+                TenChucVu = nv.TenChucVu,
+                SoTaiKhoan = nv.SoTaiKhoan,
+                TenNganHang = nv.TenNganHang,
+                MaSoThue = nv.MaSoThue,
+                LuongP1 = nv.LuongP1,
+                HeSoP2 = nv.HeSoP2
+            }).ToList();
 
             return _excelService.ExportEmployeesToExcel(employees);
         }

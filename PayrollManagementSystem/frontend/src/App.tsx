@@ -9,6 +9,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { MainLayout } from "@/layouts/MainLayout";
 import { LoginForm } from "@/features/auth/components/LoginForm";
+import { SessionExpiredModal } from '@/features/auth/components/SessionExpiredModal';
 import { UserProfile } from "@/features/profile/components/UserProfile";
 import { EmployeeManagement } from "@/features/employees/components/EmployeeManagement";
 import { UserManagement } from "@/features/users/components/UserManagement";
@@ -32,6 +33,10 @@ import PayrollManagement from '@/features/payroll/components/PayrollManagement';
 import { KhoanKhauTruManagement } from '@/features/khoanKhauTru/components/KhoanKhauTruManagement';
 import { BangThueLuyTienManagement } from '@/features/thueTncn/components/BangThueLuyTienManagement';
 import { CauHinhGiamTruManagement } from '@/features/thueTncn/components/CauHinhGiamTruManagement';
+import { SystemLogViewer } from '@/features/systemLogs/components/SystemLogViewer';
+import MySchedule from "@/features/personalSchedule/components/MySchedule";
+import MyAttendance from "@/features/personalAttendance/components/MyAttendance";
+import { MyPayroll } from "@/features/personalPayroll/components/MyPayroll";
 
 
 const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string[], requireManager?: boolean }) => {
@@ -74,6 +79,7 @@ function App() {
           {/* 2. System Administration Group */}
           <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
             <Route path="/admin/tai-khoan" element={<UserManagement />} />
+            <Route path="/admin/system-logs" element={<SystemLogViewer />} />
           </Route>
 
           {/* 3. Human Resources Group */}
@@ -102,6 +108,9 @@ function App() {
 
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
             <Route path="/me/don-nghi" element={<MyDonNghiPortal />} />
+            <Route path="/me/lich-lam-viec" element={<MySchedule />} />
+            <Route path="/me/cham-cong" element={<MyAttendance />} />
+            <Route path="/me/bang-luong" element={<MyPayroll />} />
           </Route>
 
           {/* Đánh giá năng lực P2 */}
@@ -127,6 +136,7 @@ function App() {
 
         <Route path="*" element={<Navigate to="/profile" replace />} />
       </Routes>
+      <SessionExpiredModal />
     </BrowserRouter>
   );
 }

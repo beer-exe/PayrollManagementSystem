@@ -1,9 +1,10 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.Users.DTOs;
+using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Extensions;
 using PayrollManagementSystem.Application.Wrappers;
-
 namespace PayrollManagementSystem.Application.Features.Users.Queries.GetUsers
 {
     public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, Response<IEnumerable<UserDto>>>
@@ -17,10 +18,14 @@ namespace PayrollManagementSystem.Application.Features.Users.Queries.GetUsers
 
         public async Task<Response<IEnumerable<UserDto>>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
         {
-            var users = await _context.TaiKhoans
+            var taiKhoans = await _context.TaiKhoans
+                .AsNoTracking()
                 .Include(t => t.NhanVien)
                 .Include(t => t.VaiTro)
-                .Select(t => new UserDto
+                .OrderByDescending(t => t.TenTaiKhoan)
+                .ToListAsync(cancellationToken);
+
+            var users = taiKhoans.Select(t => new UserDto
                 {
                     IdTaiKhoan = t.IdTaiKhoan,
                     TenTaiKhoan = t.TenTaiKhoan,
@@ -28,10 +33,8 @@ namespace PayrollManagementSystem.Application.Features.Users.Queries.GetUsers
                     HoTen = t.NhanVien != null ? t.NhanVien.HoTen : string.Empty,
                     TenVaiTro = t.VaiTro != null ? t.VaiTro.TenVaiTro : string.Empty,
                     IdVaiTro = t.IdVaiTro,
-                    TrangThai = t.TrangThai.ToString()
-                })
-                .OrderByDescending(t => t.TenTaiKhoan)
-                .ToListAsync(cancellationToken);
+                    TrangThai = t.TrangThai.GetDescription()
+                });
 
             return new Response<IEnumerable<UserDto>>(users, "Lấy danh sách tài khoản thành công.");
         }

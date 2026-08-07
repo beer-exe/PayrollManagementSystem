@@ -170,23 +170,24 @@ export const WorkScheduleManagement: React.FC = () => {
         </div>
       </div>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', borderBottom: '1px solid var(--border-color)', gap: '1rem', flexWrap: 'wrap' }}>
-        <div className="ws-input-wrapper" style={{ flex: 1, minWidth: '250px', position: 'relative' }}>
-          <input
-            type="text"
-            placeholder="Tìm kiếm lịch..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="ws-input"
-            style={{ width: '100%', padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}
-          />
+      <div className="ws-controls-wrapper">
+        <div className="ws-filters">
+          <div className="ws-input-wrapper" style={{ flex: 1, minWidth: '250px', position: 'relative' }}>
+            <input
+              type="text"
+              placeholder="Tìm kiếm lịch..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="ws-input"
+              style={{ width: '100%', padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}
+            />
+          </div>
+          <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
         </div>
-        <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
-      </div>
 
-      {/* Table */}
-      <div className="ws-table-wrapper">
-        {isLoading && lichList.length === 0 ? (
+        {/* Table */}
+        <div className="ws-table-container custom-scrollbar">
+          {isLoading && lichList.length === 0 ? (
           <div className="ws-spinner" />
         ) : lichList.length === 0 ? (
           <div className="ws-empty">
@@ -293,9 +294,10 @@ export const WorkScheduleManagement: React.FC = () => {
             </tbody>
           </table>
         )}
+        </div>
         
         {totalPages > 0 && (
-          <div className="ws-pagination" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem', padding: '0 1rem 1rem 1rem' }}>
+          <div className="ws-pagination" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', padding: '1rem', borderTop: '1px solid var(--border-color)', background: 'var(--bg-body)' }}>
             <button 
               className="ws-btn-secondary" 
               onClick={() => setCurrentPage(p => p - 1)} 

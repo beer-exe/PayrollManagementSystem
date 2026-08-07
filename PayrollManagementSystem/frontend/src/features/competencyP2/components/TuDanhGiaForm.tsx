@@ -91,12 +91,12 @@ export const TuDanhGiaForm: React.FC = () => {
     );
   }
 
-  const isEditable = detail?.trangThai === 'CHO_NV_DANH_GIA';
+  const isEditable = detail?.trangThai === 'CHO_NV_DANH_GIA' || detail?.trangThai === 'Chờ nhân viên đánh giá';
   
   let badgeClass = "cp2-badge-gray";
-  if (detail?.trangThai === 'CHO_NV_DANH_GIA') badgeClass = "cp2-badge-blue";
-  if (detail?.trangThai === 'CHO_QL_DANH_GIA') badgeClass = "cp2-badge-warning";
-  if (detail?.trangThai === 'DA_HOAN_THANH') badgeClass = "cp2-badge-success";
+  if (detail?.trangThai === 'CHO_NV_DANH_GIA' || detail?.trangThai === 'Chờ nhân viên đánh giá') badgeClass = "cp2-badge-blue";
+  if (detail?.trangThai === 'CHO_QL_DANH_GIA' || detail?.trangThai === 'Chờ quản lý đánh giá') badgeClass = "cp2-badge-warning";
+  if (detail?.trangThai === 'DA_HOAN_THANH' || detail?.trangThai === 'Đã hoàn thành') badgeClass = "cp2-badge-success";
 
   return (
     <div className="cp2-container">
