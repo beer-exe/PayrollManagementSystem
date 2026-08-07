@@ -1,9 +1,10 @@
-﻿using FluentValidation;
+using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
 
 namespace PayrollManagementSystem.Application.Behaviours
 {
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
         private readonly IEnumerable<IValidator<TRequest>> _validators;

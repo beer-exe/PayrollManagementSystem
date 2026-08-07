@@ -1,7 +1,8 @@
-﻿using FluentValidation.Results;
+using FluentValidation.Results;
 
 namespace PayrollManagementSystem.Application.Common.Exceptions
 {
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ValidationException : Exception
     {
         public IDictionary<string, string[]> Errors { get; }

@@ -1,7 +1,8 @@
-﻿using System.Globalization;
+using System.Globalization;
 
 namespace PayrollManagementSystem.Application.Common.Exceptions
 {
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ApiException : Exception
     {
         public ApiException() : base() { }

@@ -1,24 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
 	<ItemGroup>
+		<!-- FrameworkReference cấp quyền truy cập SignalR, Authorization và ASP.NET Core types
+		     cho class library (Microsoft.NET.Sdk) mà không cần NuGet package cũ deprecated -->
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
 		<PackageReference Include="ClosedXML" Version="0.105.0" />
-		<PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.2.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.27">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.10">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.9" />
 		<PackageReference Include="MimeKit" Version="4.17.0" />
 		<PackageReference Include="NETCore.MailKit" Version="2.1.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.27" />
-		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.10" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
 		<PackageReference Include="Polly.Core" Version="8.6.2" />
 		<PackageReference Include="Serilog" Version="4.3.0" />
 		<PackageReference Include="StackExchange.Redis" Version="3.0.17" />

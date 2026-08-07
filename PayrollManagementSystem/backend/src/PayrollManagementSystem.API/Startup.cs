@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using Scalar.AspNetCore;
 using Serilog;
 using PayrollManagementSystem.API.Middlewares;
 using PayrollManagementSystem.Application;
@@ -40,31 +43,31 @@ namespace PayrollManagementSystem.API
             services.AddScoped<PayrollManagementSystem.Application.Common.Interfaces.ICurrentUserService, PayrollManagementSystem.API.Services.CurrentUserService>();
 
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen(options =>
-            {
-                options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-                {
-                    Description = "Enter JWT Token here",
-                    Name = "Authorization",
-                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    BearerFormat = "JWT"
-                });
 
-                options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+            services.AddOpenApi(options =>
+            {
+                options.AddDocumentTransformer((document, context, cancellationToken) =>
                 {
+                    document.Info = new OpenApiInfo
                     {
-                        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-                        {
-                            Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                            {
-                                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        new string[] {}
-                    }
+                        Title = "Payroll Management System API",
+                        Version = "v1",
+                        Description = "Hệ thống quản lý lương theo phương pháp 3P"
+                    };
+
+                    document.Components ??= new OpenApiComponents();
+                    document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+                    document.Components.SecuritySchemes["Bearer"] = new OpenApiSecurityScheme
+                    {
+                        Description = "Nhập JWT Token vào đây (không cần tiền tố Bearer)",
+                        Name = "Authorization",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.Http,
+                        Scheme = "bearer",
+                        BearerFormat = "JWT"
+                    };
+
+                    return Task.CompletedTask;
                 });
             });
 
@@ -157,11 +160,6 @@ namespace PayrollManagementSystem.API
         {
             app.UseMiddleware<ErrorHandlerMiddleware>();
 
-            if (env.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
 
             app.UseHttpsRedirection();
             
@@ -185,6 +183,13 @@ namespace PayrollManagementSystem.API
                 {
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
+
+                // Scalar UI & OpenAPI document (chỉ hiển thị trong Development)
+                if (env.IsDevelopment())
+                {
+                    endpoints.MapOpenApi();           // /openapi/v1.json
+                    endpoints.MapScalarApiReference(); // /scalar
+                }
             });
         }
     }
