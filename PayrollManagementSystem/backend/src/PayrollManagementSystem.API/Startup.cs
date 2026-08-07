@@ -37,6 +37,7 @@ namespace PayrollManagementSystem.API
             { 
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                options.JsonSerializerOptions.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
             });
 
             services.AddHttpContextAccessor();
@@ -142,7 +143,8 @@ namespace PayrollManagementSystem.API
                 {
                     context.HttpContext.Response.StatusCode = 429;
                     context.HttpContext.Response.ContentType = "application/json; charset=utf-8";
-                    var result = System.Text.Json.JsonSerializer.Serialize(new { Succeeded = false, Message = "Vui lòng thử lại sau 1 phút." });
+                    var jsonOptions = new System.Text.Json.JsonSerializerOptions { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+                    var result = System.Text.Json.JsonSerializer.Serialize(new { Succeeded = false, Message = "Vui lòng thử lại sau 1 phút." }, jsonOptions);
                     await context.HttpContext.Response.WriteAsync(result, token);
                 };
             });

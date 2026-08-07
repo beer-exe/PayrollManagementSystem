@@ -1,4 +1,4 @@
-﻿using PayrollManagementSystem.Application.Common.Exceptions;
+using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Wrappers;
 using System.Net;
 using System.Text.Json;
@@ -25,7 +25,7 @@ namespace PayrollManagementSystem.API.Middlewares
             catch (Exception error)
             {
                 HttpResponse? response = context.Response;
-                response.ContentType = "application/json";
+                response.ContentType = "application/json; charset=utf-8";
 
                 Response<string>? responseModel = new Response<string>() { Succeeded = false, Message = error?.Message };
 
@@ -59,7 +59,8 @@ namespace PayrollManagementSystem.API.Middlewares
                         break;
                 }
 
-                string result = JsonSerializer.Serialize(responseModel);
+                var jsonOptions = new JsonSerializerOptions { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+                string result = JsonSerializer.Serialize(responseModel, jsonOptions);
                 await response.WriteAsync(result);
             }
         }

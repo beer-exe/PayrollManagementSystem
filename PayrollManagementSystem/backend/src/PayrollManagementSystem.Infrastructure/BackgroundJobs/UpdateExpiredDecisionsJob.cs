@@ -1,3 +1,9 @@
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using MediatR;
+using PayrollManagementSystem.Application.Features.Departments.Commands.ExpirePastDecisions;
+
 namespace PayrollManagementSystem.Infrastructure.BackgroundJobs
 {
     public class UpdateExpiredDecisionsJob : BackgroundService
