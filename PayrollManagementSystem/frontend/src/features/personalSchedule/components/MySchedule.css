@@ -1,0 +1,232 @@
+.psch-container {
+  padding: 24px;
+  background-color: transparent;
+  min-height: calc(100vh - 64px);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.psch-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  background: var(--bg-surface);
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.psch-title h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.psch-controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.psch-select {
+  padding: 8px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  background-color: var(--bg-surface);
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.psch-select:focus, .psch-select:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.psch-btn-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.psch-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: var(--primary-hover);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.psch-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--bg-active);
+  color: var(--text-muted);
+}
+
+.psch-calendar {
+  background: var(--bg-surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.psch-calendar-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--bg-main);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.psch-calendar-header-cell {
+  padding: 12px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.psch-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  /* The number of rows will depend on the days, we use auto rows */
+}
+
+.psch-day-cell {
+  min-height: 120px;
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.2s;
+}
+
+.psch-day-cell:hover {
+  background-color: var(--bg-hover);
+}
+
+.psch-day-cell:nth-child(7n) {
+  border-right: none;
+}
+
+.psch-day-cell.psch-empty {
+  background-color: var(--bg-main);
+  color: var(--text-muted);
+}
+
+.psch-date-number {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  align-self: flex-end;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.psch-date-number.psch-today {
+  background: var(--primary);
+  color: white;
+}
+
+.psch-shift-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.psch-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+  line-height: 1.2;
+}
+
+.psch-badge-work {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-border);
+}
+
+.psch-badge-assigned {
+  background-color: var(--success-bg);
+  color: var(--success-text);
+  border: 1px solid var(--success);
+}
+
+.psch-badge-holiday {
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
+  border: 1px solid var(--danger);
+}
+
+.psch-badge-leave {
+  background-color: var(--warning-bg);
+  color: var(--warning-text);
+  border: 1px solid var(--warning);
+}
+
+.psch-time {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.psch-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  color: var(--text-secondary);
+}
+
+.psch-error {
+  padding: 16px;
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.psch-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.psch-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.psch-legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

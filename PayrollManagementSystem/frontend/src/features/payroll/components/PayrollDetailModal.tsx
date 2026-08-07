@@ -75,12 +75,44 @@ export const PayrollDetailModal: React.FC<Props> = ({ payroll, onClose }) => {
     }
   };
 
+  const handlePrint = () => {
+    const originalTitle = document.title;
+    document.title = `Phieu_Luong_T${payroll.thang}_${payroll.nam}_${payroll.tenNhanVien.replace(/\s+/g, '_')}`;
+    window.print();
+    document.title = originalTitle;
+  };
+
   return (
     <div className="payroll-modal-overlay" onClick={onClose}>
       <div className="payroll-modal-content" onClick={e => e.stopPropagation()}>
         <div className="payroll-modal-header">
           <h3>Chi tiết phiếu lương - {payroll.thang}/{payroll.nam}</h3>
-          <button className="close-btn" onClick={onClose}>&times;</button>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <button 
+              className="print-btn" 
+              onClick={handlePrint}
+              style={{
+                background: 'rgba(255,255,255,0.2)',
+                border: '1px solid rgba(255,255,255,0.3)',
+                color: 'white',
+                padding: '4px 12px',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '0.875rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+              </svg>
+              In PDF
+            </button>
+            <button className="close-btn" onClick={onClose}>&times;</button>
+          </div>
         </div>
         
         <div className="payroll-modal-body">

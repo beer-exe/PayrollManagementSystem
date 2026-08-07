@@ -1,6 +1,7 @@
+using System;
+using System.Collections.Generic;
 using MediatR;
 using PayrollManagementSystem.Application.Wrappers;
-
 using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 
@@ -29,14 +30,5 @@ namespace PayrollManagementSystem.Application.Features.Employees.Commands.Update
         public string? MaSoThue { get; set; }
 
         public List<UpdateThanNhanDto>? ThanNhans { get; set; }
-    }
-
-    public class UpdateThanNhanDto
-    {
-        public string? MaDinhDanh { get; set; }
-        public string TenTn { get; set; } = null!;
-        public DateOnly? NgaySinh { get; set; }
-        public Guid? IdMqh { get; set; }
-        public bool LaNguoiPhuThuoc { get; set; }
     }
 }

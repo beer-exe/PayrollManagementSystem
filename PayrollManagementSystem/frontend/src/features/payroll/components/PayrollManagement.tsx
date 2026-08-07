@@ -136,14 +136,18 @@ const PayrollManagement: React.FC = () => {
   };
 
   const handleExportPdf = () => {
+    const formatCurrencyExport = (amount: number) => {
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    };
+
     const columns: ExportColumn<PayrollListDto>[] = [
       { header: 'Mã NV', key: 'cccdNhanVien' },
       { header: 'Tên NV', key: 'tenNhanVien' },
-      { header: 'Lương P1', key: 'p1' },
+      { header: 'Lương P1', key: 'p1', render: (item) => formatCurrencyExport(item.p1) },
       { header: 'Công', key: 'ngayCongThucTe' },
-      { header: 'L.Thời gian', key: 'luongThoiGian' },
-      { header: 'Khấu trừ', key: 'khauTru' },
-      { header: 'Thực lĩnh', key: 'thucLinh' }
+      { header: 'L.Thời gian', key: 'luongThoiGian', render: (item) => formatCurrencyExport(item.luongThoiGian) },
+      { header: 'Khấu trừ', key: 'khauTru', render: (item) => formatCurrencyExport(item.khauTru) },
+      { header: 'Thực lĩnh', key: 'thucLinh', render: (item) => formatCurrencyExport(item.thucLinh) }
     ];
     exportToPdf(allFilteredAndSortedData, columns, `Bang_Luong_T${thang}_${nam}.pdf`, `BẢNG LƯƠNG THÁNG ${thang}/${nam}`);
   };
