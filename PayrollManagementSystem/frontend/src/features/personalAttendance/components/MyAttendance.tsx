@@ -6,6 +6,7 @@ import { useDataTable } from '../../../hooks/useDataTable';
 import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
 import { SortableHeader } from '../../../components/DataTable/SortableHeader';
 import { ExportButtons } from '../../../components/DataTable/ExportButtons';
+import { Toast } from '@/components/Toast/Toast';
 
 const LOAI_NGAY_COLOR: Record<string, string> = {
   'Làm đủ ca': 'patt-badge patt-status--ontime',
@@ -25,7 +26,7 @@ const TRANG_THAI_COLOR: Record<string, string> = {
 
 const MyAttendance: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { attendanceList, isLoading, error, fetchAttendance } = useMyAttendance();
+  const { attendanceList, isLoading, fetchAttendance, toast, setToast } = useMyAttendance();
 
   useEffect(() => {
     fetchAttendance(currentDate.getMonth() + 1, currentDate.getFullYear());
@@ -147,8 +148,6 @@ const MyAttendance: React.FC = () => {
           <ExportButtons onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
         </div>
 
-        {error && <div className="patt-error" style={{ margin: '16px' }}>{error}</div>}
-
         <div className="patt-content">
         {isLoading ? (
           <div className="patt-loading">Đang tải dữ liệu...</div>
@@ -217,6 +216,14 @@ const MyAttendance: React.FC = () => {
         )}
       </div>
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

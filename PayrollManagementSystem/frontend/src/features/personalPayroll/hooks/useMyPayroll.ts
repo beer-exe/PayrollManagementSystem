@@ -7,6 +7,11 @@ export const useMyPayroll = (initialYear: number) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [year, setYear] = useState(initialYear);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = useCallback((message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+  }, []);
 
   const fetchMyPayroll = useCallback(async (selectedYear: number) => {
     setLoading(true);
@@ -16,7 +21,9 @@ export const useMyPayroll = (initialYear: number) => {
       const finalData = Array.isArray(result) ? result : (result as any).data || [];
       setData(finalData);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Lỗi khi tải bảng lương cá nhân');
+      const msg = err.response?.data?.message || 'Lỗi khi tải bảng lương cá nhân';
+      setError(msg);
+      showToast(msg, 'error');
       setData([]);
     } finally {
       setLoading(false);
@@ -33,6 +40,8 @@ export const useMyPayroll = (initialYear: number) => {
     error,
     year,
     setYear,
-    refetch: () => fetchMyPayroll(year)
+    refetch: () => fetchMyPayroll(year),
+    toast,
+    setToast
   };
 };

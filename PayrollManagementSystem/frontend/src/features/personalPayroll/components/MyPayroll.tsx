@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useMyPayroll } from '../hooks/useMyPayroll';
 import { MyPayrollDto } from '../types/myPayroll.types';
 import { PayslipModal } from './PayslipModal';
+import { Toast } from '@/components/Toast/Toast';
 import './MyPayroll.css';
 
 export const MyPayroll: React.FC = () => {
   const currentYear = new Date().getFullYear();
-  const { data, loading, error, year, setYear } = useMyPayroll(currentYear);
+  const { data, loading, error, year, setYear, toast, setToast } = useMyPayroll(currentYear);
   const [selectedPayslip, setSelectedPayslip] = useState<MyPayrollDto | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   
@@ -85,11 +86,7 @@ export const MyPayroll: React.FC = () => {
           <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
             Đang tải dữ liệu...
           </div>
-        ) : error ? (
-          <div style={{ padding: '2rem', textAlign: 'center', color: '#ef4444' }}>
-            {error}
-          </div>
-        ) : currentData.length === 0 ? (
+        ) : currentData.length === 0 && !error ? (
           <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
             Không có dữ liệu bảng lương cho năm {year}
           </div>
@@ -165,6 +162,14 @@ export const MyPayroll: React.FC = () => {
         <PayslipModal 
           payslip={selectedPayslip} 
           onClose={() => setSelectedPayslip(null)} 
+        />
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
         />
       )}
     </div>

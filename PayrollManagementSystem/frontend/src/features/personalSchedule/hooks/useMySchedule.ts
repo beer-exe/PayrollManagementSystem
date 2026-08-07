@@ -6,6 +6,11 @@ export const useMySchedule = () => {
   const [schedule, setSchedule] = useState<MyScheduleDayDto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = useCallback((message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+  }, []);
 
   const fetchSchedule = useCallback(async (thang: number, nam: number) => {
     setIsLoading(true);
@@ -16,6 +21,7 @@ export const useMySchedule = () => {
     } catch (err: any) {
       const msg = err?.response?.data?.message ?? 'Có lỗi xảy ra khi tải lịch làm việc.';
       setError(msg);
+      showToast(msg, 'error');
       setSchedule([]);
     } finally {
       setIsLoading(false);
@@ -26,6 +32,8 @@ export const useMySchedule = () => {
     schedule,
     isLoading,
     error,
-    fetchSchedule
+    fetchSchedule,
+    toast,
+    setToast
   };
 };
