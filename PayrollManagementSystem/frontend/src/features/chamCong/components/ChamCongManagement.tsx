@@ -176,7 +176,7 @@ export const ChamCongManagement: React.FC = () => {
         { header: 'Ngày thực tế', key: 'tongNgayCongThucTe' },
         { header: 'Nghỉ lễ', key: 'ngayNghiLe' },
         { header: 'Vắng không phép', key: 'ngayVangKhongPhep' },
-        { header: 'Cần giải trình', key: 'ngayCanGiaiTrinh' },
+
       ];
       exportToExcel(allTongHop, columns, 'TongHopChamCong');
     } else {
@@ -205,7 +205,7 @@ export const ChamCongManagement: React.FC = () => {
         { header: 'Ngày thực tế', key: 'tongNgayCongThucTe' },
         { header: 'Nghỉ lễ', key: 'ngayNghiLe' },
         { header: 'Vắng không phép', key: 'ngayVangKhongPhep' },
-        { header: 'Cần giải trình', key: 'ngayCanGiaiTrinh' },
+
       ];
       exportToPdf(allTongHop, columns, 'TongHopChamCong', 'Tổng hợp chấm công');
     } else {
@@ -392,12 +392,12 @@ export const ChamCongManagement: React.FC = () => {
                 <SortableHeader label="Ngày thực tế" sortKey="tongNgayCongThucTe" currentSortKey={tongHopSortKey} currentSortDirection={tongHopSortDirection} onSort={handleTongHopSort} />
                 <SortableHeader label="Nghỉ lễ" sortKey="ngayNghiLe" currentSortKey={tongHopSortKey} currentSortDirection={tongHopSortDirection} onSort={handleTongHopSort} />
                 <SortableHeader label="Vắng không phép" sortKey="ngayVangKhongPhep" currentSortKey={tongHopSortKey} currentSortDirection={tongHopSortDirection} onSort={handleTongHopSort} />
-                <SortableHeader label="Cần giải trình" sortKey="ngayCanGiaiTrinh" currentSortKey={tongHopSortKey} currentSortDirection={tongHopSortDirection} onSort={handleTongHopSort} />
+
               </tr>
             </thead>
             <tbody>
               {summary.length === 0 ? (
-                <tr><td colSpan={7} className="cc-empty">Không có dữ liệu tổng hợp cho tháng {thang}/{nam}</td></tr>
+                <tr><td colSpan={6} className="cc-empty">Không có dữ liệu tổng hợp cho tháng {thang}/{nam}</td></tr>
               ) : currentTongHopList.map(row => (
                 <tr key={row.cccdNhanVien}>
                   <td>
@@ -417,11 +417,7 @@ export const ChamCongManagement: React.FC = () => {
                       ? <span className="cc-num--danger">{row.ngayVangKhongPhep}</span>
                       : <span>0</span>}
                   </td>
-                  <td className="cc-num">
-                    {row.ngayCanGiaiTrinh > 0
-                      ? <span className="cc-num--warn">{row.ngayCanGiaiTrinh}</span>
-                      : <span>0</span>}
-                  </td>
+
                 </tr>
               ))}
             </tbody>
@@ -435,7 +431,9 @@ export const ChamCongManagement: React.FC = () => {
               >
                 Trước
               </button>
-              <span className="cc-page-info">{tongHopPage}/{totalTongHopPages}</span>
+              <span className="cc-page-info">
+                Trang <span style={{fontWeight: 600, color: 'var(--text-primary)', margin: '0 4px'}}>{tongHopPage}</span> / <span style={{margin: '0 4px'}}>{totalTongHopPages}</span>
+              </span>
               <button 
                 className="cc-page-btn" 
                 disabled={tongHopPage === totalTongHopPages} 
@@ -516,7 +514,9 @@ export const ChamCongManagement: React.FC = () => {
               >
                 Trước
               </button>
-              <span className="cc-page-info">{chiTietPage}/{totalChiTietPages}</span>
+              <span className="cc-page-info">
+                Trang <span style={{fontWeight: 600, color: 'var(--text-primary)', margin: '0 4px'}}>{chiTietPage}</span> / <span style={{margin: '0 4px'}}>{totalChiTietPages}</span>
+              </span>
               <button 
                 className="cc-page-btn" 
                 disabled={chiTietPage === totalChiTietPages} 

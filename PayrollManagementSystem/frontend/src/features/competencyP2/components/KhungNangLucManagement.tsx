@@ -422,7 +422,7 @@ export const KhungNangLucManagement: React.FC = () => {
                   disabled={currentPage === totalPages || loading}
                   style={{ padding: '0.35rem 0.75rem' }}
                 >
-                  [Sau]
+                  Sau
                 </button>
               </div>
             )}

@@ -330,7 +330,7 @@ const PayrollManagement: React.FC = () => {
 
           {/* Pagination */}
           {totalPages > 0 && (
-            <div className="prl-pagination" style={{ justifyContent: 'center' }}>
+            <div className="prl-pagination" style={{ justifyContent: 'flex-end' }}>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                 <button
                   className="prl-btn prl-btn-secondary"

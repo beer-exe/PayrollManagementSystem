@@ -136,7 +136,7 @@ const menuItems: MenuItem[] = [
   },
   {
     path: "/time/ca-lam-viec",
-    label: "Cấu hình Ca làm việc",
+    label: "Cấu hình ca làm việc",
     allowedRoles: ["HR"],
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">

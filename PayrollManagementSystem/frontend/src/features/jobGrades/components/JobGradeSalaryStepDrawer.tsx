@@ -145,9 +145,6 @@ export const JobGradeSalaryStepDrawer: React.FC<Props> = ({ jobGradeId, jobGrade
 
         <div className="jg-drawer-body custom-scrollbar">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--warning-text)', fontStyle: 'italic', background: 'var(--warning-bg)', padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid var(--warning-bg)' }}>
-              <strong>Lưu ý:</strong> Không dùng chức năng xóa để cập nhật tiền. Hãy chọn "Cập nhật mới" để lưu lịch sử.
-            </span>
             <button className="jg-btn jg-btn-primary" onClick={handleOpenCreate}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />

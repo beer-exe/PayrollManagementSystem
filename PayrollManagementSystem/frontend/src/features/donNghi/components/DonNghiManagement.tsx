@@ -479,7 +479,9 @@ export const DonNghiManagement: React.FC = () => {
           {totalDonNghiPages > 0 && (
             <div className="dn-pagination">
               <button className="dn-page-btn" disabled={donNghiPage === 1} onClick={() => setDonNghiPage(p => p - 1)}>Trước</button>
-              <span className="dn-page-info">{donNghiPage}/{totalDonNghiPages}</span>
+              <span className="dn-page-info">
+                Trang <span style={{fontWeight: 600, color: 'var(--text-primary)', margin: '0 4px'}}>{donNghiPage}</span> / <span style={{margin: '0 4px'}}>{totalDonNghiPages}</span>
+              </span>
               <button className="dn-page-btn" disabled={donNghiPage === totalDonNghiPages} onClick={() => setDonNghiPage(p => p + 1)}>Sau</button>
             </div>
           )}
@@ -531,7 +533,9 @@ export const DonNghiManagement: React.FC = () => {
           {ngayPhepList.length > 0 && (
             <div className="dn-pagination">
               <button className="dn-page-btn" disabled={ngayPhepPage === 1} onClick={() => setNgayPhepPage(p => p - 1)}>Trước</button>
-              <span className="dn-page-info">{ngayPhepPage}/{totalNgayPhepPages}</span>
+              <span className="dn-page-info">
+                Trang <span style={{fontWeight: 600, color: 'var(--text-primary)', margin: '0 4px'}}>{ngayPhepPage}</span> / <span style={{margin: '0 4px'}}>{totalNgayPhepPages}</span>
+              </span>
               <button className="dn-page-btn" disabled={ngayPhepPage === totalNgayPhepPages} onClick={() => setNgayPhepPage(p => p + 1)}>Sau</button>
             </div>
           )}

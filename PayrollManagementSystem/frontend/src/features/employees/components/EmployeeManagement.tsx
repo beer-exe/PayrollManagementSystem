@@ -71,7 +71,7 @@ export const EmployeeManagement: React.FC = () => {
       
       <div className="emp-header">
         <div className="emp-header-left">
-          <h2 className="emp-title">👨‍💼 Hồ sơ Nhân sự</h2>
+          <h2 className="emp-title">👨‍💼 Quản lý nhân viên</h2>
           <p className="emp-subtitle">Quản lý danh sách nhân sự toàn công ty</p>
         </div>
         <div className="emp-header-actions">
