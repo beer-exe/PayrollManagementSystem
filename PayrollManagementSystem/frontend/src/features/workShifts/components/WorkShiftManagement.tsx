@@ -121,7 +121,7 @@ export const WorkShiftManagement: React.FC = () => {
         <div className="wsh-container">
             <div className="wsh-header">
                 <div className="wsh-header-left">
-                    <h2>⏰ Cấu hình Ca làm việc</h2>
+                    <h2>⏰ Cấu hình ca làm việc</h2>
                     <p>Quản lý các ca làm việc và khung giờ nghỉ của nhân viên trong công ty</p>
                 </div>
                 <div className="wsh-header-actions" style={{ display: 'flex', gap: '0.75rem' }}>
@@ -263,23 +263,21 @@ export const WorkShiftManagement: React.FC = () => {
                 {totalPages > 0 && !isLoading && (
                     <div className="wsh-pagination" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem', padding: '0 1rem 1rem 1rem' }}>
                         <button 
-                            className="wsh-btn-secondary" 
+                            className="wsh-page-btn" 
                             onClick={() => setCurrentPage(p => p - 1)} 
                             disabled={currentPage === 1 || isLoading}
-                            style={{ padding: '0.35rem 0.75rem', borderRadius: '4px' }}
                         >
-                            &lt;
+                            Trước
                         </button>
                         <div className="wsh-pagination-info" style={{ display: 'flex', alignItems: 'center', color: 'var(--text-secondary)' }}>
                             Trang <span style={{fontWeight: 600, color: 'var(--text-primary)', margin: '0 4px'}}>{currentPage}</span> / <span style={{margin: '0 4px'}}>{totalPages}</span>
                         </div>
                         <button 
-                            className="wsh-btn-secondary" 
+                            className="wsh-page-btn" 
                             onClick={() => setCurrentPage(p => p + 1)} 
                             disabled={currentPage === totalPages || isLoading}
-                            style={{ padding: '0.35rem 0.75rem', borderRadius: '4px' }}
                         >
-                            &gt;
+                            Sau
                         </button>
                     </div>
                 )}

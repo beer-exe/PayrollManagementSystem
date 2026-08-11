@@ -144,7 +144,7 @@ export const PositionManagement: React.FC = () => {
     <div className="pos-container">
       <div className="pos-header">
         <div className="pos-header-title">
-          <h2>👔 Danh Mục Chức Vụ</h2>
+          <h2>👔 Quản lý chức vụ</h2>
           <p>Quản lý các chức vụ và mô tả công việc</p>
         </div>
         <button

@@ -130,7 +130,7 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
                     NgayNghiLe = ccList.Count(cc => cc.LoaiNgayCong == LoaiNgayCong.NGHI_LE),
                     NgayNghiCuoiTuan = ccList.Count(cc => cc.LoaiNgayCong == LoaiNgayCong.NGHI_CUOI_TUAN),
                     NgayVangKhongPhep = ccList.Count(cc => cc.LoaiNgayCong == LoaiNgayCong.VANG_KHONG_PHEP),
-                    NgayCanGiaiTrinh = ccList.Count(cc => cc.TrangThai == TrangThaiChamCong.CAN_GIAI_TRINH),
+
                 };
             }).OrderBy(s => s.TenPhongBan).ThenBy(s => s.HoTenNhanVien).ToList();
 

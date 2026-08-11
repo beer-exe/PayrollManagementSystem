@@ -675,3 +675,26 @@
         margin: 1rem;
     }
 }
+.wsh-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: none !important;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-hover);
+}
+.wsh-page-btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+.wsh-page-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
