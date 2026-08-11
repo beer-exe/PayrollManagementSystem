@@ -430,7 +430,7 @@
 .cc-pagination {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   padding: 16px;
   gap: 12px;
   border-top: 1px solid var(--border-color);
@@ -438,24 +438,27 @@
   border-radius: 0 0 12px 12px;
 }
 .cc-page-btn {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-surface);
-  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 500;
-  color: var(--text-primary);
   cursor: pointer;
   transition: all 0.2s;
+  box-shadow: none !important;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-hover);
 }
 .cc-page-btn:hover:not(:disabled) {
   background: var(--bg-hover);
-  border-color: var(--border-hover);
 }
 .cc-page-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
-  background: var(--bg-main);
 }
 .cc-page-info {
   font-size: 13px;

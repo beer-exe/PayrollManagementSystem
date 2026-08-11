@@ -338,7 +338,7 @@ export const KhoanKhauTruManagement: React.FC = () => {
 
         {/* Pagination */}
         {totalPages > 0 && (
-          <div className="kkt-pagination" style={{ justifyContent: 'center' }}>
+          <div className="kkt-pagination" style={{ justifyContent: 'flex-end' }}>
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
               <button
                 className="kkt-btn kkt-btn-secondary"

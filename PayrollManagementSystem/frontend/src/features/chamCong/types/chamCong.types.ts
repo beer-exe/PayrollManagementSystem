@@ -41,7 +41,7 @@ export interface ChamCongSummaryDto {
   ngayNghiLe: number;
   ngayNghiCuoiTuan: number;
   ngayVangKhongPhep: number;
-  ngayCanGiaiTrinh: number;
+
 }
 
 export interface ImportChamCongResultDto {

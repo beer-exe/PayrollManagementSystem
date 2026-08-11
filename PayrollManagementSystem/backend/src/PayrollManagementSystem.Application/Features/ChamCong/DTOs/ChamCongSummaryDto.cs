@@ -15,6 +15,6 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.DTOs
         public decimal NgayNghiLe { get; set; }
         public decimal NgayNghiCuoiTuan { get; set; }
         public decimal NgayVangKhongPhep { get; set; }
-        public decimal NgayCanGiaiTrinh { get; set; }
+
     }
 }

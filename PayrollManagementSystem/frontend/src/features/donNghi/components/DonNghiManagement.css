@@ -295,18 +295,23 @@
   background: var(--bg-body);
 }
 .dn-page-btn {
-  padding: 7px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0.35rem 0.75rem;
   border-radius: 8px;
-  border: 1.5px solid var(--primary);
-  background: var(--bg-surface);
-  color: var(--primary);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  box-shadow: none !important;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-hover);
 }
-.dn-page-btn:hover:not(:disabled) { background: var(--primary); color: var(--bg-surface); }
-.dn-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.dn-page-btn:hover:not(:disabled) { background: var(--bg-hover); }
+.dn-page-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .dn-page-info { font-size: 14px; color: var(--text-primary); font-weight: 600; }
 
 /* LOADING / ERROR */
