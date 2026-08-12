@@ -165,7 +165,18 @@ namespace PayrollManagementSystem.API
 
             app.UseHttpsRedirection();
             
-            app.UseSerilogRequestLogging();
+            app.UseSerilogRequestLogging(options =>
+            {
+                options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+                {
+                    var userId = httpContext.User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier) ?? "Anonymous";
+                    var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+                    
+                    diagnosticContext.Set("UserId", userId);
+                    diagnosticContext.Set("ClientIp", ip);
+                    diagnosticContext.Set("CorrelationId", httpContext.TraceIdentifier);
+                };
+            });
 
             app.UseRouting();
 
