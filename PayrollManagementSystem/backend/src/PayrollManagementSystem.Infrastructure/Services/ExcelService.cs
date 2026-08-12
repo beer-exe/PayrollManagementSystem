@@ -61,5 +61,45 @@ namespace PayrollManagementSystem.Infrastructure.Services
             workbook.SaveAs(stream);
             return stream.ToArray();
         }
+
+        public byte[] ExportSystemLogsToExcel(IEnumerable<PayrollManagementSystem.Application.Features.SystemManagement.DTOs.SystemLogDto> logs)
+        {
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Nhật ký hệ thống");
+            var currentRow = 1;
+
+            // Header
+            worksheet.Cell(currentRow, 1).Value = "ID";
+            worksheet.Cell(currentRow, 2).Value = "Thời gian";
+            worksheet.Cell(currentRow, 3).Value = "Mức độ";
+            worksheet.Cell(currentRow, 4).Value = "Nội dung";
+            worksheet.Cell(currentRow, 5).Value = "Chi tiết (JSON)";
+            worksheet.Cell(currentRow, 6).Value = "Ngoại lệ (Exception)";
+
+            var headerRange = worksheet.Range(1, 1, 1, 6);
+            headerRange.Style.Font.Bold = true;
+            headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+
+            // Data
+            foreach (var log in logs)
+            {
+                currentRow++;
+                worksheet.Cell(currentRow, 1).Value = log.Id;
+                
+                var localTime = TimeZoneInfo.ConvertTimeFromUtc(log.RaiseDate, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
+                worksheet.Cell(currentRow, 2).Value = localTime.ToString("yyyy-MM-dd HH:mm:ss");
+                
+                worksheet.Cell(currentRow, 3).Value = log.Level;
+                worksheet.Cell(currentRow, 4).Value = log.Message;
+                worksheet.Cell(currentRow, 5).Value = log.Properties;
+                worksheet.Cell(currentRow, 6).Value = log.Exception;
+            }
+
+            worksheet.Columns().AdjustToContents();
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            return stream.ToArray();
+        }
     }
 }

@@ -23,5 +23,21 @@ namespace PayrollManagementSystem.API.Controllers
             var response = await _mediator.Send(query, cancellationToken);
             return Ok(response);
         }
+
+        [HttpGet("export/excel")]
+        public async Task<IActionResult> ExportExcel([FromQuery] PayrollManagementSystem.Application.Features.SystemManagement.Queries.ExportSystemLogs.ExportSystemLogsQuery query, CancellationToken cancellationToken)
+        {
+            query.Format = "Excel";
+            var fileBytes = await _mediator.Send(query, cancellationToken);
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"SystemLogs_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+        }
+
+        [HttpGet("export/pdf")]
+        public async Task<IActionResult> ExportPdf([FromQuery] PayrollManagementSystem.Application.Features.SystemManagement.Queries.ExportSystemLogs.ExportSystemLogsQuery query, CancellationToken cancellationToken)
+        {
+            query.Format = "PDF";
+            var fileBytes = await _mediator.Send(query, cancellationToken);
+            return File(fileBytes, "application/pdf", $"SystemLogs_{DateTime.Now:yyyyMMddHHmmss}.pdf");
+        }
     }
 }
