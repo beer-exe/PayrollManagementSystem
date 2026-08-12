@@ -177,6 +177,8 @@ namespace PayrollManagementSystem.API
 
             app.UseAuthorization();
 
+            app.UseMiddleware<LogContextMiddleware>();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
