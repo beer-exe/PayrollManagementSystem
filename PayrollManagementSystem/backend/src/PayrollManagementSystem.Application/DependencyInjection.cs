@@ -17,10 +17,8 @@ namespace PayrollManagementSystem.Application
             {
                 options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
                 // Thứ tự thực thi (FIFO - đăng ký trước = outermost = chạy trước):
-                // LoggingBehavior → PerformanceBehavior → ValidationBehaviour → CacheInvalidationBehavior → CachingBehavior → TransactionBehavior → Handler
+                // ValidationBehaviour → CacheInvalidationBehavior → CachingBehavior → TransactionBehavior → Handler
                 // Nhờ đó CacheInvalidation chỉ xóa cache SAU khi Transaction đã commit thành công.
-                options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-                options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(PerformanceBehavior<,>));
                 options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
                 options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(CacheInvalidationBehavior<,>));
                 options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));

@@ -54,22 +54,12 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DuyetDon
 
             // Đồng bộ dữ liệu sang Chấm công
             var chiTietLich = await _context.ChiTietLichLamViecs
-                .Include(c => c.CaLamViecMacDinh)
-                    .ThenInclude(ca => ca.KhungGioNghis)
                 .Where(c => c.Ngay >= donNghi.NgayBatDau && c.Ngay <= donNghi.NgayKetThuc && c.LoaiNgay == LoaiNgay.NGAY_LAM_VIEC)
                 .OrderBy(c => c.Ngay)
                 .ToListAsync(cancellationToken);
 
             var existingChamCongs = await _context.ChamCongs
                 .Where(c => c.CccdNhanVien == donNghi.CccdNhanVien && c.NgayChamCong >= donNghi.NgayBatDau && c.NgayChamCong <= donNghi.NgayKetThuc)
-                .ToListAsync(cancellationToken);
-
-            var phanCongCas = await _context.PhanCongCas
-                .Include(p => p.CaLamViec)
-                    .ThenInclude(c => c.KhungGioNghis)
-                .Where(p => p.CccdNhanVien == donNghi.CccdNhanVien 
-                         && p.NgayLamViec >= donNghi.NgayBatDau 
-                         && p.NgayLamViec <= donNghi.NgayKetThuc)
                 .ToListAsync(cancellationToken);
 
             decimal remainingNgayNghi = donNghi.SoNgayNghi;
@@ -99,13 +89,7 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DuyetDon
                     loaiCongToAssign = LoaiNgayCong.NUA_CA;
                 }
 
-                var assignedShift = phanCongCas.FirstOrDefault(p => p.NgayLamViec == lich.Ngay)?.CaLamViec 
-                                    ?? lich.CaLamViecMacDinh;
-                decimal shiftHours = assignedShift?.CalculateWorkingHours() ?? 8m;
-
-                bool isPaidLeave = donNghi.LoaiNghi != LoaiNghi.NGHI_KHONG_LUONG;
-                decimal soGio = isPaidLeave ? (ngayTru * shiftHours) : 0m;
-                decimal soNgayCong = isPaidLeave ? ngayTru : 0m;
+                var soGio = (1m - ngayTru) * 8m; // Default 8 hours per day
 
                 if (chamCong == null)
                 {
@@ -115,7 +99,7 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DuyetDon
                         NgayChamCong = lich.Ngay,
                         LoaiNgayCong = loaiCongToAssign,
                         SoGioLamThucTe = soGio,
-                        SoNgayCong = soNgayCong,
+                        SoNgayCong = 1m - ngayTru,
                         GhiChu = $"Nghỉ phép: {donNghi.LyDo}",
                         TrangThai = TrangThaiChamCong.DA_XAC_NHAN
                     };
@@ -125,7 +109,7 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DuyetDon
                 {
                     chamCong.LoaiNgayCong = loaiCongToAssign;
                     chamCong.SoGioLamThucTe = soGio;
-                    chamCong.SoNgayCong = soNgayCong;
+                    chamCong.SoNgayCong = 1m - ngayTru;
                     chamCong.GhiChu = $"Nghỉ phép: {donNghi.LyDo}";
                 }
             }

@@ -27,12 +27,6 @@ export const chamCongApi = {
   ): Promise<ApiResponse<ChamCongSummaryDto[]>> =>
     axiosClient.get(`${BASE_URL}/tong-hop`, { params: { thang, nam, idPhongBan } }),
 
-  getCaLamViecTrongNgay: (
-    cccd: string,
-    ngay: string
-  ): Promise<ApiResponse<{ gioVao: string | null; gioRa: string | null; isDayOff: boolean; source: string }>> =>
-    axiosClient.get(`${BASE_URL}/ca-lam-viec-trong-ngay`, { params: { cccd, ngay } }),
-
   create: (
     data: CreateChamCongRequest
   ): Promise<ApiResponse<string>> =>

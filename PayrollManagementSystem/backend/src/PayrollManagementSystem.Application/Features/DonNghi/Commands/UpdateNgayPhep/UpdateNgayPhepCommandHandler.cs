@@ -18,45 +18,34 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.UpdateNg
             {
                 throw new ApiException($"Chưa có lịch làm việc nào được tạo cho năm {request.Nam}. Vui lòng tạo lịch làm việc trước khi cấu hình ngày phép.");
             }
-            var nhanVienQuery = _context.NhanViens.Where(nv => !nv.IsDeleted);
+            var existing = await _context.NgayPhepNhanViens
+                .FirstOrDefaultAsync(n => n.CccdNhanVien == request.CccdNhanVien && n.Nam == request.Nam, cancellationToken);
 
-            if (!string.IsNullOrWhiteSpace(request.CccdNhanVien))
+            if (existing != null)
             {
-                nhanVienQuery = nhanVienQuery.Where(nv => nv.Cccd == request.CccdNhanVien);
+                existing.TongNgayPhep = request.TongNgayPhep;
             }
-
-            var nhanViens = await nhanVienQuery.ToListAsync(cancellationToken);
-
-            var cccds = nhanViens.Select(nv => nv.Cccd).ToList();
-
-            var existingPhanCaList = await _context.NgayPhepNhanViens
-                .Where(n => n.Nam == request.Nam && cccds.Contains(n.CccdNhanVien))
-                .ToListAsync(cancellationToken);
-
-            foreach (var nhanVien in nhanViens)
+            else
             {
-                var existing = existingPhanCaList.FirstOrDefault(n => n.CccdNhanVien == nhanVien.Cccd);
-                if (existing != null)
+                var nhanVien = await _context.NhanViens
+                    .FirstOrDefaultAsync(nv => nv.Cccd == request.CccdNhanVien, cancellationToken);
+                if (nhanVien == null)
+                    throw new ApiException("Nhân viên không tồn tại.");
+
+                var ngayPhep = new Domain.Models.NgayPhepNhanVien
                 {
-                    existing.TongNgayPhep = request.TongNgayPhep;
-                }
-                else
-                {
-                    var ngayPhep = new Domain.Models.NgayPhepNhanVien
-                    {
-                        CccdNhanVien = nhanVien.Cccd,
-                        Nam = request.Nam,
-                        TongNgayPhep = request.TongNgayPhep,
-                        DaSuDung = 0,
-                    };
-                    await _context.NgayPhepNhanViens.AddAsync(ngayPhep, cancellationToken);
-                }
+                    CccdNhanVien = request.CccdNhanVien,
+                    Nam = request.Nam,
+                    TongNgayPhep = request.TongNgayPhep,
+                    DaSuDung = 0,
+                };
+                await _context.NgayPhepNhanViens.AddAsync(ngayPhep, cancellationToken);
             }
 
             await _context.SaveChangesAsync(cancellationToken);
-            return new Response<bool>(true, string.IsNullOrWhiteSpace(request.CccdNhanVien) 
-                ? "Cấu hình phép cho toàn bộ nhân viên thành công." 
-                : "Cập nhật ngày phép cho nhân viên thành công.");
+            return new Response<bool>(true, existing != null
+                ? "Cập nhật phép thành công."
+                : "Tạo phép thành công.");
         }
     }
 }

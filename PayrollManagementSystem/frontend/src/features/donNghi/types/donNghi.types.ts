@@ -42,7 +42,7 @@ export interface TuChoiRequest {
 }
 
 export interface UpdateNgayPhepRequest {
-  cccdNhanVien?: string;
+  cccdNhanVien: string;
   nam: number;
   tongNgayPhep: number;
 }

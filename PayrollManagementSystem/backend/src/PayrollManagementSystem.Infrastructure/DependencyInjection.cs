@@ -18,8 +18,7 @@ namespace PayrollManagementSystem.Infrastructure
             services.AddScoped<Microsoft.EntityFrameworkCore.Diagnostics.ISaveChangesInterceptor, PayrollManagementSystem.Infrastructure.Persistence.Interceptors.AuditableEntitySaveChangesInterceptor>();
 
             services.AddDbContext<ApplicationDbContext>((sp, options) => {
-                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
-                       .UseSnakeCaseNamingConvention();
+                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
                 options.AddInterceptors(sp.GetServices<Microsoft.EntityFrameworkCore.Diagnostics.ISaveChangesInterceptor>());
             });
 
@@ -30,7 +29,6 @@ namespace PayrollManagementSystem.Infrastructure
             services.AddTransient<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddTransient<IPasswordHasher, PasswordHasher>();
             services.AddTransient<IExcelService, ExcelService>();
-            services.AddTransient<IPdfService, PdfService>();
             services.AddTransient<ITimekeepingCalculatorService, TimekeepingCalculatorService>();
 
             services.AddHostedService<UpdateExpiredDecisionsJob>();

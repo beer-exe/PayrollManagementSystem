@@ -8,7 +8,6 @@ using PayrollManagementSystem.Application.Features.ChamCong.Commands.UpdateChamC
 using PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamCongByNhanVien;
 using PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamCongSummary;
 using PayrollManagementSystem.Application.Features.ChamCong.Queries.GetMyChamCong;
-using PayrollManagementSystem.Application.Features.ChamCong.Queries.GetCaLamViecTrongNgay;
 using System.Security.Claims;
 
 namespace PayrollManagementSystem.API.Controllers
@@ -55,20 +54,6 @@ namespace PayrollManagementSystem.API.Controllers
                 Thang = thang,
                 Nam = nam,
                 IdPhongBan = idPhongBan
-            });
-            return Ok(response);
-        }
-
-        [HttpGet("ca-lam-viec-trong-ngay")]
-        [Authorize(Roles = "Admin,HR")]
-        public async Task<IActionResult> GetCaLamViecTrongNgay(
-            [FromQuery] string cccd,
-            [FromQuery] DateOnly ngay)
-        {
-            var response = await _mediator.Send(new GetCaLamViecTrongNgayQuery
-            {
-                Cccd = cccd,
-                Ngay = ngay
             });
             return Ok(response);
         }

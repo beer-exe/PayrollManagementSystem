@@ -7,7 +7,7 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.UpdateNg
 {
     public class UpdateNgayPhepCommand : IRequest<Response<bool>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
-        public string? CccdNhanVien { get; set; }
+        public string CccdNhanVien { get; set; } = null!;
         public int Nam { get; set; }
         public decimal TongNgayPhep { get; set; } = 12;
         public string CacheKeyPrefix => CacheKeyConstants.NgayPhep;
