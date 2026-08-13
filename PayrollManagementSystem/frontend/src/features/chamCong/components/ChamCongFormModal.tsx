@@ -3,6 +3,7 @@ import type { ChamCongDto, CreateChamCongRequest, UpdateChamCongRequest } from '
 import { employeeApi } from '../../employees/api/employeeApi';
 import type { UserProfileDetail } from '../../../types/profile.types';
 import { ClockTimePicker } from './ClockTimePicker';
+import { chamCongApi } from '../api/chamCongApi';
 
 interface Props {
   editItem: ChamCongDto | null;
@@ -21,6 +22,8 @@ export const ChamCongFormModal: React.FC<Props> = ({ editItem, onClose, onCreate
   const [ghiChu, setGhiChu] = useState(editItem?.ghiChu ?? '');
   const [submitting, setSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [mappingTime, setMappingTime] = useState(false);
+  const [mapMessage, setMapMessage] = useState<string | null>(null);
 
   // Employee Dropdown State
   const [employees, setEmployees] = useState<UserProfileDetail[]>([]);
@@ -68,6 +71,35 @@ export const ChamCongFormModal: React.FC<Props> = ({ editItem, onClose, onCreate
     if (gioVao === 'INVALID' || (gioVao && gioVao.length < 5)) errs.gioVao = 'Giờ vào không hợp lệ (VD: 08:30)';
     if (gioRa === 'INVALID' || (gioRa && gioRa.length < 5)) errs.gioRa = 'Giờ ra không hợp lệ (VD: 17:00)';
     return errs;
+  };
+
+  const handleMapGioCa = async () => {
+    if (!cccd || !ngay) {
+      setMapMessage('Vui lòng chọn Nhân viên và Ngày trước khi lấy giờ ca làm việc.');
+      return;
+    }
+    setMappingTime(true);
+    setMapMessage(null);
+    try {
+      const res = await chamCongApi.getCaLamViecTrongNgay(cccd, ngay);
+      if (res.data) {
+        if (res.data.isDayOff) {
+          setMapMessage(`Đây là ngày nghỉ (${res.data.source}). Không có ca làm việc.`);
+        } else {
+          if (!gioVao && res.data.gioVao) {
+            setGioVao(res.data.gioVao.substring(0, 5));
+          }
+          if (!gioRa && res.data.gioRa) {
+            setGioRa(res.data.gioRa.substring(0, 5));
+          }
+          setMapMessage(`Đã lấy giờ từ: ${res.data.source}`);
+        }
+      }
+    } catch (error) {
+      setMapMessage('Lỗi khi lấy thông tin ca làm việc.');
+    } finally {
+      setMappingTime(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -183,6 +215,19 @@ export const ChamCongFormModal: React.FC<Props> = ({ editItem, onClose, onCreate
                 <ClockTimePicker value={gioRa} onChange={setGioRa} placeholder="17:00" error={!!fieldErrors.gioRa} />
                 {fieldErrors.gioRa && <div className="cc-form-error">{fieldErrors.gioRa}</div>}
               </div>
+            </div>
+
+            <div style={{ marginBottom: 16 }}>
+              <button 
+                type="button" 
+                className="cc-btn cc-btn--outline" 
+                onClick={handleMapGioCa} 
+                disabled={mappingTime}
+                style={{ fontSize: 13, padding: '6px 12px' }}
+              >
+                {mappingTime ? 'Đang lấy...' : '🕒 Lấy giờ ca làm việc'}
+              </button>
+              {mapMessage && <span style={{ marginLeft: 10, fontSize: 12, color: mapMessage.includes('Lỗi') ? 'red' : 'var(--primary)' }}>{mapMessage}</span>}
             </div>
 
             <div className="cc-form-group">
