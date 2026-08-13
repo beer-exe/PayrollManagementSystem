@@ -42,7 +42,6 @@ export interface TuChoiRequest {
 }
 
 export interface UpdateNgayPhepRequest {
-  cccdNhanVien: string;
   nam: number;
   tongNgayPhep: number;
 }
