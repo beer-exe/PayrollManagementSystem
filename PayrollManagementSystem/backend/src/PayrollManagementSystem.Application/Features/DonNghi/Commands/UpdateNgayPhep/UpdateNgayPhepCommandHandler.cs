@@ -18,12 +18,19 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.UpdateNg
             {
                 throw new ApiException($"Chưa có lịch làm việc nào được tạo cho năm {request.Nam}. Vui lòng tạo lịch làm việc trước khi cấu hình ngày phép.");
             }
-            var nhanViens = await _context.NhanViens
-                .Where(nv => !nv.IsDeleted)
-                .ToListAsync(cancellationToken);
+            var nhanVienQuery = _context.NhanViens.Where(nv => !nv.IsDeleted);
+
+            if (!string.IsNullOrWhiteSpace(request.CccdNhanVien))
+            {
+                nhanVienQuery = nhanVienQuery.Where(nv => nv.Cccd == request.CccdNhanVien);
+            }
+
+            var nhanViens = await nhanVienQuery.ToListAsync(cancellationToken);
+
+            var cccds = nhanViens.Select(nv => nv.Cccd).ToList();
 
             var existingPhanCaList = await _context.NgayPhepNhanViens
-                .Where(n => n.Nam == request.Nam)
+                .Where(n => n.Nam == request.Nam && cccds.Contains(n.CccdNhanVien))
                 .ToListAsync(cancellationToken);
 
             foreach (var nhanVien in nhanViens)
@@ -47,7 +54,9 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.UpdateNg
             }
 
             await _context.SaveChangesAsync(cancellationToken);
-            return new Response<bool>(true, "Cấu hình phép cho toàn bộ nhân viên thành công.");
+            return new Response<bool>(true, string.IsNullOrWhiteSpace(request.CccdNhanVien) 
+                ? "Cấu hình phép cho toàn bộ nhân viên thành công." 
+                : "Cập nhật ngày phép cho nhân viên thành công.");
         }
     }
 }

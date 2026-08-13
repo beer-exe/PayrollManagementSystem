@@ -182,6 +182,9 @@ export const DonNghiManagement: React.FC = () => {
       nam: ngayPhepForm.nam,
       tongNgayPhep: ngayPhepForm.tong,
     };
+    if (ngayPhepEdit) {
+      req.cccdNhanVien = ngayPhepEdit.cccdNhanVien;
+    }
     const err = await updateNgayPhep(req);
     if (err) showToast('error', err);
       else { showToast('success', 'Cập nhật ngày phép thành công!'); handleNgayPhepFormClose(); loadData(); }
