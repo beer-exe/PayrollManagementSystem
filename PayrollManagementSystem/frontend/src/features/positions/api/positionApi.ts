@@ -10,5 +10,5 @@ export const positionApi = {
   updatePosition: (id: string, data: UpdatePositionCommand) => 
     axiosClient.put<unknown, ApiResponse<boolean>>(`/Positions/${id}`, data),
   toggleStatus: (id: string) => 
-    axiosClient.put<unknown, ApiResponse<boolean>>(`/Positions/${id}/toggle-status`),
+    axiosClient.put<unknown, ApiResponse<boolean>>(`/Positions/${id}/toggle-status`, {}),
 };

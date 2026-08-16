@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PayrollManagementSystem.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using PayrollManagementSystem.Infrastructure.Persistence;
 namespace PayrollManagementSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260813074141_AddKpiModule")]
+    partial class AddKpiModule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -656,12 +659,12 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasColumnName("updated_by");
 
                     b.HasKey("IdChiTietKpi")
-                        .HasName("pk_chi_tiet_kpis");
+                        .HasName("pk_chi_tiet_kpi");
 
                     b.HasIndex("IdPhieuKpi")
-                        .HasDatabaseName("ix_chi_tiet_kpis_id_phieu_kpi");
+                        .HasDatabaseName("ix_chi_tiet_kpi_id_phieu_kpi");
 
-                    b.ToTable("chi_tiet_kpis", (string)null);
+                    b.ToTable("ChiTietKpi", (string)null);
                 });
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.ChiTietLichLamViec", b =>
@@ -1262,13 +1265,13 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasColumnName("updated_by");
 
                     b.HasKey("IdKyKpi")
-                        .HasName("pk_ky_kpis");
+                        .HasName("pk_ky_kpi");
 
                     b.HasIndex("Thang", "Nam")
                         .IsUnique()
-                        .HasDatabaseName("ix_ky_kpis_thang_nam");
+                        .HasDatabaseName("ix_ky_kpi_thang_nam");
 
-                    b.ToTable("ky_kpis", (string)null);
+                    b.ToTable("KyKpi", (string)null);
                 });
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.KyLuong", b =>
@@ -2003,19 +2006,19 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasColumnName("updated_by");
 
                     b.HasKey("IdPhieuKpi")
-                        .HasName("pk_phieu_kpis");
+                        .HasName("pk_phieu_kpi");
 
                     b.HasIndex("CccdNhanVien")
-                        .HasDatabaseName("ix_phieu_kpis_cccd_nhan_vien");
+                        .HasDatabaseName("ix_phieu_kpi_cccd_nhan_vien");
 
                     b.HasIndex("CccdQuanLy")
-                        .HasDatabaseName("ix_phieu_kpis_cccd_quan_ly");
+                        .HasDatabaseName("ix_phieu_kpi_cccd_quan_ly");
 
                     b.HasIndex("IdKyKpi", "CccdNhanVien")
                         .IsUnique()
-                        .HasDatabaseName("ix_phieu_kpis_id_ky_kpi_cccd_nhan_vien");
+                        .HasDatabaseName("ix_phieu_kpi_id_ky_kpi_cccd_nhan_vien");
 
-                    b.ToTable("phieu_kpis", (string)null);
+                    b.ToTable("PhieuKpi", (string)null);
                 });
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.PhongBan", b =>
@@ -2473,7 +2476,7 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasForeignKey("IdPhieuKpi")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_chi_tiet_kpis_phieu_kpis_id_phieu_kpi");
+                        .HasConstraintName("fk_chi_tiet_kpi_phieu_kpi_id_phieu_kpi");
 
                     b.Navigation("PhieuKpi");
                 });
@@ -2679,20 +2682,20 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasForeignKey("CccdNhanVien")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_phieu_kpis_nhan_viens_cccd_nhan_vien");
+                        .HasConstraintName("fk_phieu_kpi_nhan_viens_cccd_nhan_vien");
 
                     b.HasOne("PayrollManagementSystem.Domain.Models.NhanVien", "QuanLy")
                         .WithMany()
                         .HasForeignKey("CccdQuanLy")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_phieu_kpis_nhan_viens_cccd_quan_ly");
+                        .HasConstraintName("fk_phieu_kpi_nhan_viens_cccd_quan_ly");
 
                     b.HasOne("PayrollManagementSystem.Domain.Models.KyKpi", "KyKpi")
                         .WithMany("PhieuKpis")
                         .HasForeignKey("IdKyKpi")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_phieu_kpis_ky_kpis_id_ky_kpi");
+                        .HasConstraintName("fk_phieu_kpi_ky_kpi_id_ky_kpi");
 
                     b.Navigation("KyKpi");
 

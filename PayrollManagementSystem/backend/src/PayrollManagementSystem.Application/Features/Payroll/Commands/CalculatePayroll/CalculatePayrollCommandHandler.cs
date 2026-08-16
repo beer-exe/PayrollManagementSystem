@@ -107,6 +107,21 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                     g => g.OrderByDescending(p => p.KyDanhGia.NgayKetThuc).FirstOrDefault()
                 );
 
+            // Lấy danh sách Phiếu KPI (P3)
+            var phieuKpis = await _context.PhieuKpis
+                .Include(p => p.KyKpi)
+                .Where(p => p.TrangThai == TrangThaiPhieuKpi.DA_PHE_DUYET
+                         && p.KyKpi.Thang == request.Thang
+                         && p.KyKpi.Nam == request.Nam)
+                .ToListAsync(cancellationToken);
+                
+            var phieuKpiGroup = phieuKpis
+                .GroupBy(p => p.CccdNhanVien)
+                .ToDictionary(
+                    g => g.Key, 
+                    g => g.FirstOrDefault()
+                );
+
             // Lấy danh sách khoản khấu trừ đang kích hoạt
             var activeKhoanKhauTrus = await _context.KhoanKhauTrus.Where(x => x.IsActive).ToListAsync(cancellationToken);
 
@@ -226,6 +241,10 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                 
                 // P3
                 decimal heSoP3 = 1.0m; // Mặc định
+                if (phieuKpiGroup.TryGetValue(nv.Cccd, out var phieuP3) && phieuP3 != null)
+                {
+                    heSoP3 = phieuP3.HeSoP3;
+                }
 
                 // Công thức chuẩn theo ý (Cách 1: Lương 3P = P1 * P2 * P3)
                 decimal luong3P = p1 * heSoP2 * heSoP3;

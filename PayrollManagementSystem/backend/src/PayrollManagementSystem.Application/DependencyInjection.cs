@@ -27,6 +27,8 @@ namespace PayrollManagementSystem.Application
                 options.AddBehavior(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
             });
 
+            services.AddTransient<PayrollManagementSystem.Application.Common.Interfaces.IKpiAuthorizationService, PayrollManagementSystem.Application.Services.KpiAuthorizationService>();
+
             return services;
         }
     }

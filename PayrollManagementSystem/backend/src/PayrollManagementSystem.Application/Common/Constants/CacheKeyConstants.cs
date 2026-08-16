@@ -20,4 +20,6 @@ public static class CacheKeyConstants
     public const string MucQuyDoi    = "MucQuyDoi_";
     public const string BacThue      = "BacThue_";
     public const string CauHinhGiamTru = "CauHinhGiamTru_";
+    public const string Kpi = "Kpi_";
 }
+

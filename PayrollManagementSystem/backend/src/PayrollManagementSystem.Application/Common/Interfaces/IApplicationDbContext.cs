@@ -29,6 +29,10 @@ namespace PayrollManagementSystem.Application.Common.Interfaces
         DbSet<ChiTietDanhGiaNangLuc> ChiTietDanhGiaNangLucs { get; set; }
         DbSet<MucQuyDoiP2> MucQuyDoiP2s { get; set; }
 
+        DbSet<KyKpi> KyKpis { get; set; }
+        DbSet<PhieuKpi> PhieuKpis { get; set; }
+        DbSet<ChiTietKpi> ChiTietKpis { get; set; }
+
         DbSet<LichLamViec> LichLamViecs { get; set; }
         DbSet<ChiTietLichLamViec> ChiTietLichLamViecs { get; set; }
 

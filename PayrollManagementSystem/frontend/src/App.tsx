@@ -37,6 +37,9 @@ import { SystemLogViewer } from '@/features/systemLogs/components/SystemLogViewe
 import MySchedule from "@/features/personalSchedule/components/MySchedule";
 import MyAttendance from "@/features/personalAttendance/components/MyAttendance";
 import { MyPayroll } from "@/features/personalPayroll/components/MyPayroll";
+import { KpiManagement } from "@/features/kpi/components/KpiManagement";
+import { MyKpi } from "@/features/kpi/components/MyKpi";
+import { KpiApprovalList } from "@/features/kpi/components/KpiApprovalList";
 
 
 const ProtectedRoute = ({ allowedRoles, requireManager }: { allowedRoles: string[], requireManager?: boolean }) => {
@@ -121,16 +124,19 @@ function App() {
 
           <Route element={<ProtectedRoute allowedRoles={["HR"]} />}>
             <Route path="/performance/ky-danh-gia" element={<KyDanhGiaManagement />} />
+            <Route path="/performance/kpi/ky-kpi" element={<KpiManagement />} />
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} />}>
             <Route path="/performance/tu-danh-gia" element={<TuDanhGia />} />
             <Route path="/performance/tu-danh-gia/:id" element={<TuDanhGiaForm />} />
+            <Route path="/performance/kpi/my-kpi" element={<MyKpi />} />
           </Route>
           
           <Route element={<ProtectedRoute allowedRoles={["Admin", "HR", "Employee"]} requireManager={true} />}>
             <Route path="/performance/duyet-danh-gia" element={<DuyetDanhGia />} />
             <Route path="/performance/duyet-danh-gia/:id" element={<DuyetDanhGiaForm />} />
+            <Route path="/performance/kpi/duyet-kpi" element={<KpiApprovalList />} />
           </Route>
         </Route>
 
