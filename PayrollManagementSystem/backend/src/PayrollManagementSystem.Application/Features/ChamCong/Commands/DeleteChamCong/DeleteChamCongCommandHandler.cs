@@ -23,6 +23,14 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.DeleteC
             if (chamCong == null)
                 throw new ApiException("Không tìm thấy bản ghi chấm công.");
 
+            var isKyLuongClosed = await _context.KyLuongs
+                .AnyAsync(kl => kl.TrangThai != PayrollManagementSystem.Domain.Enums.TrangThaiKyLuong.CHUA_CHOT
+                             && chamCong.NgayChamCong >= kl.NgayBatDau
+                             && chamCong.NgayChamCong <= kl.NgayKetThuc, cancellationToken);
+
+            if (isKyLuongClosed)
+                throw new ApiException("Không thể xóa dữ liệu chấm công vì kỳ lương tương ứng đã được chốt.");
+
             _context.SoftRemove(chamCong);
             await _context.SaveChangesAsync(cancellationToken);
 

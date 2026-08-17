@@ -77,6 +77,14 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.ImportC
                 .Select(e => $"{e.CccdNhanVien}_{e.NgayChamCong:yyyy-MM-dd}")
                 .ToHashSet();
 
+            var minDate = parsedDates.Any() ? parsedDates.Min() : DateOnly.MinValue;
+            var maxDate = parsedDates.Any() ? parsedDates.Max() : DateOnly.MaxValue;
+            var closedKyLuongs = await _context.KyLuongs
+                .Where(kl => kl.TrangThai != TrangThaiKyLuong.CHUA_CHOT
+                          && kl.NgayKetThuc >= minDate
+                          && kl.NgayBatDau <= maxDate)
+                .ToListAsync(cancellationToken);
+
             var result = new ImportChamCongResultDto { TongSoDong = rows.Count };
             var toInsert = new List<Domain.Models.ChamCong>();
 
@@ -102,6 +110,9 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.ImportC
 
                     if (ngay > DateOnly.FromDateTime(DateTime.Today))
                         throw new Exception($"Ngày chấm công {ngay:dd/MM/yyyy} không được lớn hơn ngày hiện tại.");
+
+                    if (closedKyLuongs.Any(kl => ngay >= kl.NgayBatDau && ngay <= kl.NgayKetThuc))
+                        throw new Exception($"Không thể import vì kỳ lương của ngày {ngay:dd/MM/yyyy} đã được chốt.");
 
                     var key = $"{cccd}_{ngay:yyyy-MM-dd}";
                     if (existingKeySet.Contains(key))

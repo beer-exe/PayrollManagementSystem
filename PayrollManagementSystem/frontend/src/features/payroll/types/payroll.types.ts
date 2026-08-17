@@ -42,3 +42,21 @@ export interface CalculatePayrollCommand {
   thang: number;
   nam: number;
 }
+
+export interface ReopenPayrollCommand {
+  thang: number;
+  nam: number;
+  lyDo?: string;
+}
+
+export interface KyLuongStatusDto {
+  thang: number;
+  nam: number;
+  tenKyLuong: string;
+  ngayBatDau: string;
+  ngayKetThuc: string;
+  trangThai: 'CHUA_TAO' | 'CHUA_CHOT' | 'DA_CHOT' | 'DA_THANH_TOAN' | string;
+  tenTrangThai: string;
+  isLocked: boolean;
+  coDuLieuBangLuong: boolean;
+}

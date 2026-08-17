@@ -40,7 +40,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ payslip, onClose }) 
     if (!payslip.chiTietThue) return null;
     try {
       const details = JSON.parse(payslip.chiTietThue);
-      
+
       return (
         <div style={{ marginBottom: '8px', paddingLeft: '16px', opacity: 0.9, fontSize: '0.9em' }}>
           <div className="salary-row" style={{ color: 'var(--text-secondary)' }}>
@@ -55,7 +55,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ payslip, onClose }) 
             <div className="salary-label">Thu nhập tính thuế:</div>
             <div>{formatCurrency(details.thuNhapTinhThue)}</div>
           </div>
-          
+
           {details.chiTietBacThue && details.chiTietBacThue.length > 0 && (
             <div style={{ marginTop: '4px', paddingLeft: '8px', borderLeft: '2px solid var(--border-color)' }}>
               {details.chiTietBacThue.map((bac: any, index: number) => (
@@ -88,8 +88,8 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ payslip, onClose }) 
         <div className="payroll-modal-header">
           <h3>Chi tiết phiếu lương - {payslip.thang}/{payslip.nam}</h3>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <button 
-              className="print-btn" 
+            <button
+              className="print-btn"
               onClick={handlePrint}
               style={{
                 background: 'rgba(255,255,255,0.2)',
@@ -114,7 +114,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ payslip, onClose }) 
             <button className="close-btn" onClick={onClose}>&times;</button>
           </div>
         </div>
-        
+
         <div className="payroll-modal-body">
           <div className="emp-info-card">
             <div className="emp-info-row">
@@ -141,21 +141,21 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ payslip, onClose }) 
 
           <div className="salary-details-section">
             <h4>1. Thu nhập từ lương 3P</h4>
-            
+
             <div className="salary-row">
               <div className="salary-label">
                 P1 - Lương vị trí
               </div>
               <div className="salary-amount">{formatCurrency(payslip.p1)}</div>
             </div>
-            
+
             <div className="salary-row">
               <div className="salary-label">
                 P2 - Hệ số năng lực
               </div>
               <div className="salary-amount">x {payslip.heSoP2}</div>
             </div>
-            
+
             <div className="salary-row">
               <div className="salary-label">
                 P3 - Hệ số hiệu suất
@@ -179,6 +179,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ payslip, onClose }) 
               <div className="salary-amount amount-positive">{formatCurrency(payslip.luongThoiGian)}</div>
             </div>
 
+            {/*
             <h4 style={{ marginTop: '24px' }}>2. Phụ cấp & Thưởng / Phạt</h4>
             
             <div className="salary-row">
@@ -200,16 +201,17 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ payslip, onClose }) 
               <div className="salary-label">Phạt / Trừ lương</div>
               <div className="salary-amount amount-negative">-{formatCurrency(payslip.phat)}</div>
             </div>
+            */}
 
-            <h4 style={{ marginTop: '24px' }}>3. Khấu trừ (Bảo hiểm, Thuế)</h4>
-            
+            <h4 style={{ marginTop: '24px' }}>2. Khấu trừ (Bảo hiểm, Thuế)</h4>
+
             {renderChiTietKhauTru()}
 
             <div className="salary-row sub-total">
               <div className="salary-label">Tổng Khấu trừ</div>
               <div className="salary-amount amount-negative">-{formatCurrency(payslip.khauTru)}</div>
             </div>
-            
+
             <div className="salary-row">
               <div className="salary-label">Thuế TNCN</div>
               <div className="salary-amount amount-negative">-{formatCurrency(payslip.truThue)}</div>

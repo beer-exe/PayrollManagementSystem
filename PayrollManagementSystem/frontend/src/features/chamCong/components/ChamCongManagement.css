@@ -11,26 +11,6 @@
   position: relative;
 }
 
-/* Toast */
-.cc-toast {
-  position: fixed;
-  top: 24px;
-  right: 24px;
-  z-index: 9999;
-  padding: 14px 22px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-  animation: cc-fadeInRight 0.3s ease;
-}
-.cc-toast--success { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-text); }
-.cc-toast--error   { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-text); }
-
-@keyframes cc-fadeInRight {
-  from { opacity: 0; transform: translateX(40px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
 
 /* Header */
 .cc-header {

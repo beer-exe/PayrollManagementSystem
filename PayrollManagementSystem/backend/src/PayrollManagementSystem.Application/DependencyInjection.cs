@@ -28,6 +28,7 @@ namespace PayrollManagementSystem.Application
             });
 
             services.AddTransient<PayrollManagementSystem.Application.Common.Interfaces.IKpiAuthorizationService, PayrollManagementSystem.Application.Services.KpiAuthorizationService>();
+            services.AddTransient<PayrollManagementSystem.Application.Common.Interfaces.IHrAuthorizationService, PayrollManagementSystem.Application.Services.HrAuthorizationService>();
 
             return services;
         }

@@ -615,3 +615,18 @@
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
   background-color: rgba(156, 163, 175, 0.8);
 }
+
+/* ---- Payroll Period Actions ---- */
+.prl-btn-warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 1px 3px rgba(217, 119, 6, 0.2);
+}
+
+.prl-btn-warning:hover:not(:disabled) {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+

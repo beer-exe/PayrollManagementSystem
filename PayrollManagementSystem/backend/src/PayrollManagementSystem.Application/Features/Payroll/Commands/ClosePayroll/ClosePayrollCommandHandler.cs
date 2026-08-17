@@ -10,10 +10,17 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.ClosePay
     public class ClosePayrollCommandHandler : IRequestHandler<ClosePayrollCommand, Response<bool>>
     {
         private readonly IApplicationDbContext _context;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly IHrAuthorizationService _hrAuthorizationService;
 
-        public ClosePayrollCommandHandler(IApplicationDbContext context)
+        public ClosePayrollCommandHandler(
+            IApplicationDbContext context,
+            ICurrentUserService currentUserService,
+            IHrAuthorizationService hrAuthorizationService)
         {
             _context = context;
+            _currentUserService = currentUserService;
+            _hrAuthorizationService = hrAuthorizationService;
         }
 
         public async Task<Response<bool>> Handle(ClosePayrollCommand request, CancellationToken cancellationToken)
@@ -36,6 +43,17 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.ClosePay
             if (!hasBangLuong)
             {
                 throw new ApiException($"Không thể chốt kỳ lương tháng {request.Thang}/{request.Nam} vì chưa có dữ liệu bảng lương (hãy ấn Tính lương trước).");
+            }
+
+            // Kiểm tra ràng buộc thời gian: Nếu chốt trước ngày kết thúc kỳ lương, chỉ HR cấp quản lý mới có quyền
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            if (today < kyLuong.NgayKetThuc)
+            {
+                var isHrManager = await _hrAuthorizationService.IsHrManagerAsync(_currentUserService.UserId, cancellationToken);
+                if (!isHrManager)
+                {
+                    throw new ApiException($"Không thể chốt kỳ lương tháng {request.Thang}/{request.Nam} trước khi kết thúc tháng (ngày {kyLuong.NgayKetThuc:dd/MM/yyyy}). Chỉ HR cấp quản lý mới có quyền chốt trước thời hạn!");
+                }
             }
 
             kyLuong.TrangThai = TrangThaiKyLuong.DA_CHOT;

@@ -11,6 +11,7 @@ import { useDataTable } from '../../../hooks/useDataTable';
 import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
 import { SortableHeader } from '../../../components/DataTable/SortableHeader';
 import { ExportButtons } from '../../../components/DataTable/ExportButtons';
+import { Toast } from '../../../components/Toast/Toast';
 import './ChamCongManagement.css';
 
 const LOAI_NGAY_COLOR: Record<string, string> = {
@@ -80,7 +81,7 @@ export const ChamCongManagement: React.FC = () => {
   const [editItem, setEditItem] = useState<ChamCongDto | null>(null);
 
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [toast, setToast] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
 
   const { list, summary, loading, error, fetchList, fetchSummary, createChamCong, updateChamCong, deleteChamCong } = useChamCong();
 
@@ -131,9 +132,8 @@ export const ChamCongManagement: React.FC = () => {
     setChiTietPage(1);
   }, [thang, nam, tongHopSearchTerm, chiTietSearchTerm, idPhongBan, activeTab]);
 
-  const showToast = (type: 'success' | 'error', text: string) => {
-    setToastMsg({ type, text });
-    setTimeout(() => setToastMsg(null), 3500);
+  const showToast = (type: 'success' | 'error' | 'info', message: string) => {
+    setToast({ type, message });
   };
 
   const handleCreate = async (data: CreateChamCongRequest) => {
@@ -227,8 +227,12 @@ export const ChamCongManagement: React.FC = () => {
   return (
     <div className="cc-page">
       {/* TOAST */}
-      {toastMsg && (
-        <div className={`cc-toast cc-toast--${toastMsg.type}`}>{toastMsg.text}</div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
 
       {/* HEADER */}

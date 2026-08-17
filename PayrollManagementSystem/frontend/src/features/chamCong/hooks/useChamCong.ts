@@ -14,6 +14,10 @@ export const useChamCong = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const getErrorMessage = (err: any, defaultMsg: string) => {
+    return err?.response?.data?.Message || err?.response?.data?.message || (err instanceof Error ? err.message : defaultMsg);
+  };
+
   const fetchList = useCallback(async (thang: number, nam: number, cccd?: string, idPhongBan?: string) => {
     setLoading(true);
     setError(null);
@@ -21,8 +25,8 @@ export const useChamCong = () => {
       const res = await chamCongApi.getList(thang, nam, cccd, idPhongBan);
       if (res.succeeded) setList(res.data);
       else setError(res.message);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Lỗi tải dữ liệu chấm công.');
+    } catch (err: any) {
+      setError(getErrorMessage(err, 'Lỗi tải dữ liệu chấm công.'));
     } finally {
       setLoading(false);
     }
@@ -35,8 +39,8 @@ export const useChamCong = () => {
       const res = await chamCongApi.getSummary(thang, nam, idPhongBan);
       if (res.succeeded) setSummary(res.data);
       else setError(res.message);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Lỗi tải tổng hợp chấm công.');
+    } catch (err: any) {
+      setError(getErrorMessage(err, 'Lỗi tải tổng hợp chấm công.'));
     } finally {
       setLoading(false);
     }
@@ -47,8 +51,8 @@ export const useChamCong = () => {
       const res = await chamCongApi.create(data);
       if (res.succeeded) return null;
       return res.message;
-    } catch (err: unknown) {
-      return err instanceof Error ? err.message : 'Lỗi nhập chấm công.';
+    } catch (err: any) {
+      return getErrorMessage(err, 'Lỗi nhập chấm công.');
     }
   }, []);
 
@@ -57,8 +61,8 @@ export const useChamCong = () => {
       const res = await chamCongApi.update(id, data);
       if (res.succeeded) return null;
       return res.message;
-    } catch (err: unknown) {
-      return err instanceof Error ? err.message : 'Lỗi cập nhật chấm công.';
+    } catch (err: any) {
+      return getErrorMessage(err, 'Lỗi cập nhật chấm công.');
     }
   }, []);
 
@@ -67,8 +71,8 @@ export const useChamCong = () => {
       const res = await chamCongApi.delete(id);
       if (res.succeeded) return null;
       return res.message;
-    } catch (err: unknown) {
-      return err instanceof Error ? err.message : 'Lỗi xóa bản ghi.';
+    } catch (err: any) {
+      return getErrorMessage(err, 'Lỗi xóa bản ghi.');
     }
   }, []);
 
@@ -78,8 +82,8 @@ export const useChamCong = () => {
       if (res.succeeded) return res.data;
       setError(res.message);
       return null;
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Lỗi import chấm công.');
+    } catch (err: any) {
+      setError(getErrorMessage(err, 'Lỗi import chấm công.'));
       return null;
     }
   }, []);

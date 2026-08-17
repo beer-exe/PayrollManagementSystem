@@ -1,22 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { payrollApi } from '../api/payrollApi';
 import { workScheduleApi } from '../../workSchedule/api/workScheduleApi';
-import { PayrollListDto } from '../types/payroll.types';
+import { PayrollListDto, KyLuongStatusDto } from '../types/payroll.types';
 import { Toast } from '../../../components/Toast/Toast';
 import { PayrollDetailModal } from './PayrollDetailModal';
+import { ReopenPayrollModal } from './ReopenPayrollModal';
 import { useDataTable } from '../../../hooks/useDataTable';
 import { SortableHeader } from '../../../components/DataTable/SortableHeader';
 import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportUtils';
+import { useAuthStore } from '@/store/useAuthStore';
 import './PayrollManagement.css';
 
 const PayrollManagement: React.FC = () => {
+  const { user } = useAuthStore();
+  // Nghiệp vụ quy định: Chỉ HR cấp quản lý (role HR và có hasDirectReports) mới có quyền mở chốt và chốt sớm
+  const isHrManager = user?.role === 'HR' && !!user?.hasDirectReports;
+
   const [thang, setThang] = useState<number>(new Date().getMonth() + 1);
   const [nam, setNam] = useState<number>(new Date().getFullYear());
   const [payrolls, setPayrolls] = useState<PayrollListDto[]>([]);
+  const [kyLuongStatus, setKyLuongStatus] = useState<KyLuongStatusDto | null>(null);
   const [loading, setLoading] = useState(false);
   const [calculating, setCalculating] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [reopening, setReopening] = useState(false);
+  const [isReopenModalOpen, setIsReopenModalOpen] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [selectedPayroll, setSelectedPayroll] = useState<PayrollListDto | null>(null);
   const [validYears, setValidYears] = useState<number[]>([]);
@@ -59,26 +68,38 @@ const PayrollManagement: React.FC = () => {
     fetchYears();
   }, []);
 
-  const fetchPayrolls = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await payrollApi.getPayrollList(thang, nam);
-      if (res.succeeded) {
-        setPayrolls(res.data || []);
+      const [payrollRes, statusRes] = await Promise.all([
+        payrollApi.getPayrollList(thang, nam),
+        payrollApi.getKyLuongStatus(thang, nam)
+      ]);
+
+      if (payrollRes.succeeded) {
+        setPayrolls(payrollRes.data || []);
+      }
+      if (statusRes.succeeded && statusRes.data) {
+        setKyLuongStatus(statusRes.data);
       }
     } catch (error) {
-      console.error('Lỗi khi tải bảng lương', error);
+      console.error('Lỗi khi tải dữ liệu bảng lương', error);
       setToast({ message: 'Không thể tải bảng lương. Vui lòng kiểm tra lại!', type: 'error' });
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchPayrolls();
   }, [thang, nam]);
 
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
   const handleCalculate = async () => {
+    if (kyLuongStatus?.isLocked) {
+      setToast({ message: 'Kỳ lương này đã được chốt sổ, không thể tính lại. Chỉ HR cấp quản lý mới có quyền mở chốt.', type: 'error' });
+      return;
+    }
+
     if (!window.confirm(`Bạn có chắc chắn muốn tính lương cho tháng ${thang}/${nam} không? Dữ liệu cũ của kỳ này (nếu có và chưa chốt) sẽ bị thay thế.`)) return;
 
     try {
@@ -86,7 +107,7 @@ const PayrollManagement: React.FC = () => {
       const res = await payrollApi.calculatePayroll({ thang, nam });
       if (res.succeeded) {
         setToast({ message: 'Tính lương thành công!', type: 'success' });
-        fetchPayrolls();
+        fetchData();
       }
     } catch (error: any) {
       console.error('Lỗi khi tính lương', error);
@@ -98,14 +119,41 @@ const PayrollManagement: React.FC = () => {
   };
 
   const handleClosePayroll = async () => {
-    if (!window.confirm(`Bạn có chắc chắn muốn CHỐT lương tháng ${thang}/${nam}? Sau khi chốt sẽ không thể tính lại.`)) return;
+    if (kyLuongStatus?.isLocked) {
+      setToast({ message: 'Kỳ lương này đã được chốt rồi.', type: 'error' });
+      return;
+    }
+
+    // Kiểm tra thời gian chốt lương
+    const now = new Date();
+    const lastDayOfMonth = new Date(nam, thang, 0); // Ngày cuối cùng của tháng
+    const isBeforeEndOfMonth = now < lastDayOfMonth;
+
+    if (isBeforeEndOfMonth) {
+      if (!isHrManager) {
+        setToast({
+          message: `Không thể chốt kỳ lương tháng ${thang}/${nam} trước khi kết thúc tháng (ngày ${lastDayOfMonth.toLocaleDateString('vi-VN')}). Chỉ HR cấp quản lý mới có quyền chốt trước thời hạn!`,
+          type: 'error'
+        });
+        return;
+      }
+
+      const confirmPremature = window.confirm(
+        `⚠️ CẢNH BÁO CHỐT SỚM:\nTháng ${thang}/${nam} chưa kết thúc (Hôm nay là ngày ${now.toLocaleDateString('vi-VN')}, kết thúc kỳ là ngày ${lastDayOfMonth.toLocaleDateString('vi-VN')}).\n` +
+        `Nếu bạn chốt sớm, ngày công của những ngày còn lại trong tháng sẽ không được tính vào bảng lương trừ khi mở chốt lại sau đó.\n\n` +
+        `Bạn có chắc chắn muốn chốt sớm kỳ lương này không?`
+      );
+      if (!confirmPremature) return;
+    } else {
+      if (!window.confirm(`Bạn có chắc chắn muốn CHỐT lương tháng ${thang}/${nam}? Sau khi chốt sẽ không thể tính lại nếu không được HR cấp quản lý mở chốt.`)) return;
+    }
 
     try {
       setClosing(true);
       const res = await payrollApi.closePayroll({ thang, nam });
       if (res.succeeded) {
         setToast({ message: `Đã chốt lương tháng ${thang}/${nam} thành công!`, type: 'success' });
-        fetchPayrolls();
+        fetchData();
       }
     } catch (error: any) {
       console.error('Lỗi khi chốt lương', error);
@@ -113,6 +161,24 @@ const PayrollManagement: React.FC = () => {
       setToast({ message: msg, type: 'error' });
     } finally {
       setClosing(false);
+    }
+  };
+
+  const handleReopenConfirm = async (lyDo: string) => {
+    try {
+      setReopening(true);
+      const res = await payrollApi.reopenPayroll({ thang, nam, lyDo });
+      if (res.succeeded) {
+        setToast({ message: `Đã mở chốt kỳ lương tháng ${thang}/${nam} thành công!`, type: 'success' });
+        setIsReopenModalOpen(false);
+        fetchData();
+      }
+    } catch (error: any) {
+      console.error('Lỗi khi mở chốt lương', error);
+      const msg = error.response?.data?.Message || error.response?.data?.message || 'Có lỗi xảy ra khi mở chốt kỳ lương.';
+      setToast({ message: msg, type: 'error' });
+    } finally {
+      setReopening(false);
     }
   };
 
@@ -152,17 +218,19 @@ const PayrollManagement: React.FC = () => {
     exportToPdf(allFilteredAndSortedData, columns, `Bang_Luong_T${thang}_${nam}.pdf`, `BẢNG LƯƠNG THÁNG ${thang}/${nam}`);
   };
 
+  const isLocked = kyLuongStatus?.isLocked ?? false;
+
   return (
     <div className="prl-container">
       {/* Header */}
       <div className="prl-header">
         <div className="prl-header-title">
           <h2>💰 Bảng tính lương</h2>
-          <p>Quản lý và tính toán lương cho nhân viên theo tháng</p>
+          <p>Quản lý và tính toán lương cho nhân viên theo phương pháp 3P</p>
         </div>
         <div className="prl-actions">
           {validYears.length > 0 && (
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                 <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Kỳ lương:</span>
                 <select className="prl-select" style={{ width: '100px', padding: '0.4rem 1rem' }} value={thang} onChange={(e) => setThang(Number(e.target.value))}>
@@ -176,10 +244,13 @@ const PayrollManagement: React.FC = () => {
                   ))}
                 </select>
               </div>
+
+              {/* Action Buttons */}
               <button
                 className="prl-btn prl-btn-primary"
                 onClick={handleCalculate}
-                disabled={calculating}
+                disabled={calculating || isLocked}
+                title={isLocked ? "Kỳ lương đã chốt. Mở chốt trước nếu cần tính lại." : "Chạy tính toán lương cho toàn bộ nhân viên"}
               >
                 {calculating ? (
                   <>
@@ -196,30 +267,75 @@ const PayrollManagement: React.FC = () => {
                 )}
               </button>
               
-              <button
-                className="prl-btn"
-                onClick={handleClosePayroll}
-                disabled={closing || payrolls.length === 0}
-                style={{
-                  background: 'var(--success-color, #10b981)',
-                  color: 'white',
-                  border: 'none'
-                }}
-              >
-                {closing ? (
-                  <>
-                    <div className="prl-spinner" style={{ width: 14, height: 14, borderRightColor: 'transparent', borderTopColor: '#fff', borderLeftColor: '#fff', borderBottomColor: '#fff' }} />
-                    Đang chốt...
-                  </>
+              {/* Dynamic Action Button: Chốt kỳ lương / Mở chốt kỳ lương */}
+              {isLocked ? (
+                isHrManager ? (
+                  <button
+                    className="prl-btn prl-btn-warning"
+                    onClick={() => setIsReopenModalOpen(true)}
+                    disabled={reopening}
+                    title="Mở chốt kỳ lương để tính bổ sung hoặc điều chỉnh (Dành riêng cho HR Cấp Quản lý)"
+                  >
+                    {reopening ? (
+                      <>
+                        <div className="prl-spinner" style={{ width: 14, height: 14, borderRightColor: 'transparent', borderTopColor: '#fff', borderLeftColor: '#fff', borderBottomColor: '#fff' }} />
+                        Đang mở...
+                      </>
+                    ) : (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: 18, height: 18 }}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                        </svg>
+                        Mở chốt kỳ lương
+                      </>
+                    )}
+                  </button>
                 ) : (
-                  <>
+                  <button
+                    className="prl-btn"
+                    disabled={true}
+                    title="Kỳ lương này đã được chốt sổ. Chỉ HR cấp quản lý mới có quyền mở chốt."
+                    style={{
+                      background: '#94a3b8',
+                      color: 'white',
+                      border: 'none',
+                      opacity: 0.6,
+                      cursor: 'not-allowed'
+                    }}
+                  >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: 18, height: 18 }}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                     </svg>
-                    Chốt kỳ lương
-                  </>
-                )}
-              </button>
+                    Đã chốt kỳ lương
+                  </button>
+                )
+              ) : (
+                <button
+                  className="prl-btn"
+                  onClick={handleClosePayroll}
+                  disabled={closing || payrolls.length === 0}
+                  title="Chốt sổ kỳ lương"
+                  style={{
+                    background: 'var(--success-color, #10b981)',
+                    color: 'white',
+                    border: 'none'
+                  }}
+                >
+                  {closing ? (
+                    <>
+                      <div className="prl-spinner" style={{ width: 14, height: 14, borderRightColor: 'transparent', borderTopColor: '#fff', borderLeftColor: '#fff', borderBottomColor: '#fff' }} />
+                      Đang chốt...
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: 18, height: 18 }}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                      </svg>
+                      Chốt kỳ lương
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -328,32 +444,32 @@ const PayrollManagement: React.FC = () => {
           </table>
         </div>
 
-          {/* Pagination */}
-          {totalPages > 0 && (
-            <div className="prl-pagination" style={{ justifyContent: 'flex-end' }}>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <button
-                  className="prl-btn prl-btn-secondary"
-                  disabled={currentPage <= 1 || loading}
-                  onClick={() => setCurrentPage(p => p - 1)}
-                  style={{ padding: '0.35rem 0.75rem' }}
-                >
-                  Trước
-                </button>
-                <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
-                  Trang <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{currentPage}</span> / <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{totalPages}</span>
-                </span>
-                <button
-                  className="prl-btn prl-btn-secondary"
-                  disabled={currentPage >= totalPages || loading}
-                  onClick={() => setCurrentPage(p => p + 1)}
-                  style={{ padding: '0.35rem 0.75rem' }}
-                >
-                  Sau
-                </button>
-              </div>
+        {/* Pagination */}
+        {totalPages > 0 && (
+          <div className="prl-pagination" style={{ justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <button
+                className="prl-btn prl-btn-secondary"
+                disabled={currentPage <= 1 || loading}
+                onClick={() => setCurrentPage(p => p - 1)}
+                style={{ padding: '0.35rem 0.75rem' }}
+              >
+                Trước
+              </button>
+              <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
+                Trang <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{currentPage}</span> / <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{totalPages}</span>
+              </span>
+              <button
+                className="prl-btn prl-btn-secondary"
+                disabled={currentPage >= totalPages || loading}
+                onClick={() => setCurrentPage(p => p + 1)}
+                style={{ padding: '0.35rem 0.75rem' }}
+              >
+                Sau
+              </button>
             </div>
-          )}
+          </div>
+        )}
       </div>
 
       {toast && (
@@ -370,8 +486,19 @@ const PayrollManagement: React.FC = () => {
           onClose={() => setSelectedPayroll(null)}
         />
       )}
+
+      {/* Modal Mở chốt kỳ lương */}
+      <ReopenPayrollModal
+        isOpen={isReopenModalOpen}
+        onClose={() => setIsReopenModalOpen(false)}
+        onConfirm={handleReopenConfirm}
+        thang={thang}
+        nam={nam}
+        loading={reopening}
+      />
     </div>
   );
 };
 
 export default PayrollManagement;
+export { PayrollManagement };

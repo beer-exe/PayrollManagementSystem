@@ -28,6 +28,14 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.UpdateC
             if (chamCong == null)
                 throw new ApiException($"Không tìm thấy bản ghi chấm công.");
 
+            var isKyLuongClosed = await _context.KyLuongs
+                .AnyAsync(kl => kl.TrangThai != TrangThaiKyLuong.CHUA_CHOT
+                             && chamCong.NgayChamCong >= kl.NgayBatDau
+                             && chamCong.NgayChamCong <= kl.NgayKetThuc, cancellationToken);
+
+            if (isKyLuongClosed)
+                throw new ApiException("Không thể chỉnh sửa dữ liệu chấm công vì kỳ lương tương ứng đã được chốt.");
+
             var chiTietLich = await _context.ChiTietLichLamViecs
                 .FirstOrDefaultAsync(ct => ct.Ngay == chamCong.NgayChamCong, cancellationToken);
 

@@ -35,6 +35,14 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.CreateC
             if (exists)
                 throw new ApiException($"Đã tồn tại bản ghi chấm công của nhân viên {nhanVien.HoTen} vào ngày {request.NgayChamCong:dd/MM/yyyy}.");
 
+            var isKyLuongClosed = await _context.KyLuongs
+                .AnyAsync(kl => kl.TrangThai != TrangThaiKyLuong.CHUA_CHOT
+                             && request.NgayChamCong >= kl.NgayBatDau
+                             && request.NgayChamCong <= kl.NgayKetThuc, cancellationToken);
+
+            if (isKyLuongClosed)
+                throw new ApiException("Không thể thêm dữ liệu chấm công vì kỳ lương tương ứng đã được chốt.");
+
             var calcResult = await _calculatorService.CalculateTimekeepingAsync(
                 request.CccdNhanVien,
                 request.NgayChamCong,

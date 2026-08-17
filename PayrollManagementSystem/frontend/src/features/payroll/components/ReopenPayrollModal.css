@@ -1,0 +1,194 @@
+.prl-ro-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: prlRoFadeIn 0.2s ease-out;
+}
+
+.prl-ro-modal {
+  background: var(--bg-surface);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: var(--shadow-lg, 0 20px 25px -5px rgba(0, 0, 0, 0.2));
+  overflow: hidden;
+  animation: prlRoScaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.prl-ro-header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover, #6d28d9));
+  color: #ffffff;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.prl-ro-header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.prl-ro-header-title h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+.prl-ro-header-close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.prl-ro-header-close:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.prl-ro-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  background-color: var(--bg-surface);
+}
+
+.prl-ro-warning-box {
+  background-color: var(--warning-bg);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-left: 4px solid var(--warning);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  color: var(--warning-text);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.prl-ro-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.prl-ro-form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.prl-ro-form-label span.required {
+  color: var(--danger, #ef4444);
+  margin-left: 0.25rem;
+}
+
+.prl-ro-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--border-color);
+  background-color: var(--bg-main);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  resize: vertical;
+  min-height: 90px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  box-sizing: border-box;
+}
+
+.prl-ro-textarea:focus {
+  border-color: var(--primary);
+  background-color: var(--bg-surface);
+  box-shadow: 0 0 0 3px var(--primary-light, rgba(124, 58, 237, 0.15));
+}
+
+.prl-ro-footer {
+  padding: 1rem 1.5rem 1.25rem;
+  background: var(--bg-main);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.prl-ro-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.prl-ro-btn-secondary {
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.prl-ro-btn-secondary:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+}
+
+.prl-ro-btn-warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);
+}
+
+.prl-ro-btn-warning:hover:not(:disabled) {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.35);
+  transform: translateY(-1px);
+}
+
+.prl-ro-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+@keyframes prlRoFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes prlRoScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
