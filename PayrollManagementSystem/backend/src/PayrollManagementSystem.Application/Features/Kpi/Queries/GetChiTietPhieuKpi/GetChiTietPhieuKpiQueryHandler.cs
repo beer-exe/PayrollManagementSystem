@@ -67,7 +67,8 @@ namespace PayrollManagementSystem.Application.Features.Kpi.Queries.GetChiTietPhi
                     ChiTieu = c.ChiTieu,
                     ThucTe = c.ThucTe,
                     TiLeHoanThanh = c.TiLeHoanThanh,
-                    DiemKpi = c.DiemKpi
+                    DiemKpi = c.DiemKpi,
+                    LoaiTieuChiValue = c.LoaiTieuChi
                 }).ToList()
             };
 

@@ -54,14 +54,20 @@ namespace PayrollManagementSystem.API.Controllers
         [HttpGet("ky-kpi/{idKyKpi}/phieu")]
         public async Task<IActionResult> GetPhieuKpiByKy(Guid idKyKpi)
         {
-            var result = await _mediator.Send(new GetPhieuKpiByKyKpiQuery { IdKyKpi = idKyKpi });
+            var result = await _mediator.Send(new GetPhieuKpiByKyKpiQuery { 
+                IdKyKpi = idKyKpi,
+                CurrentUserId = _currentUserService.UserId
+            });
             return Ok(result);
         }
 
         [HttpGet("phieu/{id}")]
         public async Task<IActionResult> GetChiTietPhieuKpi(Guid id)
         {
-            var result = await _mediator.Send(new GetChiTietPhieuKpiQuery { IdPhieuKpi = id });
+            var result = await _mediator.Send(new GetChiTietPhieuKpiQuery { 
+                IdPhieuKpi = id,
+                CurrentUserId = _currentUserService.UserId 
+            });
             return Ok(result);
         }
 

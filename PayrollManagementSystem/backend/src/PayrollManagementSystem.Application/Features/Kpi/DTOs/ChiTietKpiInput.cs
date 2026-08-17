@@ -1,3 +1,5 @@
+using PayrollManagementSystem.Domain.Enums;
+
 namespace PayrollManagementSystem.Application.Features.Kpi.DTOs
 {
     public class ChiTietKpiInput
@@ -8,6 +10,7 @@ namespace PayrollManagementSystem.Application.Features.Kpi.DTOs
         public decimal TrongSo { get; set; }
         public decimal ChiTieu { get; set; }
         public decimal ThucTe { get; set; }
+        public LoaiTieuChiKpi LoaiTieuChi { get; set; }
     }
 }
 

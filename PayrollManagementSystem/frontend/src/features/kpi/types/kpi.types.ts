@@ -35,6 +35,8 @@ export interface ChiTietKpi {
   thucTe: number;
   tiLeHoanThanh?: number;
   diemKpi?: number;
+  loaiTieuChi?: string | number;
+  loaiTieuChiValue?: string | number;
 }
 
 export interface PhieuKpiDetail {

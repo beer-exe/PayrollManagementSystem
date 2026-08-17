@@ -57,6 +57,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
             builder.Property(e => e.ThucTe).HasPrecision(18, 2);
             builder.Property(e => e.TiLeHoanThanh).HasPrecision(5, 2);
             builder.Property(e => e.DiemKpi).HasPrecision(5, 2);
+            builder.Property(e => e.LoaiTieuChi).HasConversion<string>().HasMaxLength(50);
 
             builder.HasOne(e => e.PhieuKpi)
                 .WithMany(e => e.ChiTietKpis)

@@ -10,8 +10,9 @@ namespace PayrollManagementSystem.Application.Features.Kpi.Queries.GetChiTietPhi
     public class GetChiTietPhieuKpiQuery : IRequest<Response<PhieuKpiDetailDto>>, ICacheableQuery
     {
         public Guid IdPhieuKpi { get; set; }
+        public Guid? CurrentUserId { get; set; }
 
-        public string? CacheKey => CacheKeyConstants.Kpi + "ChiTietPhieu_" + IdPhieuKpi;
+        public string? CacheKey => CacheKeyConstants.Kpi + "ChiTietPhieu_" + IdPhieuKpi + "_" + CurrentUserId;
         public TimeSpan? Expiration => TimeSpan.FromHours(1);
     }
 }

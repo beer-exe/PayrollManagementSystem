@@ -65,6 +65,7 @@ namespace PayrollManagementSystem.Application.Features.Kpi.Commands.AssignPhieuK
                         existing.ThucTe = 0; // Ép về 0 khi giao
                         existing.TiLeHoanThanh = 0;
                         existing.DiemKpi = 0;
+                        existing.LoaiTieuChi = item.LoaiTieuChi;
                     }
                 }
                 else
@@ -79,7 +80,8 @@ namespace PayrollManagementSystem.Application.Features.Kpi.Commands.AssignPhieuK
                         ChiTieu = item.ChiTieu,
                         ThucTe = 0,
                         TiLeHoanThanh = 0,
-                        DiemKpi = 0
+                        DiemKpi = 0,
+                        LoaiTieuChi = item.LoaiTieuChi
                     });
                 }
             }

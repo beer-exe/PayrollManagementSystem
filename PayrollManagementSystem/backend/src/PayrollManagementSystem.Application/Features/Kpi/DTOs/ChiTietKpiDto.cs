@@ -1,3 +1,6 @@
+using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Domain.Extensions;
+
 namespace PayrollManagementSystem.Application.Features.Kpi.DTOs
 {
     public class ChiTietKpiDto
@@ -11,6 +14,8 @@ namespace PayrollManagementSystem.Application.Features.Kpi.DTOs
         public decimal ThucTe { get; set; }
         public decimal TiLeHoanThanh { get; set; }
         public decimal DiemKpi { get; set; }
+        public LoaiTieuChiKpi LoaiTieuChiValue { get; set; }
+        public string LoaiTieuChi => LoaiTieuChiValue.GetDescription();
     }
 }
 

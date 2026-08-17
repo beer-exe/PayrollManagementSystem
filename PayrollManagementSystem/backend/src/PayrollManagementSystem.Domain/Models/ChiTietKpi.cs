@@ -1,4 +1,5 @@
 using PayrollManagementSystem.Domain.Common;
+using PayrollManagementSystem.Domain.Enums;
 
 namespace PayrollManagementSystem.Domain.Models
 {
@@ -14,6 +15,8 @@ namespace PayrollManagementSystem.Domain.Models
         public decimal ThucTe { get; set; } = 0m;
         public decimal TiLeHoanThanh { get; set; } = 0m;
         public decimal DiemKpi { get; set; } = 0m;
+        
+        public LoaiTieuChiKpi LoaiTieuChi { get; set; } = LoaiTieuChiKpi.CANG_NHIEU_CANG_TOT;
 
         public PhieuKpi PhieuKpi { get; set; } = null!;
     }

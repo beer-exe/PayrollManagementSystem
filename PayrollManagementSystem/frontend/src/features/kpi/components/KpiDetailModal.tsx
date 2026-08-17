@@ -40,7 +40,8 @@ export const KpiDetailModal: React.FC<KpiDetailModalProps> = ({ idPhieuKpi, isMa
     donViTinh: '',
     trongSo: 0,
     chiTieu: 0,
-    thucTe: 0
+    thucTe: 0,
+    loaiTieuChiValue: 'CANG_NHIEU_CANG_TOT'
   });
 
   const handleAddRow = () => {
@@ -71,7 +72,10 @@ export const KpiDetailModal: React.FC<KpiDetailModalProps> = ({ idPhieuKpi, isMa
     setIsLoading(true);
     try {
       await kpiApi.assignKpi(phieu.idPhieuKpi, {
-        chiTietKpis: chiTiet
+        chiTietKpis: chiTiet.map(c => ({
+          ...c,
+          loaiTieuChi: c.loaiTieuChiValue
+        }))
       });
       onSuccess('Đã giao KPI cho nhân viên!');
     } catch (error: any) {
@@ -87,12 +91,15 @@ export const KpiDetailModal: React.FC<KpiDetailModalProps> = ({ idPhieuKpi, isMa
 
     setIsLoading(true);
     try {
-      await kpiApi.saveChiTietKpi(phieu.idPhieuKpi, chiTiet);
+      await kpiApi.saveChiTietKpi(phieu.idPhieuKpi, chiTiet.map(c => ({
+        ...c,
+        loaiTieuChi: c.loaiTieuChiValue
+      })));
       if (submit) {
         await kpiApi.submitPhieuKpi(phieu.idPhieuKpi);
         onSuccess('Đã nộp phiếu KPI chờ duyệt!');
       } else {
-        onSuccess('Đã lưu nháp tiến độ!');
+        onSuccess('Đã lưu tiến độ!');
       }
     } catch (error: any) {
       setToast({ message: error.response?.data?.Message || error.response?.data?.message || 'Có lỗi xảy ra', type: 'error' });
@@ -163,67 +170,89 @@ export const KpiDetailModal: React.FC<KpiDetailModalProps> = ({ idPhieuKpi, isMa
             )}
           </div>
 
-          <table className="kpi-table" style={{ marginBottom: '24px' }}>
-            <thead>
-              <tr>
-                <th>Mục tiêu</th>
-                <th style={{ width: '100px' }}>ĐVT</th>
-                <th style={{ width: '100px' }}>Trọng số (%)</th>
-                <th style={{ width: '120px' }}>Chỉ tiêu</th>
-                <th style={{ width: '120px' }}>Thực tế</th>
-                {(!isAssigning) && <th style={{ width: '120px' }}>Tỷ lệ HT</th>}
-                {(!isAssigning) && <th style={{ width: '100px' }}>Điểm</th>}
-                {isAssigning && <th style={{ width: '60px' }}>Xóa</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {chiTiet.map((row, index) => (
-                <tr key={index}>
-                  <td>
+          <div className="kpi-target-list">
+            {chiTiet.map((row, index) => (
+              <div key={index} className="kpi-target-card">
+                <div className="kpi-target-card-header">
+                  <div className="kpi-target-field" style={{ flex: 1 }}>
+                    <span className="kpi-target-field-label">Mục tiêu</span>
                     {isTargetEditable ? (
-                      <input className="kpi-form-input" value={row.mucTieu} onChange={(e) => handleRowChange(index, 'mucTieu', e.target.value)} />
-                    ) : <span>{row.mucTieu}</span>}
-                  </td>
-                  <td>
-                    {isTargetEditable ? (
-                      <input className="kpi-form-input" value={row.donViTinh} onChange={(e) => handleRowChange(index, 'donViTinh', e.target.value)} />
-                    ) : <span>{row.donViTinh}</span>}
-                  </td>
-                  <td>
-                    {isTargetEditable ? (
-                      <input type="number" className="kpi-form-input" value={row.trongSo} onChange={(e) => handleRowChange(index, 'trongSo', e.target.value)} />
-                    ) : <span>{row.trongSo}%</span>}
-                  </td>
-                  <td>
-                    {isTargetEditable ? (
-                      <input type="number" className="kpi-form-input" value={row.chiTieu} onChange={(e) => handleRowChange(index, 'chiTieu', e.target.value)} />
-                    ) : <span>{row.chiTieu}</span>}
-                  </td>
-                  <td>
-                    {isActualEditable ? (
-                      <input type="number" className="kpi-form-input" value={row.thucTe} onChange={(e) => handleRowChange(index, 'thucTe', e.target.value)} />
-                    ) : <span>{row.thucTe}</span>}
-                  </td>
-                  {(!isAssigning) && <td>{row.tiLeHoanThanh}%</td>}
-                  {(!isAssigning) && <td>{row.diemKpi}</td>}
+                      <input className="kpi-form-input" placeholder="Nhập tên mục tiêu" value={row.mucTieu} onChange={(e) => handleRowChange(index, 'mucTieu', e.target.value)} />
+                    ) : <span className="kpi-target-field-value font-medium">{row.mucTieu}</span>}
+                  </div>
+                  
                   {isAssigning && (
-                    <td style={{ textAlign: 'center' }}>
-                      <button type="button" className="kpi-btn-remove" title="Xóa mục tiêu" onClick={() => handleRemoveRow(index)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                        </svg>
-                      </button>
-                    </td>
+                    <button type="button" className="kpi-btn-remove-card" title="Xóa mục tiêu" onClick={() => handleRemoveRow(index)}>
+                      &times;
+                    </button>
                   )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                </div>
+
+                <div className="kpi-target-card-body">
+                  <div className="kpi-target-field">
+                    <span className="kpi-target-field-label">Loại tiêu chí</span>
+                    {isTargetEditable ? (
+                      <select className="kpi-form-input" value={row.loaiTieuChiValue} onChange={(e) => handleRowChange(index, 'loaiTieuChiValue', e.target.value)}>
+                        <option value="CANG_NHIEU_CANG_TOT">[+] Càng nhiều càng tốt</option>
+                        <option value="CANG_IT_CANG_TOT">[-] Càng ít càng tốt</option>
+                      </select>
+                    ) : (
+                      <span style={{ fontSize: '0.85em', color: row.loaiTieuChiValue === 'CANG_IT_CANG_TOT' ? '#d97706' : '#16a34a', fontWeight: 600, padding: '0.35rem 0' }}>
+                        {row.loaiTieuChiValue === 'CANG_IT_CANG_TOT' ? '[-] Càng ít càng tốt' : '[+] Càng nhiều càng tốt'}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="kpi-target-field">
+                    <span className="kpi-target-field-label">Đơn vị tính</span>
+                    {isTargetEditable ? (
+                      <input className="kpi-form-input" placeholder="VD: Triệu, Bài viết..." value={row.donViTinh} onChange={(e) => handleRowChange(index, 'donViTinh', e.target.value)} />
+                    ) : <span className="kpi-target-field-value">{row.donViTinh}</span>}
+                  </div>
+
+                  <div className="kpi-target-field">
+                    <span className="kpi-target-field-label">Trọng số (%)</span>
+                    {isTargetEditable ? (
+                      <input type="number" className="kpi-form-input" placeholder="0" value={row.trongSo} onChange={(e) => handleRowChange(index, 'trongSo', e.target.value)} />
+                    ) : <span className="kpi-target-field-value">{row.trongSo}%</span>}
+                  </div>
+
+                  <div className="kpi-target-field">
+                    <span className="kpi-target-field-label">Chỉ tiêu</span>
+                    {isTargetEditable ? (
+                      <input type="number" className="kpi-form-input" placeholder="0" value={row.chiTieu} onChange={(e) => handleRowChange(index, 'chiTieu', e.target.value)} />
+                    ) : <span className="kpi-target-field-value">{row.chiTieu}</span>}
+                  </div>
+
+                  <div className="kpi-target-field" style={{ background: isActualEditable ? 'var(--bg-hover)' : 'transparent', padding: isActualEditable ? '0.5rem' : '0', borderRadius: '8px' }}>
+                    <span className="kpi-target-field-label" style={{ color: isActualEditable ? 'var(--primary)' : 'var(--text-secondary)' }}>Thực tế</span>
+                    {isActualEditable ? (
+                      <input type="number" className="kpi-form-input" placeholder="0" value={row.thucTe} onChange={(e) => handleRowChange(index, 'thucTe', e.target.value)} />
+                    ) : <span className="kpi-target-field-value font-bold">{row.thucTe}</span>}
+                  </div>
+
+                  {(!isAssigning) && (
+                    <div className="kpi-target-field">
+                      <span className="kpi-target-field-label">Tỷ lệ hoàn thành</span>
+                      <span className="kpi-target-field-value text-primary font-bold">{row.tiLeHoanThanh}%</span>
+                    </div>
+                  )}
+
+                  {(!isAssigning) && (
+                    <div className="kpi-target-field">
+                      <span className="kpi-target-field-label">Điểm KPI</span>
+                      <span className="kpi-target-field-value text-success font-bold">{row.diemKpi}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
 
           {phieu.trangThaiValue >= 2 && (
             <div className="kpi-result-banner">
               <span className="kpi-result-text">Tổng Điểm KPI:</span>
-              <span className="kpi-result-number">{phieu.tongDiemKpi}% ➔ Hệ số P3 = {phieu.heSoP3}</span>
+              <span className="kpi-result-number">{phieu.tongDiemKpi}% ➔ Hệ số KPI = {phieu.heSoP3}</span>
             </div>
           )}
 
@@ -264,7 +293,7 @@ export const KpiDetailModal: React.FC<KpiDetailModalProps> = ({ idPhieuKpi, isMa
 
           {canApprove && (
             <button type="button" className="kpi-btn kpi-btn-primary" style={{ background: '#16a34a' }} onClick={handleApprove} disabled={isLoading}>
-              Phê Duyệt & Chốt P3
+              Phê Duyệt Và Chốt Hệ Số KPI
             </button>
           )}
         </div>
