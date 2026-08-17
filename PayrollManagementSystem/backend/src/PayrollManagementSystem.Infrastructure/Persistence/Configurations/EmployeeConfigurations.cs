@@ -11,7 +11,9 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         {
             builder.HasKey(e => e.Cccd);
             
-            builder.HasIndex(e => e.Email).IsUnique();
+            builder.HasIndex(e => e.Email)
+                   .IsUnique()
+                   .HasFilter("is_deleted = false");
 
             builder.Property(e => e.Cccd).HasMaxLength(20);
             builder.Property(e => e.HoTen).HasMaxLength(150);
@@ -92,7 +94,9 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         {
             builder.HasKey(e => e.IdTaiKhoan);
             
-            builder.HasIndex(e => e.TenTaiKhoan).IsUnique();
+            builder.HasIndex(e => e.TenTaiKhoan)
+                   .IsUnique()
+                   .HasFilter("is_deleted = false");
 
             builder.Property(e => e.IdTaiKhoan).ValueGeneratedOnAdd();
             builder.Property(e => e.TenTaiKhoan).HasMaxLength(50);

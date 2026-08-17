@@ -13,7 +13,9 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
             builder.Property(e => e.TenKyLuong).HasMaxLength(150);
             builder.Property(e => e.TrangThai).HasConversion<string>().HasMaxLength(50);
 
-            builder.HasIndex(e => new { e.Thang, e.Nam }).IsUnique();
+            builder.HasIndex(e => new { e.Thang, e.Nam })
+                   .IsUnique()
+                   .HasFilter("is_deleted = false");
         }
     }
 
@@ -52,7 +54,9 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
                 .HasPrincipalKey(p => p.Cccd)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(e => new { e.IdKyLuong, e.CccdNhanVien }).IsUnique();
+            builder.HasIndex(e => new { e.IdKyLuong, e.CccdNhanVien })
+                   .IsUnique()
+                   .HasFilter("is_deleted = false");
         }
     }
 
@@ -69,7 +73,9 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
             builder.Property(e => e.IsActive).HasDefaultValue(true);
             builder.Property(e => e.IsDeleted).HasDefaultValue(false);
 
-            builder.HasIndex(e => e.TenKhoanKhauTru).IsUnique();
+            builder.HasIndex(e => e.TenKhoanKhauTru)
+                   .IsUnique()
+                   .HasFilter("is_deleted = false");
         }
     }
 

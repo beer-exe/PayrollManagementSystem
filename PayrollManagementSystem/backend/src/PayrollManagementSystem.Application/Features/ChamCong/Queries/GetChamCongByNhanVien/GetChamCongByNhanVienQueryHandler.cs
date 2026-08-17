@@ -27,7 +27,49 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
                 query = query.Where(cc => cc.CccdNhanVien == request.CccdNhanVien);
 
             if (!string.IsNullOrWhiteSpace(request.IdPhongBan))
-                query = query.Where(cc => cc.NhanVien.IdPb == request.IdPhongBan);
+            {
+                var daysInMonth = DateTime.DaysInMonth(request.Nam, request.Thang);
+                var startOfMonth = new DateOnly(request.Nam, request.Thang, 1);
+                var endOfMonth = new DateOnly(request.Nam, request.Thang, daysInMonth);
+
+                var nhanViens = await _context.NhanViens
+                    .Where(nv => nv.TrangThai == Domain.Enums.TrangThaiNhanVien.DANG_LAM_VIEC)
+                    .ToListAsync(cancellationToken);
+
+                var activeCccds = nhanViens.Select(nv => nv.Cccd).ToList();
+
+                var quyetDinhs = await _context.QuyetDinhNhanSus
+                    .Include(qd => qd.ChucVuMoi)
+                    .Where(qd => activeCccds.Contains(qd.Cccd) 
+                              && qd.TrangThai != Domain.Enums.TrangThaiQuyetDinh.HUY_BO
+                              && qd.NgayHieuLuc <= endOfMonth
+                              && (qd.NgayHetHan == null || qd.NgayHetHan >= startOfMonth))
+                    .ToListAsync(cancellationToken);
+
+                var quyetDinhGroup = quyetDinhs
+                    .GroupBy(qd => qd.Cccd)
+                    .ToDictionary(
+                        g => g.Key, 
+                        g => g.OrderByDescending(qd => qd.NgayHieuLuc).FirstOrDefault()
+                    );
+
+                var filteredCccds = new List<string>();
+                foreach (var nv in nhanViens)
+                {
+                    quyetDinhGroup.TryGetValue(nv.Cccd, out var qd);
+                    string? actualIdPb = qd?.ChucVuMoi?.IdPhongBan ?? nv.IdPb;
+
+                    if (actualIdPb == request.IdPhongBan)
+                    {
+                        filteredCccds.Add(nv.Cccd);
+                    }
+                }
+
+                if (filteredCccds.Count == 0)
+                    return new Response<List<ChamCongDto>>(new List<ChamCongDto>());
+
+                query = query.Where(cc => filteredCccds.Contains(cc.CccdNhanVien));
+            }
 
             var list = await query
                 .OrderBy(cc => cc.NgayChamCong)

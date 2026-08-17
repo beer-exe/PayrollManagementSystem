@@ -11,7 +11,9 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
             builder.HasKey(e => e.IdKyKpi);
             builder.Property(e => e.TenKyKpi).IsRequired().HasMaxLength(100);
             
-            builder.HasIndex(e => new { e.Thang, e.Nam }).IsUnique();
+            builder.HasIndex(e => new { e.Thang, e.Nam })
+                   .IsUnique()
+                   .HasFilter("is_deleted = false");
         }
     }
 
@@ -41,7 +43,9 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
                 .HasForeignKey(e => e.CccdQuanLy)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasIndex(e => new { e.IdKyKpi, e.CccdNhanVien }).IsUnique();
+            builder.HasIndex(e => new { e.IdKyKpi, e.CccdNhanVien })
+                   .IsUnique()
+                   .HasFilter("is_deleted = false");
         }
     }
 
