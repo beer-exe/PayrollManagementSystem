@@ -206,7 +206,7 @@ export const KhoanKhauTruManagement: React.FC = () => {
       {/* Header */}
       <div className="kkt-header">
         <div className="kkt-header-title">
-          <h2>✂️ Cấu hình Khoản Khấu Trừ</h2>
+          <h2>✂️ Cấu hình khoản khấu trừ</h2>
           <p>Quản lý các khoản khấu trừ áp dụng trong tính lương</p>
         </div>
         <button className="kkt-btn kkt-btn-primary" onClick={openCreateModal}>

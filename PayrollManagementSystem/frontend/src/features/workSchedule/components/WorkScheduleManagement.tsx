@@ -144,7 +144,7 @@ export const WorkScheduleManagement: React.FC = () => {
       {/* Header */}
       <div className="ws-header">
         <div className="ws-header-left">
-          <h1>📋 Lịch làm việc</h1>
+          <h1>📋 Quản lý lịch làm việc</h1>
           <p>Tạo và quản lý lịch làm việc theo năm với ngày lễ Việt Nam</p>
         </div>
         <div className="ws-header-actions">

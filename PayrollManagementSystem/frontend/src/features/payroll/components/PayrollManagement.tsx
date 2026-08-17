@@ -225,7 +225,7 @@ const PayrollManagement: React.FC = () => {
       {/* Header */}
       <div className="prl-header">
         <div className="prl-header-title">
-          <h2>💰 Bảng tính lương</h2>
+          <h2>💰 Quản lý bảng lương</h2>
           <p>Quản lý và tính toán lương cho nhân viên theo phương pháp 3P</p>
         </div>
         <div className="prl-actions">

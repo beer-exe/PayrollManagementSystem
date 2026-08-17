@@ -266,7 +266,7 @@ export const ChamCongManagement: React.FC = () => {
       {/* HEADER */}
       <div className="cc-header">
         <div className="cc-header__left">
-          <h1 className="cc-title">⏱️ Quản lý Chấm Công</h1>
+          <h1 className="cc-title">⏱️ Quản lý chấm công</h1>
           <p className="cc-subtitle">Theo dõi và quản lý dữ liệu chấm công nhân viên</p>
         </div>
         {userRole !== 'Admin' && (
