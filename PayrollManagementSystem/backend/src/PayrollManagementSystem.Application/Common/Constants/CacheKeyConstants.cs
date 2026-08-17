@@ -21,5 +21,6 @@ public static class CacheKeyConstants
     public const string BacThue      = "BacThue_";
     public const string CauHinhGiamTru = "CauHinhGiamTru_";
     public const string Kpi = "Kpi_";
+    public const string KyChamCong = "KyChamCong_";
 }
 

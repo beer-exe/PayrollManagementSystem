@@ -12,6 +12,7 @@ import { exportToExcel, exportToPdf, ExportColumn } from '../../../utils/exportU
 import { SortableHeader } from '../../../components/DataTable/SortableHeader';
 import { ExportButtons } from '../../../components/DataTable/ExportButtons';
 import { Toast } from '../../../components/Toast/Toast';
+import { useKyChamCong } from '../hooks/useKyChamCong';
 import './ChamCongManagement.css';
 
 const LOAI_NGAY_COLOR: Record<string, string> = {
@@ -39,6 +40,8 @@ export const ChamCongManagement: React.FC = () => {
 
   const { user } = useAuthStore();
   const userRole = user?.role || '';
+
+  const { kyChamCong, loading: kyLoading, fetchKyChamCong, chotCong, moChotCong } = useKyChamCong();
 
   // Lọc Phòng ban
   const [departments, setDepartments] = useState<DepartmentDto[]>([]);
@@ -90,7 +93,10 @@ export const ChamCongManagement: React.FC = () => {
     else fetchSummary(thang, nam, idPhongBan || undefined);
   }, [activeTab, thang, nam, idPhongBan, fetchList, fetchSummary]);
 
-  useEffect(() => { loadData(); }, [loadData]);
+  useEffect(() => { 
+    loadData(); 
+    fetchKyChamCong(nam, thang);
+  }, [loadData, fetchKyChamCong, nam, thang]);
 
   const {
     currentData: currentTongHopList,
@@ -134,6 +140,28 @@ export const ChamCongManagement: React.FC = () => {
 
   const showToast = (type: 'success' | 'error' | 'info', message: string) => {
     setToast({ type, message });
+  };
+
+  const handleChotCong = async () => {
+    if (!confirm(`Xác nhận chốt công tháng ${thang}/${nam}?`)) return;
+    const res = await chotCong(nam, thang);
+    if (res.success) {
+      showToast('success', `Đã chốt công tháng ${thang}/${nam} thành công!`);
+      loadData();
+    } else {
+      showToast('error', res.message || 'Lỗi khi chốt công');
+    }
+  };
+
+  const handleMoChotCong = async () => {
+    if (!confirm(`Xác nhận MỞ chốt công tháng ${thang}/${nam}?`)) return;
+    const res = await moChotCong(nam, thang);
+    if (res.success) {
+      showToast('success', `Đã mở chốt công tháng ${thang}/${nam} thành công!`);
+      loadData();
+    } else {
+      showToast('error', res.message || 'Lỗi khi mở chốt công');
+    }
   };
 
   const handleCreate = async (data: CreateChamCongRequest) => {
@@ -243,21 +271,77 @@ export const ChamCongManagement: React.FC = () => {
         </div>
         {userRole !== 'Admin' && (
           <div className="cc-header__actions">
-            <button className="cc-btn cc-btn--outline" onClick={() => chamCongApi.downloadTemplate()}>
+            {kyChamCong?.trangThai === 'DA_CHOT' ? (
+              user?.hasDirectReports ? (
+                <button 
+                  className="cc-btn cc-btn--outline" 
+                  onClick={handleMoChotCong}
+                  disabled={kyLoading}
+                  style={{ color: '#d97706', borderColor: '#fcd34d', backgroundColor: '#fffbeb' }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width={16} height={16}>
+                    <path fillRule="evenodd" d="M14.5 10a4.5 4.5 0 0 0-4.284-4.492l-2.73 2.731A2.5 2.5 0 0 0 8 10h6.5Zm-8.22 1.547a4.5 4.5 0 0 1 4.183-4.184l-2.613 2.613a2.5 2.5 0 0 0 1.066 1.066l-2.636 2.636c-.463-.294-.856-.687-1.15-1.15l2.636-2.636a2.5 2.5 0 0 0-1.066-1.066l-2.613 2.613A4.5 4.5 0 0 1 6.28 11.547Zm2.107-7.44a6 6 0 1 0 8.485 8.486L20 18.5a.75.75 0 0 1-1.06 1.06l-3.132-3.132a6 6 0 0 1-8.485-8.486L3 3.56a.75.75 0 0 1 1.06-1.06l4.327 4.327Z" clipRule="evenodd" />
+                  </svg>
+                  Mở chốt công
+                </button>
+              ) : (
+                <button 
+                  className="cc-btn cc-btn--primary" 
+                  disabled={true}
+                  style={{ background: '#9ca3af', cursor: 'not-allowed', opacity: 0.7 }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width={16} height={16}>
+                    <path fillRule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clipRule="evenodd" />
+                  </svg>
+                  Đã chốt công
+                </button>
+              )
+            ) : (
+              <button 
+                className="cc-btn cc-btn--primary" 
+                onClick={handleChotCong}
+                disabled={kyLoading}
+                style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width={16} height={16}>
+                  <path fillRule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clipRule="evenodd" />
+                </svg>
+                Chốt công tháng này
+              </button>
+            )}
+            
+            <button 
+              className="cc-btn cc-btn--outline" 
+              onClick={() => chamCongApi.downloadTemplate()}
+              disabled={kyChamCong?.trangThai === 'DA_CHOT'}
+              style={kyChamCong?.trangThai === 'DA_CHOT' ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width={16} height={16}>
                 <path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z" />
                 <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
               </svg>
               Tải mẫu CSV
             </button>
-            <button className="cc-btn cc-btn--secondary" onClick={() => setShowImportModal(true)}>
+            
+            <button 
+              className="cc-btn cc-btn--secondary" 
+              onClick={() => setShowImportModal(true)}
+              disabled={kyChamCong?.trangThai === 'DA_CHOT'}
+              style={kyChamCong?.trangThai === 'DA_CHOT' ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width={16} height={16}>
                 <path d="M9.25 13.25a.75.75 0 0 0 1.5 0V4.636l2.955 3.129a.75.75 0 0 0 1.09-1.03l-4.25-4.5a.75.75 0 0 0-1.09 0l-4.25 4.5a.75.75 0 1 0 1.09 1.03L9.25 4.636v8.614Z" />
                 <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
               </svg>
               Import CSV
             </button>
-            <button className="cc-btn cc-btn--primary" onClick={() => { setEditItem(null); setShowFormModal(true); }}>
+            
+            <button 
+              className="cc-btn cc-btn--primary" 
+              onClick={() => { setEditItem(null); setShowFormModal(true); }}
+              disabled={kyChamCong?.trangThai === 'DA_CHOT'}
+              style={kyChamCong?.trangThai === 'DA_CHOT' ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width={16} height={16}>
                 <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
               </svg>
@@ -486,7 +570,7 @@ export const ChamCongManagement: React.FC = () => {
                   <td><span className={TRANG_THAI_COLOR[row.trangThai] ?? 'cc-status'}>{row.trangThai}</span></td>
                   <td className="cc-note">{row.ghiChu ?? '—'}</td>
                   <td className="cc-actions-cell">
-                    {userRole !== 'Admin' && (
+                    {userRole !== 'Admin' && kyChamCong?.trangThai !== 'DA_CHOT' && (
                       <div className="cc-dropdown-wrap">
                         <button
                           className="cc-actions-btn"

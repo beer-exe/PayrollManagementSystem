@@ -85,6 +85,16 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.ImportC
                           && kl.NgayBatDau <= maxDate)
                 .ToListAsync(cancellationToken);
 
+            var minMonth = minDate.Month;
+            var minYear = minDate.Year;
+            var maxMonth = maxDate.Month;
+            var maxYear = maxDate.Year;
+            var closedKyChamCongs = await _context.KyChamCongs
+                .Where(kcc => kcc.TrangThai == Domain.Enums.TrangThaiKyChamCong.DA_CHOT
+                           && (kcc.Nam > minYear || (kcc.Nam == minYear && kcc.Thang >= minMonth))
+                           && (kcc.Nam < maxYear || (kcc.Nam == maxYear && kcc.Thang <= maxMonth)))
+                .ToListAsync(cancellationToken);
+
             var result = new ImportChamCongResultDto { TongSoDong = rows.Count };
             var toInsert = new List<Domain.Models.ChamCong>();
 
@@ -113,6 +123,9 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.ImportC
 
                     if (closedKyLuongs.Any(kl => ngay >= kl.NgayBatDau && ngay <= kl.NgayKetThuc))
                         throw new Exception($"Không thể import vì kỳ lương của ngày {ngay:dd/MM/yyyy} đã được chốt.");
+
+                    if (closedKyChamCongs.Any(kcc => kcc.Thang == ngay.Month && kcc.Nam == ngay.Year))
+                        throw new Exception($"Không thể import vì kỳ chấm công tháng {ngay.Month}/{ngay.Year} đã được chốt.");
 
                     var key = $"{cccd}_{ngay:yyyy-MM-dd}";
                     if (existingKeySet.Contains(key))
@@ -158,7 +171,7 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.ImportC
                         SoPhutVeSom = calcResult.SoPhutVeSom,
                         IsNhapTay = false,
                         GhiChu = ghiChu ?? calcResult.GhiChu,
-                        TrangThai = TrangThaiChamCong.DA_XAC_NHAN
+                        TrangThai = TrangThaiChamCong.CHUA_XAC_NHAN
                     });
 
                     // Thêm vào set để tránh trùng trong cùng 1 file

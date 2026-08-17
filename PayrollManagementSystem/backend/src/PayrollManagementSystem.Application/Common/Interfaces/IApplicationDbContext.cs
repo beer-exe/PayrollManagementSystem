@@ -40,6 +40,7 @@ namespace PayrollManagementSystem.Application.Common.Interfaces
         DbSet<KhungGioNghi> KhungGioNghis { get; set; }
         DbSet<PhanCongCa> PhanCongCas { get; set; }
 
+        DbSet<KyChamCong> KyChamCongs { get; set; }
         DbSet<ChamCong> ChamCongs { get; set; }
 
         DbSet<DonNghi> DonNghis { get; set; }

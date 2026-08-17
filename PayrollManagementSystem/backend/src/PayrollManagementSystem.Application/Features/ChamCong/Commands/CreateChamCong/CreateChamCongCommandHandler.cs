@@ -43,6 +43,14 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.CreateC
             if (isKyLuongClosed)
                 throw new ApiException("Không thể thêm dữ liệu chấm công vì kỳ lương tương ứng đã được chốt.");
 
+            var isKyChamCongClosed = await _context.KyChamCongs
+                .AnyAsync(kcc => kcc.Thang == request.NgayChamCong.Month
+                              && kcc.Nam == request.NgayChamCong.Year
+                              && kcc.TrangThai == TrangThaiKyChamCong.DA_CHOT, cancellationToken);
+
+            if (isKyChamCongClosed)
+                throw new ApiException($"Không thể thêm dữ liệu chấm công vì kỳ chấm công tháng {request.NgayChamCong.Month}/{request.NgayChamCong.Year} đã được chốt.");
+
             var calcResult = await _calculatorService.CalculateTimekeepingAsync(
                 request.CccdNhanVien,
                 request.NgayChamCong,
@@ -64,7 +72,7 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.CreateC
                 SoPhutVeSom = calcResult.SoPhutVeSom,
                 IsNhapTay = true,
                 GhiChu = request.GhiChu ?? calcResult.GhiChu,
-                TrangThai = TrangThaiChamCong.DA_XAC_NHAN
+                TrangThai = TrangThaiChamCong.CHUA_XAC_NHAN
             };
 
             await _context.ChamCongs.AddAsync(chamCong, cancellationToken);

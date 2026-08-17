@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PayrollManagementSystem.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using PayrollManagementSystem.Infrastructure.Persistence;
 namespace PayrollManagementSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260817144608_AddKyChamCong")]
+    partial class AddKyChamCong
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -460,10 +463,6 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasColumnType("time without time zone")
                         .HasColumnName("gio_vao");
 
-                    b.Property<Guid?>("IdKyChamCong")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id_ky_cham_cong");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean")
                         .HasColumnName("is_deleted");
@@ -518,9 +517,6 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_cham_congs");
-
-                    b.HasIndex("IdKyChamCong")
-                        .HasDatabaseName("ix_cham_congs_id_ky_cham_cong");
 
                     b.HasIndex("CccdNhanVien", "NgayChamCong")
                         .IsUnique()
@@ -1201,9 +1197,8 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("thang");
 
-                    b.Property<string>("TrangThai")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<int>("TrangThai")
+                        .HasColumnType("integer")
                         .HasColumnName("trang_thai");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
@@ -2511,14 +2506,6 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_cham_congs_nhan_viens_cccd_nhan_vien");
 
-                    b.HasOne("PayrollManagementSystem.Domain.Models.KyChamCong", "KyChamCong")
-                        .WithMany("ChamCongs")
-                        .HasForeignKey("IdKyChamCong")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("fk_cham_congs_ky_cham_congs_id_ky_cham_cong");
-
-                    b.Navigation("KyChamCong");
-
                     b.Navigation("NhanVien");
                 });
 
@@ -2866,11 +2853,6 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                     b.Navigation("KhungNangLucs");
 
                     b.Navigation("QuyetDinhNhanSus");
-                });
-
-            modelBuilder.Entity("PayrollManagementSystem.Domain.Models.KyChamCong", b =>
-                {
-                    b.Navigation("ChamCongs");
                 });
 
             modelBuilder.Entity("PayrollManagementSystem.Domain.Models.KyDanhGia", b =>

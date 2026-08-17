@@ -51,6 +51,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
         public virtual DbSet<KhungGioNghi> KhungGioNghis { get; set; }
         public virtual DbSet<PhanCongCa> PhanCongCas { get; set; }
 
+        public virtual DbSet<KyChamCong> KyChamCongs { get; set; }
         public virtual DbSet<ChamCong> ChamCongs { get; set; }
 
         public virtual DbSet<DonNghi> DonNghis { get; set; }

@@ -36,6 +36,14 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.UpdateC
             if (isKyLuongClosed)
                 throw new ApiException("Không thể chỉnh sửa dữ liệu chấm công vì kỳ lương tương ứng đã được chốt.");
 
+            var isKyChamCongClosed = await _context.KyChamCongs
+                .AnyAsync(kcc => kcc.Thang == chamCong.NgayChamCong.Month
+                              && kcc.Nam == chamCong.NgayChamCong.Year
+                              && kcc.TrangThai == TrangThaiKyChamCong.DA_CHOT, cancellationToken);
+
+            if (isKyChamCongClosed)
+                throw new ApiException($"Không thể chỉnh sửa dữ liệu chấm công vì kỳ chấm công tháng {chamCong.NgayChamCong.Month}/{chamCong.NgayChamCong.Year} đã được chốt.");
+
             var chiTietLich = await _context.ChiTietLichLamViecs
                 .FirstOrDefaultAsync(ct => ct.Ngay == chamCong.NgayChamCong, cancellationToken);
 

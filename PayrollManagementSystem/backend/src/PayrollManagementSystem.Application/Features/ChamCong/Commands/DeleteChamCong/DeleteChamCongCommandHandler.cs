@@ -31,6 +31,14 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.DeleteC
             if (isKyLuongClosed)
                 throw new ApiException("Không thể xóa dữ liệu chấm công vì kỳ lương tương ứng đã được chốt.");
 
+            var isKyChamCongClosed = await _context.KyChamCongs
+                .AnyAsync(kcc => kcc.Thang == chamCong.NgayChamCong.Month
+                              && kcc.Nam == chamCong.NgayChamCong.Year
+                              && kcc.TrangThai == Domain.Enums.TrangThaiKyChamCong.DA_CHOT, cancellationToken);
+
+            if (isKyChamCongClosed)
+                throw new ApiException($"Không thể xóa dữ liệu chấm công vì kỳ chấm công tháng {chamCong.NgayChamCong.Month}/{chamCong.NgayChamCong.Year} đã được chốt.");
+
             _context.SoftRemove(chamCong);
             await _context.SaveChangesAsync(cancellationToken);
 
