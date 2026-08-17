@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PayrollManagementSystem.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using PayrollManagementSystem.Infrastructure.Persistence;
 namespace PayrollManagementSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260816065507_AddLoaiTieuChiToChiTietKpi")]
+    partial class AddLoaiTieuChiToChiTietKpi
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -626,10 +629,8 @@ namespace PayrollManagementSystem.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_deleted");
 
-                    b.Property<string>("LoaiTieuChi")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                    b.Property<int>("LoaiTieuChi")
+                        .HasColumnType("integer")
                         .HasColumnName("loai_tieu_chi");
 
                     b.Property<string>("MucTieu")

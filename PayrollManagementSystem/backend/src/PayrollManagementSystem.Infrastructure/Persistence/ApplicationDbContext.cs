@@ -40,6 +40,10 @@ namespace PayrollManagementSystem.Infrastructure.Persistence
         public virtual DbSet<ChiTietDanhGiaNangLuc> ChiTietDanhGiaNangLucs { get; set; }
         public virtual DbSet<MucQuyDoiP2> MucQuyDoiP2s { get; set; }
 
+        public virtual DbSet<KyKpi> KyKpis { get; set; }
+        public virtual DbSet<PhieuKpi> PhieuKpis { get; set; }
+        public virtual DbSet<ChiTietKpi> ChiTietKpis { get; set; }
+
         public virtual DbSet<LichLamViec> LichLamViecs { get; set; }
         public virtual DbSet<ChiTietLichLamViec> ChiTietLichLamViecs { get; set; }
 

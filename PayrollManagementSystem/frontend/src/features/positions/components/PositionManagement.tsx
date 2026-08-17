@@ -114,15 +114,22 @@ export const PositionManagement: React.FC = () => {
   };
 
   const handleToggleStatus = (record: PositionDto) => {
-    const isActivating = record.trangThai !== "HOAT_DONG";
+    console.log("Clicked toggle status for:", record);
+    const isActivating = record.trangThai !== "Hoạt động";
     const msg = isActivating 
       ? `Bạn có muốn kích hoạt lại chức vụ "${record.tenChucVu}"?`
       : `Bạn có chắc muốn vô hiệu hóa chức vụ "${record.tenChucVu}"?`;
 
     if (window.confirm(msg)) {
+      console.log("User confirmed toggle for ID:", record.idChucVu);
       toggleStatus(record.idChucVu).then(success => {
+        console.log("Toggle status result:", success);
         if (success) fetchPositions(searchTerm, statusFilter, selectedDepartmentId);
+      }).catch(err => {
+        console.error("Error calling toggleStatus:", err);
       });
+    } else {
+      console.log("User cancelled toggle");
     }
     setActiveDropdown(null);
   };
@@ -234,7 +241,7 @@ export const PositionManagement: React.FC = () => {
                       )}
                     </td>
                     <td style={{ textAlign: 'center' }}>
-                      {record.trangThai === "HOAT_DONG" ? (
+                      {record.trangThai === "Hoạt động" ? (
                         <span className="pos-badge pos-badge-success">{record.tenTrangThai}</span>
                       ) : (
                         <span className="pos-badge pos-badge-gray">{record.tenTrangThai}</span>
@@ -269,13 +276,13 @@ export const PositionManagement: React.FC = () => {
                               Sửa chức vụ
                             </button>
                             <button 
-                              className={`pos-dropdown-item ${record.trangThai === "HOAT_DONG" ? "warning" : "success"}`}
+                              className={`pos-dropdown-item ${record.trangThai === "Hoạt động" ? "warning" : "success"}`}
                               onClick={() => handleToggleStatus(record)}
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1rem', height: '1rem' }}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                               </svg>
-                              {record.trangThai === "HOAT_DONG" ? "Vô hiệu hóa" : "Kích hoạt"}
+                              {record.trangThai === "Hoạt động" ? "Vô hiệu hóa" : "Kích hoạt"}
                             </button>
                           </div>
                         )}
