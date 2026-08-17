@@ -29,34 +29,8 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
                 .Include(nv => nv.PhongBan)
                 .Where(nv => nv.TrangThai == TrangThaiNhanVien.DANG_LAM_VIEC);
 
-            if (!string.IsNullOrWhiteSpace(request.IdPhongBan))
-                nvQuery = nvQuery.Where(nv => nv.IdPb == request.IdPhongBan);
-
             var nhanViens = await nvQuery.ToListAsync(cancellationToken);
-
-            var allCccd = nhanViens.Select(nv => nv.Cccd).ToList();
-            
-            var chamCongs = await _context.ChamCongs
-                .Where(cc => allCccd.Contains(cc.CccdNhanVien)
-                          && cc.NgayChamCong.Month == request.Thang
-                          && cc.NgayChamCong.Year == request.Nam)
-                .ToListAsync(cancellationToken);
-
-            var chamCongGroup = chamCongs
-                .GroupBy(cc => cc.CccdNhanVien)
-                .ToDictionary(g => g.Key, g => g.ToList());
-
-            var phanCongCas = await _context.PhanCongCas
-                .Include(p => p.CaLamViec)
-                    .ThenInclude(c => c.KhungGioNghis)
-                .Where(p => allCccd.Contains(p.CccdNhanVien) 
-                         && p.NgayLamViec.Month == request.Thang 
-                         && p.NgayLamViec.Year == request.Nam)
-                .ToListAsync(cancellationToken);
-
-            var phanCongGroup = phanCongCas
-                .GroupBy(p => p.CccdNhanVien)
-                .ToDictionary(g => g.Key, g => g.ToDictionary(p => p.NgayLamViec.Day));
+            var allActiveCccd = nhanViens.Select(nv => nv.Cccd).ToList();
 
             var daysInMonth = DateTime.DaysInMonth(request.Nam, request.Thang);
             var startOfMonth = new DateOnly(request.Nam, request.Thang, 1);
@@ -65,7 +39,7 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
             var quyetDinhs = await _context.QuyetDinhNhanSus
                 .Include(qd => qd.ChucVuMoi)
                     .ThenInclude(cv => cv.PhongBan)
-                .Where(qd => allCccd.Contains(qd.Cccd) 
+                .Where(qd => allActiveCccd.Contains(qd.Cccd) 
                           && qd.TrangThai != TrangThaiQuyetDinh.HUY_BO
                           && qd.NgayHieuLuc <= endOfMonth
                           && (qd.NgayHetHan == null || qd.NgayHetHan >= startOfMonth))
@@ -78,7 +52,47 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
                     g => g.OrderByDescending(qd => qd.NgayHieuLuc).FirstOrDefault()
                 );
 
-            var result = nhanViens.Select(nv =>
+            // Resolve actual department and filter
+            var filteredNhanViens = new List<Domain.Models.NhanVien>();
+            foreach (var nv in nhanViens)
+            {
+                quyetDinhGroup.TryGetValue(nv.Cccd, out var qd);
+                string? actualIdPb = qd?.ChucVuMoi?.IdPhongBan ?? nv.IdPb;
+
+                if (string.IsNullOrWhiteSpace(request.IdPhongBan) || actualIdPb == request.IdPhongBan)
+                {
+                    filteredNhanViens.Add(nv);
+                }
+            }
+
+            var allFilteredCccd = filteredNhanViens.Select(nv => nv.Cccd).ToList();
+
+            if (allFilteredCccd.Count == 0)
+                return new Response<List<ChamCongSummaryDto>>(new List<ChamCongSummaryDto>());
+
+            var chamCongs = await _context.ChamCongs
+                .Where(cc => allFilteredCccd.Contains(cc.CccdNhanVien)
+                          && cc.NgayChamCong.Month == request.Thang
+                          && cc.NgayChamCong.Year == request.Nam)
+                .ToListAsync(cancellationToken);
+
+            var chamCongGroup = chamCongs
+                .GroupBy(cc => cc.CccdNhanVien)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var phanCongCas = await _context.PhanCongCas
+                .Include(p => p.CaLamViec)
+                    .ThenInclude(c => c.KhungGioNghis)
+                .Where(p => allFilteredCccd.Contains(p.CccdNhanVien) 
+                         && p.NgayLamViec.Month == request.Thang 
+                         && p.NgayLamViec.Year == request.Nam)
+                .ToListAsync(cancellationToken);
+
+            var phanCongGroup = phanCongCas
+                .GroupBy(p => p.CccdNhanVien)
+                .ToDictionary(g => g.Key, g => g.ToDictionary(p => p.NgayLamViec.Day));
+
+            var result = filteredNhanViens.Select(nv =>
             {
                 chamCongGroup.TryGetValue(nv.Cccd, out var ccList);
                 ccList ??= new List<Domain.Models.ChamCong>();

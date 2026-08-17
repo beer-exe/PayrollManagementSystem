@@ -91,7 +91,9 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
                 .WithMany(c => c.PhanCongCas)
                 .HasForeignKey(e => e.IdCaLamViec);
 
-            builder.HasIndex(e => new { e.CccdNhanVien, e.NgayLamViec }).IsUnique();
+            builder.HasIndex(e => new { e.CccdNhanVien, e.NgayLamViec })
+                   .IsUnique()
+                   .HasFilter("is_deleted = false");
         }
     }
 
@@ -115,7 +117,9 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
                 .HasPrincipalKey(n => n.Cccd)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(e => new { e.CccdNhanVien, e.NgayChamCong }).IsUnique();
+            builder.HasIndex(e => new { e.CccdNhanVien, e.NgayChamCong })
+                   .IsUnique()
+                   .HasFilter("is_deleted = false");
         }
     }
 
@@ -168,7 +172,9 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
                 .HasPrincipalKey(n => n.Cccd)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(e => new { e.CccdNhanVien, e.Nam }).IsUnique();
+            builder.HasIndex(e => new { e.CccdNhanVien, e.Nam })
+                   .IsUnique()
+                   .HasFilter("is_deleted = false");
         }
     }
 }
