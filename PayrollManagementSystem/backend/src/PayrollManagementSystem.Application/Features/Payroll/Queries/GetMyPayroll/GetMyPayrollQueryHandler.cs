@@ -101,7 +101,8 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetMyPayr
                     TrangThaiKyLuong = b.KyLuong.TrangThai.GetDescription(),
                     TrangThai = b.TrangThai.ToString(),
                     TrangThaiText = b.TrangThai.GetDescription(),
-                    LyDoKhieuNai = b.LyDoKhieuNai
+                    LyDoKhieuNai = b.LyDoKhieuNai,
+                    PhanHoiKhieuNai = b.PhanHoiKhieuNai
                 };
             }).ToList();
 

@@ -177,6 +177,35 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ payslip, onClose, on
         </div>
         
         <div className="payroll-modal-body">
+          {payslip.trangThai === 'YEU_CAU_XEM_XET' && (
+            <div style={{
+              background: '#fee2e2', border: '1px solid #fca5a5', borderRadius: '8px',
+              padding: '16px', marginBottom: '16px', color: '#991b1b'
+            }}>
+              <h4 style={{ margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+                Yêu cầu xem xét của bạn đang được xử lý
+              </h4>
+              <p style={{ margin: 0, fontSize: '0.9em', fontWeight: 500 }}>
+                Lý do: <span style={{ fontWeight: 400 }}>{payslip.lyDoKhieuNai}</span>
+              </p>
+            </div>
+          )}
+
+          {payslip.phanHoiKhieuNai && (
+            <div style={{
+              background: '#e0f2fe', border: '1px solid #7dd3fc', borderRadius: '8px',
+              padding: '16px', marginBottom: '16px', color: '#0369a1'
+            }}>
+              <h4 style={{ margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                Phản hồi từ phòng Hành chính Nhân sự
+              </h4>
+              <p style={{ margin: 0, fontSize: '0.9em', fontWeight: 500 }}>
+                <span style={{ fontWeight: 400 }}>{payslip.phanHoiKhieuNai}</span>
+              </p>
+            </div>
+          )}
           <div className="emp-info-card">
             <div className="emp-info-row">
               <span className="info-label">Nhân viên:</span>

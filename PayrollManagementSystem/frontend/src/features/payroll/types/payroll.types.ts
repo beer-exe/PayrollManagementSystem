@@ -40,6 +40,7 @@ export interface PayrollListDto {
   trangThai: string;
   trangThaiText: string;
   lyDoKhieuNai?: string;
+  phanHoiKhieuNai?: string;
 }
 
 export interface CalculatePayrollCommand {

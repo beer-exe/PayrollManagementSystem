@@ -66,13 +66,10 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                 throw new ApiException("Kỳ lương này đã chốt hoặc đã thanh toán, không thể tính lại!");
             }
 
-            // Xóa dữ liệu bảng lương cũ của kỳ này nếu có
-            var oldBangLuongs = await _context.BangLuongs.Where(x => x.IdKyLuong == kyLuong.IdKyLuong).ToListAsync(cancellationToken);
-            if (oldBangLuongs.Any())
-            {
-                _context.BangLuongs.RemoveRange(oldBangLuongs);
-                await _context.SaveChangesAsync(cancellationToken);
-            }
+            // Lấy dữ liệu bảng lương cũ (CHUA_XAC_NHAN) để update thay vì xóa, giữ nguyên Id
+            var oldBangLuongs = await _context.BangLuongs
+                .Where(x => x.IdKyLuong == kyLuong.IdKyLuong && x.TrangThai == TrangThaiBangLuong.CHUA_XAC_NHAN)
+                .ToListAsync(cancellationToken);
 
             // 3. Lọc danh sách nhân viên đủ điều kiện (Có quyết định nhân sự và đang làm việc)
             var activeEmployees = await _context.NhanViens
@@ -156,8 +153,16 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
 
             var listBangLuong = new List<BangLuong>();
 
+            // Lấy danh sách ID nhân viên đã có bảng lương đang ở trạng thái khác CHUA_XAC_NHAN (tức là đã xác nhận hoặc đang khiếu nại)
+            var existingConfirmedCccds = await _context.BangLuongs
+                .Where(x => x.IdKyLuong == kyLuong.IdKyLuong && x.TrangThai != TrangThaiBangLuong.CHUA_XAC_NHAN)
+                .Select(x => x.CccdNhanVien)
+                .ToListAsync(cancellationToken);
+
             foreach (var nv in activeEmployees)
             {
+                if (existingConfirmedCccds.Contains(nv.Cccd)) continue;
+
                 // Phân tách chi tiết các loại ngày công để tính lương
                 var nvChamCong = chamCongs.Where(x => x.CccdNhanVien == nv.Cccd).ToList();
                 
@@ -345,34 +350,43 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                 // Tính lại Thực Lĩnh sau khi trừ thuế và trừ phạt
                 thucLinh = tongThuNhap - tongKhauTru - truThue - phat;
 
-                var bangLuong = new BangLuong
+                // Tìm bảng lương cũ nếu có, nếu không thì tạo mới
+                var bangLuong = oldBangLuongs.FirstOrDefault(x => x.CccdNhanVien == nv.Cccd);
+                bool isNew = false;
+                if (bangLuong == null)
                 {
-                    IdKyLuong = kyLuong.IdKyLuong,
-                    CccdNhanVien = nv.Cccd,
-                    Thang = request.Thang,
-                    Nam = request.Nam,
-                    P1 = p1,
-                    HeSoP2 = heSoP2,
-                    HeSoP3 = heSoP3,
-                    NgayCongChuan = Math.Round(ngayCongChuan, 3),
-                    NgayCongThucTe = Math.Round(ngayCongThucTe, 3),
-                    GioCongChuan = Math.Round(gioCongChuan, 2),
-                    GioCongThucTe = Math.Round(gioCongThucTe, 2),
-                    LuongThoiGian = Math.Round(luongThoiGian, 0),
-                    LuongHieuSuatP3 = Math.Round(luongHieuSuat, 0),
-                    PhuCap = 0,
-                    Thuong = 0,
-                    TangCa = 0,
-                    Phat = phat,
-                    KhauTru = Math.Round(tongKhauTru, 0),
-                    ChiTietKhauTru = chiTietKhauTruJson,
-                    TruThue = Math.Round(truThue, 0),
-                    ChiTietThue = chiTietThueJson,
-                    TongThuNhap = Math.Round(tongThuNhap, 0),
-                    ThucLinh = Math.Round(thucLinh, 0),
-                };
+                    bangLuong = new BangLuong();
+                    isNew = true;
+                }
 
-                listBangLuong.Add(bangLuong);
+                bangLuong.IdKyLuong = kyLuong.IdKyLuong;
+                bangLuong.CccdNhanVien = nv.Cccd;
+                bangLuong.Thang = request.Thang;
+                bangLuong.Nam = request.Nam;
+                bangLuong.P1 = p1;
+                bangLuong.HeSoP2 = heSoP2;
+                bangLuong.HeSoP3 = heSoP3;
+                bangLuong.NgayCongChuan = Math.Round(ngayCongChuan, 3);
+                bangLuong.NgayCongThucTe = Math.Round(ngayCongThucTe, 3);
+                bangLuong.GioCongChuan = Math.Round(gioCongChuan, 2);
+                bangLuong.GioCongThucTe = Math.Round(gioCongThucTe, 2);
+                bangLuong.LuongThoiGian = Math.Round(luongThoiGian, 0);
+                bangLuong.LuongHieuSuatP3 = Math.Round(luongHieuSuat, 0);
+                bangLuong.PhuCap = 0;
+                bangLuong.Thuong = 0;
+                bangLuong.TangCa = 0;
+                bangLuong.Phat = phat;
+                bangLuong.KhauTru = Math.Round(tongKhauTru, 0);
+                bangLuong.ChiTietKhauTru = chiTietKhauTruJson;
+                bangLuong.TruThue = Math.Round(truThue, 0);
+                bangLuong.ChiTietThue = chiTietThueJson;
+                bangLuong.TongThuNhap = Math.Round(tongThuNhap, 0);
+                bangLuong.ThucLinh = Math.Round(thucLinh, 0);
+
+                if (isNew)
+                {
+                    listBangLuong.Add(bangLuong);
+                }
             }
 
             _context.BangLuongs.AddRange(listBangLuong);

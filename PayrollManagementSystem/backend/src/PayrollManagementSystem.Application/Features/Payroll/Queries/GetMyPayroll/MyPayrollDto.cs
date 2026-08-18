@@ -47,5 +47,6 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetMyPayr
         public string TrangThai { get; set; } = null!;
         public string TrangThaiText { get; set; } = null!;
         public string? LyDoKhieuNai { get; set; }
+        public string? PhanHoiKhieuNai { get; set; }
     }
 }

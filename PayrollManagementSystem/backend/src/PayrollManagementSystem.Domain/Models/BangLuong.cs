@@ -51,6 +51,7 @@ namespace PayrollManagementSystem.Domain.Models
         // Trạng thái phiếu lương
         public TrangThaiBangLuong TrangThai { get; set; } = TrangThaiBangLuong.CHUA_XAC_NHAN;
         public string? LyDoKhieuNai { get; set; }
+        public string? PhanHoiKhieuNai { get; set; }
 
         // Navigation properties
         public KyLuong KyLuong { get; set; } = null!;

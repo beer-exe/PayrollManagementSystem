@@ -493,6 +493,7 @@ const PayrollManagement: React.FC = () => {
         <PayrollDetailModal
           payroll={selectedPayroll}
           onClose={() => setSelectedPayroll(null)}
+          onSuccess={fetchData}
         />
       )}
 

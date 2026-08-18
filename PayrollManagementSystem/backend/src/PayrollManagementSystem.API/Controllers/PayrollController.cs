@@ -6,6 +6,7 @@ using PayrollManagementSystem.Application.Features.Payroll.Commands.ClosePayroll
 using PayrollManagementSystem.Application.Features.Payroll.Commands.ConfirmBangLuong;
 using PayrollManagementSystem.Application.Features.Payroll.Commands.ReopenPayroll;
 using PayrollManagementSystem.Application.Features.Payroll.Commands.RequestReviewBangLuong;
+using PayrollManagementSystem.Application.Features.Payroll.Commands.ResolveReviewBangLuong;
 using PayrollManagementSystem.Application.Features.Payroll.Queries.GetKyLuongStatus;
 using PayrollManagementSystem.Application.Features.Payroll.Queries.GetPayrollList;
 
@@ -66,9 +67,9 @@ namespace PayrollManagementSystem.API.Controllers
         }
 
         [HttpPost("bang-luong/{id}/confirm")]
-        public async Task<IActionResult> ConfirmBangLuong(Guid id)
+        public async Task<IActionResult> ConfirmBangLuong(Guid id, [FromBody] ConfirmBangLuongCommand command)
         {
-            var command = new ConfirmBangLuongCommand { IdBangLuong = id };
+            command.IdBangLuong = id;
             var result = await _mediator.Send(command);
             return Ok(result);
         }
@@ -76,10 +77,16 @@ namespace PayrollManagementSystem.API.Controllers
         [HttpPost("bang-luong/{id}/request-review")]
         public async Task<IActionResult> RequestReviewBangLuong(Guid id, [FromBody] RequestReviewBangLuongCommand command)
         {
-            if (id != command.IdBangLuong)
-            {
-                return BadRequest("ID không hợp lệ.");
-            }
+            command.IdBangLuong = id;
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        [HttpPost("bang-luong/{id}/resolve-review")]
+        [Authorize(Roles = "HR,Admin")]
+        public async Task<IActionResult> ResolveReviewBangLuong(Guid id, [FromBody] ResolveReviewBangLuongCommand command)
+        {
+            command.IdBangLuong = id;
             var result = await _mediator.Send(command);
             return Ok(result);
         }

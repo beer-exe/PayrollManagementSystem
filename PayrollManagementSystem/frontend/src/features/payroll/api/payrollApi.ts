@@ -17,4 +17,7 @@ export const payrollApi = {
 
   reopenPayroll: (data: ReopenPayrollCommand) => 
     axiosClient.post<unknown, ApiResponse<boolean>>('/Payroll/reopen', data),
+
+  resolveReview: (id: string, data: { action: 'REJECT' | 'RECALCULATE'; phanHoiKhieuNai?: string }) => 
+    axiosClient.post<unknown, ApiResponse<boolean>>(`/Payroll/bang-luong/${id}/resolve-review`, data),
 };
