@@ -1,10 +1,10 @@
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace PayrollManagementSystem.Application.Features.Payroll.Commands.CalculatePayroll
+namespace PayrollManagementSystem.Application.Features.Payroll.Commands.ClosePayroll
 {
-    public class CalculatePayrollCommandValidator : AbstractValidator<CalculatePayrollCommand>
+    public class ClosePayrollCommandValidator : AbstractValidator<ClosePayrollCommand>
     {
-        public CalculatePayrollCommandValidator()
+        public ClosePayrollCommandValidator()
         {
             RuleFor(p => p.Thang)
                 .NotEmpty().WithMessage("{PropertyName} là bắt buộc.")

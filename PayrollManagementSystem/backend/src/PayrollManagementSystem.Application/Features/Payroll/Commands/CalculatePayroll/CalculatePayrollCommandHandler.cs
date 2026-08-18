@@ -31,6 +31,18 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                 throw new ApiException($"Không thể chạy lương tháng {request.Thang}/{request.Nam} vì kỳ lương tháng {unclosedKyLuong.Thang}/{unclosedKyLuong.Nam} chưa được chốt!");
             }
 
+            // Kiểm tra xem Kỳ chấm công của tháng này đã tồn tại và đã chốt chưa
+            var kyChamCong = await _context.KyChamCongs
+                .FirstOrDefaultAsync(x => x.Thang == request.Thang && x.Nam == request.Nam, cancellationToken);
+            if (kyChamCong == null)
+            {
+                throw new ApiException($"Không thể tính lương vì kỳ chấm công tháng {request.Thang}/{request.Nam} không tồn tại!");
+            }
+            else if (kyChamCong.TrangThai != TrangThaiKyChamCong.DA_CHOT)
+            {
+                throw new ApiException($"Không thể tính lương vì kỳ chấm công tháng {request.Thang}/{request.Nam} chưa được chốt!");
+            }
+
             // 2. Tạo hoặc lấy Kỳ lương hiện tại
             var kyLuong = await _context.KyLuongs
                 .FirstOrDefaultAsync(x => x.Thang == request.Thang && x.Nam == request.Nam, cancellationToken);
@@ -66,7 +78,10 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
             var activeEmployees = await _context.NhanViens
                 .Where(x => x.TrangThai == Domain.Enums.TrangThaiNhanVien.DANG_LAM_VIEC)
                 .ToListAsync(cancellationToken);
-
+            if (!activeEmployees.Any())
+            {
+                throw new ApiException("Không thể tính lương vì không có nhân viên nào đang làm việc trong kỳ này.");
+            }
             // 4. Lấy dữ liệu chấm công của tháng (để tính Số ngày công thực tế)
             var chamCongs = await _context.ChamCongs
                 .Where(x => x.NgayChamCong.Month == request.Thang && x.NgayChamCong.Year == request.Nam && x.TrangThai == TrangThaiChamCong.DA_XAC_NHAN)

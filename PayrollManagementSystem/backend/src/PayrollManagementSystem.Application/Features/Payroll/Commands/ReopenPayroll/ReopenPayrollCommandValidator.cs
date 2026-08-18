@@ -1,10 +1,10 @@
 using FluentValidation;
 
-namespace PayrollManagementSystem.Application.Features.Payroll.Commands.CalculatePayroll
+namespace PayrollManagementSystem.Application.Features.Payroll.Commands.ReopenPayroll
 {
-    public class CalculatePayrollCommandValidator : AbstractValidator<CalculatePayrollCommand>
+    public class ReopenPayrollCommandValidator : AbstractValidator<ReopenPayrollCommand>
     {
-        public CalculatePayrollCommandValidator()
+        public ReopenPayrollCommandValidator()
         {
             RuleFor(p => p.Thang)
                 .NotEmpty().WithMessage("{PropertyName} là bắt buộc.")
@@ -13,6 +13,10 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
             RuleFor(p => p.Nam)
                 .NotEmpty().WithMessage("{PropertyName} là bắt buộc.")
                 .GreaterThanOrEqualTo(2000).WithMessage("{PropertyName} không hợp lệ.");
+
+            RuleFor(p => p.LyDo)
+                .NotEmpty().WithMessage("Lý do mở lại kỳ lương là bắt buộc.")
+                .MaximumLength(500).WithMessage("Lý do không được vượt quá 500 ký tự.");
         }
     }
 }
