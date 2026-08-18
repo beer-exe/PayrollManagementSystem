@@ -46,6 +46,7 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.ReopenPa
             }
 
             kyLuong.TrangThai = TrangThaiKyLuong.CHUA_CHOT;
+            kyLuong.LyDoMoChot = request.LyDo;
 
             await _context.SaveChangesAsync(cancellationToken);
 

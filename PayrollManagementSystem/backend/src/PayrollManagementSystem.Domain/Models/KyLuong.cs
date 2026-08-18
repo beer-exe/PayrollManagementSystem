@@ -13,6 +13,9 @@ namespace PayrollManagementSystem.Domain.Models
         public DateOnly NgayKetThuc { get; set; }
         
         public TrangThaiKyLuong TrangThai { get; set; } = TrangThaiKyLuong.CHUA_CHOT;
+        
+        // Lý do mở chốt kỳ lương (Lưu vết kiểm toán)
+        public string? LyDoMoChot { get; set; }
 
         // Navigation property
         public ICollection<BangLuong> BangLuongs { get; set; } = new List<BangLuong>();

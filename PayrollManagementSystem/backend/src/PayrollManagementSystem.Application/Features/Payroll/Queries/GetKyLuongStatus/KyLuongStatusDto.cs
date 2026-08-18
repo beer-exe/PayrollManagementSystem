@@ -11,5 +11,6 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetKyLuon
         public string TenTrangThai { get; set; } = "Chưa tạo";
         public bool IsLocked { get; set; }
         public bool CoDuLieuBangLuong { get; set; }
+        public string? LyDoMoChot { get; set; }
     }
 }

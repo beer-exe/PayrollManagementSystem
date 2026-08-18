@@ -56,7 +56,8 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetKyLuon
                 TrangThai = kyLuong.TrangThai.ToString(),
                 TenTrangThai = kyLuong.TrangThai.GetDescription(),
                 IsLocked = isLocked,
-                CoDuLieuBangLuong = hasBangLuong
+                CoDuLieuBangLuong = hasBangLuong,
+                LyDoMoChot = kyLuong.LyDoMoChot
             };
 
             return new Response<KyLuongStatusDto>(dto);
