@@ -82,6 +82,7 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
             {
                 throw new ApiException("Không thể tính lương vì không có nhân viên nào đang làm việc trong kỳ này.");
             }
+
             // 4. Lấy dữ liệu chấm công của tháng (để tính Số ngày công thực tế)
             var chamCongs = await _context.ChamCongs
                 .Where(x => x.NgayChamCong.Month == request.Thang && x.NgayChamCong.Year == request.Nam && x.TrangThai == TrangThaiChamCong.DA_XAC_NHAN)

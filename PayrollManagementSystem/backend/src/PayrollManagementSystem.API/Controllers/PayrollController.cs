@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PayrollManagementSystem.Application.Features.Payroll.Commands.CalculatePayroll;
 using PayrollManagementSystem.Application.Features.Payroll.Commands.ClosePayroll;
+using PayrollManagementSystem.Application.Features.Payroll.Commands.ConfirmBangLuong;
 using PayrollManagementSystem.Application.Features.Payroll.Commands.ReopenPayroll;
+using PayrollManagementSystem.Application.Features.Payroll.Commands.RequestReviewBangLuong;
 using PayrollManagementSystem.Application.Features.Payroll.Queries.GetKyLuongStatus;
 using PayrollManagementSystem.Application.Features.Payroll.Queries.GetPayrollList;
 
@@ -60,6 +62,25 @@ namespace PayrollManagementSystem.API.Controllers
         {
             var query = new GetKyLuongStatusQuery { Thang = thang, Nam = nam };
             var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpPost("bang-luong/{id}/confirm")]
+        public async Task<IActionResult> ConfirmBangLuong(Guid id)
+        {
+            var command = new ConfirmBangLuongCommand { IdBangLuong = id };
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        [HttpPost("bang-luong/{id}/request-review")]
+        public async Task<IActionResult> RequestReviewBangLuong(Guid id, [FromBody] RequestReviewBangLuongCommand command)
+        {
+            if (id != command.IdBangLuong)
+            {
+                return BadRequest("ID không hợp lệ.");
+            }
+            var result = await _mediator.Send(command);
             return Ok(result);
         }
     }

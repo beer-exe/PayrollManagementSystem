@@ -7,7 +7,7 @@ import './MyPayroll.css';
 
 export const MyPayroll: React.FC = () => {
   const currentYear = new Date().getFullYear();
-  const { data, loading, error, year, setYear, toast, setToast } = useMyPayroll(currentYear);
+  const { data, loading, error, year, setYear, toast, setToast, refetch } = useMyPayroll(currentYear);
   const [selectedPayslip, setSelectedPayslip] = useState<MyPayrollDto | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   
@@ -162,6 +162,11 @@ export const MyPayroll: React.FC = () => {
         <PayslipModal 
           payslip={selectedPayslip} 
           onClose={() => setSelectedPayslip(null)} 
+          onPayslipUpdated={() => {
+            refetch();
+            setSelectedPayslip(null);
+          }}
+          onToast={(msg, type) => setToast({ message: msg, type })}
         />
       )}
 

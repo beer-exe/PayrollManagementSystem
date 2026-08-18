@@ -42,7 +42,10 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetMyPayr
         public string? GhiChu { get; set; }
         public string? ChiTietKhauTru { get; set; }
         public string? ChiTietThue { get; set; }
-        
         public string TrangThaiKyLuong { get; set; } = null!;
+
+        public string TrangThai { get; set; } = null!;
+        public string TrangThaiText { get; set; } = null!;
+        public string? LyDoKhieuNai { get; set; }
     }
 }

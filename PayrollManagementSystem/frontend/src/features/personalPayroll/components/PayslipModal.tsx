@@ -1,15 +1,59 @@
 import React from 'react';
 import { MyPayrollDto } from '../types/myPayroll.types';
 import '../../payroll/components/PayrollDetailModal.css';
+import { personalPayrollApi } from '../api/personalPayrollApi';
 
 interface PayslipModalProps {
   payslip: MyPayrollDto;
   onClose: () => void;
+  onPayslipUpdated?: () => void;
+  onToast?: (message: string, type: 'success' | 'error') => void;
 }
 
-export const PayslipModal: React.FC<PayslipModalProps> = ({ payslip, onClose }) => {
+export const PayslipModal: React.FC<PayslipModalProps> = ({ payslip, onClose, onPayslipUpdated, onToast }) => {
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [showReviewPrompt, setShowReviewPrompt] = React.useState(false);
+  const [reviewReason, setReviewReason] = React.useState('');
+  const [errorMsg, setErrorMsg] = React.useState('');
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+  };
+
+  const handleConfirm = async () => {
+    if (!window.confirm('Bạn xác nhận phiếu lương này là chính xác? Hành động này không thể hoàn tác.')) return;
+    try {
+      setIsSubmitting(true);
+      setErrorMsg('');
+      await personalPayrollApi.confirmPayslip(payslip.idBangLuong);
+      if (onToast) onToast('Xác nhận bảng lương thành công!', 'success');
+      if (onPayslipUpdated) onPayslipUpdated();
+      onClose();
+    } catch (err: any) {
+      const msg = err.response?.data?.message || err.message || 'Có lỗi xảy ra khi xác nhận.';
+      if (onToast) onToast(msg, 'error');
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleRequestReview = async () => {
+    if (!reviewReason.trim()) {
+      if (onToast) onToast('Vui lòng nhập lý do yêu cầu xem xét.', 'error');
+      setErrorMsg('Vui lòng nhập lý do yêu cầu xem xét.');
+      return;
+    }
+    try {
+      setIsSubmitting(true);
+      setErrorMsg('');
+      await personalPayrollApi.requestReviewPayslip(payslip.idBangLuong, reviewReason);
+      if (onToast) onToast('Gửi yêu cầu xem xét thành công!', 'success');
+      if (onPayslipUpdated) onPayslipUpdated();
+      onClose();
+    } catch (err: any) {
+      const msg = err.response?.data?.message || err.message || 'Có lỗi xảy ra khi yêu cầu xem xét.';
+      if (onToast) onToast(msg, 'error');
+      setIsSubmitting(false);
+    }
   };
 
   const luong3P = payslip.p1 * payslip.heSoP2 * payslip.heSoP3;
@@ -82,11 +126,28 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ payslip, onClose }) 
     document.title = originalTitle;
   };
 
+  const renderStatusBadge = () => {
+    let statusClass = 'neutral';
+    if (payslip.trangThai === 'DA_XAC_NHAN') {
+      statusClass = 'success';
+    } else if (payslip.trangThai === 'YEU_CAU_XEM_XET') {
+      statusClass = 'danger';
+    }
+    return (
+      <span className={`mpay-status ${statusClass}`} style={{ marginLeft: '12px' }}>
+        {payslip.trangThaiText}
+      </span>
+    );
+  };
+
   return (
     <div className="payroll-modal-overlay" onClick={onClose}>
       <div className="payroll-modal-content" onClick={e => e.stopPropagation()}>
-        <div className="payroll-modal-header">
-          <h3>Chi tiết phiếu lương - {payslip.thang}/{payslip.nam}</h3>
+        <div className="payroll-modal-header" style={{ flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <h3 style={{ margin: 0 }}>Chi tiết phiếu lương - {payslip.thang}/{payslip.nam}</h3>
+            {renderStatusBadge()}
+          </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <button
               className="print-btn"
@@ -114,7 +175,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ payslip, onClose }) 
             <button className="close-btn" onClick={onClose}>&times;</button>
           </div>
         </div>
-
+        
         <div className="payroll-modal-body">
           <div className="emp-info-card">
             <div className="emp-info-row">
@@ -224,6 +285,68 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ payslip, onClose }) 
             </div>
           </div>
         </div>
+        
+        {showReviewPrompt && payslip.trangThai === 'CHUA_XAC_NHAN' && (
+          <div style={{ padding: '16px 24px', backgroundColor: 'rgba(245, 158, 11, 0.05)', borderTop: '1px solid rgba(245, 158, 11, 0.3)' }}>
+            <p style={{ margin: '0 0 8px 0', fontWeight: 600, color: '#f59e0b' }}>
+              Nhập lý do yêu cầu xem xét lại phiếu lương:
+            </p>
+            <textarea
+              style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid rgba(245, 158, 11, 0.3)', minHeight: '60px', backgroundColor: 'var(--bg-main)', color: 'var(--text-primary)' }}
+              value={reviewReason}
+              onChange={e => setReviewReason(e.target.value)}
+              placeholder="Ví dụ: Thiếu giờ tăng ca ngày 15/10..."
+            />
+            {errorMsg && <p style={{ color: '#ef4444', fontSize: '0.875rem', margin: '4px 0' }}>{errorMsg}</p>}
+            <div style={{ marginTop: '8px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+              <button 
+                onClick={() => setShowReviewPrompt(false)}
+                style={{ padding: '6px 12px', background: 'var(--bg-main)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '4px', cursor: 'pointer' }}
+              >Hủy</button>
+              <button 
+                onClick={handleRequestReview}
+                disabled={isSubmitting || !reviewReason.trim()}
+                style={{ padding: '6px 12px', background: '#d97706', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+              >Gửi yêu cầu</button>
+            </div>
+          </div>
+        )}
+
+        {payslip.trangThai === 'YEU_CAU_XEM_XET' && (
+          <div style={{ padding: '12px 24px', backgroundColor: 'rgba(239, 68, 68, 0.05)', borderTop: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444' }}>
+            <strong>Lý do khiếu nại của bạn:</strong> {payslip.lyDoKhieuNai}
+          </div>
+        )}
+
+        {payslip.trangThai === 'CHUA_XAC_NHAN' && !showReviewPrompt && (
+          <div style={{ 
+            padding: '16px 24px', 
+            borderTop: '1px solid var(--border-color)', 
+            display: 'flex', 
+            justifyContent: 'flex-end', 
+            gap: '12px', 
+            background: 'var(--bg-main)',
+            borderBottomLeftRadius: '12px',
+            borderBottomRightRadius: '12px'
+          }}>
+            <button
+              className="print-btn"
+              onClick={() => setShowReviewPrompt(!showReviewPrompt)}
+              style={{ background: '#f59e0b', borderColor: '#d97706', padding: '8px 16px', fontSize: '0.95rem' }}
+              disabled={isSubmitting}
+            >
+              ⚠️ Yêu cầu xem xét
+            </button>
+            <button
+              className="print-btn"
+              onClick={handleConfirm}
+              style={{ background: '#10b981', borderColor: '#059669', padding: '8px 16px', fontSize: '0.95rem' }}
+              disabled={isSubmitting}
+            >
+              ✅ Xác nhận đúng
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

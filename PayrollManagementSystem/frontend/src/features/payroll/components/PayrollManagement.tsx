@@ -370,13 +370,14 @@ const PayrollManagement: React.FC = () => {
                 <SortableHeader label="Lương TG" sortKey="luongThoiGian" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'right' }} />
                 <SortableHeader label="Khấu trừ" sortKey="khauTru" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'right' }} />
                 <SortableHeader label="Thực lĩnh" sortKey="thucLinh" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'right' }} />
+                <SortableHeader label="Trạng thái" sortKey="trangThaiText" currentSortKey={sortKey} currentSortDirection={sortDirection} onSort={handleSort} style={{ textAlign: 'center' }} />
                 <th style={{ textAlign: 'center', width: 90 }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={8}>
+                  <td colSpan={9}>
                     <div className="prl-loader">
                       <div className="prl-spinner" />
                     </div>
@@ -384,7 +385,7 @@ const PayrollManagement: React.FC = () => {
                 </tr>
               ) : paginatedItems.length === 0 ? (
                 <tr>
-                  <td colSpan={8}>
+                  <td colSpan={9}>
                     <div className="prl-empty">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" style={{ width: 48, height: 48, margin: '0 auto 1rem', opacity: 0.5 }}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
@@ -427,6 +428,14 @@ const PayrollManagement: React.FC = () => {
                     <td style={{ textAlign: 'right', fontWeight: 500 }}>{formatCurrency(row.luongThoiGian)}</td>
                     <td style={{ textAlign: 'right', fontWeight: 500, color: 'var(--danger-text)' }}>-{formatCurrency(row.khauTru)}</td>
                     <td style={{ textAlign: 'right', fontWeight: 600, color: 'var(--success-text)' }}>{formatCurrency(row.thucLinh)}</td>
+                    <td style={{ textAlign: 'center' }}>
+                      <span className={`prl-status ${
+                        row.trangThai === 'DA_XAC_NHAN' ? 'success' : 
+                        row.trangThai === 'YEU_CAU_XEM_XET' ? 'danger' : 'neutral'
+                      }`}>
+                        {row.trangThaiText}
+                      </span>
+                    </td>
                     <td style={{ textAlign: 'center' }}>
                       <button
                         className="prl-btn prl-btn-secondary"

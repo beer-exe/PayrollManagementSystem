@@ -7,5 +7,18 @@ export const personalPayrollApi = {
       params: { nam }
     });
     return response.data;
+  },
+
+  confirmPayslip: async (id: string): Promise<boolean> => {
+    const response = await axiosClient.post<any>(`/Payroll/bang-luong/${id}/confirm`);
+    return response.data;
+  },
+
+  requestReviewPayslip: async (id: string, lyDoKhieuNai: string): Promise<boolean> => {
+    const response = await axiosClient.post<any>(`/Payroll/bang-luong/${id}/request-review`, {
+      idBangLuong: id,
+      lyDoKhieuNai
+    });
+    return response.data;
   }
 };

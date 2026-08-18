@@ -45,6 +45,15 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.ClosePay
                 throw new ApiException($"Không thể chốt kỳ lương tháng {request.Thang}/{request.Nam} vì chưa có dữ liệu bảng lương (hãy ấn Tính lương trước).");
             }
 
+            // Bắt buộc tất cả nhân viên phải xác nhận bảng lương thì mới được chốt kỳ lương
+            var unconfirmedBangLuongsCount = await _context.BangLuongs
+                .CountAsync(x => x.IdKyLuong == kyLuong.IdKyLuong && x.TrangThai != TrangThaiBangLuong.DA_XAC_NHAN, cancellationToken);
+            
+            if (unconfirmedBangLuongsCount > 0)
+            {
+                throw new ApiException($"Không thể chốt kỳ lương tháng {request.Thang}/{request.Nam} vì vẫn còn {unconfirmedBangLuongsCount} nhân viên chưa xác nhận bảng lương!");
+            }
+
             // Kiểm tra ràng buộc thời gian: Nếu chốt trước ngày kết thúc kỳ lương, chỉ HR cấp quản lý mới có quyền
             var today = DateOnly.FromDateTime(DateTime.Today);
             if (today < kyLuong.NgayKetThuc)

@@ -38,4 +38,7 @@ export interface MyPayrollDto {
   chiTietThue?: string;
   
   trangThaiKyLuong: string;
+  trangThai: string;
+  trangThaiText: string;
+  lyDoKhieuNai?: string;
 }

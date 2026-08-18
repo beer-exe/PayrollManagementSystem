@@ -2,6 +2,7 @@ using MediatR;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 using Microsoft.EntityFrameworkCore;
+using PayrollManagementSystem.Domain.Extensions;
 
 namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetPayrollList
 {
@@ -72,7 +73,10 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetPayrol
                     ThucLinh = bl.ThucLinh,
                     GhiChu = bl.GhiChu,
                     ChiTietKhauTru = bl.ChiTietKhauTru,
-                    ChiTietThue = bl.ChiTietThue
+                    ChiTietThue = bl.ChiTietThue,
+                    TrangThai = bl.TrangThai.ToString(),
+                    TrangThaiText = bl.TrangThai.GetDescription(),
+                    LyDoKhieuNai = bl.LyDoKhieuNai
                 };
             }).OrderBy(x => x.TenPhongBan).ThenBy(x => x.TenNhanVien).ToList();
 

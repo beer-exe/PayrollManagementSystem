@@ -1,4 +1,5 @@
 using PayrollManagementSystem.Domain.Common;
+using PayrollManagementSystem.Domain.Enums;
 
 namespace PayrollManagementSystem.Domain.Models
 {
@@ -46,6 +47,10 @@ namespace PayrollManagementSystem.Domain.Models
 
         // Chi tiết khoản mục thuế (lưu trữ JSON)
         public string? ChiTietThue { get; set; }
+
+        // Trạng thái phiếu lương
+        public TrangThaiBangLuong TrangThai { get; set; } = TrangThaiBangLuong.CHUA_XAC_NHAN;
+        public string? LyDoKhieuNai { get; set; }
 
         // Navigation properties
         public KyLuong KyLuong { get; set; } = null!;

@@ -43,6 +43,9 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
             builder.Property(e => e.ThucLinh).HasPrecision(18, 2);
             builder.Property(e => e.GhiChu).HasMaxLength(500);
 
+            builder.Property(e => e.TrangThai).HasConversion<string>().HasMaxLength(50);
+            builder.Property(e => e.LyDoKhieuNai).HasMaxLength(500);
+
             builder.HasOne(d => d.KyLuong)
                 .WithMany(p => p.BangLuongs)
                 .HasForeignKey(d => d.IdKyLuong)

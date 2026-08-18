@@ -36,6 +36,10 @@ export interface PayrollListDto {
   ghiChu?: string;
   chiTietKhauTru?: string;
   chiTietThue?: string;
+
+  trangThai: string;
+  trangThaiText: string;
+  lyDoKhieuNai?: string;
 }
 
 export interface CalculatePayrollCommand {
