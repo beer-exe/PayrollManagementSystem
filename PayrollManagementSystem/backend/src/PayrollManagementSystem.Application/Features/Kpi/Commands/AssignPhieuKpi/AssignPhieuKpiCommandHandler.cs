@@ -30,8 +30,8 @@ namespace PayrollManagementSystem.Application.Features.Kpi.Commands.AssignPhieuK
             if (phieu == null)
                 throw new ApiException($"Không tìm thấy phiếu KPI {request.IdPhieuKpi}");
 
-            if (phieu.TrangThai != TrangThaiPhieuKpi.CHO_GIAO_MUC_TIEU)
-                throw new ApiException("Phiếu KPI không ở trạng thái chờ giao mục tiêu.");
+            if (phieu.TrangThai != TrangThaiPhieuKpi.CHO_GIAO_MUC_TIEU && phieu.TrangThai != TrangThaiPhieuKpi.CHO_XAC_NHAN)
+                throw new ApiException("Phiếu KPI không ở trạng thái chờ giao mục tiêu hoặc chờ xác nhận.");
 
             bool canManage = await _kpiAuthorizationService.CanManageAsync(request.TaiKhoanIdQuanLy, phieu.CccdNhanVien, cancellationToken);
             if (!canManage)
@@ -88,7 +88,7 @@ namespace PayrollManagementSystem.Application.Features.Kpi.Commands.AssignPhieuK
 
             phieu.TongDiemKpi = 0;
             phieu.HeSoP3 = 0;
-            phieu.TrangThai = TrangThaiPhieuKpi.DANG_THUC_HIEN;
+            phieu.TrangThai = TrangThaiPhieuKpi.CHO_XAC_NHAN;
 
             await _context.SaveChangesAsync(cancellationToken);
 

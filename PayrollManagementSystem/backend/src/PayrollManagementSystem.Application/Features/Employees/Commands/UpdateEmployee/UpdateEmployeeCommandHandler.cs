@@ -36,6 +36,8 @@ namespace PayrollManagementSystem.Application.Features.Employees.Commands.Update
                 var deptExists = await _context.PhongBans.AnyAsync(pb => pb.IdPb == request.IdPb, cancellationToken);
                 if (!deptExists)
                     throw new ApiException("Phòng ban được chọn không tồn tại trong hệ thống.");
+                
+                nhanVien.IdPb = request.IdPb;
             }
 
             nhanVien.HoTen = request.HoTen.Trim();
@@ -48,7 +50,6 @@ namespace PayrollManagementSystem.Application.Features.Employees.Commands.Update
             nhanVien.ChuyenNganh = request.ChuyenNganh?.Trim();
             nhanVien.SoBhxh = request.SoBhxh?.Trim();
             nhanVien.SoBhyt = request.SoBhyt?.Trim();
-            nhanVien.IdPb = request.IdPb;
             nhanVien.SoTaiKhoan = request.SoTaiKhoan?.Trim();
             nhanVien.TenNganHang = request.TenNganHang?.Trim();
             nhanVien.MaSoThue = request.MaSoThue?.Trim();

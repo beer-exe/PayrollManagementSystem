@@ -41,6 +41,10 @@ export const kpiApi = {
     return axiosClient.post(`/kpi/phieu/${idPhieuKpi}/assign`, data);
   },
 
+  confirmPhieuKpi: (id: string) => {
+    return axiosClient.post(`/kpi/phieu/${id}/confirm`);
+  },
+
   submitPhieuKpi: (id: string) => {
     return axiosClient.post<string>(`/kpi/phieu/${id}/submit`);
   },

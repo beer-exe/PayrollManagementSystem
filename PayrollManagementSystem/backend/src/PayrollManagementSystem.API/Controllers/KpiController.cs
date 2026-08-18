@@ -81,6 +81,20 @@ namespace PayrollManagementSystem.API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("phieu/{id}/confirm")]
+        public async Task<IActionResult> ConfirmPhieuKpi(Guid id)
+        {
+            if (_currentUserService.UserId == null) return Unauthorized();
+            
+            var command = new PayrollManagementSystem.Application.Features.Kpi.Commands.ConfirmPhieuKpi.ConfirmPhieuKpiCommand 
+            { 
+                IdPhieuKpi = id, 
+                TaiKhoanIdNhanVien = _currentUserService.UserId.Value 
+            };
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
         [HttpPost("phieu/{id}/chi-tiet")]
         public async Task<IActionResult> SaveChiTietKpi(Guid id, [FromBody] List<ChiTietKpiInput> chiTietKpis)
         {

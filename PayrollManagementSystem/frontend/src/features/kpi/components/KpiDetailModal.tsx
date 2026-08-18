@@ -108,6 +108,19 @@ export const KpiDetailModal: React.FC<KpiDetailModalProps> = ({ idPhieuKpi, isMa
     }
   };
 
+  const handleConfirmKpi = async () => {
+    if (!phieu) return;
+    setIsLoading(true);
+    try {
+      await kpiApi.confirmPhieuKpi(phieu.idPhieuKpi);
+      onSuccess('Đã xác nhận KPI!');
+    } catch (error: any) {
+      setToast({ message: error.response?.data?.Message || error.response?.data?.message || 'Có lỗi xảy ra', type: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Quản lý phê duyệt (chỉ gọi khi trạng thái = 2 và isManagerView)
   const handleApprove = async () => {
     if (!phieu) return;
@@ -127,9 +140,10 @@ export const KpiDetailModal: React.FC<KpiDetailModalProps> = ({ idPhieuKpi, isMa
   if (!phieu) return null;
 
   // Xác định quyền hạn theo trạng thái và vai trò
-  const isAssigning = isManagerView && phieu.canManage && phieu.trangThaiValue === 0;
+  const isAssigning = isManagerView && phieu.canManage && (phieu.trangThaiValue === 0 || phieu.trangThaiValue === 4);
   const isUpdatingProgress = !isManagerView && phieu.trangThaiValue === 1;
   const canApprove = isManagerView && phieu.canManage && phieu.trangThaiValue === 2;
+  const canConfirm = !isManagerView && phieu.trangThaiValue === 4;
 
   // Cột nào được phép sửa?
   const isTargetEditable = isAssigning;
@@ -277,6 +291,12 @@ export const KpiDetailModal: React.FC<KpiDetailModalProps> = ({ idPhieuKpi, isMa
           {isAssigning && (
             <button type="button" className="kpi-btn kpi-btn-primary" onClick={handleAssignKpi} disabled={isLoading}>
               Giao KPI
+            </button>
+          )}
+
+          {canConfirm && (
+            <button type="button" className="kpi-btn kpi-btn-primary" style={{ background: '#16a34a' }} onClick={handleConfirmKpi} disabled={isLoading}>
+              Xác Nhận KPI
             </button>
           )}
 

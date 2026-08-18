@@ -6,6 +6,9 @@ namespace PayrollManagementSystem.Domain.Enums
     {
         [Description("Chờ giao mục tiêu")]
         CHO_GIAO_MUC_TIEU = 0,
+
+        [Description("Chờ xác nhận")]
+        CHO_XAC_NHAN = 4,
         
         [Description("Đang thực hiện")]
         DANG_THUC_HIEN = 1,
