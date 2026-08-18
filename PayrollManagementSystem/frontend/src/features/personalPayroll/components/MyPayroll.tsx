@@ -112,8 +112,11 @@ export const MyPayroll: React.FC = () => {
                       <td>{formatCurrency(item.khauTru + item.truThue + item.phat)}</td>
                       <td style={{ fontWeight: '600', color: '#7c3aed' }}>{formatCurrency(item.thucLinh)}</td>
                       <td>
-                        <span className={`mpay-status ${getStatusClass(item.trangThaiKyLuong)}`}>
-                          {item.trangThaiKyLuong}
+                        <span className={`mpay-status ${
+                          item.trangThai === 'DA_XAC_NHAN' ? 'success' : 
+                          item.trangThai === 'YEU_CAU_XEM_XET' ? 'danger' : 'neutral'
+                        }`}>
+                          {item.trangThaiText}
                         </span>
                       </td>
                       <td style={{ textAlign: 'center' }}>

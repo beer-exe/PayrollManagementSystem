@@ -190,6 +190,24 @@
   color: var(--text-secondary);
 }
 
+.prl-feedback-box {
+  background-color: var(--bg-surface);
+  border: 1px solid #3b82f6;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+}
+
+.prl-feedback-box-header {
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #3b82f6;
+}
+
 .prl-form-textarea {
   width: 100%;
   padding: 12px;
