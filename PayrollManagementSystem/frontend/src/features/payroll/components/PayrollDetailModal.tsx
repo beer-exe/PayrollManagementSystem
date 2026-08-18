@@ -144,16 +144,13 @@ export const PayrollDetailModal: React.FC<Props> = ({ payroll, onClose, onSucces
 
         <div className="payroll-modal-body">
           {payroll.trangThai === 'YEU_CAU_XEM_XET' && (
-            <div style={{
-              background: '#fee2e2', border: '1px solid #fca5a5', borderRadius: '8px',
-              padding: '16px', marginBottom: '16px', color: '#991b1b'
-            }}>
-              <h4 style={{ margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="prl-review-box">
+              <h4 className="prl-review-box-header">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
                 Yêu cầu xem xét từ nhân viên
               </h4>
-              <p style={{ margin: '0 0 12px 0', fontSize: '0.9em', fontWeight: 500 }}>
-                Lý do: <span style={{ fontWeight: 400 }}>{payroll.lyDoKhieuNai}</span>
+              <p className="prl-review-box-reason">
+                Lý do: <span>{payroll.lyDoKhieuNai}</span>
               </p>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -163,7 +160,6 @@ export const PayrollDetailModal: React.FC<Props> = ({ payroll, onClose, onSucces
                   value={phanHoi}
                   onChange={e => setPhanHoi(e.target.value)}
                   disabled={isSubmitting}
-                  style={{ background: '#fff', borderColor: '#fca5a5' }}
                 />
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                   <button 
@@ -175,7 +171,6 @@ export const PayrollDetailModal: React.FC<Props> = ({ payroll, onClose, onSucces
                   </button>
                   <button 
                     className="prl-btn prl-btn-primary" 
-                    style={{ background: '#059669', borderColor: '#059669' }}
                     onClick={() => handleResolve('RECALCULATE')}
                     disabled={isSubmitting}
                   >

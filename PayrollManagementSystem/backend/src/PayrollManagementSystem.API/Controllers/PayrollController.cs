@@ -67,9 +67,9 @@ namespace PayrollManagementSystem.API.Controllers
         }
 
         [HttpPost("bang-luong/{id}/confirm")]
-        public async Task<IActionResult> ConfirmBangLuong(Guid id, [FromBody] ConfirmBangLuongCommand command)
+        public async Task<IActionResult> ConfirmBangLuong(Guid id)
         {
-            command.IdBangLuong = id;
+            var command = new ConfirmBangLuongCommand { IdBangLuong = id };
             var result = await _mediator.Send(command);
             return Ok(result);
         }

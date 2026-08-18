@@ -235,8 +235,15 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                 decimal gioCongThucTe = empTongGioThucTe;
                 if (gioCongChuan == 0) gioCongChuan = ngayCongChuan * 8m;
 
+                // Tìm bảng lương cũ nếu có
+                var oldRecord = oldBangLuongs.FirstOrDefault(x => x.CccdNhanVien == nv.Cccd);
+
                 // Nếu không có giờ công thực tế -> Bỏ qua không tính lương
-                if (gioCongThucTe <= 0) continue;
+                if (gioCongThucTe <= 0)
+                {
+                    if (oldRecord != null) oldRecord.IsDeleted = true;
+                    continue;
+                }
 
                 // Lấy Quyết định nhân sự có hiệu lực cuối cùng trong tháng
                 var qd = await _context.QuyetDinhNhanSus
@@ -248,7 +255,11 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                     .OrderByDescending(x => x.NgayHieuLuc)
                     .FirstOrDefaultAsync(cancellationToken);
 
-                if (qd == null || qd.BacLuong == null) continue;
+                if (qd == null || qd.BacLuong == null)
+                {
+                    if (oldRecord != null) oldRecord.IsDeleted = true;
+                    continue;
+                }
 
                 // P1
                 decimal p1 = qd.BacLuong.LuongP1;
@@ -386,6 +397,10 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                 if (isNew)
                 {
                     listBangLuong.Add(bangLuong);
+                }
+                else
+                {
+                    _context.BangLuongs.Update(bangLuong);
                 }
             }
 
