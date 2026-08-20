@@ -1,7 +1,7 @@
 using MediatR;
-using PayrollManagementSystem.Application.Wrappers;
-using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Common.Constants;
+using PayrollManagementSystem.Application.Common.Interfaces;
+using PayrollManagementSystem.Application.Wrappers;
 
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.MucQuyDoi.Commands.UpdateMucQuyDoi
 {
@@ -12,7 +12,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.MucQuyDoi.Co
         public decimal DiemToiThieu { get; set; }
         public decimal DiemToiDa { get; set; }
         public decimal HeSoP2 { get; set; }
-        
+
         public string CacheKeyPrefix => CacheKeyConstants.MucQuyDoi;
     }
 }

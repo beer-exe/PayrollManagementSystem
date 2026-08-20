@@ -4,7 +4,6 @@ using Moq;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.SystemManagement.Commands.ClearCache;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.SystemManagement.Commands.ClearCache
 {
@@ -43,7 +42,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.SystemManagemen
 
             var exception = await Assert.ThrowsAsync<ApiException>(() => _handler.Handle(command, CancellationToken.None));
             exception.Message.Should().Contain("Đã xảy ra lỗi khi xóa cache");
-            
+
             // Check if logger was called
             _loggerMock.Verify(
                 x => x.Log(
@@ -51,7 +50,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.SystemManagemen
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((v, t) => true),
                     It.IsAny<Exception>(),
-                    It.Is<Func<It.IsAnyType, Exception?, string>>((v, t) => true)), 
+                    It.Is<Func<It.IsAnyType, Exception?, string>>((v, t) => true)),
                 Times.Once);
         }
     }

@@ -1,5 +1,3 @@
-using System;
-
 namespace PayrollManagementSystem.Application.Features.Profile.DTOs
 {
     public class ProfileThanNhanDto

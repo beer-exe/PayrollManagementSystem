@@ -1,7 +1,7 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Domain.Enums;
-using Microsoft.EntityFrameworkCore;
 
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.KyDanhGia.Commands.ChangeStatusKyDanhGia
 {
@@ -36,7 +36,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.KyDanhGia.Co
                     <p>Trân trọng,</p>
                     <p>Phòng Nhân Sự</p>
                 ";
-                
+
                 await _emailService.SendAsync(nv.Email!, subject, body);
             }
 

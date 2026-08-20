@@ -1,5 +1,3 @@
-using System;
-
 namespace PayrollManagementSystem.Application.Features.WorkSchedule.DTOs
 {
     public class ChiTietLichLamViecDto

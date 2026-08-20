@@ -24,7 +24,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.KyDanhGia.Co
             {
                 if (entity.TrangThai != TrangThaiKyDanhGia.KHOI_TAO)
                     return new Response<bool>("Chỉ có thể mở đánh giá từ trạng thái Khởi tạo.");
-                
+
                 // Lệnh gửi Email thông báo
                 // await _mediator.Send(new NotifyEvaluationOpenedCommand(request.IdKyDanhGia), cancellationToken);
             }
@@ -66,7 +66,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.KyDanhGia.Co
                 var phieus = await _context.PhieuDanhGiaNangLucs
                     .Where(x => x.IdKyDanhGia == request.IdKyDanhGia)
                     .ToListAsync(cancellationToken);
-                
+
                 foreach (var phieu in phieus)
                 {
                     phieu.TrangThai = TrangThaiPhieuDanhGia.DA_HUY;

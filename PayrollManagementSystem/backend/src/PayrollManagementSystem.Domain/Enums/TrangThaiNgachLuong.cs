@@ -6,7 +6,7 @@ namespace PayrollManagementSystem.Domain.Enums
     {
         [Description("Ngừng hoạt động")]
         NGUNG_HOAT_DONG = 0,
-        
+
         [Description("Hoạt động")]
         HOAT_DONG = 1
     }

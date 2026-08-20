@@ -5,7 +5,6 @@ using PayrollManagementSystem.Domain.Extensions;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Users.Queries.GetUsers
 {
@@ -46,7 +45,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Users.Queries.G
                 TrangThai = TrangThaiNhanVien.DANG_LAM_VIEC,
                 HeSoP2 = 1.0m,
             };
-            
+
             var accountId = Guid.NewGuid();
             var account = new TaiKhoan
             {
@@ -66,7 +65,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Users.Queries.G
 
             result.Succeeded.Should().BeTrue();
             result.Data.Should().HaveCount(1);
-            
+
             var dto = result.Data.First();
             dto.IdTaiKhoan.Should().Be(accountId);
             dto.TenTaiKhoan.Should().Be("admin_user");

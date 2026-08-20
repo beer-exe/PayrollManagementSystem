@@ -1,12 +1,10 @@
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using PayrollManagementSystem.Application.Features.Auth.Commands.Login;
 using PayrollManagementSystem.Application.Features.Auth.Commands.RefreshToken;
 using PayrollManagementSystem.Application.Features.Auth.DTOs;
 using PayrollManagementSystem.Application.Wrappers;
-
-using Microsoft.AspNetCore.RateLimiting;
 
 namespace PayrollManagementSystem.API.Controllers
 {

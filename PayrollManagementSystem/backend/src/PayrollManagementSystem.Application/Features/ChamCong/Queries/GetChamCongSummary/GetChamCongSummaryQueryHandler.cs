@@ -39,16 +39,16 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
             var quyetDinhs = await _context.QuyetDinhNhanSus
                 .Include(qd => qd.ChucVuMoi)
                     .ThenInclude(cv => cv.PhongBan)
-                .Where(qd => allActiveCccd.Contains(qd.Cccd) 
+                .Where(qd => allActiveCccd.Contains(qd.Cccd)
                           && qd.TrangThai != TrangThaiQuyetDinh.HUY_BO
                           && qd.NgayHieuLuc <= endOfMonth
                           && (qd.NgayHetHan == null || qd.NgayHetHan >= startOfMonth))
                 .ToListAsync(cancellationToken);
-                
+
             var quyetDinhGroup = quyetDinhs
                 .GroupBy(qd => qd.Cccd)
                 .ToDictionary(
-                    g => g.Key, 
+                    g => g.Key,
                     g => g.OrderByDescending(qd => qd.NgayHieuLuc).FirstOrDefault()
                 );
 
@@ -83,8 +83,8 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
             var phanCongCas = await _context.PhanCongCas
                 .Include(p => p.CaLamViec)
                     .ThenInclude(c => c.KhungGioNghis)
-                .Where(p => allFilteredCccd.Contains(p.CccdNhanVien) 
-                         && p.NgayLamViec.Month == request.Thang 
+                .Where(p => allFilteredCccd.Contains(p.CccdNhanVien)
+                         && p.NgayLamViec.Month == request.Thang
                          && p.NgayLamViec.Year == request.Nam)
                 .ToListAsync(cancellationToken);
 
@@ -121,7 +121,7 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
                         }
                     }
                 }
-                
+
                 var empNgayCongChuan = Math.Round(empTongGioChuan / 8m, 3);
 
                 quyetDinhGroup.TryGetValue(nv.Cccd, out var qd);

@@ -1,8 +1,6 @@
 using MediatR;
-using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Application.Features.WorkSchedule.DTOs;
-using System;
-using System.Collections.Generic;
+using PayrollManagementSystem.Application.Wrappers;
 
 namespace PayrollManagementSystem.Application.Features.WorkSchedule.Queries.GetMySchedule
 {

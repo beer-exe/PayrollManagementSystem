@@ -30,20 +30,20 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Queries.GetNgayPh
             var quyetDinhs = await _context.QuyetDinhNhanSus
                 .Include(qd => qd.ChucVuMoi)
                     .ThenInclude(cv => cv.PhongBan)
-                .Where(qd => allCccd.Contains(qd.Cccd) 
+                .Where(qd => allCccd.Contains(qd.Cccd)
                           && qd.TrangThai != TrangThaiQuyetDinh.HUY_BO
                           && qd.NgayHieuLuc <= now
                           && (qd.NgayHetHan == null || qd.NgayHetHan >= now))
                 .ToListAsync(cancellationToken);
-                
+
             var quyetDinhGroup = quyetDinhs
                 .GroupBy(qd => qd.Cccd)
                 .ToDictionary(
-                    g => g.Key, 
+                    g => g.Key,
                     g => g.OrderByDescending(qd => qd.NgayHieuLuc).FirstOrDefault()
                 );
 
-            var result = list.Select(n => 
+            var result = list.Select(n =>
             {
                 quyetDinhGroup.TryGetValue(n.CccdNhanVien, out var qd);
                 string? tenPhongBan = qd?.ChucVuMoi?.PhongBan?.TenPb ?? n.NhanVien.PhongBan?.TenPb;

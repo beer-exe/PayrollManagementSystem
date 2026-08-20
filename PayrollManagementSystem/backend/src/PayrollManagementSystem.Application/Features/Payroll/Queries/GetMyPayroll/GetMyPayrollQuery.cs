@@ -8,7 +8,7 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetMyPayr
     {
         public Guid UserId { get; set; }
         public int Nam { get; set; }
-        
+
         public string CacheKey => $"{PayrollManagementSystem.Application.Common.Constants.CacheKeyConstants.Payroll}My_{UserId}_{Nam}";
         public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
     }

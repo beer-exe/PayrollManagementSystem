@@ -6,7 +6,6 @@ using PayrollManagementSystem.Application.Features.Users.Commands.ChangePassword
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Users.Commands.ChangePassword
 {
@@ -82,7 +81,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Users.Commands.
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Succeeded.Should().BeTrue();
-            
+
             var updated = await _context.TaiKhoans.FindAsync(userId);
             updated!.MatKhauHash.Should().Be("hash2");
         }

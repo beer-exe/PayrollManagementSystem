@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using PayrollManagementSystem.Domain.Enums;
 
 namespace PayrollManagementSystem.Application.Common.Interfaces

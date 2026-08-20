@@ -9,13 +9,13 @@ namespace PayrollManagementSystem.Domain.Enums
 
         [Description("Chờ xác nhận")]
         CHO_XAC_NHAN = 4,
-        
+
         [Description("Đang thực hiện")]
         DANG_THUC_HIEN = 1,
-        
+
         [Description("Chờ phê duyệt")]
         CHO_PHE_DUYET = 2,
-        
+
         [Description("Đã phê duyệt")]
         DA_PHE_DUYET = 3
     }

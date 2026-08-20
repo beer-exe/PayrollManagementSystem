@@ -1,10 +1,9 @@
-using PayrollManagementSystem.Application.Features.Kpi.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Common.Interfaces;
-using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Application.Wrappers;
+using PayrollManagementSystem.Domain.Enums;
 
 namespace PayrollManagementSystem.Application.Features.Kpi.Commands.ApprovePhieuKpi
 {
@@ -46,7 +45,7 @@ namespace PayrollManagementSystem.Application.Features.Kpi.Commands.ApprovePhieu
             phieu.TrangThai = TrangThaiPhieuKpi.DA_PHE_DUYET;
             phieu.CccdQuanLy = quanLy.Cccd;
             phieu.NhanXet = request.NhanXet;
-            
+
             decimal tongDiem = phieu.ChiTietKpis.Sum(x => x.DiemKpi);
             phieu.TongDiemKpi = tongDiem;
             phieu.HeSoP3 = tongDiem / 100m;

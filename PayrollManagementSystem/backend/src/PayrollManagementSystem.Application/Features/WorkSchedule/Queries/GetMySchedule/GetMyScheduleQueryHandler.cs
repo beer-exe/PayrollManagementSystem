@@ -2,15 +2,10 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Common.Interfaces;
+using PayrollManagementSystem.Application.Features.WorkSchedule.DTOs;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Extensions;
-using PayrollManagementSystem.Application.Features.WorkSchedule.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PayrollManagementSystem.Application.Features.WorkSchedule.Queries.GetMySchedule
 {

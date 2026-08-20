@@ -7,7 +7,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Payroll.Commands.ReopenPayroll
 {
@@ -29,8 +28,8 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Payroll.Command
                 .ReturnsAsync(true);
 
             _handler = new ReopenPayrollCommandHandler(
-                _context, 
-                _currentUserServiceMock.Object, 
+                _context,
+                _currentUserServiceMock.Object,
                 _hrAuthorizationServiceMock.Object);
         }
 

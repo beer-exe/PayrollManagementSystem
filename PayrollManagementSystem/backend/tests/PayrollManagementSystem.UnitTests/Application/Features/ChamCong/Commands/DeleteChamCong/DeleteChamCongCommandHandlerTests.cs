@@ -4,7 +4,6 @@ using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Features.ChamCong.Commands.DeleteChamCong;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.ChamCong.Commands.DeleteChamCong
 {
@@ -39,7 +38,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.ChamCong.Comman
 
             // Assert
             result.Succeeded.Should().BeTrue();
-            
+
             var entityInDb = await _context.ChamCongs.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == entity.Id);
             entityInDb.Should().NotBeNull();
             entityInDb!.IsDeleted.Should().BeTrue();

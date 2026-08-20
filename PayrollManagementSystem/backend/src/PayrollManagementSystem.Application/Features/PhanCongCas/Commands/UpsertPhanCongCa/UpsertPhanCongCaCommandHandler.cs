@@ -4,8 +4,6 @@ using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Models;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PayrollManagementSystem.Application.Features.PhanCongCas.Commands.UpsertPhanCongCa
 {
@@ -22,7 +20,7 @@ namespace PayrollManagementSystem.Application.Features.PhanCongCas.Commands.Upse
         {
             var existing = await _context.PhanCongCas
                 .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(p => p.CccdNhanVien == request.CccdNhanVien 
+                .FirstOrDefaultAsync(p => p.CccdNhanVien == request.CccdNhanVien
                                        && p.NgayLamViec == request.NgayLamViec, cancellationToken);
 
             if (request.XoaPhanCong)

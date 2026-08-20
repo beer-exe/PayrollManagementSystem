@@ -1,8 +1,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PayrollManagementSystem.Application.Features.Profile.Queries.GetUserProfile;
 using PayrollManagementSystem.Application.Features.Profile.Commands.UpdateAvatar;
+using PayrollManagementSystem.Application.Features.Profile.Queries.GetUserProfile;
 using PayrollManagementSystem.Application.Features.Users.Commands.ChangePassword;
 using PayrollManagementSystem.Application.Wrappers;
 using System.Security.Claims;

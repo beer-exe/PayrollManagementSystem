@@ -6,7 +6,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Commands.HuyDonNghiDaDuyet
 {
@@ -49,9 +48,12 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Command
         [Fact]
         public async Task Handle_PastStartDate_ThrowsApiException()
         {
-            var donNghi = new Domain.Models.DonNghi 
-            { 
-                Id = Guid.NewGuid(), CccdNhanVien = "001", TrangThai = TrangThaiDonNghi.DA_DUYET, LyDo = "Test",
+            var donNghi = new Domain.Models.DonNghi
+            {
+                Id = Guid.NewGuid(),
+                CccdNhanVien = "001",
+                TrangThai = TrangThaiDonNghi.DA_DUYET,
+                LyDo = "Test",
                 NgayBatDau = DateOnly.FromDateTime(DateTime.Today.AddDays(-1)) // Yesterday
             };
             _context.DonNghis.Add(donNghi);
@@ -67,19 +69,20 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Command
         {
             // Arrange
             var futureDate = DateOnly.FromDateTime(DateTime.Today.AddDays(5));
-            var donNghi = new Domain.Models.DonNghi 
-            { 
-                Id = Guid.NewGuid(), 
+            var donNghi = new Domain.Models.DonNghi
+            {
+                Id = Guid.NewGuid(),
                 CccdNhanVien = "001",
-                TrangThai = TrangThaiDonNghi.DA_DUYET, LyDo = "Test",
+                TrangThai = TrangThaiDonNghi.DA_DUYET,
+                LyDo = "Test",
                 LoaiNghi = LoaiNghi.NGHI_PHEP_NAM,
                 NgayBatDau = futureDate,
                 NgayKetThuc = futureDate,
                 SoNgayNghi = 1
             };
-            
+
             var ngayPhep = new NgayPhepNhanVien { CccdNhanVien = "001", Nam = futureDate.Year, TongNgayPhep = 12, DaSuDung = 5 };
-            
+
             _context.DonNghis.Add(donNghi);
             _context.NgayPhepNhanViens.Add(ngayPhep);
             await _context.SaveChangesAsync();
@@ -91,10 +94,10 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Command
 
             // Assert
             result.Succeeded.Should().BeTrue();
-            
+
             var dbDonNghi = await _context.DonNghis.FindAsync(donNghi.Id);
             dbDonNghi!.TrangThai.Should().Be(TrangThaiDonNghi.TU_CHOI);
-            
+
             var dbNgayPhep = await _context.NgayPhepNhanViens.FirstOrDefaultAsync(n => n.CccdNhanVien == "001");
             dbNgayPhep!.DaSuDung.Should().Be(4); // Reverted 1 day
         }

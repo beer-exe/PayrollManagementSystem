@@ -7,7 +7,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.ChamCong.Commands.CreateChamCong
 {
@@ -46,7 +45,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.ChamCong.Comman
             // Arrange
             var nv = new NhanVien { Cccd = "001", HoTen = "Test NV" };
             var chamCong = new Domain.Models.ChamCong { Id = Guid.NewGuid(), CccdNhanVien = "001", NgayChamCong = new DateOnly(2025, 1, 1) };
-            
+
             _context.NhanViens.Add(nv);
             _context.ChamCongs.Add(chamCong);
             await _context.SaveChangesAsync();

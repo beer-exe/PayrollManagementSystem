@@ -22,12 +22,12 @@ namespace PayrollManagementSystem.API.Controllers
         {
             var command = new SeedDemoDataCommand();
             var result = await _mediator.Send(command);
-            
+
             if (result.Succeeded)
             {
                 return Ok(result);
             }
-            
+
             return BadRequest(result);
         }
     }

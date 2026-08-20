@@ -1,11 +1,10 @@
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Features.CompetencyP2.KyDanhGia.Commands.ChangeStatusKyDanhGia;
 using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
-using Microsoft.EntityFrameworkCore;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.CompetencyP2.KyDanhGia.Commands.ChangeStatusKyDanhGia
 {
@@ -52,7 +51,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.CompetencyP2.Ky
             var nv = new NhanVien { Cccd = "001", HoTen = "Test NV", HeSoP2 = 0 };
             var phieu = new PhieuDanhGiaNangLuc { IdPhieu = Guid.NewGuid(), IdKyDanhGia = kyDanhGia.IdKyDanhGia, CccdNhanVien = "001", TrangThai = TrangThaiPhieuDanhGia.DA_HOAN_THANH, DiemTongHop = 80 };
             var config = new MucQuyDoiP2 { IdQuyDoi = Guid.NewGuid(), DiemToiThieu = 70, DiemToiDa = 100, HeSoP2 = 1.2m, XepLoai = "Xuất sắc" };
-            
+
             _context.KyDanhGias.Add(kyDanhGia);
             _context.NhanViens.Add(nv);
             _context.PhieuDanhGiaNangLucs.Add(phieu);
@@ -66,7 +65,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.CompetencyP2.Ky
 
             // Assert
             result.Succeeded.Should().BeTrue();
-            
+
             var dbKy = await _context.KyDanhGias.FindAsync(kyDanhGia.IdKyDanhGia);
             dbKy!.TrangThai.Should().Be(TrangThaiKyDanhGia.DA_CHOT);
 
@@ -85,7 +84,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.CompetencyP2.Ky
             // Arrange
             var kyDanhGia = new Domain.Models.KyDanhGia { IdKyDanhGia = Guid.NewGuid(), TenKyDanhGia = "Test", TrangThai = TrangThaiKyDanhGia.DANG_DANH_GIA };
             var phieu = new PhieuDanhGiaNangLuc { IdPhieu = Guid.NewGuid(), IdKyDanhGia = kyDanhGia.IdKyDanhGia, CccdNhanVien = "001", TrangThai = TrangThaiPhieuDanhGia.CHO_NV_DANH_GIA };
-            
+
             _context.KyDanhGias.Add(kyDanhGia);
             _context.PhieuDanhGiaNangLucs.Add(phieu);
             await _context.SaveChangesAsync();

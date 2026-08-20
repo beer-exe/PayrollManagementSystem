@@ -15,7 +15,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
             builder.Property(x => x.TrangThai)
                 .HasConversion<string>()
                 .IsRequired();
-                
+
             builder.HasMany(x => x.ChamCongs)
                 .WithOne(x => x.KyChamCong)
                 .HasForeignKey(x => x.IdKyChamCong)

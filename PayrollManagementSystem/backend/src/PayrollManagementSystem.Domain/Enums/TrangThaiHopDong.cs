@@ -6,13 +6,13 @@ namespace PayrollManagementSystem.Domain.Enums
     {
         [Description("Hiệu lực")]
         HIEU_LUC,
-        
+
         [Description("Hết hạn")]
         HET_HAN,
-        
+
         [Description("Chấm dứt")]
         CHAM_DUT,
-        
+
         [Description("Chờ duyệt")]
         CHO_DUYET
     }

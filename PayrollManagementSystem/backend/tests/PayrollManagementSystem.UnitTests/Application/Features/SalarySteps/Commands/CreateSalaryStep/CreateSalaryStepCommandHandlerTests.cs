@@ -5,7 +5,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.SalarySteps.Commands.CreateSalaryStep
 {
@@ -66,7 +65,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.SalarySteps.Com
 
             result.Succeeded.Should().BeTrue();
             result.Data.Should().NotBeNullOrEmpty();
-            
+
             var saved = await _context.BacLuongs.FindAsync(result.Data);
             saved.Should().NotBeNull();
             saved!.IdNgachLuong.Should().Be("NL01");

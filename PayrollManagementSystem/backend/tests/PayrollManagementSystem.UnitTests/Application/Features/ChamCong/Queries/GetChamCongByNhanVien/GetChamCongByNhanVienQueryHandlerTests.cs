@@ -4,7 +4,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.ChamCong.Queries.GetChamCongByNhanVien
 {
@@ -30,7 +29,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.ChamCong.Querie
             // Arrange
             var nv = new NhanVien { Cccd = "001", HoTen = "Test NV", IdPb = "PB01" };
             var nv2 = new NhanVien { Cccd = "002", HoTen = "Test NV2", IdPb = "PB02" };
-            
+
             _context.NhanViens.AddRange(nv, nv2);
 
             _context.ChamCongs.AddRange(new List<Domain.Models.ChamCong>

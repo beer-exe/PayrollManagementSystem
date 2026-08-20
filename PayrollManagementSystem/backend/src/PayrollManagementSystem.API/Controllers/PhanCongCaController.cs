@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PayrollManagementSystem.Application.Features.PhanCongCas.Commands.UpsertPhanCongCa;
 using PayrollManagementSystem.Application.Features.PhanCongCas.Queries.GetPhanCongCaByDateRange;
-using System;
-using System.Threading.Tasks;
 
 namespace PayrollManagementSystem.Api.Controllers
 {
@@ -23,9 +21,9 @@ namespace PayrollManagementSystem.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] DateOnly startDate, [FromQuery] DateOnly endDate, [FromQuery] string? idPhongBan)
         {
-            var result = await _mediator.Send(new GetPhanCongCaByDateRangeQuery 
-            { 
-                StartDate = startDate, 
+            var result = await _mediator.Send(new GetPhanCongCaByDateRangeQuery
+            {
+                StartDate = startDate,
                 EndDate = endDate,
                 IdPhongBan = idPhongBan
             });

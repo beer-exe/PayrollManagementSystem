@@ -2,9 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PayrollManagementSystem.Application.Features.WorkSchedule.Queries.GetMySchedule;
-using System;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace PayrollManagementSystem.API.Controllers
 {

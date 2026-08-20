@@ -1,5 +1,3 @@
-using System;
-
 namespace PayrollManagementSystem.Application.Features.DonNghi.DTOs
 {
     public class DonNghiDto

@@ -1,8 +1,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
-using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc.DTOs;
+using PayrollManagementSystem.Application.Wrappers;
 
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc.Queries.GetKhungNangLucs
 {

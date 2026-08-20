@@ -1,11 +1,9 @@
 using FluentAssertions;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Features.Departments.Commands.TransferEmployee;
-using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Departments.Commands.TransferEmployee
 {
@@ -61,14 +59,14 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Departments.Com
             _context.BacLuongs.Add(bacLuong);
             await _context.SaveChangesAsync();
 
-            var command = new TransferEmployeeCommand 
-            { 
-                Cccd = "001", 
-                SoQuyetDinh = "QD01", 
-                IdPbMoi = "PB_NEW", 
-                IdChucVuMoi = "CV1", 
-                IdBacLuongMoi = "B1", 
-                NgayHieuLuc = DateOnly.FromDateTime(DateTime.Today) 
+            var command = new TransferEmployeeCommand
+            {
+                Cccd = "001",
+                SoQuyetDinh = "QD01",
+                IdPbMoi = "PB_NEW",
+                IdChucVuMoi = "CV1",
+                IdBacLuongMoi = "B1",
+                NgayHieuLuc = DateOnly.FromDateTime(DateTime.Today)
             };
 
             // Act

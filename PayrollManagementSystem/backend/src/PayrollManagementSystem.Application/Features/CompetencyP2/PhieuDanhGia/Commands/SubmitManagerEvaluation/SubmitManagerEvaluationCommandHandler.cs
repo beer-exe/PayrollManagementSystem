@@ -39,7 +39,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
                         .OrderByDescending(x => x.NgayHieuLuc)
                         .ThenByDescending(x => x.CreatedAt)
                         .FirstOrDefaultAsync(cancellationToken);
-                    
+
                     if (userQd != null && userQd.IdChucVuMoi == empChucVu.IdChucVuQuanLy)
                     {
                         isCurrentManager = true;
@@ -63,7 +63,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
                 {
                     dbChiTiet.DiemQuanLyDanhGia = reqChiTiet.DiemQuanLyDanhGia;
                     dbChiTiet.NhanXetQuanLy = reqChiTiet.NhanXetQuanLy;
-                    
+
                     if (dbChiTiet.TieuChi != null)
                     {
                         totalScore += (decimal)reqChiTiet.DiemQuanLyDanhGia * dbChiTiet.TieuChi.TyTrong;
@@ -76,25 +76,28 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
             if (request.IsSubmit)
             {
                 phieu.DiemTongHop = totalScore;
-                
+
                 var mucQuyDois = await _context.MucQuyDoiP2s.ToListAsync(cancellationToken);
                 var matched = mucQuyDois.FirstOrDefault(x => totalScore >= (decimal)x.DiemToiThieu && totalScore <= (decimal)x.DiemToiDa);
-                
+
                 if (matched != null)
                 {
                     phieu.HeSoP2 = matched.HeSoP2;
                     phieu.XepLoai = matched.XepLoai;
                 }
-                else 
+                else
                 {
                     if (mucQuyDois.Any())
                     {
                         var max = mucQuyDois.OrderByDescending(x => x.DiemToiDa).First();
                         var min = mucQuyDois.OrderBy(x => x.DiemToiThieu).First();
-                        if (totalScore > (decimal)max.DiemToiDa) {
+                        if (totalScore > (decimal)max.DiemToiDa)
+                        {
                             phieu.HeSoP2 = max.HeSoP2;
                             phieu.XepLoai = max.XepLoai;
-                        } else {
+                        }
+                        else
+                        {
                             phieu.HeSoP2 = min.HeSoP2;
                             phieu.XepLoai = min.XepLoai;
                         }

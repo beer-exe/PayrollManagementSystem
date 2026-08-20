@@ -35,7 +35,7 @@ namespace PayrollManagementSystem.Application.Features.Departments.Commands.Tran
             var chucVuMoi = await _context.ChucVus.FindAsync(new object[] { request.IdChucVuMoi }, cancellationToken);
             if (chucVuMoi?.IdNgachLuong == null)
                 throw new ApiException($"Chức vụ mới không được gán Ngạch lương hợp lệ.");
-            
+
             var bacLuongMoi = await _context.BacLuongs.FirstOrDefaultAsync(b => b.IdBacLuong == request.IdBacLuongMoi && b.IdNgachLuong == chucVuMoi.IdNgachLuong, cancellationToken);
             if (bacLuongMoi == null)
                 throw new ApiException($"Bậc lương '{request.IdBacLuongMoi}' không hợp lệ hoặc không thuộc ngạch lương của chức vụ mới.");

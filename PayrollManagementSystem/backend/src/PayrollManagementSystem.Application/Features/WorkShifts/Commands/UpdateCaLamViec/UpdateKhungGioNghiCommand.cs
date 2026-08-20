@@ -1,5 +1,3 @@
-using System;
-
 namespace PayrollManagementSystem.Application.Features.WorkShifts.Commands.UpdateCaLamViec
 {
     public class UpdateKhungGioNghiCommand

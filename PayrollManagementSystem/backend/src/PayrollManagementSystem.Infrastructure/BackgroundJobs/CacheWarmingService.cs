@@ -2,12 +2,12 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PayrollManagementSystem.Application.Features.CompetencyP2.KyDanhGia.Queries.GetKyDanhGias;
+using PayrollManagementSystem.Application.Features.CompetencyP2.MucQuyDoi.Queries.GetMucQuyDois;
 using PayrollManagementSystem.Application.Features.Departments.Queries.GetAllDepartments;
 using PayrollManagementSystem.Application.Features.JobGrades.Queries.GetJobGrades;
 using PayrollManagementSystem.Application.Features.ThueTncn.Queries.GetBacThueList;
 using PayrollManagementSystem.Application.Features.ThueTncn.Queries.GetCauHinhGiamTru;
-using PayrollManagementSystem.Application.Features.CompetencyP2.KyDanhGia.Queries.GetKyDanhGias;
-using PayrollManagementSystem.Application.Features.CompetencyP2.MucQuyDoi.Queries.GetMucQuyDois;
 
 namespace PayrollManagementSystem.Infrastructure.BackgroundJobs
 {

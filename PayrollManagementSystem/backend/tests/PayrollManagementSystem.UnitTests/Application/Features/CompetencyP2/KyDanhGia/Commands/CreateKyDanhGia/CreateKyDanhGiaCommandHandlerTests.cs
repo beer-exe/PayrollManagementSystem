@@ -3,7 +3,6 @@ using PayrollManagementSystem.Application.Features.CompetencyP2.KyDanhGia.Comman
 using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.CompetencyP2.KyDanhGia.Commands.CreateKyDanhGia
 {

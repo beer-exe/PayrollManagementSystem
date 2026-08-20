@@ -4,7 +4,6 @@ using PayrollManagementSystem.Application.Features.PhanCongCas.Commands.UpsertPh
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.PhanCongCas.Commands.UpsertPhanCongCa
 {
@@ -137,7 +136,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.PhanCongCas.Com
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Succeeded.Should().BeTrue();
-            
+
             var saved = _context.PhanCongCas.FirstOrDefault(p => p.CccdNhanVien == "002" && p.NgayLamViec == date);
             saved.Should().NotBeNull();
             saved!.IdCaLamViec.Should().Be(caId1);
@@ -161,7 +160,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.PhanCongCas.Com
 
             result.Succeeded.Should().BeTrue();
             result.Message.Should().Contain("Đã gán ngày nghỉ ghi đè ca mặc định thành công");
-            
+
             var saved = _context.PhanCongCas.FirstOrDefault(p => p.CccdNhanVien == "003" && p.NgayLamViec == date);
             saved.Should().NotBeNull();
             saved!.IdCaLamViec.Should().BeNull();

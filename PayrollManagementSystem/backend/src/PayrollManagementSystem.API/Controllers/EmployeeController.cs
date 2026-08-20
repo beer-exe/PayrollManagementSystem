@@ -1,15 +1,15 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PayrollManagementSystem.API.DTOs;
 using PayrollManagementSystem.Application.Features.Employees.Commands.ChangeEmployeeStatus;
 using PayrollManagementSystem.Application.Features.Employees.Commands.CreateEmployee;
 using PayrollManagementSystem.Application.Features.Employees.Commands.UpdateEmployee;
+using PayrollManagementSystem.Application.Features.Employees.Queries.ExportEmployees;
 using PayrollManagementSystem.Application.Features.Employees.Queries.GetEmployees;
+using PayrollManagementSystem.Application.Features.Employees.Queries.GetRelations;
 using PayrollManagementSystem.Application.Wrappers;
 using System.IdentityModel.Tokens.Jwt;
-using PayrollManagementSystem.Application.Features.Employees.Queries.GetRelations;
-using PayrollManagementSystem.Application.Features.Employees.Queries.ExportEmployees;
-using PayrollManagementSystem.API.DTOs;
 
 namespace PayrollManagementSystem.API.Controllers
 {

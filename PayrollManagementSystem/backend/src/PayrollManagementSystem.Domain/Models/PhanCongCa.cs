@@ -1,4 +1,3 @@
-using System;
 using PayrollManagementSystem.Domain.Common;
 
 namespace PayrollManagementSystem.Domain.Models
@@ -8,7 +7,7 @@ namespace PayrollManagementSystem.Domain.Models
         public Guid IdPhanCong { get; set; } = Guid.NewGuid();
         public string CccdNhanVien { get; set; } = null!;
         public DateOnly NgayLamViec { get; set; }
-        
+
         public Guid? IdCaLamViec { get; set; }
 
         public string? GhiChu { get; set; }

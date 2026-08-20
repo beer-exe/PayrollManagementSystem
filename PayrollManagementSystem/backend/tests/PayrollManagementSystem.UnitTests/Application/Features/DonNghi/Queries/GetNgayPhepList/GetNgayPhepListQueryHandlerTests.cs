@@ -3,7 +3,6 @@ using PayrollManagementSystem.Application.Features.DonNghi.Queries.GetNgayPhepLi
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Queries.GetNgayPhepList
 {

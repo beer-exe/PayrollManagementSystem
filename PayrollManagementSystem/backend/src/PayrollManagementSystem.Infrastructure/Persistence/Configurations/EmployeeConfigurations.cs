@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PayrollManagementSystem.Domain.Models;
-using System.Reflection.Emit;
 
 namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
 {
@@ -10,7 +9,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<NhanVien> builder)
         {
             builder.HasKey(e => e.Cccd);
-            
+
             builder.HasIndex(e => e.Email)
                    .IsUnique()
                    .HasFilter("is_deleted = false");
@@ -58,7 +57,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<QuyetDinhNhanSu> builder)
         {
             builder.HasKey(e => e.SoQuyetDinh);
-            
+
             builder.HasIndex(e => new { e.Cccd, e.TrangThai, e.NgayHieuLuc });
 
             builder.Property(e => e.SoQuyetDinh).HasMaxLength(50);
@@ -93,7 +92,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<TaiKhoan> builder)
         {
             builder.HasKey(e => e.IdTaiKhoan);
-            
+
             builder.HasIndex(e => e.TenTaiKhoan)
                    .IsUnique()
                    .HasFilter("is_deleted = false");
@@ -163,7 +162,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<HopDongLaoDong> builder)
         {
             builder.HasKey(e => e.SoHopDong);
-            
+
             builder.Property(e => e.SoHopDong).HasMaxLength(50);
             builder.Property(e => e.Cccd).HasMaxLength(20);
             builder.Property(e => e.LoaiHopDong).HasMaxLength(100);
@@ -182,7 +181,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<NhatKyTrangThai> builder)
         {
             builder.HasKey(e => e.IdNhatKy);
-            
+
             builder.Property(e => e.IdNhatKy).ValueGeneratedOnAdd().HasDefaultValueSql("gen_random_uuid()");
             builder.Property(e => e.Cccd).HasMaxLength(20);
             builder.Property(e => e.TrangThaiCu).HasConversion<string>().HasMaxLength(50);

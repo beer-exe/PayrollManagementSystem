@@ -41,7 +41,7 @@ namespace PayrollManagementSystem.Application.Features.Employees.Queries.GetEmpl
                 .OrderByDescending(nv => nv.NgayVaoLam)
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
-                .Select(nv => new 
+                .Select(nv => new
                 {
                     Cccd = nv.Cccd,
                     HoTen = nv.HoTen,
@@ -77,36 +77,36 @@ namespace PayrollManagementSystem.Application.Features.Employees.Queries.GetEmpl
                         .ThenByDescending(qd => qd.CreatedAt)
                         .Select(qd => _context.ChucVus.FirstOrDefault(cv => cv.IdChucVu == qd.IdChucVuMoi).TenChucVu)
                         .FirstOrDefault(),
-                        
+
                     SoTaiKhoan = nv.SoTaiKhoan,
                     TenNganHang = nv.TenNganHang,
                     MaSoThue = nv.MaSoThue,
-                    
+
                     LuongP1 = _context.QuyetDinhNhanSus
                         .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC && qd.NgayHieuLuc <= today)
                         .OrderByDescending(qd => qd.NgayHieuLuc)
                         .ThenByDescending(qd => qd.CreatedAt)
                         .Select(qd => _context.BacLuongs.FirstOrDefault(bl => bl.IdBacLuong == qd.IdBacLuongMoi).LuongP1)
                         .FirstOrDefault(),
-                        
+
                     HeSoP2 = _context.PhieuDanhGiaNangLucs
                         .Where(pdg => pdg.CccdNhanVien == nv.Cccd && pdg.TrangThai == TrangThaiPhieuDanhGia.DA_HOAN_THANH)
                         .OrderByDescending(pdg => pdg.KyDanhGia.NgayKetThuc)
                         .Select(pdg => pdg.HeSoP2)
                         .FirstOrDefault() ?? 1.00m,
-                        
+
                     SoHopDong = _context.HopDongLaoDongs
                         .Where(hd => hd.Cccd == nv.Cccd && hd.TrangThai == TrangThaiHopDong.HIEU_LUC)
                         .OrderByDescending(hd => hd.NgayBatDau)
                         .Select(hd => hd.SoHopDong)
                         .FirstOrDefault(),
-                        
+
                     LoaiHopDong = _context.HopDongLaoDongs
                         .Where(hd => hd.Cccd == nv.Cccd && hd.TrangThai == TrangThaiHopDong.HIEU_LUC)
                         .OrderByDescending(hd => hd.NgayBatDau)
                         .Select(hd => hd.LoaiHopDong)
                         .FirstOrDefault(),
-                        
+
                     NgayBatDauHopDong = _context.HopDongLaoDongs
                         .Where(hd => hd.Cccd == nv.Cccd && hd.TrangThai == TrangThaiHopDong.HIEU_LUC)
                         .OrderByDescending(hd => hd.NgayBatDau)

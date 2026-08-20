@@ -1,5 +1,3 @@
-using System;
-
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Commands.SubmitManagerEvaluation
 {
     public class ChiTietManagerEvaluationDto

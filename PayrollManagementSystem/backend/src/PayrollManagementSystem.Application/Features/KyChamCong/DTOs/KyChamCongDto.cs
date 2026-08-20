@@ -1,5 +1,3 @@
-using PayrollManagementSystem.Domain.Enums;
-
 namespace PayrollManagementSystem.Application.Features.KyChamCong.DTOs
 {
     public class KyChamCongDto

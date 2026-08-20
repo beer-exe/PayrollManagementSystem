@@ -5,7 +5,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Queries.CalculateSoNgayNghi
 {
@@ -28,11 +27,11 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Queries
         [Fact]
         public async Task Handle_InvalidDates_ThrowsApiException()
         {
-            var query = new CalculateSoNgayNghiQuery 
-            { 
-                NgayBatDau = new DateOnly(2025, 1, 2), 
-                NgayKetThuc = new DateOnly(2025, 1, 1), 
-                LoaiNghi = "NGHI_PHEP_NAM" 
+            var query = new CalculateSoNgayNghiQuery
+            {
+                NgayBatDau = new DateOnly(2025, 1, 2),
+                NgayKetThuc = new DateOnly(2025, 1, 1),
+                LoaiNghi = "NGHI_PHEP_NAM"
             };
             var exception = await Assert.ThrowsAsync<ApiException>(() => _handler.Handle(query, CancellationToken.None));
             exception.Message.Should().Contain("nhỏ hơn ngày bắt đầu");
@@ -41,11 +40,11 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Queries
         [Fact]
         public async Task Handle_DifferentYears_ThrowsApiException()
         {
-            var query = new CalculateSoNgayNghiQuery 
-            { 
-                NgayBatDau = new DateOnly(2025, 12, 31), 
-                NgayKetThuc = new DateOnly(2026, 1, 1), 
-                LoaiNghi = "NGHI_PHEP_NAM" 
+            var query = new CalculateSoNgayNghiQuery
+            {
+                NgayBatDau = new DateOnly(2025, 12, 31),
+                NgayKetThuc = new DateOnly(2026, 1, 1),
+                LoaiNghi = "NGHI_PHEP_NAM"
             };
             var exception = await Assert.ThrowsAsync<ApiException>(() => _handler.Handle(query, CancellationToken.None));
             exception.Message.Should().Contain("cùng nằm trong một năm");
@@ -54,11 +53,11 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Queries
         [Fact]
         public async Task Handle_NoLichLamViec_ThrowsApiException()
         {
-            var query = new CalculateSoNgayNghiQuery 
-            { 
-                NgayBatDau = new DateOnly(2025, 1, 1), 
-                NgayKetThuc = new DateOnly(2025, 1, 2), 
-                LoaiNghi = "NGHI_PHEP_NAM" 
+            var query = new CalculateSoNgayNghiQuery
+            {
+                NgayBatDau = new DateOnly(2025, 1, 1),
+                NgayKetThuc = new DateOnly(2025, 1, 2),
+                LoaiNghi = "NGHI_PHEP_NAM"
             };
             var exception = await Assert.ThrowsAsync<ApiException>(() => _handler.Handle(query, CancellationToken.None));
             exception.Message.Should().Contain("Chưa có lịch làm việc nào được tạo");
@@ -76,11 +75,11 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Queries
             );
             await _context.SaveChangesAsync();
 
-            var query = new CalculateSoNgayNghiQuery 
-            { 
-                NgayBatDau = new DateOnly(2025, 1, 1), 
-                NgayKetThuc = new DateOnly(2025, 1, 2), 
-                LoaiNghi = "NGHI_PHEP_NAM" 
+            var query = new CalculateSoNgayNghiQuery
+            {
+                NgayBatDau = new DateOnly(2025, 1, 1),
+                NgayKetThuc = new DateOnly(2025, 1, 2),
+                LoaiNghi = "NGHI_PHEP_NAM"
             };
 
             // Act
@@ -98,11 +97,11 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Queries
             _context.LichLamViecs.Add(new LichLamViec { IdLich = Guid.NewGuid(), Nam = 2025 });
             await _context.SaveChangesAsync();
 
-            var query = new CalculateSoNgayNghiQuery 
-            { 
-                NgayBatDau = new DateOnly(2025, 1, 1), 
-                NgayKetThuc = new DateOnly(2025, 1, 5), 
-                LoaiNghi = "NGHI_THAI_SAN" 
+            var query = new CalculateSoNgayNghiQuery
+            {
+                NgayBatDau = new DateOnly(2025, 1, 1),
+                NgayKetThuc = new DateOnly(2025, 1, 5),
+                LoaiNghi = "NGHI_THAI_SAN"
             };
 
             // Act

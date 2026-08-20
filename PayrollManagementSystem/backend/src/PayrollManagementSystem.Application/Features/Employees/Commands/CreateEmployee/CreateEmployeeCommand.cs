@@ -1,7 +1,7 @@
 using MediatR;
-using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
+using PayrollManagementSystem.Application.Wrappers;
 
 namespace PayrollManagementSystem.Application.Features.Employees.Commands.CreateEmployee
 {
@@ -18,7 +18,7 @@ namespace PayrollManagementSystem.Application.Features.Employees.Commands.Create
         public string? DiaChi { get; set; }
         public string? DanToc { get; set; }
         public string? ChuyenNganh { get; set; }
-        
+
         public string? SoBhxh { get; set; }
         public string? SoBhyt { get; set; }
         public string? SoTaiKhoan { get; set; }

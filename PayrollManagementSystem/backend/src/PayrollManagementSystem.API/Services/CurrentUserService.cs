@@ -1,5 +1,5 @@
-using System.Security.Claims;
 using PayrollManagementSystem.Application.Common.Interfaces;
+using System.Security.Claims;
 
 namespace PayrollManagementSystem.API.Services
 {

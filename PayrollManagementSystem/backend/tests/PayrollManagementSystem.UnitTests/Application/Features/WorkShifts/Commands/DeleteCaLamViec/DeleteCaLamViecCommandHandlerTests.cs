@@ -4,7 +4,6 @@ using PayrollManagementSystem.Application.Features.WorkShifts.Commands.DeleteCaL
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.WorkShifts.Commands.DeleteCaLamViec
 {
@@ -38,7 +37,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.WorkShifts.Comm
         {
             var shift = new CaLamViec { Id = Guid.NewGuid(), TenCa = "Ca 1" };
             var lich = new LichLamViec { IdLich = Guid.NewGuid(), Nam = 2024 };
-            var scheduleDetail = new ChiTietLichLamViec { Id = Guid.NewGuid(), IdLich = lich.IdLich, LichLamViec = lich, Ngay = new DateOnly(2024,1,1), Thu = "Hai", IdCaLamViecMacDinh = shift.Id };
+            var scheduleDetail = new ChiTietLichLamViec { Id = Guid.NewGuid(), IdLich = lich.IdLich, LichLamViec = lich, Ngay = new DateOnly(2024, 1, 1), Thu = "Hai", IdCaLamViecMacDinh = shift.Id };
             _context.CaLamViecs.Add(shift);
             _context.LichLamViecs.Add(lich);
             _context.ChiTietLichLamViecs.Add(scheduleDetail);
@@ -54,7 +53,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.WorkShifts.Comm
         public async Task Handle_ShiftUsedInAssignment_ThrowsApiException()
         {
             var shift = new CaLamViec { Id = Guid.NewGuid(), TenCa = "Ca 1" };
-            var assignment = new PhanCongCa { IdPhanCong = Guid.NewGuid(), CccdNhanVien = "123", NgayLamViec = new DateOnly(2024,1,1), IdCaLamViec = shift.Id };
+            var assignment = new PhanCongCa { IdPhanCong = Guid.NewGuid(), CccdNhanVien = "123", NgayLamViec = new DateOnly(2024, 1, 1), IdCaLamViec = shift.Id };
             _context.CaLamViecs.Add(shift);
             _context.PhanCongCas.Add(assignment);
             await _context.SaveChangesAsync();
@@ -69,9 +68,9 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.WorkShifts.Comm
         public async Task Handle_ValidRequest_SoftDeletesShiftAndBreaks()
         {
             var shiftId = Guid.NewGuid();
-            var shift = new CaLamViec 
-            { 
-                Id = shiftId, 
+            var shift = new CaLamViec
+            {
+                Id = shiftId,
                 TenCa = "Ca 1",
                 KhungGioNghis = new List<KhungGioNghi> { new KhungGioNghi { Id = Guid.NewGuid(), TenKhoangNghi = "Nghỉ" } }
             };

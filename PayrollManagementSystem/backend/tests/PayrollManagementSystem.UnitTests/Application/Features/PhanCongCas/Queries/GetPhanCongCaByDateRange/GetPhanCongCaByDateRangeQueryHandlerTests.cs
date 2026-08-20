@@ -3,7 +3,6 @@ using PayrollManagementSystem.Application.Features.PhanCongCas.Queries.GetPhanCo
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.PhanCongCas.Queries.GetPhanCongCaByDateRange
 {
@@ -34,7 +33,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.PhanCongCas.Que
             _context.NhanViens.AddRange(nv1, nv2);
 
             var caId = Guid.NewGuid();
-            var ca = new CaLamViec { Id = caId, TenCa = "Ca 1", GioBatDau = new TimeSpan(8,0,0), GioKetThuc = new TimeSpan(17,0,0) };
+            var ca = new CaLamViec { Id = caId, TenCa = "Ca 1", GioBatDau = new TimeSpan(8, 0, 0), GioKetThuc = new TimeSpan(17, 0, 0) };
             _context.CaLamViecs.Add(ca);
 
             var date1 = DateOnly.FromDateTime(DateTime.Today);

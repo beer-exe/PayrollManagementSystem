@@ -1,6 +1,5 @@
 using FluentAssertions;
 using PayrollManagementSystem.Application.Features.Auth.Commands.RefreshToken;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Auth.Commands.RefreshToken
 {
@@ -20,7 +19,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Auth.Commands.R
         {
             var command = new RefreshTokenCommand { AccessToken = accessToken, RefreshToken = refreshToken };
             var result = _validator.Validate(command);
-            
+
             result.IsValid.Should().BeFalse();
             result.Errors.Should().Contain(e => e.PropertyName == "AccessToken" && e.ErrorMessage == "Access Token không được để trống.");
         }
@@ -32,7 +31,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Auth.Commands.R
         {
             var command = new RefreshTokenCommand { AccessToken = accessToken, RefreshToken = refreshToken };
             var result = _validator.Validate(command);
-            
+
             result.IsValid.Should().BeFalse();
             result.Errors.Should().Contain(e => e.PropertyName == "RefreshToken" && e.ErrorMessage == "Refresh Token không được để trống.");
         }
@@ -42,7 +41,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Auth.Commands.R
         {
             var command = new RefreshTokenCommand { AccessToken = "access_token", RefreshToken = "refresh_token" };
             var result = _validator.Validate(command);
-            
+
             result.IsValid.Should().BeTrue();
         }
     }

@@ -54,8 +54,8 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.UpdateNg
             }
 
             await _context.SaveChangesAsync(cancellationToken);
-            return new Response<bool>(true, string.IsNullOrWhiteSpace(request.CccdNhanVien) 
-                ? "Cấu hình phép cho toàn bộ nhân viên thành công." 
+            return new Response<bool>(true, string.IsNullOrWhiteSpace(request.CccdNhanVien)
+                ? "Cấu hình phép cho toàn bộ nhân viên thành công."
                 : "Cập nhật ngày phép cho nhân viên thành công.");
         }
     }

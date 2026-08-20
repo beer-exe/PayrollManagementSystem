@@ -33,7 +33,7 @@ namespace PayrollManagementSystem.Application.Features.SeedData.Commands.SeedDem
             }
 
             var dummyPassword = "123abc@";
-            
+
             var tk = new TaiKhoan
             {
                 IdTaiKhoan = Guid.NewGuid(),

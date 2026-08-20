@@ -1,10 +1,8 @@
 using MediatR;
 using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
-using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Application.Features.PhanCongCas.DTOs;
-using System;
-using System.Collections.Generic;
+using PayrollManagementSystem.Application.Wrappers;
 
 namespace PayrollManagementSystem.Application.Features.PhanCongCas.Queries.GetPhanCongCaByDateRange
 {

@@ -1,7 +1,7 @@
-using PayrollManagementSystem.API.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PayrollManagementSystem.API.DTOs;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.Kpi.Commands.ApprovePhieuKpi;
 using PayrollManagementSystem.Application.Features.Kpi.Commands.AssignPhieuKpi;
@@ -54,7 +54,8 @@ namespace PayrollManagementSystem.API.Controllers
         [HttpGet("ky-kpi/{idKyKpi}/phieu")]
         public async Task<IActionResult> GetPhieuKpiByKy(Guid idKyKpi)
         {
-            var result = await _mediator.Send(new GetPhieuKpiByKyKpiQuery { 
+            var result = await _mediator.Send(new GetPhieuKpiByKyKpiQuery
+            {
                 IdKyKpi = idKyKpi,
                 CurrentUserId = _currentUserService.UserId
             });
@@ -64,9 +65,10 @@ namespace PayrollManagementSystem.API.Controllers
         [HttpGet("phieu/{id}")]
         public async Task<IActionResult> GetChiTietPhieuKpi(Guid id)
         {
-            var result = await _mediator.Send(new GetChiTietPhieuKpiQuery { 
+            var result = await _mediator.Send(new GetChiTietPhieuKpiQuery
+            {
                 IdPhieuKpi = id,
-                CurrentUserId = _currentUserService.UserId 
+                CurrentUserId = _currentUserService.UserId
             });
             return Ok(result);
         }
@@ -75,7 +77,7 @@ namespace PayrollManagementSystem.API.Controllers
         public async Task<IActionResult> AssignPhieuKpi(Guid id, [FromBody] AssignKpiRequestDto request)
         {
             if (_currentUserService.UserId == null) return Unauthorized();
-            
+
             var command = new AssignPhieuKpiCommand { IdPhieuKpi = id, TaiKhoanIdQuanLy = _currentUserService.UserId.Value, ChiTietKpis = request.ChiTietKpis };
             var result = await _mediator.Send(command);
             return Ok(result);
@@ -85,11 +87,11 @@ namespace PayrollManagementSystem.API.Controllers
         public async Task<IActionResult> ConfirmPhieuKpi(Guid id)
         {
             if (_currentUserService.UserId == null) return Unauthorized();
-            
-            var command = new PayrollManagementSystem.Application.Features.Kpi.Commands.ConfirmPhieuKpi.ConfirmPhieuKpiCommand 
-            { 
-                IdPhieuKpi = id, 
-                TaiKhoanIdNhanVien = _currentUserService.UserId.Value 
+
+            var command = new PayrollManagementSystem.Application.Features.Kpi.Commands.ConfirmPhieuKpi.ConfirmPhieuKpiCommand
+            {
+                IdPhieuKpi = id,
+                TaiKhoanIdNhanVien = _currentUserService.UserId.Value
             };
             var result = await _mediator.Send(command);
             return Ok(result);

@@ -4,7 +4,6 @@ using PayrollManagementSystem.Application.Features.ThueTncn.Commands.UpdateBacTh
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.ThueTncn.Commands.UpdateBacThue
 {
@@ -61,7 +60,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.ThueTncn.Comman
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Succeeded.Should().BeTrue();
-            
+
             var updated = await _context.BacThues.FindAsync(id);
             updated!.DenGia.Should().Be(10000000);
             updated.ThueSuat.Should().Be(10);

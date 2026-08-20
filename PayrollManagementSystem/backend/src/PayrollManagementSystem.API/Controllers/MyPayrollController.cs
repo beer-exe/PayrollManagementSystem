@@ -1,10 +1,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PayrollManagementSystem.Application.Features.Payroll.Queries.GetMyPayroll;
-
-using System.Security.Claims;
 using PayrollManagementSystem.Application.Common.Interfaces;
+using PayrollManagementSystem.Application.Features.Payroll.Queries.GetMyPayroll;
 
 namespace PayrollManagementSystem.API.Controllers
 {

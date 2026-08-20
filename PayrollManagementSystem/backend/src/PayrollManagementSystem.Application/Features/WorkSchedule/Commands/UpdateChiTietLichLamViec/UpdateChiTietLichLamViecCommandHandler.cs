@@ -48,7 +48,7 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Upd
                     .AnyAsync(d => d.NgayBatDau <= chiTiet.Ngay && d.NgayKetThuc >= chiTiet.Ngay
                                 && (d.TrangThai == TrangThaiDonNghi.CHO_DUYET || d.TrangThai == TrangThaiDonNghi.DA_DUYET)
                                 && !d.IsDeleted, cancellationToken);
-                
+
                 if (hasConflictingLeaves)
                 {
                     throw new ApiException("Có đơn xin nghỉ phép của nhân viên trong ngày này. Vui lòng huỷ các đơn nghỉ phép liên quan trước khi đổi thành ngày nghỉ.");
@@ -56,7 +56,7 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Upd
             }
 
             chiTiet.LoaiNgay = loaiNgay;
-            
+
             if (loaiNgay == LoaiNgay.NGHI_CUOI_TUAN && string.IsNullOrWhiteSpace(request.TenNgayNghi))
             {
                 chiTiet.TenNgayNghi = $"Nghỉ {chiTiet.Thu}";
@@ -65,24 +65,24 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Upd
             {
                 chiTiet.TenNgayNghi = string.IsNullOrWhiteSpace(request.TenNgayNghi) ? null : request.TenNgayNghi.Trim();
             }
-            
+
             // Adjust working hours based on day type
             if (loaiNgay == LoaiNgay.NGAY_LAM_VIEC)
             {
                 decimal workingHours = 8;
-                
+
                 if (request.IdCaLamViecMacDinh.HasValue)
                 {
                     var shift = await _context.CaLamViecs
                         .Include(c => c.KhungGioNghis)
                         .FirstOrDefaultAsync(c => c.Id == request.IdCaLamViecMacDinh.Value, cancellationToken);
-                        
+
                     if (shift == null)
                         throw new ApiException("Không tìm thấy ca làm việc đã chọn.");
-                        
+
                     workingHours = shift.CalculateWorkingHours();
                 }
-                
+
                 chiTiet.SoGioLam = workingHours;
                 chiTiet.IdCaLamViecMacDinh = request.IdCaLamViecMacDinh;
             }
@@ -91,7 +91,7 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Upd
                 chiTiet.SoGioLam = 0;
                 chiTiet.IdCaLamViecMacDinh = null;
             }
-            
+
             await _context.SaveChangesAsync(cancellationToken);
 
             return new Response<bool>(true, "Cập nhật ngày thành công.");

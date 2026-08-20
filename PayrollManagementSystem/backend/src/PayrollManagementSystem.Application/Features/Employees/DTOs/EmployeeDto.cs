@@ -1,4 +1,3 @@
-using System;
 using PayrollManagementSystem.Application.Features.Profile.DTOs;
 using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Extensions;
@@ -24,7 +23,7 @@ namespace PayrollManagementSystem.Application.Features.Employees.DTOs
         public string? IdPb { get; set; }
         public string? TenPhongBan { get; set; }
         public string? TenChucVu { get; set; }
-        
+
         public string? SoTaiKhoan { get; set; }
         public string? TenNganHang { get; set; }
         public string? MaSoThue { get; set; }

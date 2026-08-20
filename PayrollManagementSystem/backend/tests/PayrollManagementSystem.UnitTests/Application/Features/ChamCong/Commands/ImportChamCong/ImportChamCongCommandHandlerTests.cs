@@ -9,7 +9,6 @@ using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
 using System.Text;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.ChamCong.Commands.ImportChamCong
 {
@@ -64,7 +63,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.ChamCong.Comman
             var csvContent = "CCCD,NgayChamCong,GioVao,GioRa,GhiChu\n" +
                              $"001,{DateTime.Today.AddDays(-1):dd/MM/yyyy},08:00,17:00,Note1\n" +
                              $"001,{DateTime.Today:dd/MM/yyyy},08:15,17:00,Note2";
-                             
+
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
 
             var command = new ImportChamCongCommand { FileName = "test.csv", FileStream = stream };

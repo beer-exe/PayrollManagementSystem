@@ -9,13 +9,13 @@ namespace PayrollManagementSystem.Domain.Models
         public Guid IdPhieuKpi { get; set; }
         public string MucTieu { get; set; } = null!;
         public string DonViTinh { get; set; } = null!;
-        
+
         public decimal TrongSo { get; set; } = 0m;
         public decimal ChiTieu { get; set; } = 0m;
         public decimal ThucTe { get; set; } = 0m;
         public decimal TiLeHoanThanh { get; set; } = 0m;
         public decimal DiemKpi { get; set; } = 0m;
-        
+
         public LoaiTieuChiKpi LoaiTieuChi { get; set; } = LoaiTieuChiKpi.CANG_NHIEU_CANG_TOT;
 
         public PhieuKpi PhieuKpi { get; set; } = null!;

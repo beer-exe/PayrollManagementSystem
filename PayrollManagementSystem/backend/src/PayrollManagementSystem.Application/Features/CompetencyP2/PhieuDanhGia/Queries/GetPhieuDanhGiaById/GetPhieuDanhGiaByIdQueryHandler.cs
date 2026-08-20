@@ -1,9 +1,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
-using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.DTOs;
-using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Extensions;
 
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Queries.GetPhieuDanhGiaById
@@ -44,7 +43,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
                         .OrderByDescending(x => x.NgayHieuLuc)
                         .ThenByDescending(x => x.CreatedAt)
                         .FirstOrDefaultAsync(cancellationToken);
-                    
+
                     if (userQd != null && userQd.IdChucVuMoi == empChucVu.IdChucVuQuanLy)
                     {
                         isCurrentManager = true;

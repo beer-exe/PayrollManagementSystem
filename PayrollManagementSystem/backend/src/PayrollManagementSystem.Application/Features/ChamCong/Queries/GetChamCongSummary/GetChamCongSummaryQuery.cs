@@ -1,5 +1,4 @@
 using MediatR;
-using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.ChamCong.DTOs;
 using PayrollManagementSystem.Application.Wrappers;
 

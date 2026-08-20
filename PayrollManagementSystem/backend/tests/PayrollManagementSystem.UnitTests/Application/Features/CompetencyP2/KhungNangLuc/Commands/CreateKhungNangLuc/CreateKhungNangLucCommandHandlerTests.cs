@@ -2,7 +2,6 @@ using FluentAssertions;
 using PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc.Commands.CreateKhungNangLuc;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.CompetencyP2.KhungNangLuc.Commands.CreateKhungNangLuc
 {

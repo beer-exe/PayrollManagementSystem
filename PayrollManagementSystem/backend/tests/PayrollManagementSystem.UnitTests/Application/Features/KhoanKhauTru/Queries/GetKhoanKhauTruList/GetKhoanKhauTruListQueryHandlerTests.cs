@@ -1,9 +1,7 @@
 using FluentAssertions;
 using PayrollManagementSystem.Application.Features.KhoanKhauTru.Queries.GetKhoanKhauTruList;
-using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.KhoanKhauTru.Queries.GetKhoanKhauTruList
 {
@@ -38,7 +36,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.KhoanKhauTru.Qu
             result.Data.First().TenKhoanKhauTru.Should().Be("A"); // Sorted by CreatedAt
             result.Data.Last().TenKhoanKhauTru.Should().Be("B");
         }
-        
+
         [Fact]
         public async Task Handle_WithIsActiveFilter_ReturnsFilteredEntities()
         {

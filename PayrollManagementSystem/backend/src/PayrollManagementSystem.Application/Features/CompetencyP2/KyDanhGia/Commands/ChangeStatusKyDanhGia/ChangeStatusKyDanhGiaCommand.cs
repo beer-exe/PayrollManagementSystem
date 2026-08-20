@@ -1,9 +1,8 @@
 using MediatR;
+using PayrollManagementSystem.Application.Common.Constants;
+using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Enums;
-using PayrollManagementSystem.Application.Common.Interfaces;
-using PayrollManagementSystem.Application.Common.Constants;
-using System;
 
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.KyDanhGia.Commands.ChangeStatusKyDanhGia
 {
@@ -12,7 +11,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.KyDanhGia.Co
         public Guid IdKyDanhGia { get; set; }
         public TrangThaiKyDanhGia TrangThaiMoi { get; set; }
         public bool Force { get; set; } = false;
-        
+
         public string CacheKeyPrefix => CacheKeyConstants.KyDanhGia;
     }
 }

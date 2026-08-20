@@ -5,7 +5,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.WorkSchedule.Queries.GetChiTietLichLamViec
 {
@@ -44,10 +43,10 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.WorkSchedule.Qu
             // Month 1 details
             _context.ChiTietLichLamViecs.Add(new ChiTietLichLamViec { Id = Guid.NewGuid(), IdLich = lichId, Ngay = new DateOnly(2024, 1, 1), Thu = "Hai", LoaiNgay = LoaiNgay.NGAY_LAM_VIEC });
             _context.ChiTietLichLamViecs.Add(new ChiTietLichLamViec { Id = Guid.NewGuid(), IdLich = lichId, Ngay = new DateOnly(2024, 1, 2), Thu = "Ba", LoaiNgay = LoaiNgay.NGHI_CUOI_TUAN });
-            
+
             // Month 2 details
             _context.ChiTietLichLamViecs.Add(new ChiTietLichLamViec { Id = Guid.NewGuid(), IdLich = lichId, Ngay = new DateOnly(2024, 2, 1), Thu = "Tư", LoaiNgay = LoaiNgay.NGAY_LAM_VIEC });
-            
+
             await _context.SaveChangesAsync();
 
             var query = new GetChiTietLichLamViecQuery { IdLich = lichId, Thang = 1, PageNumber = 1, PageSize = 10 };

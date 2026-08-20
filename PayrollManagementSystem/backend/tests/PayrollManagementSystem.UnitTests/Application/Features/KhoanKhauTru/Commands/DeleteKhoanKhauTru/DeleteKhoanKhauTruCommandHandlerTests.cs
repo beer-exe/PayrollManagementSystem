@@ -1,10 +1,8 @@
 using FluentAssertions;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Features.KhoanKhauTru.Commands.DeleteKhoanKhauTru;
-using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.KhoanKhauTru.Commands.DeleteKhoanKhauTru
 {

@@ -23,13 +23,13 @@ namespace PayrollManagementSystem.Application.Features.Kpi.Commands.AssignPhieuK
             {
                 kpi.RuleFor(x => x.MucTieu)
                     .NotEmpty().WithMessage("Mục tiêu không được để trống.");
-                    
+
                 kpi.RuleFor(x => x.DonViTinh)
                     .NotEmpty().WithMessage("Đơn vị tính không được để trống.");
-                    
+
                 kpi.RuleFor(x => x.TrongSo)
                     .GreaterThan(0).WithMessage("Trọng số phải lớn hơn 0.");
-                    
+
                 kpi.RuleFor(x => x.ChiTieu)
                     .GreaterThanOrEqualTo(0).WithMessage("Chỉ tiêu không được âm.");
             });

@@ -1,13 +1,10 @@
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Features.WorkShifts.Commands.UpdateCaLamViec;
-using PayrollManagementSystem.Application.Features.WorkShifts.DTOs;
-using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
-using Microsoft.EntityFrameworkCore;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.WorkShifts.Commands.UpdateCaLamViec
 {
@@ -40,35 +37,35 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.WorkShifts.Comm
         public async Task Handle_ShiftUsedInPast_AndCoreModified_ThrowsApiException()
         {
             var shiftId = Guid.NewGuid();
-            var shift = new CaLamViec 
-            { 
-                Id = shiftId, 
-                TenCa = "Ca 1", 
-                GioBatDau = new TimeSpan(8,0,0), 
-                GioKetThuc = new TimeSpan(12,0,0) 
+            var shift = new CaLamViec
+            {
+                Id = shiftId,
+                TenCa = "Ca 1",
+                GioBatDau = new TimeSpan(8, 0, 0),
+                GioKetThuc = new TimeSpan(12, 0, 0)
             };
-            
+
             var lich = new LichLamViec { IdLich = Guid.NewGuid(), Nam = 2024 };
 
-            var scheduleDetail = new ChiTietLichLamViec 
-            { 
-                Id = Guid.NewGuid(), 
+            var scheduleDetail = new ChiTietLichLamViec
+            {
+                Id = Guid.NewGuid(),
                 IdLich = lich.IdLich,
                 LichLamViec = lich,
                 Ngay = DateOnly.FromDateTime(DateTime.Today.AddDays(-1)), // Past date
-                Thu = "Hai", 
-                IdCaLamViecMacDinh = shiftId 
+                Thu = "Hai",
+                IdCaLamViecMacDinh = shiftId
             };
-            
+
             _context.CaLamViecs.Add(shift);
             _context.LichLamViecs.Add(lich);
             _context.ChiTietLichLamViecs.Add(scheduleDetail);
             await _context.SaveChangesAsync();
 
-            var command = new UpdateCaLamViecCommand 
-            { 
-                Id = shiftId, 
-                TenCa = "Ca 1 Sửa", 
+            var command = new UpdateCaLamViecCommand
+            {
+                Id = shiftId,
+                TenCa = "Ca 1 Sửa",
                 GioBatDau = "09:00:00", // Core modified
                 GioKetThuc = "12:00:00",
                 KhungGioNghis = new List<UpdateKhungGioNghiCommand>()
@@ -82,38 +79,38 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.WorkShifts.Comm
         public async Task Handle_ShiftUsedInPast_AndNotCoreModified_UpdatesNameOnly()
         {
             var shiftId = Guid.NewGuid();
-            var shift = new CaLamViec 
-            { 
-                Id = shiftId, 
-                TenCa = "Ca 1", 
-                GioBatDau = new TimeSpan(8,0,0), 
-                GioKetThuc = new TimeSpan(12,0,0),
+            var shift = new CaLamViec
+            {
+                Id = shiftId,
+                TenCa = "Ca 1",
+                GioBatDau = new TimeSpan(8, 0, 0),
+                GioKetThuc = new TimeSpan(12, 0, 0),
                 HeSoLuong = 1.0m,
                 XuyenNgay = false
             };
-            
+
             var lich = new LichLamViec { IdLich = Guid.NewGuid(), Nam = 2024 };
 
-            var scheduleDetail = new ChiTietLichLamViec 
-            { 
-                Id = Guid.NewGuid(), 
+            var scheduleDetail = new ChiTietLichLamViec
+            {
+                Id = Guid.NewGuid(),
                 IdLich = lich.IdLich,
                 LichLamViec = lich,
-                Ngay = DateOnly.FromDateTime(DateTime.Today.AddDays(-1)), 
-                Thu = "Hai", 
-                IdCaLamViecMacDinh = shiftId 
+                Ngay = DateOnly.FromDateTime(DateTime.Today.AddDays(-1)),
+                Thu = "Hai",
+                IdCaLamViecMacDinh = shiftId
             };
-            
+
             _context.CaLamViecs.Add(shift);
             _context.LichLamViecs.Add(lich);
             _context.ChiTietLichLamViecs.Add(scheduleDetail);
             await _context.SaveChangesAsync();
 
-            var command = new UpdateCaLamViecCommand 
-            { 
-                Id = shiftId, 
+            var command = new UpdateCaLamViecCommand
+            {
+                Id = shiftId,
                 TenCa = "Ca 1 Sửa Tên", // Only name changes
-                GioBatDau = "08:00:00", 
+                GioBatDau = "08:00:00",
                 GioKetThuc = "12:00:00",
                 HeSoLuong = 1.0m,
                 XuyenNgay = false,
@@ -123,7 +120,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.WorkShifts.Comm
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Succeeded.Should().BeTrue();
-            
+
             var updatedShift = await _context.CaLamViecs.FindAsync(shiftId);
             updatedShift!.TenCa.Should().Be("Ca 1 Sửa Tên");
         }
@@ -133,12 +130,12 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.WorkShifts.Comm
         {
             var shiftId = Guid.NewGuid();
             var breakId = Guid.NewGuid();
-            var shift = new CaLamViec 
-            { 
-                Id = shiftId, 
-                TenCa = "Ca 1", 
-                GioBatDau = new TimeSpan(8,0,0), 
-                GioKetThuc = new TimeSpan(12,0,0),
+            var shift = new CaLamViec
+            {
+                Id = shiftId,
+                TenCa = "Ca 1",
+                GioBatDau = new TimeSpan(8, 0, 0),
+                GioKetThuc = new TimeSpan(12, 0, 0),
                 KhungGioNghis = new List<KhungGioNghi>
                 {
                     new KhungGioNghi
@@ -152,15 +149,15 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.WorkShifts.Comm
                     }
                 }
             };
-            
+
             _context.CaLamViecs.Add(shift);
             await _context.SaveChangesAsync();
 
-            var command = new UpdateCaLamViecCommand 
-            { 
-                Id = shiftId, 
+            var command = new UpdateCaLamViecCommand
+            {
+                Id = shiftId,
                 TenCa = "Ca 1 Mới",
-                GioBatDau = "08:00:00", 
+                GioBatDau = "08:00:00",
                 GioKetThuc = "17:00:00",
                 HeSoLuong = 1.0m,
                 XuyenNgay = false,
@@ -180,9 +177,9 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.WorkShifts.Comm
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Succeeded.Should().BeTrue();
-            
+
             var updatedShift = await _context.CaLamViecs.Include(c => c.KhungGioNghis).FirstOrDefaultAsync(c => c.Id == shiftId);
-            updatedShift!.GioKetThuc.Should().Be(new TimeSpan(17,0,0));
+            updatedShift!.GioKetThuc.Should().Be(new TimeSpan(17, 0, 0));
             updatedShift.KhungGioNghis.Should().HaveCount(1);
         }
     }

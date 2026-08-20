@@ -3,7 +3,6 @@ using PayrollManagementSystem.Application.Features.ThueTncn.Queries.GetCauHinhGi
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.ThueTncn.Queries.GetCauHinhGiamTru
 {

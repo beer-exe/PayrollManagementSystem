@@ -1,4 +1,3 @@
-using PayrollManagementSystem.Application.Features.Kpi.DTOs;
 using FluentValidation;
 
 namespace PayrollManagementSystem.Application.Features.Kpi.Commands.CreateKyKpi

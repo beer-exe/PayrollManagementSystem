@@ -1,10 +1,8 @@
 using FluentAssertions;
 using PayrollManagementSystem.Application.Features.Departments.Queries.GetEmployeesByDepartment;
-using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Departments.Queries.GetEmployeesByDepartment
 {
@@ -29,10 +27,10 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Departments.Que
         {
             // Arrange
             _context.PhongBans.Add(new PhongBan { IdPb = "PB1", TenPb = "Phòng 1" });
-            
+
             var nv1 = new NhanVien { Cccd = "001", HoTen = "Test 1", IdPb = "PB1" };
             var nv2 = new NhanVien { Cccd = "002", HoTen = "Test 2", IdPb = "PB2" };
-            
+
             _context.NhanViens.AddRange(nv1, nv2);
             await _context.SaveChangesAsync();
 

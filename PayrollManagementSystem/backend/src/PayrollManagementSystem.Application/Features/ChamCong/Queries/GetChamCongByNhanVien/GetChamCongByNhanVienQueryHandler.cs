@@ -40,7 +40,7 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
 
                 var quyetDinhs = await _context.QuyetDinhNhanSus
                     .Include(qd => qd.ChucVuMoi)
-                    .Where(qd => activeCccds.Contains(qd.Cccd) 
+                    .Where(qd => activeCccds.Contains(qd.Cccd)
                               && qd.TrangThai != Domain.Enums.TrangThaiQuyetDinh.HUY_BO
                               && qd.NgayHieuLuc <= endOfMonth
                               && (qd.NgayHetHan == null || qd.NgayHetHan >= startOfMonth))
@@ -49,7 +49,7 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetChamC
                 var quyetDinhGroup = quyetDinhs
                     .GroupBy(qd => qd.Cccd)
                     .ToDictionary(
-                        g => g.Key, 
+                        g => g.Key,
                         g => g.OrderByDescending(qd => qd.NgayHieuLuc).FirstOrDefault()
                     );
 

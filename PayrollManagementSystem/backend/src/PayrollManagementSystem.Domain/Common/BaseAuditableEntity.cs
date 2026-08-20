@@ -4,10 +4,10 @@ namespace PayrollManagementSystem.Domain.Common
     {
         public DateTimeOffset CreatedAt { get; set; }
         public Guid? CreatedBy { get; set; }
-        
+
         public DateTimeOffset? UpdatedAt { get; set; }
         public Guid? UpdatedBy { get; set; }
-        
+
         public bool IsDeleted { get; set; } = false;
     }
 }

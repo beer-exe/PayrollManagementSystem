@@ -1,5 +1,3 @@
-using System;
-
 namespace PayrollManagementSystem.Application.Features.ChamCong.DTOs
 {
     public class ChamCongDto

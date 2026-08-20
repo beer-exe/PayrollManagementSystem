@@ -1,8 +1,7 @@
 using MediatR;
+using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.JobGrades.DTOs;
 using PayrollManagementSystem.Application.Wrappers;
-
-using PayrollManagementSystem.Application.Common.Interfaces;
 
 namespace PayrollManagementSystem.Application.Features.JobGrades.Queries.GetJobGrades
 {

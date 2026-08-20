@@ -24,7 +24,7 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.TuChoiDo
                 throw new ApiException("Chỉ có thể từ chối đơn đang ở trạng thái 'Chờ duyệt'.");
 
             donNghi.TrangThai = TrangThaiDonNghi.TU_CHOI;
-            
+
             if (Guid.TryParse(request.CccdNguoiDuyet, out var userId))
             {
                 var nguoiDuyetAccount = await _context.TaiKhoans.Include(t => t.NhanVien).FirstOrDefaultAsync(t => t.IdTaiKhoan == userId, cancellationToken);

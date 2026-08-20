@@ -56,7 +56,7 @@ namespace PayrollManagementSystem.Application.Features.KyChamCong.Commands.ChotK
             {
                 _context.ChamCongs.UpdateRange(chamCongs);
             }
-            
+
             await _context.SaveChangesAsync(cancellationToken);
 
             return new Response<bool>(true, $"Đã chốt công tháng {request.Thang}/{request.Nam} thành công.");

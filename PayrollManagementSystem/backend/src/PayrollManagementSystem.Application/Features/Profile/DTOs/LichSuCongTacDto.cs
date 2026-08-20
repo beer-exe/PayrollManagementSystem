@@ -1,4 +1,3 @@
-using System;
 using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Extensions;
 

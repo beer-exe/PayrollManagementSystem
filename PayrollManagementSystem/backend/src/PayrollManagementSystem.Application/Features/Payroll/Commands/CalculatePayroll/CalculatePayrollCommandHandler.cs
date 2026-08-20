@@ -1,10 +1,10 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
-using Microsoft.EntityFrameworkCore;
-using PayrollManagementSystem.Application.Common.Exceptions;
 
 namespace PayrollManagementSystem.Application.Features.Payroll.Commands.CalculatePayroll
 {
@@ -25,7 +25,7 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                 .Where(x => x.TrangThai == TrangThaiKyLuong.CHUA_CHOT)
                 .OrderBy(x => x.Nam).ThenBy(x => x.Thang)
                 .FirstOrDefaultAsync(cancellationToken);
-                
+
             if (unclosedKyLuong != null)
             {
                 throw new ApiException($"Không thể chạy lương tháng {request.Thang}/{request.Nam} vì kỳ lương tháng {unclosedKyLuong.Thang}/{unclosedKyLuong.Nam} chưa được chốt!");
@@ -84,13 +84,13 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
             var chamCongs = await _context.ChamCongs
                 .Where(x => x.NgayChamCong.Month == request.Thang && x.NgayChamCong.Year == request.Nam && x.TrangThai == TrangThaiChamCong.DA_XAC_NHAN)
                 .ToListAsync(cancellationToken);
-                
+
             var chiTietLichs = await _context.ChiTietLichLamViecs
                 .Include(ct => ct.CaLamViecMacDinh)
                     .ThenInclude(c => c.KhungGioNghis)
                 .Where(ct => ct.Ngay.Month == request.Thang && ct.Ngay.Year == request.Nam)
                 .ToDictionaryAsync(ct => ct.Ngay.Day, cancellationToken);
-                
+
             var phanCongCas = await _context.PhanCongCas
                 .Include(p => p.CaLamViec)
                     .ThenInclude(c => c.KhungGioNghis)
@@ -100,7 +100,7 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
             var phanCongGroup = phanCongCas
                 .GroupBy(p => p.CccdNhanVien)
                 .ToDictionary(g => g.Key, g => g.ToDictionary(p => p.NgayLamViec.Day));
-                
+
             var daysInMonth = DateTime.DaysInMonth(request.Nam, request.Thang);
             var startOfMonth = new DateOnly(request.Nam, request.Thang, 1);
             var endOfMonth = new DateOnly(request.Nam, request.Thang, daysInMonth);
@@ -112,11 +112,11 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                          && p.KyDanhGia.NgayBatDau <= endOfMonth
                          && p.KyDanhGia.NgayKetThuc >= startOfMonth)
                 .ToListAsync(cancellationToken);
-                
+
             var phieuP2Group = phieuDanhGias
                 .GroupBy(p => p.CccdNhanVien)
                 .ToDictionary(
-                    g => g.Key, 
+                    g => g.Key,
                     g => g.OrderByDescending(p => p.KyDanhGia.NgayKetThuc).FirstOrDefault()
                 );
 
@@ -127,11 +127,11 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                          && p.KyKpi.Thang == request.Thang
                          && p.KyKpi.Nam == request.Nam)
                 .ToListAsync(cancellationToken);
-                
+
             var phieuKpiGroup = phieuKpis
                 .GroupBy(p => p.CccdNhanVien)
                 .ToDictionary(
-                    g => g.Key, 
+                    g => g.Key,
                     g => g.FirstOrDefault()
                 );
 
@@ -165,18 +165,18 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
 
                 // Phân tách chi tiết các loại ngày công để tính lương
                 var nvChamCong = chamCongs.Where(x => x.CccdNhanVien == nv.Cccd).ToList();
-                
+
                 // 1. Công làm việc thực tế và Nghỉ phép có lương (Vắng có phép được duyệt sẽ có SoNgayCong > 0)
                 decimal ngayDiLam = nvChamCong
-                    .Where(cc => cc.LoaiNgayCong == LoaiNgayCong.LAM_DU_CA || 
-                                 cc.LoaiNgayCong == LoaiNgayCong.NUA_CA || 
-                                 cc.LoaiNgayCong == LoaiNgayCong.DI_TRE_VE_SOM || 
+                    .Where(cc => cc.LoaiNgayCong == LoaiNgayCong.LAM_DU_CA ||
+                                 cc.LoaiNgayCong == LoaiNgayCong.NUA_CA ||
+                                 cc.LoaiNgayCong == LoaiNgayCong.DI_TRE_VE_SOM ||
                                  cc.LoaiNgayCong == LoaiNgayCong.VANG_CO_PHEP)
                     .Sum(x => x.SoNgayCong);
 
                 // 2. Nghỉ lễ (Hưởng nguyên lương, đếm số ngày)
                 int soNgayNghiLe = nvChamCong.Count(cc => cc.LoaiNgayCong == LoaiNgayCong.NGHI_LE);
-                
+
                 // 3. Vắng không phép (Không hưởng lương, không cộng vào)
                 // int soNgayVangKhongPhep = nvChamCong.Count(cc => cc.LoaiNgayCong == LoaiNgayCong.VANG_KHONG_PHEP);
 
@@ -214,13 +214,13 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                     var chamCongDay = nvChamCong.FirstOrDefault(x => x.NgayChamCong.Day == d);
                     if (chamCongDay != null)
                     {
-                        if (chamCongDay.LoaiNgayCong == LoaiNgayCong.LAM_DU_CA || 
-                            chamCongDay.LoaiNgayCong == LoaiNgayCong.NUA_CA || 
+                        if (chamCongDay.LoaiNgayCong == LoaiNgayCong.LAM_DU_CA ||
+                            chamCongDay.LoaiNgayCong == LoaiNgayCong.NUA_CA ||
                             chamCongDay.LoaiNgayCong == LoaiNgayCong.DI_TRE_VE_SOM)
                         {
                             empTongGioThucTe += chamCongDay.SoGioLamThucTe;
                         }
-                        else if (chamCongDay.LoaiNgayCong == LoaiNgayCong.VANG_CO_PHEP || 
+                        else if (chamCongDay.LoaiNgayCong == LoaiNgayCong.VANG_CO_PHEP ||
                                  chamCongDay.LoaiNgayCong == LoaiNgayCong.NGHI_LE)
                         {
                             empTongGioThucTe += hoursForDay;
@@ -230,7 +230,7 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                 }
                 decimal ngayCongChuan = Math.Round(empTongGioChuan / 8m, 3);
                 if (ngayCongChuan == 0) ngayCongChuan = 21.375m; // Fallback nếu dữ liệu lỗi
-                
+
                 decimal gioCongChuan = empTongGioChuan;
                 decimal gioCongThucTe = empTongGioThucTe;
                 if (gioCongChuan == 0) gioCongChuan = ngayCongChuan * 8m;
@@ -248,8 +248,8 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                 // Lấy Quyết định nhân sự có hiệu lực cuối cùng trong tháng
                 var qd = await _context.QuyetDinhNhanSus
                     .Include(x => x.BacLuong)
-                    .Where(x => x.Cccd == nv.Cccd 
-                             && x.TrangThai != TrangThaiQuyetDinh.HUY_BO 
+                    .Where(x => x.Cccd == nv.Cccd
+                             && x.TrangThai != TrangThaiQuyetDinh.HUY_BO
                              && x.NgayHieuLuc <= endOfMonth
                              && (x.NgayHetHan == null || x.NgayHetHan >= startOfMonth))
                     .OrderByDescending(x => x.NgayHieuLuc)
@@ -263,14 +263,14 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
 
                 // P1
                 decimal p1 = qd.BacLuong.LuongP1;
-                
+
                 // P2
                 decimal heSoP2 = 1.0m;
                 if (phieuP2Group.TryGetValue(nv.Cccd, out var phieuP2) && phieuP2?.HeSoP2 != null)
                 {
                     heSoP2 = phieuP2.HeSoP2.Value;
                 }
-                
+
                 // P3
                 decimal heSoP3 = 1.0m; // Mặc định
                 if (phieuKpiGroup.TryGetValue(nv.Cccd, out var phieuP3) && phieuP3 != null)
@@ -283,12 +283,12 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
 
                 // Lương thời gian = (Lương 3P * Giờ công thực tế) / Giờ công chuẩn
                 decimal luongThoiGian = (luong3P * gioCongThucTe) / gioCongChuan;
-                
+
                 // Do P3 đã tính thẳng vào Lương 3P và Lương thời gian nên cục Lương hiệu suất để riêng = 0
                 decimal luongHieuSuat = 0;
 
                 decimal tongThuNhap = luongThoiGian + luongHieuSuat;
-                
+
                 // Khấu trừ
                 decimal tongKhauTru = 0;
                 var listChiTietKhauTru = new List<object>();
@@ -304,22 +304,23 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                         soTienTru = khauTru.GiaTri;
                     }
                     tongKhauTru += soTienTru;
-                    listChiTietKhauTru.Add(new {
+                    listChiTietKhauTru.Add(new
+                    {
                         ten = khauTru.TenKhoanKhauTru,
                         soTien = Math.Round(soTienTru, 0)
                     });
                 }
-                
+
                 decimal thucLinh = tongThuNhap - tongKhauTru;
                 string chiTietKhauTruJson = System.Text.Json.JsonSerializer.Serialize(listChiTietKhauTru);
 
                 // --- TÍNH THUẾ TNCN LŨY TIẾN ---
                 decimal thuNhapTruocThue = tongThuNhap - tongKhauTru; // Không trừ phạt
-                
+
                 // Số người phụ thuộc
                 int soNguoiPhuThuoc = nptGroups.TryGetValue(nv.Cccd, out int nptCount) ? nptCount : 0;
                 decimal tongGiamTru = giamTruBanThan + (soNguoiPhuThuoc * giamTruNguoiPhuThuoc);
-                
+
                 decimal thuNhapTinhThue = Math.Max(0, thuNhapTruocThue - tongGiamTru);
                 decimal truThue = 0;
 
@@ -335,8 +336,9 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                             decimal taxableInBracket = Math.Min(thuNhapTinhThue, maxInBracket) - bac.TuGia;
                             decimal taxForBracket = taxableInBracket * (bac.ThueSuat / 100m);
                             truThue += taxForBracket;
-                            
-                            listChiTietBacThue.Add(new {
+
+                            listChiTietBacThue.Add(new
+                            {
                                 bac = bac.Bac,
                                 thueSuat = bac.ThueSuat,
                                 thuNhapTinh = Math.Round(taxableInBracket, 0),
@@ -346,7 +348,8 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.Calculat
                     }
                 }
 
-                var thueDetails = new {
+                var thueDetails = new
+                {
                     thuNhapTruocThue = Math.Round(thuNhapTruocThue, 0),
                     soNguoiPhuThuoc = soNguoiPhuThuoc,
                     tongGiamTru = Math.Round(tongGiamTru, 0),

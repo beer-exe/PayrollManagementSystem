@@ -6,7 +6,7 @@ namespace PayrollManagementSystem.Domain.Enums
     {
         [Description("Hiệu lực")]
         HIEU_LUC,
-        
+
         [Description("Hết hiệu lực")]
         HET_HIEU_LUC
     }

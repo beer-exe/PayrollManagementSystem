@@ -42,8 +42,8 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.HuyDonNg
             }
 
             var chamCongsToRevert = await _context.ChamCongs
-                .Where(c => c.CccdNhanVien == donNghi.CccdNhanVien 
-                            && c.NgayChamCong >= donNghi.NgayBatDau 
+                .Where(c => c.CccdNhanVien == donNghi.CccdNhanVien
+                            && c.NgayChamCong >= donNghi.NgayBatDau
                             && c.NgayChamCong <= donNghi.NgayKetThuc
                             && (c.LoaiNgayCong == LoaiNgayCong.VANG_CO_PHEP || c.LoaiNgayCong == LoaiNgayCong.NUA_CA))
                 .ToListAsync(cancellationToken);
@@ -55,12 +55,12 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.HuyDonNg
                 cc.SoNgayCong = 1;
                 cc.GhiChu = "Đã hủy đơn nghỉ";
                 cc.TrangThai = TrangThaiChamCong.CHUA_XAC_NHAN;
-                
+
                 // Note: Alternatively, we could delete the ChamCong record if it was completely auto-generated,
                 // but setting it back to a default state is safer if there was other attendance data.
             }
 
-            donNghi.TrangThai = TrangThaiDonNghi.TU_CHOI; 
+            donNghi.TrangThai = TrangThaiDonNghi.TU_CHOI;
             donNghi.LyDoTuChoi = "Hủy đơn đã duyệt theo yêu cầu";
 
             await _context.SaveChangesAsync(cancellationToken);

@@ -1,5 +1,3 @@
-using System;
-
 namespace PayrollManagementSystem.Application.Features.PhanCongCas.DTOs
 {
     public class PhanCongCaDto

@@ -1,6 +1,5 @@
 using FluentAssertions;
 using PayrollManagementSystem.Application.Features.Auth.Commands.Login;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Auth.Commands.Login
 {
@@ -20,7 +19,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Auth.Commands.L
         {
             var command = new LoginCommand { TenTaiKhoan = username, MatKhau = password };
             var result = _validator.Validate(command);
-            
+
             result.IsValid.Should().BeFalse();
             result.Errors.Should().Contain(e => e.PropertyName == "TenTaiKhoan" && e.ErrorMessage == "Tên tài khoản không được để trống.");
         }
@@ -32,7 +31,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Auth.Commands.L
         {
             var command = new LoginCommand { TenTaiKhoan = username, MatKhau = password };
             var result = _validator.Validate(command);
-            
+
             result.IsValid.Should().BeFalse();
             result.Errors.Should().Contain(e => e.PropertyName == "MatKhau" && e.ErrorMessage == "Mật khẩu không được để trống.");
         }
@@ -42,7 +41,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Auth.Commands.L
         {
             var command = new LoginCommand { TenTaiKhoan = "admin", MatKhau = "password123" };
             var result = _validator.Validate(command);
-            
+
             result.IsValid.Should().BeTrue();
         }
     }

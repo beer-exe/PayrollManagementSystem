@@ -5,7 +5,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.JobGrades.Commands.UpdateJobGrade
 {
@@ -57,7 +56,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.JobGrades.Comma
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Succeeded.Should().BeTrue();
-            
+
             var entity = await _context.NgachLuongs.FindAsync("NL01");
             entity!.TenNgachLuong.Should().Be("Ngạch 1 Updated");
             entity.MoTa.Should().Be("Mô tả 1 Updated");

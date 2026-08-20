@@ -1,10 +1,8 @@
 using FluentAssertions;
-using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Features.ChamCong.Commands.UpdateChamCong;
 using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.ChamCong.Commands.UpdateChamCong
 {
@@ -28,21 +26,21 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.ChamCong.Comman
         public async Task Handle_ValidCommand_UpdatesEntity()
         {
             // Arrange
-            var entity = new Domain.Models.ChamCong 
-            { 
-                Id = Guid.NewGuid(), 
-                CccdNhanVien = "001", 
+            var entity = new Domain.Models.ChamCong
+            {
+                Id = Guid.NewGuid(),
+                CccdNhanVien = "001",
                 NgayChamCong = new DateOnly(2025, 1, 1),
                 GioVao = new TimeOnly(8, 0, 0),
                 GioRa = new TimeOnly(17, 0, 0)
             };
-            
+
             _context.ChamCongs.Add(entity);
             await _context.SaveChangesAsync();
 
-            var command = new UpdateChamCongCommand 
-            { 
-                Id = entity.Id, 
+            var command = new UpdateChamCongCommand
+            {
+                Id = entity.Id,
                 GioVao = new TimeOnly(9, 0, 0), // Late
                 GioRa = new TimeOnly(17, 0, 0),
                 GhiChu = "Updated note"
@@ -53,7 +51,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.ChamCong.Comman
 
             // Assert
             result.Succeeded.Should().BeTrue();
-            
+
             var updatedEntity = await _context.ChamCongs.FindAsync(entity.Id);
             updatedEntity.Should().NotBeNull();
             updatedEntity!.GioVao.Should().Be(new TimeOnly(9, 0, 0));

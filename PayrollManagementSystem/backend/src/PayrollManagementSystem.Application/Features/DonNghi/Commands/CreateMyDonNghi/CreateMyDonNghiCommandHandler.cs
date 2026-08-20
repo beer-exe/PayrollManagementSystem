@@ -42,7 +42,7 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.CreateMy
             else
             {
                 maxSoNgay = chiTietLich.Count(c => c.LoaiNgay == LoaiNgay.NGAY_LAM_VIEC);
-                
+
                 if (chiTietLich.Count == 0)
                 {
                     maxSoNgay = request.NgayKetThuc.DayNumber - request.NgayBatDau.DayNumber + 1;

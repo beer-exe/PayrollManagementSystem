@@ -17,7 +17,7 @@ namespace PayrollManagementSystem.Application.Services
             var quanLy = await _context.NhanViens
                 .AsNoTracking()
                 .FirstOrDefaultAsync(n => n.IdTaiKhoan == managerTaiKhoanId, cancellationToken);
-                
+
             if (quanLy == null) return new List<string>();
 
             var managerQd = await _context.QuyetDinhNhanSus

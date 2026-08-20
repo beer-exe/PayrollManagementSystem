@@ -5,7 +5,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Positions.Commands.TogglePositionStatus
 {
@@ -37,17 +36,17 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Positions.Comma
         public async Task Handle_ActiveWithEmployees_ThrowsApiException()
         {
             _context.ChucVus.Add(new ChucVu { IdChucVu = "CV01", TenChucVu = "Dev", IdPhongBan = "PB01", TrangThai = TrangThaiChucVu.HOAT_DONG });
-            _context.QuyetDinhNhanSus.Add(new QuyetDinhNhanSu 
-            { 
-                SoQuyetDinh = "QD-01", 
-                IdChucVuMoi = "CV01", 
+            _context.QuyetDinhNhanSus.Add(new QuyetDinhNhanSu
+            {
+                SoQuyetDinh = "QD-01",
+                IdChucVuMoi = "CV01",
                 TrangThai = TrangThaiQuyetDinh.HIEU_LUC,
                 LoaiQuyetDinh = "TUYEN_DUNG"
             });
             await _context.SaveChangesAsync();
 
             var command = new TogglePositionStatusCommand { IdChucVu = "CV01" };
-            
+
             var exception = await Assert.ThrowsAsync<ApiException>(() => _handler.Handle(command, CancellationToken.None));
             exception.Message.Should().Contain("đang được gắn với nhân sự");
         }

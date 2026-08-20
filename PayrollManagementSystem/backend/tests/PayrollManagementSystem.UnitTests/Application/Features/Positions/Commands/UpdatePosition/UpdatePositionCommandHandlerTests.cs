@@ -4,7 +4,6 @@ using PayrollManagementSystem.Application.Features.Positions.Commands.UpdatePosi
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Positions.Commands.UpdatePosition
 {
@@ -38,9 +37,9 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Positions.Comma
             _context.ChucVus.Add(new ChucVu { IdChucVu = "CV01", TenChucVu = "Old Name", IdPhongBan = "PB01" });
             await _context.SaveChangesAsync();
 
-            var command = new UpdatePositionCommand 
-            { 
-                IdChucVu = "CV01", 
+            var command = new UpdatePositionCommand
+            {
+                IdChucVu = "CV01",
                 TenChucVu = "New Name",
                 IdPhongBan = "PB01"
             };
@@ -48,7 +47,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Positions.Comma
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Succeeded.Should().BeTrue();
-            
+
             var entity = await _context.ChucVus.FindAsync("CV01");
             entity!.TenChucVu.Should().Be("New Name");
             entity.IdPhongBan.Should().Be("PB01");

@@ -5,7 +5,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Departments.Commands.ChangePosition
 {
@@ -39,13 +38,13 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Departments.Com
         {
             // Arrange
             _context.NhanViens.Add(new NhanVien { Cccd = "001", HoTen = "Test NV" });
-            
-            var oldQd = new QuyetDinhNhanSu 
-            { 
-                SoQuyetDinh = "QD01", 
-                Cccd = "001", 
-                IdChucVuMoi = "CV1", 
-                IdBacLuongMoi = "B1", 
+
+            var oldQd = new QuyetDinhNhanSu
+            {
+                SoQuyetDinh = "QD01",
+                Cccd = "001",
+                IdChucVuMoi = "CV1",
+                IdBacLuongMoi = "B1",
                 TrangThai = TrangThaiQuyetDinh.HIEU_LUC,
                 NgayHieuLuc = DateOnly.FromDateTime(DateTime.Today.AddDays(-10)),
                 LoaiQuyetDinh = "Test"
@@ -53,13 +52,13 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Departments.Com
             _context.QuyetDinhNhanSus.Add(oldQd);
             await _context.SaveChangesAsync();
 
-            var command = new ChangePositionCommand 
-            { 
-                Cccd = "001", 
-                SoQuyetDinh = "QD02", 
+            var command = new ChangePositionCommand
+            {
+                Cccd = "001",
+                SoQuyetDinh = "QD02",
                 IdChucVuMoi = "CV2",
-                IdBacLuongMoi = "B2", 
-                NgayHieuLuc = DateTime.Today 
+                IdBacLuongMoi = "B2",
+                NgayHieuLuc = DateTime.Today
             };
 
             // Act

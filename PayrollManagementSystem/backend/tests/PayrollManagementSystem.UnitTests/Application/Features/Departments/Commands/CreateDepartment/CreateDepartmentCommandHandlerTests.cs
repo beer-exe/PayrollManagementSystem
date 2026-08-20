@@ -4,7 +4,6 @@ using PayrollManagementSystem.Application.Features.Departments.Commands.CreateDe
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Departments.Commands.CreateDepartment
 {

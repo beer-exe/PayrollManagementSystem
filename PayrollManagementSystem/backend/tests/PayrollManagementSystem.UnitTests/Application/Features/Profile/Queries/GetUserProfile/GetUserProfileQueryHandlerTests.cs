@@ -5,7 +5,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Profile.Queries.GetUserProfile
 {
@@ -39,12 +38,12 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Profile.Queries
             // Arrange
             var taiKhoanId = Guid.NewGuid();
             var cccd = "001";
-            
+
             _context.TaiKhoans.Add(new TaiKhoan { IdTaiKhoan = taiKhoanId, TenTaiKhoan = "test", MatKhauHash = "hash", UserAvatar = "avatar.jpg" });
-            
+
             var pb = new PhongBan { IdPb = "PB01", TenPb = "IT" };
             _context.PhongBans.Add(pb);
-            
+
             var cv = new ChucVu { IdChucVu = "CV01", TenChucVu = "Dev", IdPhongBan = "PB01" };
             _context.ChucVus.Add(cv);
 
@@ -57,7 +56,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Profile.Queries
                 PhongBan = pb,
                 Email = "test@example.com"
             });
-            
+
             _context.QuyetDinhNhanSus.Add(new QuyetDinhNhanSu
             {
                 SoQuyetDinh = "QD-01",
@@ -67,7 +66,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Profile.Queries
                 NgayHieuLuc = DateOnly.FromDateTime(DateTime.Today.AddDays(-10)),
                 LoaiQuyetDinh = "TUYEN_DUNG"
             });
-            
+
             await _context.SaveChangesAsync();
 
             var query = new GetUserProfileQuery { TaiKhoanId = taiKhoanId };

@@ -6,7 +6,7 @@ namespace PayrollManagementSystem.Domain.Enums
     {
         [Description("Đã nghỉ việc")]
         DA_NGHI_VIEC,
-        
+
         [Description("Đang làm việc")]
         DANG_LAM_VIEC
     }

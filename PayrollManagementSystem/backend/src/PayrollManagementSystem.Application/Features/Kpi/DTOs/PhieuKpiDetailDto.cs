@@ -17,7 +17,7 @@ namespace PayrollManagementSystem.Application.Features.Kpi.DTOs
         public string TrangThai { get; set; } = null!;
         public int TrangThaiValue { get; set; }
         public bool CanManage { get; set; }
-        
+
         public List<ChiTietKpiDto> ChiTietKpis { get; set; } = new();
     }
 }

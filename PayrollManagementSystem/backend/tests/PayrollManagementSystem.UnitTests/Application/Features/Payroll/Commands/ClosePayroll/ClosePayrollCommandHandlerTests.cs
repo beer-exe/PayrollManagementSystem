@@ -7,7 +7,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Payroll.Commands.ClosePayroll
 {
@@ -28,8 +27,8 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Payroll.Command
                 .ReturnsAsync(true);
 
             _handler = new ClosePayrollCommandHandler(
-                _context, 
-                _currentUserServiceMock.Object, 
+                _context,
+                _currentUserServiceMock.Object,
                 _hrAuthorizationServiceMock.Object);
         }
 
@@ -136,7 +135,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Payroll.Command
                 NgayBatDau = new DateOnly(2020, 1, 1),
                 NgayKetThuc = new DateOnly(2020, 1, 31)
             });
-            
+
             _context.BangLuongs.Add(new BangLuong
             {
                 IdBangLuong = Guid.NewGuid(),
@@ -147,7 +146,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Payroll.Command
                 ChiTietKhauTru = "[]",
                 ChiTietThue = "{}"
             });
-            
+
             await _context.SaveChangesAsync();
 
             var command = new ClosePayrollCommand { Thang = 1, Nam = 2020 };

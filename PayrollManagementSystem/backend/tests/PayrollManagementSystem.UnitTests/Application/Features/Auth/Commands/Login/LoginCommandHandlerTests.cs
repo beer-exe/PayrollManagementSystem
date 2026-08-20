@@ -7,7 +7,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Auth.Commands.Login
 {
@@ -48,7 +47,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Auth.Commands.L
             await _context.SaveChangesAsync();
 
             var command = new LoginCommand { TenTaiKhoan = "admin", MatKhau = "password123" };
-            
+
             _mockPasswordHasher.Setup(x => x.VerifyPasswordEnhanced("password123", "hashed_password")).Returns(true);
             _mockJwtTokenGenerator.Setup(x => x.GenerateAccessToken(It.IsAny<TaiKhoan>())).Returns("access_token");
             _mockJwtTokenGenerator.Setup(x => x.GenerateRefreshToken()).Returns("refresh_token");
@@ -63,7 +62,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Auth.Commands.L
             result.Data!.AccessToken.Should().Be("access_token");
             result.Data.RefreshToken.Should().Be("refresh_token");
             result.Data.Email.Should().Be("admin@test.com");
-            
+
             // Verify db updated with refresh token
             var dbAccount = await _context.TaiKhoans.FindAsync(taiKhoan.IdTaiKhoan);
             dbAccount!.RefreshToken.Should().Be("refresh_token");

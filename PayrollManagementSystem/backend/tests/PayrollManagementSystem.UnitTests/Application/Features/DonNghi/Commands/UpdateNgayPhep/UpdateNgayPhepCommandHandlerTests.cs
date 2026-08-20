@@ -5,7 +5,6 @@ using PayrollManagementSystem.Application.Features.DonNghi.Commands.UpdateNgayPh
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Commands.UpdateNgayPhep
 {
@@ -59,7 +58,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Command
 
             // Assert
             result.Succeeded.Should().BeTrue();
-            
+
             var dbNgayPhep = await _context.NgayPhepNhanViens.FirstOrDefaultAsync(n => n.CccdNhanVien == "001" && n.Nam == 2025);
             dbNgayPhep.Should().NotBeNull();
             dbNgayPhep!.TongNgayPhep.Should().Be(12);

@@ -1,5 +1,3 @@
-using System;
-
 namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetCaLamViecTrongNgay
 {
     public class CaLamViecTrongNgayDto

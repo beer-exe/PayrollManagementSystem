@@ -4,7 +4,6 @@ using PayrollManagementSystem.Application.Features.Positions.Commands.CreatePosi
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Positions.Commands.CreatePosition
 {
@@ -42,9 +41,9 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Positions.Comma
         public async Task Handle_ValidRequest_CreatesPosition()
         {
             // Arrange
-            var command = new CreatePositionCommand 
-            { 
-                IdChucVu = "CV02", 
+            var command = new CreatePositionCommand
+            {
+                IdChucVu = "CV02",
                 TenChucVu = "Dev",
                 MoTaCongViec = "Lập trình viên",
                 IdPhongBan = "PB01"

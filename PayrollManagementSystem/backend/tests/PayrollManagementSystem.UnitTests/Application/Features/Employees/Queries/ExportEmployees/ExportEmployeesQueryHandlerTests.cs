@@ -7,7 +7,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Employees.Queries.ExportEmployees
 {
@@ -21,7 +20,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Employees.Queri
         {
             _context = MockDbContextFactory.Create();
             _mockExcelService = new Mock<IExcelService>();
-            
+
             _mockExcelService.Setup(x => x.ExportEmployeesToExcel(It.IsAny<List<EmployeeDto>>()))
                 .Returns(new byte[] { 1, 2, 3 });
 

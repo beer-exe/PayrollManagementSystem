@@ -9,7 +9,6 @@ using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
 using System.Security.Claims;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Auth.Commands.RefreshToken
 {
@@ -52,7 +51,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Auth.Commands.R
 
             var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) };
             var principal = new ClaimsPrincipal(new ClaimsIdentity(claims));
-            
+
             _mockJwtTokenGenerator.Setup(x => x.GetPrincipalFromExpiredToken("old_access_token")).Returns(principal);
             _mockJwtTokenGenerator.Setup(x => x.GenerateAccessToken(It.IsAny<TaiKhoan>())).Returns("new_access_token");
             _mockJwtTokenGenerator.Setup(x => x.GenerateRefreshToken()).Returns("new_refresh_token");
@@ -73,7 +72,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Auth.Commands.R
         {
             // Arrange
             var command = new RefreshTokenCommand { AccessToken = "invalid_token", RefreshToken = "old_refresh_token" };
-            
+
             _mockJwtTokenGenerator.Setup(x => x.GetPrincipalFromExpiredToken("invalid_token"))
                                   .Throws(new SecurityTokenException("Invalid token"));
 
@@ -105,7 +104,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Auth.Commands.R
 
             var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) };
             var principal = new ClaimsPrincipal(new ClaimsIdentity(claims));
-            
+
             _mockJwtTokenGenerator.Setup(x => x.GetPrincipalFromExpiredToken("old_access_token")).Returns(principal);
 
             // Act

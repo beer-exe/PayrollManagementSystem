@@ -46,7 +46,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
             {
                 var possibleManagers = await _context.NhanViens
                     .Where(nv => nv.TrangThai == Domain.Enums.TrangThaiNhanVien.DANG_LAM_VIEC)
-                    .Select(nv => new 
+                    .Select(nv => new
                     {
                         nv.Cccd,
                         LatestQd = nv.QuyetDinhNhanSus

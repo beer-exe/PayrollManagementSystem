@@ -4,7 +4,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Queries.GetDonNghiList
 {
@@ -30,11 +29,12 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Queries
             // Arrange
             var pb = new PhongBan { IdPb = "PB1", TenPb = "Phòng 1" };
             var nv = new NhanVien { Cccd = "001", HoTen = "Test NV", IdPb = "PB1" };
-            var donNghi = new Domain.Models.DonNghi 
-            { 
-                Id = Guid.NewGuid(), 
-                CccdNhanVien = "001", 
-                TrangThai = TrangThaiDonNghi.CHO_DUYET, LyDo = "Test",
+            var donNghi = new Domain.Models.DonNghi
+            {
+                Id = Guid.NewGuid(),
+                CccdNhanVien = "001",
+                TrangThai = TrangThaiDonNghi.CHO_DUYET,
+                LyDo = "Test",
                 NgayBatDau = new DateOnly(2025, 5, 1),
                 NgayKetThuc = new DateOnly(2025, 5, 2)
             };

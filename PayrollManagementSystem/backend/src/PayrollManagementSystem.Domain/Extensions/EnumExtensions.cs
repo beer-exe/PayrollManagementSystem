@@ -11,7 +11,7 @@ namespace PayrollManagementSystem.Domain.Extensions
 
             FieldInfo field = value.GetType().GetField(value.ToString());
             if (field == null) return value.ToString();
-            
+
             DescriptionAttribute attribute = Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute)) as DescriptionAttribute;
             return attribute == null ? value.ToString() : attribute.Description;
         }

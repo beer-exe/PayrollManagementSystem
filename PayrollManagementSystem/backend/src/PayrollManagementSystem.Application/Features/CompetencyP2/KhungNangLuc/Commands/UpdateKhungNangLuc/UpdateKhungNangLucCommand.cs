@@ -1,8 +1,7 @@
 using MediatR;
-using PayrollManagementSystem.Application.Wrappers;
-using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Common.Constants;
-using System;
+using PayrollManagementSystem.Application.Common.Interfaces;
+using PayrollManagementSystem.Application.Wrappers;
 
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc.Commands.UpdateKhungNangLuc
 {
@@ -12,7 +11,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc
         public string TenNangLuc { get; set; } = null!;
         public string? MoTa { get; set; }
         public decimal TyTrong { get; set; }
-        
+
         public string CacheKeyPrefix => CacheKeyConstants.KhungNangLuc;
     }
 }

@@ -4,7 +4,6 @@ using PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc.Com
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.CompetencyP2.KhungNangLuc.Commands.DeleteKhungNangLuc
 {

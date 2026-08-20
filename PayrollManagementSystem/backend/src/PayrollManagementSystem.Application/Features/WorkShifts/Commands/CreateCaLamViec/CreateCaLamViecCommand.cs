@@ -2,8 +2,6 @@ using MediatR;
 using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
-using System;
-using System.Collections.Generic;
 
 namespace PayrollManagementSystem.Application.Features.WorkShifts.Commands.CreateCaLamViec
 {

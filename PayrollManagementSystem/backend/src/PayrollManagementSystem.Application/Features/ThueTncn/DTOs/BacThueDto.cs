@@ -1,5 +1,3 @@
-using System;
-
 namespace PayrollManagementSystem.Application.Features.ThueTncn.DTOs
 {
     public class BacThueDto

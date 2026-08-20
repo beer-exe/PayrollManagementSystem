@@ -1,11 +1,9 @@
-using PayrollManagementSystem.Application.Features.Kpi.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Common.Interfaces;
-using PayrollManagementSystem.Domain.Models;
-using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Application.Wrappers;
+using PayrollManagementSystem.Domain.Enums;
 
 namespace PayrollManagementSystem.Application.Features.Kpi.Commands.SubmitPhieuKpi
 {
@@ -30,7 +28,7 @@ namespace PayrollManagementSystem.Application.Features.Kpi.Commands.SubmitPhieuK
                 throw new ApiException("Phiếu KPI phải ở trạng thái Đang thực hiện mới có thể nộp.");
 
             phieu.TrangThai = TrangThaiPhieuKpi.CHO_PHE_DUYET;
-            
+
             await _context.SaveChangesAsync(cancellationToken);
 
             return new Response<Guid>(phieu.IdPhieuKpi, "Nộp phiếu KPI thành công.");

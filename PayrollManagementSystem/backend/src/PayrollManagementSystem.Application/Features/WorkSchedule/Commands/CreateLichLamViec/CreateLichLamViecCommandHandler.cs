@@ -34,10 +34,10 @@ namespace PayrollManagementSystem.Application.Features.WorkSchedule.Commands.Cre
                 defaultShift = await _context.CaLamViecs
                     .Include(c => c.KhungGioNghis)
                     .FirstOrDefaultAsync(c => c.Id == request.DefaultShiftId.Value, cancellationToken);
-                
+
                 if (defaultShift == null)
                     throw new ApiException("Không tìm thấy ca làm việc mặc định đã chọn.");
-                
+
                 defaultWorkingHours = defaultShift.CalculateWorkingHours();
             }
 

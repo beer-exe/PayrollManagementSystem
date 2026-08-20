@@ -1,10 +1,8 @@
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Features.WorkShifts.Commands.CreateCaLamViec;
-using PayrollManagementSystem.Application.Features.WorkShifts.DTOs;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
-using Microsoft.EntityFrameworkCore;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.WorkShifts.Commands.CreateCaLamViec
 {

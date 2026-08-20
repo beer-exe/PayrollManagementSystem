@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Extensions;
 
@@ -23,7 +21,7 @@ namespace PayrollManagementSystem.Application.Features.Profile.DTOs
         public string? SoBhyt { get; set; }
         public string? TenPhongBan { get; set; }
         public string? TenChucVu { get; set; }
-        
+
         public string? SoTaiKhoan { get; set; }
         public string? TenNganHang { get; set; }
         public string? MaSoThue { get; set; }
@@ -32,7 +30,7 @@ namespace PayrollManagementSystem.Application.Features.Profile.DTOs
         public string? SoHopDong { get; set; }
         public string? LoaiHopDong { get; set; }
         public DateOnly? NgayBatDauHopDong { get; set; }
-        
+
         public List<ProfileThanNhanDto> ThanNhans { get; set; } = new List<ProfileThanNhanDto>();
         public List<LichSuCongTacDto> LichSuCongTac { get; set; } = new List<LichSuCongTacDto>();
         public string? IdPb { get; set; }

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace PayrollManagementSystem.Application.Features.ChamCong.DTOs
 {
     public class ImportChamCongResultDto

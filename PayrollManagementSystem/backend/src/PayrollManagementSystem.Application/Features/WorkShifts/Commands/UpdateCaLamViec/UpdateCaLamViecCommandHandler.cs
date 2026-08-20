@@ -35,7 +35,7 @@ namespace PayrollManagementSystem.Application.Features.WorkShifts.Commands.Updat
 
             if (isUsedInPast)
             {
-                bool isCoreModified = 
+                bool isCoreModified =
                     caLamViec.GioBatDau != TimeSpan.Parse(request.GioBatDau) ||
                     caLamViec.GioKetThuc != TimeSpan.Parse(request.GioKetThuc) ||
                     caLamViec.XuyenNgay != request.XuyenNgay ||
@@ -51,13 +51,13 @@ namespace PayrollManagementSystem.Application.Features.WorkShifts.Commands.Updat
                     {
                         foreach (var kgn in request.KhungGioNghis)
                         {
-                            if (!kgn.Id.HasValue) 
+                            if (!kgn.Id.HasValue)
                             {
                                 isCoreModified = true;
                                 break;
                             }
                             var existing = caLamViec.KhungGioNghis.FirstOrDefault(k => k.Id == kgn.Id.Value && !k.IsDeleted);
-                            if (existing == null || 
+                            if (existing == null ||
                                 existing.GioBatDau != TimeSpan.Parse(kgn.GioBatDau) ||
                                 existing.GioKetThuc != TimeSpan.Parse(kgn.GioKetThuc) ||
                                 existing.TinhVaoGioLam != kgn.TinhVaoGioLam)
@@ -85,7 +85,7 @@ namespace PayrollManagementSystem.Application.Features.WorkShifts.Commands.Updat
 
             var newBreakIds = request.KhungGioNghis.Where(k => k.Id.HasValue).Select(k => k.Id.Value).ToList();
             var breaksToRemove = caLamViec.KhungGioNghis.Where(k => !newBreakIds.Contains(k.Id)).ToList();
-            
+
             foreach (var b in breaksToRemove)
             {
                 b.IsDeleted = true;
@@ -118,10 +118,10 @@ namespace PayrollManagementSystem.Application.Features.WorkShifts.Commands.Updat
 
             // Recalculate working hours for future schedules using this shift
             decimal newHours = caLamViec.CalculateWorkingHours();
-            
+
             var futureDetails = await _context.ChiTietLichLamViecs
-                .Where(c => c.IdCaLamViecMacDinh == caLamViec.Id 
-                         && c.Ngay >= DateOnly.FromDateTime(DateTime.Now) 
+                .Where(c => c.IdCaLamViecMacDinh == caLamViec.Id
+                         && c.Ngay >= DateOnly.FromDateTime(DateTime.Now)
                          && !c.IsDeleted)
                 .ToListAsync(cancellationToken);
 

@@ -1,13 +1,13 @@
-using Microsoft.AspNetCore.Mvc;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Commands.GenerateMyPhieuDanhGia;
+using PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Commands.SubmitManagerEvaluation;
+using PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Commands.SubmitTuDanhGia;
+using PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Queries.GetManagerEvaluations;
 using PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Queries.GetMyPhieuDanhGias;
 using PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Queries.GetPhieuDanhGiaById;
-using PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Commands.GenerateMyPhieuDanhGia;
-using PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Commands.SubmitTuDanhGia;
-using PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Commands.SubmitManagerEvaluation;
-using PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Queries.GetManagerEvaluations;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 
 namespace PayrollManagementSystem.API.Controllers
 {
@@ -35,8 +35,8 @@ namespace PayrollManagementSystem.API.Controllers
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out Guid userId)) return Unauthorized();
 
-            var query = new GetPhieuDanhGiaByIdQuery 
-            { 
+            var query = new GetPhieuDanhGiaByIdQuery
+            {
                 IdPhieu = id,
                 TaiKhoanId = userId,
                 IsHr = User.IsInRole("HR")
@@ -49,7 +49,7 @@ namespace PayrollManagementSystem.API.Controllers
         {
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out Guid userId)) return Unauthorized();
-            
+
             command.TaiKhoanId = userId;
             return Ok(await _mediator.Send(command));
         }
@@ -66,8 +66,8 @@ namespace PayrollManagementSystem.API.Controllers
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out Guid userId)) return Unauthorized();
 
-            var query = new GetManagerEvaluationsQuery 
-            { 
+            var query = new GetManagerEvaluationsQuery
+            {
                 TaiKhoanId = userId,
                 IsHr = User.IsInRole("HR")
             };

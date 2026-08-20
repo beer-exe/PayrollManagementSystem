@@ -44,7 +44,7 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.CreateDo
             else
             {
                 maxSoNgay = chiTietLich.Count(c => c.LoaiNgay == LoaiNgay.NGAY_LAM_VIEC);
-                
+
                 // Fallback in case HR hasn't created the schedule yet
                 if (chiTietLich.Count == 0)
                 {

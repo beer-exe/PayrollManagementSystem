@@ -2,9 +2,9 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Common.Interfaces;
+using PayrollManagementSystem.Application.Features.Payroll.Commands.CalculatePayroll;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Enums;
-using PayrollManagementSystem.Application.Features.Payroll.Commands.CalculatePayroll;
 
 namespace PayrollManagementSystem.Application.Features.Payroll.Commands.ResolveReviewBangLuong
 {
@@ -40,7 +40,7 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.ResolveR
                 bangLuong.TrangThai = TrangThaiBangLuong.DA_XAC_NHAN;
                 bangLuong.PhanHoiKhieuNai = request.PhanHoiKhieuNai;
                 await _context.SaveChangesAsync(cancellationToken);
-                
+
                 return new Response<bool>(true, "Đã từ chối khiếu nại và chuyển bảng lương sang trạng thái Đã xác nhận.");
             }
             else if (request.Action == "RECALCULATE")
@@ -58,7 +58,7 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.ResolveR
                     Thang = bangLuong.Thang,
                     Nam = bangLuong.Nam
                 };
-                
+
                 // Gửi command để chạy lại (Chú ý: vì CalculatePayrollCommand cũng là Transactional,
                 // việc gọi sender.Send ở đây sẽ chạy trong một pipeline mới, nên ta lưu thay đổi trước).
                 await _sender.Send(calcCommand, cancellationToken);

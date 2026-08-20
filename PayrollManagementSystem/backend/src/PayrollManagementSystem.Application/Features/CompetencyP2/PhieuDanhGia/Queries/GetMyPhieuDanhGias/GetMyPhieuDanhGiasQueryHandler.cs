@@ -1,9 +1,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
-using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.DTOs;
-using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Extensions;
 
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Queries.GetMyPhieuDanhGias
@@ -22,7 +21,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
                 .AsNoTracking()
                 .Include(x => x.KyDanhGia)
                 .Where(x => x.CccdNhanVien == nhanVien.Cccd)
-                .Select(x => new 
+                .Select(x => new
                 {
                     IdPhieu = x.IdPhieu,
                     IdKyDanhGia = x.IdKyDanhGia,

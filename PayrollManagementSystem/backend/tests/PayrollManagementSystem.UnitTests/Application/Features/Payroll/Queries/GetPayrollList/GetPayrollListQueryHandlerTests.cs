@@ -4,7 +4,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Payroll.Queries.GetPayrollList
 {
@@ -62,7 +61,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Payroll.Queries
                 IdChucVuMoi = "CV01"
             };
             _context.QuyetDinhNhanSus.Add(quyetDinh);
-            
+
             await _context.SaveChangesAsync();
 
             var query = new GetPayrollListQuery { Thang = 6, Nam = 2026 };
@@ -73,7 +72,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Payroll.Queries
             // Assert
             result.Succeeded.Should().BeTrue();
             result.Data.Should().HaveCount(1);
-            
+
             var dto = result.Data.First();
             dto.CccdNhanVien.Should().Be("001");
             dto.TenNhanVien.Should().Be("Nguyen Van A");

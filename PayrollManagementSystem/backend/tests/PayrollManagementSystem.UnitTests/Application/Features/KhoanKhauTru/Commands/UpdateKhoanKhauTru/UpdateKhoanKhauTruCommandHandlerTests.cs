@@ -2,10 +2,8 @@ using FluentAssertions;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Features.KhoanKhauTru.Commands.UpdateKhoanKhauTru;
 using PayrollManagementSystem.Domain.Enums;
-using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.KhoanKhauTru.Commands.UpdateKhoanKhauTru
 {

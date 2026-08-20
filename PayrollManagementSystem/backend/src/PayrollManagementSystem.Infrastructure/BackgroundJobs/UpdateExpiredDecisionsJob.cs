@@ -28,7 +28,7 @@ namespace PayrollManagementSystem.Infrastructure.BackgroundJobs
                     using (var scope = _serviceProvider.CreateScope())
                     {
                         var sender = scope.ServiceProvider.GetRequiredService<ISender>();
-                        
+
                         _logger.LogInformation("UpdateExpiredDecisionsJob is running to expire past decisions.");
                         await sender.Send(new ExpirePastDecisionsCommand(), stoppingToken);
                     }
@@ -42,7 +42,7 @@ namespace PayrollManagementSystem.Infrastructure.BackgroundJobs
                 var now = DateTime.Now;
                 var nextMidnight = now.Date.AddDays(1);
                 var delay = nextMidnight - now;
-                
+
                 _logger.LogInformation($"UpdateExpiredDecisionsJob is sleeping for {delay.TotalHours:F2} hours until next run.");
 
                 // For testing/development, this delay could be shortened, 

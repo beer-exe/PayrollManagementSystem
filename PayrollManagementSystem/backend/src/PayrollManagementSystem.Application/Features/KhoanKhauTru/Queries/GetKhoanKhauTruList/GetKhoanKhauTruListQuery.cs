@@ -1,7 +1,7 @@
 using MediatR;
 using PayrollManagementSystem.Application.Common.Interfaces;
-using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Application.Features.KhoanKhauTru.DTOs;
+using PayrollManagementSystem.Application.Wrappers;
 
 namespace PayrollManagementSystem.Application.Features.KhoanKhauTru.Queries.GetKhoanKhauTruList
 {

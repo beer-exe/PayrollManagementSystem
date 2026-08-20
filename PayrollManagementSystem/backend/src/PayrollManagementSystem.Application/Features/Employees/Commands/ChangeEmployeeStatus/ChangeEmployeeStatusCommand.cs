@@ -1,9 +1,8 @@
 using MediatR;
-using PayrollManagementSystem.Application.Wrappers;
-using PayrollManagementSystem.Domain.Enums;
-
 using PayrollManagementSystem.Application.Common.Constants;
 using PayrollManagementSystem.Application.Common.Interfaces;
+using PayrollManagementSystem.Application.Wrappers;
+using PayrollManagementSystem.Domain.Enums;
 
 namespace PayrollManagementSystem.Application.Features.Employees.Commands.ChangeEmployeeStatus
 {

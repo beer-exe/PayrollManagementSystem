@@ -9,7 +9,7 @@ namespace PayrollManagementSystem.Domain.Models
         public int Thang { get; set; }
         public int Nam { get; set; }
         public TrangThaiKyChamCong TrangThai { get; set; } = TrangThaiKyChamCong.DANG_MO;
-        
+
         public ICollection<ChamCong> ChamCongs { get; set; } = new List<ChamCong>();
     }
 }

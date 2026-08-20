@@ -4,7 +4,6 @@ using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.SystemManagement.DTOs;
 using PayrollManagementSystem.Application.Features.SystemManagement.Queries.GetSystemLogs;
 using PayrollManagementSystem.Application.Wrappers;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.SystemManagement.Queries.GetSystemLogs
 {

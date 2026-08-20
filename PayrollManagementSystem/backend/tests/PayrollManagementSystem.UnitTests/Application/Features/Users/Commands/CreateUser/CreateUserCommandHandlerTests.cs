@@ -7,7 +7,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Users.Commands.CreateUser
 {
@@ -140,7 +139,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Users.Commands.
             savedUser!.TenTaiKhoan.Should().Be("newuser");
             savedUser.MatKhauHash.Should().Be("hashed_123");
             savedUser.IdVaiTro.Should().Be(roleId);
-            
+
             var savedNv = await _context.NhanViens.FindAsync("123");
             savedNv!.IdTaiKhoan.Should().Be(result.Data);
         }

@@ -3,9 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
-using PayrollManagementSystem.Domain.Extensions;
 using PayrollManagementSystem.Domain.Enums;
-using PayrollManagementSystem.Domain.Models;
+using PayrollManagementSystem.Domain.Extensions;
 
 namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.CreateChamCong
 {

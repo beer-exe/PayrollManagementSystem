@@ -1,5 +1,3 @@
-using System;
-
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.DTOs
 {
     public class ChiTietDanhGiaDto

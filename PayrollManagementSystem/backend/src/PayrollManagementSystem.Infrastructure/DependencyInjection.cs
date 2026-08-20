@@ -17,7 +17,8 @@ namespace PayrollManagementSystem.Infrastructure
         {
             services.AddScoped<Microsoft.EntityFrameworkCore.Diagnostics.ISaveChangesInterceptor, PayrollManagementSystem.Infrastructure.Persistence.Interceptors.AuditableEntitySaveChangesInterceptor>();
 
-            services.AddDbContext<ApplicationDbContext>((sp, options) => {
+            services.AddDbContext<ApplicationDbContext>((sp, options) =>
+            {
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
                        .UseSnakeCaseNamingConvention();
                 options.AddInterceptors(sp.GetServices<Microsoft.EntityFrameworkCore.Diagnostics.ISaveChangesInterceptor>());

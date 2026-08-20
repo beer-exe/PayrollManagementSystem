@@ -1,5 +1,5 @@
-using System.Security.Claims;
 using Serilog.Context;
+using System.Security.Claims;
 
 namespace PayrollManagementSystem.API.Middlewares
 {

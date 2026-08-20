@@ -5,7 +5,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.SalarySteps.Commands.UpdateSalaryStepVersion
 {
@@ -94,7 +93,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.SalarySteps.Com
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Succeeded.Should().BeTrue();
-            
+
             // Assert old is inactive
             currentStep.TrangThai.Should().Be(TrangThaiBacLuong.HET_HIEU_LUC);
             currentStep.NgayKetThuc.Should().Be(DateOnly.FromDateTime(newDate.AddDays(-1)));

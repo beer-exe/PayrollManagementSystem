@@ -33,14 +33,14 @@ namespace PayrollManagementSystem.Application.Features.WorkShifts.Commands.Delet
             {
                 //throw new ApiException("Không thể xoá ca làm việc đã được gán vào lịch làm việc hoặc phân công ca. Vui lòng chọn 'Chỉnh sửa' và tắt Trạng thái (Vô hiệu hoá) thay vì xoá.");
                 throw new ApiException("Không thể xoá ca làm việc đã được gán vào lịch làm việc hoặc phân công ca.");
-            }            
+            }
 
             // Using soft delete as per AGENTS.md rules
             _context.SoftRemove(caLamViec);
 
             if (caLamViec.KhungGioNghis.Any())
             {
-                 _context.SoftRemoveRange(caLamViec.KhungGioNghis);
+                _context.SoftRemoveRange(caLamViec.KhungGioNghis);
             }
 
             await _context.SaveChangesAsync(cancellationToken);

@@ -1,4 +1,3 @@
-using PayrollManagementSystem.Application.Features.Kpi.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Exceptions;
@@ -55,7 +54,7 @@ namespace PayrollManagementSystem.Application.Features.Kpi.Commands.SaveChiTietK
                         }
 
                         var diemKpi = tiLe * existing.TrongSo / 100m;
-                        
+
                         tongDiem += diemKpi;
 
                         existing.ThucTe = item.ThucTe;

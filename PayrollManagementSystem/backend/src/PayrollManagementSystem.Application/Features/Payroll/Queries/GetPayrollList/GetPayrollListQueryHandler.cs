@@ -1,7 +1,7 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
-using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Domain.Extensions;
 
 namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetPayrollList
@@ -31,14 +31,14 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetPayrol
             var quyetDinhs = await _context.QuyetDinhNhanSus
                 .Include(x => x.ChucVuMoi)
                     .ThenInclude(cv => cv.PhongBan)
-                .Where(x => cccdList.Contains(x.Cccd) 
+                .Where(x => cccdList.Contains(x.Cccd)
                          && x.TrangThai != Domain.Enums.TrangThaiQuyetDinh.HUY_BO)
                 .ToListAsync(cancellationToken);
 
-            var result = bangLuongs.Select(bl => 
+            var result = bangLuongs.Select(bl =>
             {
                 var qd = quyetDinhs
-                    .Where(x => x.Cccd == bl.CccdNhanVien 
+                    .Where(x => x.Cccd == bl.CccdNhanVien
                              && x.NgayHieuLuc <= endOfMonth
                              && (x.NgayHetHan == null || x.NgayHetHan >= startOfMonth))
                     .OrderByDescending(x => x.NgayHieuLuc)

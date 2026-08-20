@@ -4,7 +4,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
 using System.Text;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.ChamCong.Commands.GenerateMockChamCong
 {
@@ -42,7 +41,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.ChamCong.Comman
             result.FileName.Should().Be("Mock_ChamCong_01_2025.csv");
             result.ContentType.Should().Be("text/csv");
             result.Data.Should().NotBeNullOrEmpty();
-            
+
             // Validate preamble and content
             var preamble = Encoding.UTF8.GetPreamble();
             var dataWithoutPreamble = new byte[result.Data.Length - preamble.Length];

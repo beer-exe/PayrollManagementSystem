@@ -1,10 +1,9 @@
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Features.CompetencyP2.KyDanhGia.Commands.DeleteKyDanhGia;
 using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
-using Microsoft.EntityFrameworkCore;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.CompetencyP2.KyDanhGia.Commands.DeleteKyDanhGia
 {
@@ -40,7 +39,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.CompetencyP2.Ky
             // Assert
             result.Succeeded.Should().BeTrue();
             result.Data.Should().BeTrue();
-            
+
             var entityInDb = await _context.KyDanhGias.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.IdKyDanhGia == entity.IdKyDanhGia);
             entityInDb.Should().NotBeNull();
             entityInDb!.IsDeleted.Should().BeTrue();

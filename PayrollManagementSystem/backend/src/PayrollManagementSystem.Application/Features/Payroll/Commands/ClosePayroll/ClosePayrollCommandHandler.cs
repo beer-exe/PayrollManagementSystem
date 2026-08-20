@@ -49,7 +49,7 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.ClosePay
             var unconfirmedBangLuongs = await _context.BangLuongs
                 .Where(x => x.IdKyLuong == kyLuong.IdKyLuong && x.TrangThai != TrangThaiBangLuong.DA_XAC_NHAN)
                 .ToListAsync(cancellationToken);
-            
+
             if (unconfirmedBangLuongs.Any())
             {
                 // Kiểm tra xem có bảng lương nào đang YEU_CAU_XEM_XET không
@@ -61,7 +61,7 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.ClosePay
 
                 var now = DateTimeOffset.UtcNow;
                 var notExpiredCount = unconfirmedBangLuongs.Count(x => (now - (x.UpdatedAt ?? x.CreatedAt)).TotalDays <= 3);
-                
+
                 if (notExpiredCount > 0)
                 {
                     throw new ApiException($"Không thể chốt kỳ lương vì có {notExpiredCount} phiếu lương chưa được nhân viên xác nhận và chưa quá hạn 3 ngày chờ!");
@@ -71,11 +71,11 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Commands.ClosePay
                 foreach (var bl in unconfirmedBangLuongs)
                 {
                     bl.TrangThai = TrangThaiBangLuong.DA_XAC_NHAN;
-                    bl.GhiChu = string.IsNullOrEmpty(bl.GhiChu) 
-                        ? "Tự động xác nhận do quá hạn 3 ngày" 
+                    bl.GhiChu = string.IsNullOrEmpty(bl.GhiChu)
+                        ? "Tự động xác nhận do quá hạn 3 ngày"
                         : bl.GhiChu + " (Tự động xác nhận do quá hạn 3 ngày)";
                 }
-                
+
                 _context.BangLuongs.UpdateRange(unconfirmedBangLuongs);
             }
 

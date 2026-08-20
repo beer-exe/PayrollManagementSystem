@@ -3,7 +3,6 @@ using PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc.Que
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.CompetencyP2.KhungNangLuc.Queries.GetKhungNangLucs
 {

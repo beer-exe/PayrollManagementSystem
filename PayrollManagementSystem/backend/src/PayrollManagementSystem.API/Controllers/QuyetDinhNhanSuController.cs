@@ -1,9 +1,8 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PayrollManagementSystem.Application.Features.HrDecisions.Queries.GetNextDecisionCode;
-using Microsoft.AspNetCore.Authorization;
 using PayrollManagementSystem.Application.Wrappers;
-using System.Threading.Tasks;
 
 namespace PayrollManagementSystem.API.Controllers
 {

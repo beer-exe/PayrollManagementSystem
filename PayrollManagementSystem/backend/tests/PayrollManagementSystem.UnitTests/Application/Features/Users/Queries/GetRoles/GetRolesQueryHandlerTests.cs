@@ -3,7 +3,6 @@ using PayrollManagementSystem.Application.Features.Users.Queries.GetRoles;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Users.Queries.GetRoles
 {

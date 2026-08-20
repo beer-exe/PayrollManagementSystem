@@ -1,11 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Domain.Enums;
-using PayrollManagementSystem.Domain.Models;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PayrollManagementSystem.Infrastructure.Services
 {
@@ -55,7 +50,7 @@ namespace PayrollManagementSystem.Infrastructure.Services
                 // Fallback lịch làm việc mặc định
                 var chiTietLich = await _context.ChiTietLichLamViecs
                     .FirstOrDefaultAsync(ct => ct.Ngay == ngayChamCong, cancellationToken);
-                    
+
                 if (chiTietLich?.LoaiNgay == LoaiNgay.NGHI_LE)
                 {
                     return new TimekeepingResult { SoGioLamThucTe = 0, SoNgayCong = 0, LoaiNgayCong = LoaiNgayCong.NGHI_LE };
@@ -64,7 +59,7 @@ namespace PayrollManagementSystem.Infrastructure.Services
                 {
                     return new TimekeepingResult { SoGioLamThucTe = 0, SoNgayCong = 0, LoaiNgayCong = LoaiNgayCong.NGHI_CUOI_TUAN };
                 }
-                
+
                 idCaLamViecToUse = chiTietLich?.IdCaLamViecMacDinh;
             }
 
@@ -114,11 +109,11 @@ namespace PayrollManagementSystem.Infrastructure.Services
             {
                 actualEnd = actualEnd.Add(TimeSpan.FromDays(1));
             }
-            
+
             // Xử lý giờ ra bé hơn giờ vào (điều chỉnh thủ công bị lỗi, hoặc night shift k khớp)
             if (actualEnd < actualStart)
             {
-                 actualEnd = actualEnd.Add(TimeSpan.FromDays(1));
+                actualEnd = actualEnd.Add(TimeSpan.FromDays(1));
             }
 
             // Tính phút đi trễ, về sớm
@@ -127,7 +122,7 @@ namespace PayrollManagementSystem.Infrastructure.Services
             {
                 lateMinutes = (int)(actualStart - shiftStart).TotalMinutes;
             }
-            
+
             int earlyMinutes = 0;
             if (actualEnd < shiftEnd)
             {
@@ -160,7 +155,7 @@ namespace PayrollManagementSystem.Infrastructure.Services
                 {
                     var breakStart = breakTime.GioBatDau;
                     var breakEnd = breakTime.GioKetThuc;
-                    
+
                     if (breakEnd < breakStart) breakEnd = breakEnd.Add(TimeSpan.FromDays(1));
                     if (isNightShift && breakStart < TimeSpan.FromHours(12)) breakStart = breakStart.Add(TimeSpan.FromDays(1));
                     if (isNightShift && breakEnd < TimeSpan.FromHours(12)) breakEnd = breakEnd.Add(TimeSpan.FromDays(1));

@@ -2,12 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.GenerateMockChamCong
 {
@@ -118,7 +113,7 @@ namespace PayrollManagementSystem.Application.Features.ChamCong.Commands.Generat
                     {
                         TimeSpan shiftStart = expectedCa.GioBatDau;
                         TimeSpan shiftEnd = expectedCa.GioKetThuc;
-                        
+
                         // Night shift end time logic just for calculation
                         if (expectedCa.XuyenNgay || shiftEnd < shiftStart)
                         {

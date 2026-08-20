@@ -1,11 +1,9 @@
 using FluentAssertions;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Features.Employees.Commands.UpdateEmployee;
-using PayrollManagementSystem.Application.Features.Employees.DTOs;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Employees.Commands.UpdateEmployee
 {
@@ -66,7 +64,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Employees.Comma
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Succeeded.Should().BeTrue();
-            
+
             var nv = await _context.NhanViens.FindAsync("001");
             nv!.HoTen.Should().Be("New Name");
         }
@@ -83,9 +81,9 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Employees.Comma
             _context.TNhanNviens.Add(new ThanNhanNhanVien { Cccd = "001", MaDinhDanh = "TN1", IdMqh = guid1 });
             await _context.SaveChangesAsync();
 
-            var command = new UpdateEmployeeCommand 
-            { 
-                Cccd = "001", 
+            var command = new UpdateEmployeeCommand
+            {
+                Cccd = "001",
                 HoTen = "Test",
                 ThanNhans = new List<UpdateThanNhanDto>
                 {
@@ -93,7 +91,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Employees.Comma
                     new UpdateThanNhanDto { TenTn = "New TN", IdMqh = guid3 } // Add new
                 }
             };
-            
+
             var result = await _handler.Handle(command, CancellationToken.None);
             result.Succeeded.Should().BeTrue();
 

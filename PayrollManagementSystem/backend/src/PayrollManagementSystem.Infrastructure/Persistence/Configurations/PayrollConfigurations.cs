@@ -9,7 +9,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<KyLuong> builder)
         {
             builder.HasKey(e => e.IdKyLuong);
-            
+
             builder.Property(e => e.TenKyLuong).HasMaxLength(150);
             builder.Property(e => e.TrangThai).HasConversion<string>().HasMaxLength(50);
 
@@ -24,7 +24,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<BangLuong> builder)
         {
             builder.HasKey(e => e.IdBangLuong);
-            
+
             builder.Property(e => e.CccdNhanVien).IsRequired().HasMaxLength(20);
             builder.Property(e => e.P1).HasPrecision(18, 2);
             builder.Property(e => e.HeSoP2).HasPrecision(5, 2);
@@ -68,7 +68,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<KhoanKhauTru> builder)
         {
             builder.HasKey(e => e.IdKhoanKhauTru);
-            
+
             builder.Property(e => e.TenKhoanKhauTru).IsRequired().HasMaxLength(200);
             builder.Property(e => e.LoaiCongThuc).HasConversion<string>().HasMaxLength(50);
             builder.Property(e => e.GiaTri).HasPrecision(18, 4);
@@ -87,7 +87,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<BacThue> builder)
         {
             builder.HasKey(e => e.IdBacThue);
-            
+
             builder.Property(e => e.TuGia).HasPrecision(18, 2);
             builder.Property(e => e.DenGia).HasPrecision(18, 2);
             builder.Property(e => e.ThueSuat).HasPrecision(5, 2);
@@ -101,7 +101,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<CauHinhGiamTru> builder)
         {
             builder.HasKey(e => e.IdCauHinhGiamTru);
-            
+
             builder.Property(e => e.GiamTruBanThan).HasPrecision(18, 2);
             builder.Property(e => e.GiamTruNguoiPhuThuoc).HasPrecision(18, 2);
             builder.Property(e => e.IsActive).HasDefaultValue(true);

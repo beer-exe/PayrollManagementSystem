@@ -48,7 +48,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<CaLamViec> builder)
         {
             builder.HasKey(e => e.Id);
-            
+
             builder.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
             builder.Property(e => e.TenCa).IsRequired().HasMaxLength(150);
             builder.Property(e => e.XuyenNgay).HasDefaultValue(false);
@@ -62,7 +62,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<KhungGioNghi> builder)
         {
             builder.HasKey(e => e.Id);
-            
+
             builder.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
             builder.Property(e => e.TenKhoangNghi).IsRequired().HasMaxLength(150);
             builder.Property(e => e.TinhVaoGioLam).HasDefaultValue(false);
@@ -79,7 +79,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<PhanCongCa> builder)
         {
             builder.HasKey(e => e.IdPhanCong);
-            
+
             builder.Property(e => e.CccdNhanVien).IsRequired().HasMaxLength(20);
             builder.Property(e => e.GhiChu).HasMaxLength(255);
 
@@ -160,7 +160,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<NgayPhepNhanVien> builder)
         {
             builder.HasKey(e => e.Id);
-            
+
             builder.Property(e => e.CccdNhanVien).IsRequired().HasMaxLength(20);
             builder.Property(e => e.TongNgayPhep).HasPrecision(5, 1).HasDefaultValue(12m);
             builder.Property(e => e.DaSuDung).HasPrecision(5, 1).HasDefaultValue(0m);

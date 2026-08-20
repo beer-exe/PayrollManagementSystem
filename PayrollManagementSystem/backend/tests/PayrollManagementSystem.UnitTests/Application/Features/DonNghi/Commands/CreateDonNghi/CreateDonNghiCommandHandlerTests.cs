@@ -5,7 +5,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Commands.CreateDonNghi
 {
@@ -47,13 +46,13 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Command
             _context.NhanViens.Add(new NhanVien { Cccd = "001", HoTen = "Test NV" });
             await _context.SaveChangesAsync();
 
-            var command = new CreateDonNghiCommand 
-            { 
-                LoaiNghi = "NGHI_PHEP_NAM", 
-                CccdNhanVien = "001", 
-                NgayBatDau = new DateOnly(2025, 1, 1), 
-                NgayKetThuc = new DateOnly(2025, 1, 2), 
-                SoNgayNghi = 2 
+            var command = new CreateDonNghiCommand
+            {
+                LoaiNghi = "NGHI_PHEP_NAM",
+                CccdNhanVien = "001",
+                NgayBatDau = new DateOnly(2025, 1, 1),
+                NgayKetThuc = new DateOnly(2025, 1, 2),
+                SoNgayNghi = 2
             };
 
             var exception = await Assert.ThrowsAsync<ApiException>(() => _handler.Handle(command, CancellationToken.None));
@@ -70,12 +69,12 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Command
             _context.ChiTietLichLamViecs.Add(new ChiTietLichLamViec { IdLich = lichId, Ngay = new DateOnly(2025, 1, 1), Thu = "T4", LoaiNgay = LoaiNgay.NGAY_LAM_VIEC });
             await _context.SaveChangesAsync();
 
-            var command = new CreateDonNghiCommand 
-            { 
-                LoaiNghi = "NGHI_PHEP_NAM", 
-                CccdNhanVien = "001", 
-                NgayBatDau = new DateOnly(2025, 1, 1), 
-                NgayKetThuc = new DateOnly(2025, 1, 1), 
+            var command = new CreateDonNghiCommand
+            {
+                LoaiNghi = "NGHI_PHEP_NAM",
+                CccdNhanVien = "001",
+                NgayBatDau = new DateOnly(2025, 1, 1),
+                NgayKetThuc = new DateOnly(2025, 1, 1),
                 SoNgayNghi = 1,
                 LyDo = "Test"
             };
@@ -85,7 +84,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Command
 
             // Assert
             result.Succeeded.Should().BeTrue();
-            
+
             var donNghi = await _context.DonNghis.FindAsync(result.Data);
             donNghi.Should().NotBeNull();
             donNghi!.TrangThai.Should().Be(TrangThaiDonNghi.CHO_DUYET);

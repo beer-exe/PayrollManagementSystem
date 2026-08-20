@@ -85,10 +85,10 @@ namespace PayrollManagementSystem.Infrastructure.Services
             {
                 currentRow++;
                 worksheet.Cell(currentRow, 1).Value = log.Id;
-                
+
                 var localTime = TimeZoneInfo.ConvertTimeFromUtc(log.RaiseDate, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
                 worksheet.Cell(currentRow, 2).Value = localTime.ToString("yyyy-MM-dd HH:mm:ss");
-                
+
                 worksheet.Cell(currentRow, 3).Value = log.Level;
                 worksheet.Cell(currentRow, 4).Value = log.Message;
                 worksheet.Cell(currentRow, 5).Value = log.Properties;

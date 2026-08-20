@@ -46,7 +46,7 @@ namespace PayrollManagementSystem.Application.Features.KyChamCong.Commands.MoCho
             // Mở chốt
             kyChamCong.TrangThai = TrangThaiKyChamCong.DANG_MO;
             _context.KyChamCongs.Update(kyChamCong);
-            
+
             // Unlink all ChamCong records for this month
             var chamCongs = await _context.ChamCongs
                 .Where(x => x.IdKyChamCong == kyChamCong.Id)

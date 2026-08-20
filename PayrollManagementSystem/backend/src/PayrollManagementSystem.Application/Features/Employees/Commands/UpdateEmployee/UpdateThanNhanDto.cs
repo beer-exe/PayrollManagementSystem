@@ -1,5 +1,3 @@
-using System;
-
 namespace PayrollManagementSystem.Application.Features.Employees.Commands.UpdateEmployee
 {
     public class UpdateThanNhanDto

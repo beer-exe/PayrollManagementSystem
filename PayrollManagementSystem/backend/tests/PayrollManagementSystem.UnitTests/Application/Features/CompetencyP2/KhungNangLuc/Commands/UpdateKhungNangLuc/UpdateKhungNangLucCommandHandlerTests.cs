@@ -3,7 +3,6 @@ using PayrollManagementSystem.Application.Features.CompetencyP2.KhungNangLuc.Com
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.CompetencyP2.KhungNangLuc.Commands.UpdateKhungNangLuc
 {
@@ -31,8 +30,8 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.CompetencyP2.Kh
             _context.KhungNangLucP2s.Add(entity);
             await _context.SaveChangesAsync();
 
-            var command = new UpdateKhungNangLucCommand 
-            { 
+            var command = new UpdateKhungNangLucCommand
+            {
                 IdTieuChi = entity.IdTieuChi,
                 TenNangLuc = "Updated",
                 MoTa = "Updated Desc",

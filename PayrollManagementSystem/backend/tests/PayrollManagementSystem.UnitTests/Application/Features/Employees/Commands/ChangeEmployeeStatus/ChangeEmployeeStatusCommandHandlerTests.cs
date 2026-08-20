@@ -5,7 +5,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Employees.Commands.ChangeEmployeeStatus
 {
@@ -52,9 +51,9 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Employees.Comma
             _context.NhanViens.Add(new NhanVien { Cccd = "001", HoTen = "Test", TrangThai = TrangThaiNhanVien.DANG_LAM_VIEC });
             await _context.SaveChangesAsync();
 
-            var command = new ChangeEmployeeStatusCommand 
-            { 
-                Cccd = "001", 
+            var command = new ChangeEmployeeStatusCommand
+            {
+                Cccd = "001",
                 TrangThaiMoi = TrangThaiNhanVien.DA_NGHI_VIEC,
                 LyDo = "Nghỉ hưu",
                 NguoiThayDoi = "Admin"
@@ -63,7 +62,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Employees.Comma
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Succeeded.Should().BeTrue();
-            
+
             var nv = await _context.NhanViens.FindAsync("001");
             nv!.TrangThai.Should().Be(TrangThaiNhanVien.DA_NGHI_VIEC);
             nv.NgayNghiViec.Should().NotBeNull();

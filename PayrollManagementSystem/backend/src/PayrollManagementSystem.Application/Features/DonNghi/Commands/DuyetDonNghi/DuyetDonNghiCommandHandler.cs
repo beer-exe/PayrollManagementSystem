@@ -39,7 +39,7 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DuyetDon
             }
 
             donNghi.TrangThai = TrangThaiDonNghi.DA_DUYET;
-            
+
             if (Guid.TryParse(request.CccdNguoiDuyet, out var userId))
             {
                 var nguoiDuyetAccount = await _context.TaiKhoans.Include(t => t.NhanVien).FirstOrDefaultAsync(t => t.IdTaiKhoan == userId, cancellationToken);
@@ -67,8 +67,8 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DuyetDon
             var phanCongCas = await _context.PhanCongCas
                 .Include(p => p.CaLamViec)
                     .ThenInclude(c => c.KhungGioNghis)
-                .Where(p => p.CccdNhanVien == donNghi.CccdNhanVien 
-                         && p.NgayLamViec >= donNghi.NgayBatDau 
+                .Where(p => p.CccdNhanVien == donNghi.CccdNhanVien
+                         && p.NgayLamViec >= donNghi.NgayBatDau
                          && p.NgayLamViec <= donNghi.NgayKetThuc)
                 .ToListAsync(cancellationToken);
 
@@ -86,20 +86,20 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.DuyetDon
                 remainingNgayNghi -= ngayTru;
 
                 var chamCong = existingChamCongs.FirstOrDefault(c => c.NgayChamCong == lich.Ngay);
-                
+
                 LoaiNgayCong loaiCongToAssign;
-                if (ngayTru == 1m) 
+                if (ngayTru == 1m)
                 {
-                    loaiCongToAssign = (donNghi.LoaiNghi == LoaiNghi.NGHI_KHONG_LUONG) 
-                        ? LoaiNgayCong.VANG_CO_PHEP_KHONG_LUONG 
+                    loaiCongToAssign = (donNghi.LoaiNghi == LoaiNghi.NGHI_KHONG_LUONG)
+                        ? LoaiNgayCong.VANG_CO_PHEP_KHONG_LUONG
                         : LoaiNgayCong.VANG_CO_PHEP;
                 }
-                else 
+                else
                 {
                     loaiCongToAssign = LoaiNgayCong.NUA_CA;
                 }
 
-                var assignedShift = phanCongCas.FirstOrDefault(p => p.NgayLamViec == lich.Ngay)?.CaLamViec 
+                var assignedShift = phanCongCas.FirstOrDefault(p => p.NgayLamViec == lich.Ngay)?.CaLamViec
                                     ?? lich.CaLamViecMacDinh;
                 decimal shiftHours = assignedShift?.CalculateWorkingHours() ?? 8m;
 

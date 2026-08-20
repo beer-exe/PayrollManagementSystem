@@ -3,7 +3,6 @@ using PayrollManagementSystem.Application.Features.HrDecisions.Queries.GetNextDe
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.HrDecisions.Queries.GetNextDecisionCode
 {
@@ -54,7 +53,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.HrDecisions.Que
             // Assert
             result.Should().Be($"QDTD-{year}-000006");
         }
-        
+
         [Fact]
         public async Task Handle_ExistingDecisionsDifferentType_ReturnsFirstCodeForNewType()
         {

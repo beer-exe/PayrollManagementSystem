@@ -2,9 +2,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.Positions.DTOs;
-using PayrollManagementSystem.Domain.Enums;
-using PayrollManagementSystem.Domain.Extensions;
 using PayrollManagementSystem.Application.Wrappers;
+using PayrollManagementSystem.Domain.Extensions;
 namespace PayrollManagementSystem.Application.Features.Positions.Queries.GetPositions
 {
     public class GetPositionsQueryHandler : IRequestHandler<GetPositionsQuery, Response<IEnumerable<PositionDto>>>
@@ -38,7 +37,7 @@ namespace PayrollManagementSystem.Application.Features.Positions.Queries.GetPosi
             }
 
             var chucVus = await query.OrderBy(x => x.IdChucVu).ToListAsync(cancellationToken);
-            
+
             var positions = chucVus.Select(cv => new PositionDto
             {
                 IdChucVu = cv.IdChucVu,

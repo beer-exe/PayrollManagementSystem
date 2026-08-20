@@ -30,7 +30,7 @@ namespace PayrollManagementSystem.API
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .UseSerilog((context, services, configuration) => 
+                .UseSerilog((context, services, configuration) =>
                 {
                     // Expand environment variables for Serilog File sink path (e.g. %BASEDIR%)
                     var writeToSections = context.Configuration.GetSection("Serilog:WriteTo").GetChildren();

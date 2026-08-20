@@ -10,8 +10,8 @@ namespace PayrollManagementSystem.Application.Features.SystemManagement.Queries.
         private readonly IPdfService _pdfService;
 
         public ExportSystemLogsQueryHandler(
-            ISystemLogRepository systemLogRepository, 
-            IExcelService excelService, 
+            ISystemLogRepository systemLogRepository,
+            IExcelService excelService,
             IPdfService pdfService)
         {
             _systemLogRepository = systemLogRepository;

@@ -1,9 +1,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
-using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.DTOs;
-using PayrollManagementSystem.Domain.Enums;
+using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Extensions;
 
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia.Queries.GetManagerEvaluations
@@ -19,7 +18,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
             if (manager == null) return new Response<IEnumerable<PhieuDanhGiaDto>>("Không tìm thấy tài khoản quản lý.");
 
             var today = DateOnly.FromDateTime(DateTime.Today);
-            
+
             var userQd = await _context.QuyetDinhNhanSus
                 .Where(x => x.Cccd == manager.Cccd && x.TrangThai == Domain.Enums.TrangThaiQuyetDinh.HIEU_LUC && x.NgayHieuLuc <= today)
                 .OrderByDescending(x => x.NgayHieuLuc)
@@ -38,7 +37,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
                 {
                     reportingEmployees = await _context.NhanViens
                         .Where(nv => nv.TrangThai == Domain.Enums.TrangThaiNhanVien.DANG_LAM_VIEC)
-                        .Select(nv => new 
+                        .Select(nv => new
                         {
                             nv.Cccd,
                             LatestQd = nv.QuyetDinhNhanSus
@@ -57,7 +56,7 @@ namespace PayrollManagementSystem.Application.Features.CompetencyP2.PhieuDanhGia
                 .AsNoTracking()
                 .Include(x => x.KyDanhGia)
                 .Where(x => (request.IsHr || x.CccdQuanLy == manager.Cccd || reportingEmployees.Contains(x.CccdNhanVien)) && x.TrangThai != Domain.Enums.TrangThaiPhieuDanhGia.CHO_NV_DANH_GIA)
-                .Select(x => new 
+                .Select(x => new
                 {
                     IdPhieu = x.IdPhieu,
                     IdKyDanhGia = x.IdKyDanhGia,

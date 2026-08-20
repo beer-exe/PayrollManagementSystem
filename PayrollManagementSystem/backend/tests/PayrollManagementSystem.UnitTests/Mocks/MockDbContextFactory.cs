@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using PayrollManagementSystem.Application.Common.Interfaces;
-using PayrollManagementSystem.Infrastructure.Persistence;
-using Moq;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using PayrollManagementSystem.Infrastructure.Persistence;
 
 namespace PayrollManagementSystem.UnitTests.Mocks
 {
@@ -20,7 +18,7 @@ namespace PayrollManagementSystem.UnitTests.Mocks
             context.Database.EnsureCreated();
             return context;
         }
-        
+
         public static void Destroy(ApplicationDbContext context)
         {
             context.Database.EnsureDeleted();

@@ -1,7 +1,7 @@
 using MediatR;
+using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Wrappers;
-using PayrollManagementSystem.Application.Common.Exceptions;
 
 namespace PayrollManagementSystem.Application.Features.CompetencyP2.MucQuyDoi.Commands.UpdateMucQuyDoi
 {

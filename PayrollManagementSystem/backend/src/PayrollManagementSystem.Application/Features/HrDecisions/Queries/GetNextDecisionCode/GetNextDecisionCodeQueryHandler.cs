@@ -1,7 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
@@ -34,7 +30,7 @@ namespace PayrollManagementSystem.Application.Features.HrDecisions.Queries.GetNe
                 var lastCode = lastDecision.SoQuyetDinh;
                 // Ví dụ: QDTD-2026-000001 -> cắt 6 ký tự cuối
                 var sequencePart = lastCode.Substring(prefix.Length);
-                
+
                 if (int.TryParse(sequencePart, out int parsedSequence))
                 {
                     nextSequence = parsedSequence + 1;

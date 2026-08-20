@@ -1,17 +1,17 @@
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
-using Serilog;
 using PayrollManagementSystem.API.Middlewares;
 using PayrollManagementSystem.Application;
 using PayrollManagementSystem.Infrastructure;
 using PayrollManagementSystem.Infrastructure.Hubs;
+using PayrollManagementSystem.Infrastructure.Persistence;
+using Serilog;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
-using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using PayrollManagementSystem.Infrastructure.Persistence;
 
 namespace PayrollManagementSystem.API
 {
@@ -26,12 +26,12 @@ namespace PayrollManagementSystem.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApplicationServices(Configuration);  
+            services.AddApplicationServices(Configuration);
             services.AddInfrastructureServices(Configuration);
             services.AddSignalR();
 
-            services.AddControllers().AddJsonOptions(options => 
-            { 
+            services.AddControllers().AddJsonOptions(options =>
+            {
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
@@ -164,14 +164,14 @@ namespace PayrollManagementSystem.API
             }
 
             app.UseHttpsRedirection();
-            
+
             app.UseSerilogRequestLogging(options =>
             {
                 options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
                 {
                     var userId = httpContext.User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier) ?? "Anonymous";
                     var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
-                    
+
                     diagnosticContext.Set("UserId", userId);
                     diagnosticContext.Set("ClientIp", ip);
                     diagnosticContext.Set("CorrelationId", httpContext.TraceIdentifier);

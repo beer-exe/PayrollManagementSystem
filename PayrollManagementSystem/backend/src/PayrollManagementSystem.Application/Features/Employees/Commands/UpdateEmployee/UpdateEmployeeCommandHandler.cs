@@ -36,7 +36,7 @@ namespace PayrollManagementSystem.Application.Features.Employees.Commands.Update
                 var deptExists = await _context.PhongBans.AnyAsync(pb => pb.IdPb == request.IdPb, cancellationToken);
                 if (!deptExists)
                     throw new ApiException("Phòng ban được chọn không tồn tại trong hệ thống.");
-                
+
                 nhanVien.IdPb = request.IdPb;
             }
 

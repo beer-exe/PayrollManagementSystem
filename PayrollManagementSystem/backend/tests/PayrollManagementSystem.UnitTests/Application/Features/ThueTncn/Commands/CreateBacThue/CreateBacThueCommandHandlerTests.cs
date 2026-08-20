@@ -4,7 +4,6 @@ using PayrollManagementSystem.Application.Features.ThueTncn.Commands.CreateBacTh
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.ThueTncn.Commands.CreateBacThue
 {

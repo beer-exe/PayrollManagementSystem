@@ -2,10 +2,8 @@ using FluentAssertions;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Features.DonNghi.Commands.DeleteDonNghi;
 using PayrollManagementSystem.Domain.Enums;
-using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Commands.DeleteDonNghi
 {
@@ -56,7 +54,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.DonNghi.Command
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Succeeded.Should().BeTrue();
-            
+
             var dbDonNghi = await _context.DonNghis.FindAsync(donNghi.Id);
             dbDonNghi.Should().NotBeNull();
             dbDonNghi!.IsDeleted.Should().BeTrue();

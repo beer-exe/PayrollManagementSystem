@@ -4,7 +4,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.WorkSchedule.Queries.GetLichLamViecs
 {
@@ -41,7 +40,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.WorkSchedule.Qu
                     new ChiTietLichLamViec { Id = Guid.NewGuid(), IdLich = lichId1, Ngay = new DateOnly(2024,1,4), Thu = "Năm", LoaiNgay = LoaiNgay.NGAY_LAM_VIEC, IsDeleted = true } // Should not count
                 }
             };
-            
+
             var lichId2 = Guid.NewGuid();
             var lich2 = new LichLamViec
             {

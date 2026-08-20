@@ -3,7 +3,6 @@ using PayrollManagementSystem.Application.Features.JobGrades.Commands.CreateJobG
 using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.JobGrades.Commands.CreateJobGrade
 {

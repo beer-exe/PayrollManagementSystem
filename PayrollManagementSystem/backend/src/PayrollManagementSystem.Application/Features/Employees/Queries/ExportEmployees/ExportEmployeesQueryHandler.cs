@@ -42,7 +42,7 @@ namespace PayrollManagementSystem.Application.Features.Employees.Queries.ExportE
             var employeesData = await query
                 .AsNoTracking()
                 .OrderByDescending(nv => nv.NgayVaoLam)
-                .Select(nv => new 
+                .Select(nv => new
                 {
                     Cccd = nv.Cccd,
                     HoTen = nv.HoTen,

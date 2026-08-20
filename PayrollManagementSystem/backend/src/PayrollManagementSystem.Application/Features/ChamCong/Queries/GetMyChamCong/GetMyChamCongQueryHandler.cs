@@ -5,10 +5,6 @@ using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.ChamCong.DTOs;
 using PayrollManagementSystem.Application.Wrappers;
 using PayrollManagementSystem.Domain.Extensions;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PayrollManagementSystem.Application.Features.ChamCong.Queries.GetMyChamCong
 {

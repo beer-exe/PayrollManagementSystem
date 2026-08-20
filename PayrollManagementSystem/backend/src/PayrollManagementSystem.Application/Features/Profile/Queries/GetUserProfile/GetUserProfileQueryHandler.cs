@@ -25,7 +25,7 @@ namespace PayrollManagementSystem.Application.Features.Profile.Queries.GetUserPr
             var profileData = await _context.NhanViens
                 .AsNoTracking()
                 .Where(nv => nv.IdTaiKhoan == request.TaiKhoanId)
-                .Select(nv => new 
+                .Select(nv => new
                 {
                     Cccd = nv.Cccd,
                     HoTen = nv.HoTen,
@@ -95,7 +95,7 @@ namespace PayrollManagementSystem.Application.Features.Profile.Queries.GetUserPr
                         .Where(qd => qd.Cccd == nv.Cccd)
                         .OrderByDescending(qd => qd.NgayHieuLuc)
                         .ThenByDescending(qd => qd.CreatedAt)
-                        .Select(qd => new 
+                        .Select(qd => new
                         {
                             SoQuyetDinh = qd.SoQuyetDinh,
                             LoaiQuyetDinh = qd.LoaiQuyetDinh,

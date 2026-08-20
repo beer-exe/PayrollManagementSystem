@@ -24,7 +24,7 @@ namespace PayrollManagementSystem.Domain.Models
             {
                 diff = diff.Add(TimeSpan.FromHours(24));
             }
-            
+
             decimal totalHours = (decimal)diff.TotalHours;
 
             if (KhungGioNghis != null)

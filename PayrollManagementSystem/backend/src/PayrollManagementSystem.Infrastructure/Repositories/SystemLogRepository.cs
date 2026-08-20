@@ -1,8 +1,8 @@
-using System.Data;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.SystemManagement.DTOs;
 using PayrollManagementSystem.Application.Wrappers;
+using System.Data;
 using System.Data.Common;
 
 namespace PayrollManagementSystem.Infrastructure.Repositories
@@ -23,12 +23,12 @@ namespace PayrollManagementSystem.Infrastructure.Repositories
 
         private static readonly Dictionary<string, int> LevelToInt = new(StringComparer.OrdinalIgnoreCase)
         {
-            ["Verbose"]     = 0,
-            ["Debug"]       = 1,
+            ["Verbose"] = 0,
+            ["Debug"] = 1,
             ["Information"] = 2,
-            ["Warning"]     = 3,
-            ["Error"]       = 4,
-            ["Fatal"]       = 5,
+            ["Warning"] = 3,
+            ["Error"] = 4,
+            ["Fatal"] = 5,
         };
 
         public SystemLogRepository(IApplicationDbContext context)
@@ -56,20 +56,20 @@ namespace PayrollManagementSystem.Infrastructure.Repositories
             var qt = $"\"{tableName}\"";
             var schema = await DiscoverSchemaAsync(connection, qt, cancellationToken);
 
-            var tsCol   = FindCol(schema.Keys, "raise_date", "timestamp", "time_stamp", "raised_at", "logged_at", "created_at")
+            var tsCol = FindCol(schema.Keys, "raise_date", "timestamp", "time_stamp", "raised_at", "logged_at", "created_at")
                           ?? throw new InvalidOperationException($"Không tìm thấy cột timestamp. Cột: {string.Join(", ", schema.Keys)}");
-            var lvlCol  = FindCol(schema.Keys, "level")
+            var lvlCol = FindCol(schema.Keys, "level")
                           ?? throw new InvalidOperationException($"Không tìm thấy cột level. Cột: {string.Join(", ", schema.Keys)}");
-            var msgCol  = FindCol(schema.Keys, "message", "rendered_message")
+            var msgCol = FindCol(schema.Keys, "message", "rendered_message")
                           ?? throw new InvalidOperationException($"Không tìm thấy cột message. Cột: {string.Join(", ", schema.Keys)}");
-            var excCol  = FindCol(schema.Keys, "exception");
+            var excCol = FindCol(schema.Keys, "exception");
             var propCol = FindCol(schema.Keys, "properties", "log_event");
 
             var levelIsInt = schema.TryGetValue(lvlCol, out var lvlType) &&
                              (lvlType.Contains("int") || lvlType.Contains("Int"));
 
             var where = new List<string>();
-            var ps    = new List<(string name, object value)>();
+            var ps = new List<(string name, object value)>();
 
             if (!string.IsNullOrWhiteSpace(level))
             {
@@ -122,7 +122,7 @@ namespace PayrollManagementSystem.Infrastructure.Repositories
             var logs = new List<SystemLogDto>();
             await using (var cmd = connection.CreateCommand())
             {
-                var excSql  = excCol  != null ? $"{qt}.\"{excCol}\""  : "NULL";
+                var excSql = excCol != null ? $"{qt}.\"{excCol}\"" : "NULL";
                 var propSql = propCol != null ? $"{qt}.\"{propCol}\"" : "NULL";
 
                 cmd.CommandText = $@"
@@ -148,19 +148,19 @@ namespace PayrollManagementSystem.Infrastructure.Repositories
                     var rawLevel = reader.GetValue(2);
                     var levelStr = rawLevel switch
                     {
-                        int i    => LevelMap.GetValueOrDefault(i, i.ToString()),
-                        long l   => LevelMap.GetValueOrDefault((int)l, l.ToString()),
+                        int i => LevelMap.GetValueOrDefault(i, i.ToString()),
+                        long l => LevelMap.GetValueOrDefault((int)l, l.ToString()),
                         string s => s,
-                        _        => rawLevel?.ToString() ?? "Information"
+                        _ => rawLevel?.ToString() ?? "Information"
                     };
 
                     logs.Add(new SystemLogDto
                     {
-                        Id         = reader.GetInt64(0),
-                        RaiseDate  = reader.GetDateTime(1),
-                        Level      = levelStr,
-                        Message    = reader.IsDBNull(3) ? null : reader.GetValue(3)?.ToString(),
-                        Exception  = reader.IsDBNull(4) ? null : reader.GetValue(4)?.ToString(),
+                        Id = reader.GetInt64(0),
+                        RaiseDate = reader.GetDateTime(1),
+                        Level = levelStr,
+                        Message = reader.IsDBNull(3) ? null : reader.GetValue(3)?.ToString(),
+                        Exception = reader.IsDBNull(4) ? null : reader.GetValue(4)?.ToString(),
                         Properties = reader.IsDBNull(5) ? null : reader.GetValue(5)?.ToString(),
                     });
                 }

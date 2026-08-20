@@ -2,9 +2,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
 using PayrollManagementSystem.Application.Features.SalarySteps.DTOs;
-using PayrollManagementSystem.Domain.Enums;
-using PayrollManagementSystem.Domain.Extensions;
 using PayrollManagementSystem.Application.Wrappers;
+using PayrollManagementSystem.Domain.Extensions;
 namespace PayrollManagementSystem.Application.Features.SalarySteps.Queries.GetSalaryStepHistory
 {
     public class GetSalaryStepHistoryQueryHandler : IRequestHandler<GetSalaryStepHistoryQuery, Response<IEnumerable<SalaryStepDto>>>

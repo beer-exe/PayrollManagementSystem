@@ -4,13 +4,13 @@ namespace PayrollManagementSystem.Domain.Enums
 {
     public enum TrangThaiDonNghi
     {
-        [Description("Chờ duyệt")] 
+        [Description("Chờ duyệt")]
         CHO_DUYET,
 
-        [Description("Đã duyệt")] 
+        [Description("Đã duyệt")]
         DA_DUYET,
 
-        [Description("Từ chối")] 
+        [Description("Từ chối")]
         TU_CHOI,
     }
 }

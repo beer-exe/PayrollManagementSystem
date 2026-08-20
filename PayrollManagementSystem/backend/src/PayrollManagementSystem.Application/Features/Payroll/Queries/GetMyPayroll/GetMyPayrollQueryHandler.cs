@@ -1,4 +1,4 @@
- using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Exceptions;
 using PayrollManagementSystem.Application.Common.Interfaces;
@@ -49,7 +49,7 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetMyPayr
                 .Where(x => x.Cccd == nhanVien.Cccd && x.TrangThai != Domain.Enums.TrangThaiQuyetDinh.HUY_BO)
                 .ToListAsync(cancellationToken);
 
-            var result = bangLuongs.Select(b => 
+            var result = bangLuongs.Select(b =>
             {
                 var endOfMonth = new DateOnly(request.Nam, b.Thang, DateTime.DaysInMonth(request.Nam, b.Thang));
                 var startOfMonth = new DateOnly(request.Nam, b.Thang, 1);
@@ -67,37 +67,37 @@ namespace PayrollManagementSystem.Application.Features.Payroll.Queries.GetMyPayr
                     TenNhanVien = nhanVien.HoTen,
                     TenPhongBan = qd?.ChucVuMoi?.PhongBan?.TenPb ?? (nhanVien.PhongBan?.TenPb ?? ""),
                     TenChucVu = qd?.ChucVuMoi?.TenChucVu ?? "",
-                    
+
                     Thang = b.Thang,
                     Nam = b.Nam,
-                    
+
                     P1 = b.P1,
                     HeSoP2 = b.HeSoP2,
                     HeSoP3 = b.HeSoP3,
-                    
+
                     NgayCongChuan = b.NgayCongChuan,
                     NgayCongThucTe = b.NgayCongThucTe,
                     GioCongChuan = b.GioCongChuan,
                     GioCongThucTe = b.GioCongThucTe,
-                    
+
                     LuongThoiGian = b.LuongThoiGian,
                     LuongHieuSuatP3 = b.LuongHieuSuatP3,
-                    
+
                     PhuCap = b.PhuCap,
                     Thuong = b.Thuong,
                     TangCa = b.TangCa,
-                    
+
                     Phat = b.Phat,
                     KhauTru = b.KhauTru,
                     TruThue = b.TruThue,
-                    
+
                     TongThuNhap = b.TongThuNhap,
                     ThucLinh = b.ThucLinh,
-                    
+
                     GhiChu = b.GhiChu,
                     ChiTietKhauTru = b.ChiTietKhauTru,
                     ChiTietThue = b.ChiTietThue,
-                    
+
                     TrangThaiKyLuong = b.KyLuong.TrangThai.GetDescription(),
                     TrangThai = b.TrangThai.ToString(),
                     TrangThaiText = b.TrangThai.GetDescription(),

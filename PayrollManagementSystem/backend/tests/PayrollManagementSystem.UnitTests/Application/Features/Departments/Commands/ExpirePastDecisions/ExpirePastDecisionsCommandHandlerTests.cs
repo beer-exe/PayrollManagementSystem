@@ -4,7 +4,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Departments.Commands.ExpirePastDecisions
 {
@@ -34,7 +33,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Departments.Com
 
             var oldQd = new QuyetDinhNhanSu { SoQuyetDinh = "QD1", Cccd = "001", LoaiQuyetDinh = "Test", TrangThai = TrangThaiQuyetDinh.HIEU_LUC, NgayHieuLuc = lastMonth };
             var newQd = new QuyetDinhNhanSu { SoQuyetDinh = "QD2", Cccd = "001", LoaiQuyetDinh = "Test", TrangThai = TrangThaiQuyetDinh.HIEU_LUC, NgayHieuLuc = yesterday };
-            
+
             _context.QuyetDinhNhanSus.AddRange(oldQd, newQd);
             await _context.SaveChangesAsync();
 

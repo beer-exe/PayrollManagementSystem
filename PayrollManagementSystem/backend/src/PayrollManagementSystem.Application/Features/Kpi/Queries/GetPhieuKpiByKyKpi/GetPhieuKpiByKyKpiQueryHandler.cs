@@ -1,10 +1,9 @@
-using PayrollManagementSystem.Application.Features.Kpi.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PayrollManagementSystem.Application.Common.Interfaces;
-using PayrollManagementSystem.Application.Features.Kpi.Queries.GetPhieuKpiByNhanVien;
-using PayrollManagementSystem.Domain.Extensions;
+using PayrollManagementSystem.Application.Features.Kpi.DTOs;
 using PayrollManagementSystem.Application.Wrappers;
+using PayrollManagementSystem.Domain.Extensions;
 
 namespace PayrollManagementSystem.Application.Features.Kpi.Queries.GetPhieuKpiByKyKpi
 {
@@ -35,9 +34,9 @@ namespace PayrollManagementSystem.Application.Features.Kpi.Queries.GetPhieuKpiBy
             if (_currentUserService.UserId.HasValue)
             {
                 var currentUserId = _currentUserService.UserId.Value;
-                
+
                 subordinateCccds = await _kpiAuthorizationService.GetSubordinateCccdsAsync(currentUserId, cancellationToken);
-                
+
                 var taiKhoan = await _context.TaiKhoans
                     .AsNoTracking()
                     .FirstOrDefaultAsync(t => t.IdTaiKhoan == currentUserId, cancellationToken);

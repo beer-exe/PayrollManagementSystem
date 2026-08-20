@@ -9,7 +9,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<KhungNangLucP2> builder)
         {
             builder.HasKey(e => e.IdTieuChi);
-            
+
             builder.Property(e => e.IdTieuChi).HasDefaultValueSql("gen_random_uuid()");
             builder.Property(e => e.IdChucVu).IsRequired().HasMaxLength(50);
             builder.Property(e => e.TenNangLuc).IsRequired().HasMaxLength(150);
@@ -28,7 +28,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<KyDanhGia> builder)
         {
             builder.HasKey(e => e.IdKyDanhGia);
-            
+
             builder.Property(e => e.IdKyDanhGia).HasDefaultValueSql("gen_random_uuid()");
             builder.Property(e => e.TenKyDanhGia).IsRequired().HasMaxLength(200);
             builder.Property(e => e.TrangThai).HasConversion<string>().HasMaxLength(50);
@@ -40,7 +40,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<PhieuDanhGiaNangLuc> builder)
         {
             builder.HasKey(e => e.IdPhieu);
-            
+
             builder.Property(e => e.IdPhieu).HasDefaultValueSql("gen_random_uuid()");
             builder.Property(e => e.CccdNhanVien).IsRequired().HasMaxLength(20);
             builder.Property(e => e.CccdQuanLy).HasMaxLength(20);
@@ -72,7 +72,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<ChiTietDanhGiaNangLuc> builder)
         {
             builder.HasKey(e => e.IdChiTiet);
-            
+
             builder.Property(e => e.IdChiTiet).HasDefaultValueSql("gen_random_uuid()");
             builder.Property(e => e.NhanXetNhanVien).HasMaxLength(500);
             builder.Property(e => e.NhanXetQuanLy).HasMaxLength(500);
@@ -94,7 +94,7 @@ namespace PayrollManagementSystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<MucQuyDoiP2> builder)
         {
             builder.HasKey(e => e.IdQuyDoi);
-            
+
             builder.Property(e => e.IdQuyDoi).HasDefaultValueSql("gen_random_uuid()");
             builder.Property(e => e.XepLoai).IsRequired().HasMaxLength(100);
             builder.Property(e => e.DiemToiThieu).HasPrecision(5, 2);

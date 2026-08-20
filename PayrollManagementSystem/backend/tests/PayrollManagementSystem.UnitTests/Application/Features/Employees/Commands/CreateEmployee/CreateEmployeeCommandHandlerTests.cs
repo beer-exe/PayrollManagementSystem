@@ -5,7 +5,6 @@ using PayrollManagementSystem.Domain.Enums;
 using PayrollManagementSystem.Domain.Models;
 using PayrollManagementSystem.Infrastructure.Persistence;
 using PayrollManagementSystem.UnitTests.Mocks;
-using Xunit;
 
 namespace PayrollManagementSystem.UnitTests.Application.Features.Employees.Commands.CreateEmployee
 {
@@ -80,7 +79,7 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Employees.Comma
             exception.Message.Should().Contain("Chức vụ");
             exception.Message.Should().Contain("không tồn tại");
         }
-        
+
         [Fact]
         public async Task Handle_BacLuongNotFound_ThrowsApiException()
         {
@@ -103,8 +102,8 @@ namespace PayrollManagementSystem.UnitTests.Application.Features.Employees.Comma
             _context.BacLuongs.Add(new BacLuong { IdBacLuong = "BL01", TenBacLuong = "Bậc 1", IdNgachLuong = "NL01" });
             await _context.SaveChangesAsync();
 
-            var command = new CreateEmployeeCommand 
-            { 
+            var command = new CreateEmployeeCommand
+            {
                 Cccd = "001",
                 SoHopDong = "HD01",
                 SoQuyetDinh = "QD01",

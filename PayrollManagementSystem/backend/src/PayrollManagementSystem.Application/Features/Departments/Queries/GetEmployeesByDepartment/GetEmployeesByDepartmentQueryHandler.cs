@@ -19,14 +19,14 @@ namespace PayrollManagementSystem.Application.Features.Departments.Queries.GetEm
 
             var employeesData = await _context.NhanViens
                 .AsNoTracking()
-                .Where(nv => nv.IdPb == request.IdPb || 
+                .Where(nv => nv.IdPb == request.IdPb ||
                             (nv.IdPb == null && _context.QuyetDinhNhanSus
                                 .Where(qd => qd.Cccd == nv.Cccd && qd.TrangThai == TrangThaiQuyetDinh.HIEU_LUC && qd.NgayHieuLuc <= today)
                                 .OrderByDescending(qd => qd.NgayHieuLuc)
                                 .ThenByDescending(qd => qd.CreatedAt)
                                 .Select(qd => _context.ChucVus.Where(cv => cv.IdChucVu == qd.IdChucVuMoi).Select(cv => cv.IdPhongBan).FirstOrDefault())
                                 .FirstOrDefault() == request.IdPb))
-                .Select(nv => new 
+                .Select(nv => new
                 {
                     Cccd = nv.Cccd,
                     HoTen = nv.HoTen,

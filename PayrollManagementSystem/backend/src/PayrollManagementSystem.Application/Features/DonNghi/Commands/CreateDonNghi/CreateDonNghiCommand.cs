@@ -8,7 +8,7 @@ namespace PayrollManagementSystem.Application.Features.DonNghi.Commands.CreateDo
     public class CreateDonNghiCommand : IRequest<Response<Guid>>, ITransactionalCommand, ICacheInvalidatorCommand
     {
         public string CccdNhanVien { get; set; } = null!;
-        public string LoaiNghi { get; set; } = null!; 
+        public string LoaiNghi { get; set; } = null!;
         public DateOnly NgayBatDau { get; set; }
         public DateOnly NgayKetThuc { get; set; }
         public decimal SoNgayNghi { get; set; }
